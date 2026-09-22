@@ -1,0 +1,672 @@
+{
+  "status": "section12_audit_and_isolated_checks_complete_no_product_changes",
+  "input": {
+    "archive": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\coordination\\integrated-f95fc1eeb7d2.zip",
+    "sha256": "f95fc1eeb7d239dfc5b5e6e999b7c2443dc082a63bc9f6f6f7007e6bc3c53c6e",
+    "commit": "1e1e30e8d0dd500e38f9d45d416bb911c4778c3a",
+    "source": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input",
+    "files": {
+      ".dockerignore": "5fc4d87caf418bbaf05d4fd83e693e3ffd24e7d3a0c5d8e334ecaee9bf06a52a",
+      ".env.configured.example": "ba0e0e02b7807adb8cdf6028397eee23817286dd6f47f62eca30b8cd9ac27631",
+      "Cargo.lock": "74673949565cf45110dedef719b65f7ec8fc380415b70f356c0fe3d4a7a18e16",
+      "Cargo.toml": "e5aeb82d72704700969a88ba8d1f73703c3cb5fe6ff046f9724998711fcde31d",
+      "COMPATIBILITY.md": "a5272faa372edcafc3e1fe66d7e5fa1008591a97ef433cca5a38a8480cf444f1",
+      "compose.offline.yml": "306c407f5e5afe6a479757bb3c782abcd7e9dd6e2723053cc1fb0fed00fc46cb",
+      "Dockerfile": "72962f2eb09d3c491e3dc59a3ad7dbbf63b4ee16a552354167ffd5eb451684a2",
+      "PHASE1_CONTRACT.md": "6205eddbc1993f3ee9b41b48c053b555a17799e55dbc8cdd1f10bc1261b4a8dd",
+      "README.md": "b80ab6ed94025272c52568f356d3357c591451fcf223ad95e51534f23614c145",
+      "examples/check_config.rs": "f05e1e549366234963a767658883a299ae9cc76e1b28d97fa04e75da770a3e67",
+      "src/config.rs": "52fe253f3afaab1be81e8e7062bfc9eed400530543996e7d1b44a645e7267f3a",
+      "src/crypto.rs": "c59203a66264aaa3ffb08fd006e3ccaf23ff7ed675d1a6650256f9330db03a5f",
+      "src/lib.rs": "6377ef21bc1b7fab9123f06883911d07c372130767c760b0eada2143c135f560",
+      "src/main.rs": "8fd4c3b9d1e924da0d1b937fdb2614e020e8a5bc5ac79d43ca65ba4fc1ab1ad2",
+      "src/policy.rs": "e8898ccf2a1ad28352e667e073a3f8a513f9fba2637d12144a63a23281357d7c",
+      "src/resource_acl.rs": "80ee34100574d8b746905ae71ea42b67d25c13410e247b4408e47db4ea0caa39",
+      "src/schema.sql": "1d368f1ab010628495516aa619dcf13c210d1b53710e7a8f1f608fb7a04649af",
+      "src/server.rs": "7c6f0f220b6ae31ed72accc351f6e94b0577f3c7344ef179bc847f24b9cb49ff",
+      "src/storage.rs": "cbedbfcb9390ac569736921ae98771432a3c8c38841c223f0dfe12d4e85546c9",
+      "tests/auth_refresh.rs": "7e1d36c93c18bbb2e30618994063a3100262d0de1c22208c422d52bd43c4cbba",
+      "tests/backup_contract.rs": "350adca97f7978cc69d313e3e53712c86a50f32ac9133df32007fe708bdd5637",
+      "tests/coord_acl_contract.rs": "8b06f74d703632fce6546d0b5463d50c8f830d81547f605ce4e8f180b419dbfa",
+      "tests/coord_boundary_regression.rs": "7fccb8e6ac1cd2176c1814ef979fd0dd671898419c630800a86380f8fb6f0c6f",
+      "tests/migration.rs": "887a6ddf6dc1b7f3c4928503fa6a995d25dfde6ce807b64166863774d0cc9b51",
+      "tests/mirror_auth.rs": "2a21848325a3f074a317bdc5a301864412199b07a7abb35d987edd20b4164ff9",
+      "tests/original_crypto.rs": "1b211d9c1b2e4661f77872b7e1ded9f45b85c2e1188a3d95399750d2942ddd3e",
+      "tests/static_assets.rs": "7fb5b8d558b37f5876eae291c11605cecea450d6c3e7ab09ea7905ea6dedc578",
+      "src/assets/gateway-client-hosts.json": "d7ef6a13e22df4df9e097229fb28352d50da0eb40b33425e4029e4dffe9f14ff",
+      "src/assets/gateway-client.html": "465719ae5e4ffcd33dd7e35605d82c9ef73cb3a5689a79daf747a44af06208dc",
+      "src/server/compression.rs": "fb8659679eae7f3bfeef0ee31f7e9e8e17821968fc1c2ed46473580aa890d00d",
+      "src/server/management.rs": "d2b3bfba9b327ce3e624f5d65383cae32161be769f0912a03932bc945f75cf9b",
+      "src/server/proxy.rs": "c4db0dc057ad6f56cde97d315e0406858a73604d8e6d82747b529e0c6b89a094",
+      "src/server/static_assets.rs": "0be41000463d9a802ddbb52df6a23bfcb6b3b49242348a1cc64bf379521792e8"
+    }
+  },
+  "source_evidence_commit": "1e1e30e8d0dd500e38f9d45d416bb911c4778c3a",
+  "classification_values": [
+    "已验证一致",
+    "存在可解释差异",
+    "尚未验证"
+  ],
+  "findings": [
+    {
+      "id": "S12-01",
+      "status": "已验证一致",
+      "title": "共享账号不合并本地用户会话",
+      "statement": "gateway_sessions按(user_name,chatgpt_username)唯一，随机mirror token只保存hash；同一上游账号下Alice/Bob可有独立access_token/extra_cookies和login_mode。Alice重登录、handoff、logout不替换Bob的行。本轮也实际观察同账号下两套不同合成凭据/cookie各自被选取。",
+      "references": [
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\src\\schema.sql",
+          "lines": "35-54"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\src\\server.rs",
+          "lines": "328-359,948-978"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\src\\server\\proxy.rs",
+          "lines": "313-325"
+        }
+      ],
+      "evidence": [
+        "coord_shared_account_token_rotation_preserves_other_user",
+        "coord_local_sessions_distinct_accounts_and_logout_are_isolated",
+        "probe-output/observations.json:shared_account,persisted_binding,logout"
+      ],
+      "scope_limit": "仅会话行和凭据选择；不是产品资源ACL全链验收，也不保证同账号各用户共享同一个上游device/session。"
+    },
+    {
+      "id": "S12-02",
+      "status": "存在可解释差异",
+      "title": "普通me在重登录期间未固定凭据代次",
+      "statement": "确定性时序：旧请求先从DB读旧token对应Session并释放锁；其Django授权HTTP已到fixture但尚未返回；同Alice/同账号新登录完成可信fixture授权和me校验并提交新token/新凭据；再释放旧Django响应(active=true、相同v1)，旧session校验通过；load_credentials只按(user,account)取到新access/extra_cookies。旧在途me=200且用synthetic-alice-new，后续旧token请求=401。generation只是本报告的代次概念，当前无该列。",
+      "references": [
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\src\\server.rs",
+          "lines": "888-942,351-359"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\src\\server\\proxy.rs",
+          "lines": "135-147,185-194,313-325"
+        }
+      ],
+      "evidence": [
+        "probe-output/observations.json:inflight_relogin",
+        "probe-output/synthetic-events.json events 4,5,6,7",
+        "probe_lifecycle.py"
+      ],
+      "scope_limit": "不是跨用户/跨账号泄露。fixture保留同一授权version；真实Django若同时令旧授权失效，结果可能不同。conversations使用同一load_credentials路径，仅源码推及风险，本轮未运行该路径竞态。"
+    },
+    {
+      "id": "S12-03",
+      "status": "已验证一致",
+      "title": "auth/session刷新有更强的token绑定",
+      "statement": "refresh_auth_session按user/account/mirror_token精确取凭据快照，不持DB锁等待网络；每次accounts/check后me；拒绝email变更；外层再次session验证，因此等待期间撤权可完成且结果变空对象。accounts HTTP失败仍检查me并显示free，me401/账号不匹配返回{}。",
+      "references": [
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\src\\server\\proxy.rs",
+          "lines": "263-310"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\src\\server.rs",
+          "lines": "981-1004"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\tests\\auth_refresh.rs",
+          "lines": "49-196"
+        }
+      ],
+      "evidence": [
+        "auth_refresh:3 tests exit0"
+      ],
+      "scope_limit": "这里只是账号计划/用户信息刷新，不是access/session/refresh token续期。不能把该精确token保证外推到普通me/list；UI expires=2099是兼容展示，不是真正授权到期。"
+    },
+    {
+      "id": "S12-04",
+      "status": "存在可解释差异",
+      "title": "出口配置意图没有进入普通请求执行",
+      "statement": "mirror_proxy.enabled/proxy_url/transport_mode设置可以保存，proxy_node_id可以在会话落库；主App客户端始终no_proxy且无节点选择读取。隔离probe保存enabled配置=200、两行proxy_node_id=71，普通me直接到固定回环上游，proxy-trap命中0。独立test_proxy端点另造代理客户端，不等于普通链路采用该配置。",
+      "references": [
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\src\\server.rs",
+          "lines": "73-85,353-354,695-761"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\src\\schema.sql",
+          "lines": "47"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\src\\server\\proxy.rs",
+          "lines": "502-508"
+        }
+      ],
+      "evidence": [
+        "probe-output/observations.json:configured_proxy_unused,persisted_binding"
+      ],
+      "scope_limit": "只验证本候选合成回环条件；没有真实代理出口IP、DNS、NAT、TLS或公网归属观测。未运行test_proxy端点。"
+    },
+    {
+      "id": "S12-05",
+      "status": "存在可解释差异",
+      "title": "登录和代理请求未使用同一头/cookie上下文",
+      "statement": "登录fetch_user直接client.get+bearer，初始三次me实测UA/Cookie/Origin均缺失；之后普通代理me使用固定UA、会话extra_cookies及固定Origin。session_token交换也走独立cookie-only请求路径（该交换仅源码审计）。因此一个账号的登录与后续代理并非统一client profile执行。",
+      "references": [
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\src\\server.rs",
+          "lines": "422-446"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\src\\server\\proxy.rs",
+          "lines": "64-65,393-415,447-508"
+        }
+      ],
+      "evidence": [
+        "header-observations.json event_index 1,3,6 vs 7,9,11"
+      ],
+      "scope_limit": "不评估哪组头更像浏览器，不实现伪装；UA文本不等于TLS/HTTP2/设备身份。"
+    },
+    {
+      "id": "S12-06",
+      "status": "尚未验证",
+      "title": "上游device/session和cookie生命周期缺专用契约",
+      "statement": "schema有本地id、mirror_token、access/session token及extra_cookies，没有专用上游device_id/session_id、cookie作用域/有效期/版本、client_profile或credential_generation字段；generic加密payload可以保留未消费字段，但不能算可信绑定。extra_cookies仅解析name/value。合成fixture_device只是任意cookie名，不是已证实的上游设备协议。",
+      "references": [
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\src\\schema.sql",
+          "lines": "11-23,35-54"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\src\\server.rs",
+          "lines": "336-350"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\src\\server\\proxy.rs",
+          "lines": "256-259,328-342"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\src\\config.rs",
+          "lines": "6-21"
+        }
+      ],
+      "evidence": [
+        "bounded source inspection of schema/storage/server/proxy/config",
+        "header-observations.json"
+      ],
+      "scope_limit": "真实设备、账号session、cookie过期/换发语义均未观测，不得从名称猜测或补造ID。"
+    },
+    {
+      "id": "S12-07",
+      "status": "已验证一致",
+      "title": "登出和版本撤权阻止后续请求",
+      "statement": "logout删除指定user_name的所有账号会话及授权行；revoke按subject/version/expiry及明确访客前缀匹配后删除。当前本地测试确认旧版本撤权不误删新版本会话，Alice退出后Alice401/Bob200；mirror_profile下请求还回查Django。",
+      "references": [
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\src\\server.rs",
+          "lines": "493-559,923-940"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\src\\policy.rs",
+          "lines": "197-259"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\tests\\mirror_auth.rs",
+          "lines": "109-166,224-270"
+        }
+      ],
+      "evidence": [
+        "mirror_authority_revocation_and_relogin_are_enforced",
+        "probe-output/observations.json:logout"
+      ],
+      "scope_limit": "只对下一请求及专门测试的refresh结果成立；没有全路由在途取消/实时断连。管理密钥是服务认证，不是可信管理员操作者。"
+    },
+    {
+      "id": "S12-08",
+      "status": "已验证一致",
+      "title": "同DB同key重启保留本地会话绑定",
+      "statement": "本轮实际终止自己的空闲候选进程后用相同全新DB/key重启，Alice/Bob各自凭据和extra_cookies仍对应原用户，授权重新回查。上游Set-Cookie: fixture_rotated不会被reqwest自动吸收到持久cookie组，后续和重启后请求仍仅携带已保存extra_cookies。",
+      "references": [
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\src\\storage.rs",
+          "lines": "198-220,444-505"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\src\\server.rs",
+          "lines": "73-85,888-942"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\src\\server\\proxy.rs",
+          "lines": "313-342,420-435"
+        }
+      ],
+      "evidence": [
+        "probe-output/observations.json:restart",
+        "probe-output/processes.json",
+        "header-observations.json event_index 13,15"
+      ],
+      "scope_limit": "受控terminate而非优雅关机，进程退出码1是测试主动结束；无在途写入压力测试。不能推出公网出口、CF cookie、TLS连接或真实设备重启稳定。"
+    },
+    {
+      "id": "S12-09",
+      "status": "尚未验证",
+      "title": "全局CF缓存没有账号/出口/profile绑定",
+      "statement": "cf_cache是App级Option<Value>，启动预热或任一有效session刷新后整体替换；发送helper从全局缓存选择cf_clearance，未按账号、节点、profile或代次索引。请求user_agent参数固定，但不足以证明结果属于相同实际出口/传输身份。",
+      "references": [
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\src\\server.rs",
+          "lines": "33-38,73-90,1021-1057"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\src\\server\\proxy.rs",
+          "lines": "344-364,479-508"
+        }
+      ],
+      "evidence": [
+        "source execution path only"
+      ],
+      "scope_limit": "本轮CF_BYPASS_URL未设置，未调用CF服务；有效期、跨上下文隔离及失败后旧缓存行为没有运行验收。共享网络凭据不能合并用户ACL。"
+    },
+    {
+      "id": "S12-10",
+      "status": "存在可解释差异",
+      "title": "账号凭据复制与真正续期尚未统一",
+      "statement": "management::mirror_token把账号表access/session/extra_cookies复制到user/account会话行，不消费refresh_token；普通proxy之后只读会话副本。其新行proxy_node_id=NULL，冲突更新又不更新该列，可能保留原值。login仅在显式session_token非空时保存它，仅chatgpt_token作为交换输入时不会存入该列。当前auth/session未实现真正credential续期/Set-Cookie合并。",
+      "references": [
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\src\\server\\management.rs",
+          "lines": "126-183"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\src\\server.rs",
+          "lines": "310-340,432-446"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\src\\schema.sql",
+          "lines": "16-19"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\src\\server\\proxy.rs",
+          "lines": "263-325"
+        }
+      ],
+      "evidence": [
+        "source audit; mirror_auth covers basic mirror-token reissue only"
+      ],
+      "scope_limit": "未模拟账号池令牌更新传播、过期renew、复杂cookie旋转；不把每用户副本等同于单一账号执行profile。"
+    },
+    {
+      "id": "S12-11",
+      "status": "尚未验证",
+      "title": "资源ACL仍未接入生产路径",
+      "statement": "会话行分离与conversation列表按account+user过滤的源码成立；独立ResourceAcl的同账号默认私有用例本轮单项通过。但lib.rs没有resource_acl导出，router不建ACL表也不调用RequestIdentity，Django可信stable ID/admin字段仍缺接线。不能据共享账号会话测试称所有资源用户权限已经独立。",
+      "references": [
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\src\\lib.rs",
+          "lines": "1-6"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\src\\server.rs",
+          "lines": "73-145,367-400"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\src\\server\\proxy.rs",
+          "lines": "198-250"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\src\\resource_acl.rs",
+          "lines": "37-100,437-494"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\PHASE1_CONTRACT.md",
+          "lines": "75-80"
+        }
+      ],
+      "evidence": [
+        "successful_create_is_private_and_owner_can_read_modify_delete_continue:1 test exit0",
+        "source audit"
+      ],
+      "scope_limit": "禁止以账号、出口IP、profile或上游cookie/session ID取代稳定Django user_id作为ACL主体；未知/未开放业务不能算通过。"
+    }
+  ],
+  "session_execution_context_proposal": {
+    "status": "尚未验证",
+    "implemented": false,
+    "fields": [
+      {
+        "field": "principal",
+        "trust": "可信Django user_id/is_admin/authorization_version +经验证subject",
+        "binding": "与本地会话固定，版本/角色变化使旧context失效",
+        "failure": "未确认、visitor未支持或过期拒绝，不以服务密钥造actor"
+      },
+      {
+        "field": "local_session_ref + binding_generation",
+        "trust": "Rust服务端会话ID及一份绑定代次；不由浏览器指定",
+        "binding": "冻结token/凭据/cookie/profile/出口组合；重登录或任一组合替换建立新代次",
+        "failure": "发送前发现代次已变则拒绝/取消旧操作，不拿新凭据接续旧请求、不自动重发"
+      },
+      {
+        "field": "upstream_account_key",
+        "trust": "经服务端账号映射和真实上游身份校验得到的稳定key",
+        "binding": "资源账号不可变；当前email仅已有定位键，不能自行当永久vendor ID",
+        "failure": "身份不匹配拒绝重新绑定"
+      },
+      {
+        "field": "credential_bundle_ref",
+        "trust": "服务端加密凭据引用及有来源的cookie集合，不向浏览器下发",
+        "binding": "access/session/refresh/extra cookie必须同代次；可经明确策略共享账号bundle，但仍为各actor独立context",
+        "failure": "缺失/解密失败/过期停止；响应cookie更新需来源、作用域和版本校验，不靠透明cookie jar猜测"
+      },
+      {
+        "field": "egress_binding_ref",
+        "trust": "服务端已批准的实际出口节点/策略；配置意图不能假装已选中",
+        "binding": "固定到本次代次，账号策略明确哪些会话可共享，变更显式重建",
+        "failure": "节点不可用或未接通时失败，不静默直连或换出口；是否允许直连必须明确"
+      },
+      {
+        "field": "client_profile_ref",
+        "trust": "服务端实际传输实现和头配置版本，不是浏览器自报UA",
+        "binding": "登录、交换、刷新、普通请求使用同一批准profile或记录明确差异",
+        "failure": "不支持的传输/协议拒绝或保持门禁；不作不可识别代理承诺"
+      },
+      {
+        "field": "upstream_session_device_ref (optional)",
+        "trust": "仅真实协议已验证来源的opaque引用和作用域",
+        "binding": "与账号/凭据/出口profile关联；没有事实时保持unknown，不随机造device ID",
+        "failure": "需要该绑定但未证实时不开业务；不是ACL主体"
+      },
+      {
+        "field": "validity",
+        "trust": "Django真实expires_at及服务端撤权状态",
+        "binding": "查库/鉴权/快照/发送前后同代次验证；网络等待不持DB锁",
+        "failure": "旧token401；在途context切换的取消/409等兼容语义由owner审定，禁止伪造成功"
+      }
+    ]
+  },
+  "existing_tests_executed": 7,
+  "commands": [
+    {
+      "label": "coord_shared_account_token_rotation_preserves_other_user",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo\\bin\\cargo.exe",
+        "test",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\Cargo.toml",
+        "--test",
+        "coord_boundary_regression",
+        "coord_shared_account_token_rotation_preserves_other_user",
+        "--",
+        "--exact",
+        "--nocapture"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12",
+      "exit_status": 0,
+      "stdout": "\nrunning 1 test\nCOORD_EVIDENCE test=shared_account events=42 panicking=false\ntest coord_shared_account_token_rotation_preserves_other_user ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.10s\n\n",
+      "stderr": "   Compiling proc-macro2 v1.0.107\n   Compiling unicode-ident v1.0.26\n   Compiling quote v1.0.47\n   Compiling cfg-if v1.0.5\n   Compiling version_check v0.9.5\n   Compiling once_cell v1.21.4\n   Compiling windows-link v0.2.1\n   Compiling smallvec v1.16.1\n   Compiling typenum v1.20.1\n   Compiling find-msvc-tools v0.1.13\n   Compiling shlex v2.0.1\n   Compiling bytes v1.12.1\n   Compiling pin-project-lite v0.2.17\n   Compiling stable_deref_trait v1.2.1\n   Compiling itoa v1.0.18\n   Compiling futures-core v0.3.34\n   Compiling getrandom v0.2.17\n   Compiling windows-sys v0.61.2\n   Compiling parking_lot_core v0.9.12\n   Compiling scopeguard v1.2.0\n   Compiling log v0.4.34\n   Compiling rand_core v0.6.4\n   Compiling lock_api v0.4.14\n   Compiling zerocopy v0.8.57\n   Compiling zeroize v1.9.0\n   Compiling subtle v2.6.1\n   Compiling tracing-core v0.1.36\n   Compiling futures-sink v0.3.34\n   Compiling generic-array v0.14.7\n   Compiling rustls-pki-types v1.15.1\n   Compiling slab v0.4.12\n   Compiling cpufeatures v0.2.17\n   Compiling untrusted v0.9.0\n   Compiling httparse v1.10.1\n   Compiling litemap v0.8.3\n   Compiling cc v1.4.7\n   Compiling futures-task v0.3.34\n   Compiling writeable v0.6.4\n   Compiling http v1.5.0\n   Compiling parking_lot v0.12.5\n   Compiling serde_core v1.0.229\n   Compiling percent-encoding v2.3.2\n   Compiling icu_normalizer_data v2.3.0\n   Compiling rustls v0.23.45\n   Compiling icu_properties_data v2.3.0\n   Compiling utf8_iter v1.0.4\n   Compiling tower-service v0.3.3\n   Compiling libc v0.2.189\n   Compiling try-lock v0.2.5\n   Compiling form_urlencoded v1.2.2\n   Compiling webpki-roots v1.0.9\n   Compiling ahash v0.8.12\n   Compiling want v0.3.1\n   Compiling sync_wrapper v1.0.2\n   Compiling futures-channel v0.3.34\n   Compiling atomic-waker v1.1.2\n   Compiling syn v3.0.6\n   Compiling syn v2.0.119\n   Compiling http-body v1.1.0\n   Compiling crypto-common v0.1.7\n   Compiling block-buffer v0.10.4\n   Compiling thiserror v1.0.69\n   Compiling tower-layer v0.3.3\n   Compiling httpdate v1.0.3\n   Compiling zmij v1.0.23\n   Compiling serde v1.0.229\n   Compiling digest v0.10.7\n   Compiling inout v0.1.4\n   Compiling base64 v0.22.1\n   Compiling serde_json v1.0.151\n   Compiling rustversion v1.0.23\n   Compiling pkg-config v0.3.34\n   Compiling vcpkg v0.2.15\n   Compiling ipnet v2.12.2\n   Compiling sha1 v0.10.7\n   Compiling cipher v0.4.4\n   Compiling universal-hash v0.5.1\n   Compiling http-body-util v0.1.5\n   Compiling byteorder v1.5.0\n   Compiling data-encoding v2.11.1\n   Compiling opaque-debug v0.3.1\n   Compiling memchr v2.8.3\n   Compiling ring v0.17.14\n   Compiling bitflags v2.13.2\n   Compiling utf-8 v0.7.6\n   Compiling crc32fast v1.5.2\n   Compiling regex-syntax v0.8.11\n   Compiling ryu v1.0.23\n   Compiling polyval v0.6.2\n   Compiling webpki-roots v0.26.11\n   Compiling anyhow v1.0.104\n   Compiling adler2 v2.0.1\n   Compiling mime v0.3.17\n   Compiling libsqlite3-sys v0.28.0\n   Compiling simd-adler32 v0.3.10\n   Compiling socket2 v0.6.5\n   Compiling mio v1.2.3\n   Compiling lazy_static v1.5.0\n   Compiling miniz_oxide v0.9.1\n   Compiling sharded-slab v0.1.7\n   Compiling nu-ansi-term v0.50.3\n   Compiling ghash v0.5.1\n   Compiling ctr v0.9.2\n   Compiling aes v0.8.4\n   Compiling aead v0.5.2\n   Compiling regex-automata v0.4.18\n   Compiling tracing-log v0.2.0\n   Compiling thread_local v1.1.10\n   Compiling serde_path_to_error v0.1.20\n   Compiling fallible-streaming-iterator v0.1.9\n   Compiling fallible-iterator v0.3.0\n   Compiling matchit v0.7.3\n   Compiling getrandom v0.4.3\n   Compiling aes-gcm v0.10.3\n   Compiling flate2 v1.1.10\n   Compiling sha2 v0.10.9\n   Compiling fastrand v2.5.0\n   Compiling tempfile v3.27.0\n   Compiling ppv-lite86 v0.2.21\n   Compiling hashbrown v0.14.5\n   Compiling rand_chacha v0.3.1\n   Compiling synstructure v0.14.0\n   Compiling tracing-attributes v0.1.31\n   Compiling thiserror-impl v1.0.69\n   Compiling axum-macros v0.4.2\n   Compiling matchers v0.2.0\n   Compiling rand v0.8.8\n   Compiling hashlink v0.9.1\n   Compiling rusqlite v0.31.0\n   Compiling zerofrom-derive v0.1.8\n   Compiling yoke-derive v0.8.3\n   Compiling zerovec-derive v0.11.6\n   Compiling displaydoc v0.2.7\n   Compiling tokio-macros v2.7.2\n   Compiling futures-macro v0.3.34\n   Compiling serde_derive v1.0.229\n   Compiling async-trait v0.1.92\n   Compiling tracing v0.1.44\n   Compiling rustls-webpki v0.103.15\n   Compiling tracing-subscriber v0.3.23\n   Compiling tokio v1.53.1\n   Compiling futures-util v0.3.34\n   Compiling zerofrom v0.1.8\n   Compiling yoke v0.8.3\n   Compiling zerovec v0.11.8\n   Compiling zerotrie v0.2.5\n   Compiling tinystr v0.8.4\n   Compiling potential_utf v0.1.6\n   Compiling icu_collections v2.3.0\n   Compiling icu_locale_core v2.3.0\n   Compiling icu_provider v2.3.1\n   Compiling serde_urlencoded v0.7.1\n   Compiling icu_normalizer v2.3.0\n   Compiling icu_properties v2.3.0\n   Compiling axum-core v0.4.5\n   Compiling idna_adapter v1.2.2\n   Compiling idna v1.1.0\n   Compiling tungstenite v0.24.0\n   Compiling url v2.5.8\n   Compiling hyper v1.11.1\n   Compiling tokio-rustls v0.26.5\n   Compiling tower v0.5.3\n   Compiling tokio-util v0.7.19\n   Compiling tokio-tungstenite v0.24.0\n   Compiling tower-http v0.6.11\n   Compiling hyper-util v0.1.20\n   Compiling hyper-rustls v0.27.10\n   Compiling axum v0.7.9\n   Compiling reqwest v0.12.28\n   Compiling mirror-gateway v0.1.0 (C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 24.51s\n     Running tests\\coord_boundary_regression.rs (build\\debug\\deps\\coord_boundary_regression-41443e0c916205db.exe)\n"
+    },
+    {
+      "label": "coord_local_sessions_distinct_accounts_and_logout_are_isolated",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo\\bin\\cargo.exe",
+        "test",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\Cargo.toml",
+        "--test",
+        "coord_boundary_regression",
+        "coord_local_sessions_distinct_accounts_and_logout_are_isolated",
+        "--",
+        "--exact",
+        "--nocapture"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12",
+      "exit_status": 0,
+      "stdout": "\nrunning 1 test\nCOORD_EVIDENCE test=distinct_accounts events=67 panicking=false\ntest coord_local_sessions_distinct_accounts_and_logout_are_isolated ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.09s\n\n",
+      "stderr": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.32s\n     Running tests\\coord_boundary_regression.rs (build\\debug\\deps\\coord_boundary_regression-41443e0c916205db.exe)\n"
+    },
+    {
+      "label": "auth_refresh",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo\\bin\\cargo.exe",
+        "test",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\Cargo.toml",
+        "--test",
+        "auth_refresh",
+        "--",
+        "--test-threads=1"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12",
+      "exit_status": 0,
+      "stdout": "\nrunning 3 tests\ntest preserves_observed_failure_shapes_without_rebinding_accounts ... ok\ntest refreshes_account_then_me_on_every_request ... ok\ntest revocation_completes_during_network_wait_and_invalidates_refresh_result ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s\n\n",
+      "stderr": "   Compiling mirror-gateway v0.1.0 (C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.67s\n     Running tests\\auth_refresh.rs (build\\debug\\deps\\auth_refresh-b9a0befcc8e8089f.exe)\n"
+    },
+    {
+      "label": "mirror_authority_revocation_and_relogin_are_enforced",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo\\bin\\cargo.exe",
+        "test",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\Cargo.toml",
+        "--test",
+        "mirror_auth",
+        "mirror_authority_revocation_and_relogin_are_enforced",
+        "--",
+        "--exact",
+        "--nocapture"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12",
+      "exit_status": 0,
+      "stdout": "\nrunning 1 test\ntest mirror_authority_revocation_and_relogin_are_enforced ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.07s\n\n",
+      "stderr": "   Compiling mirror-gateway v0.1.0 (C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.12s\n     Running tests\\mirror_auth.rs (build\\debug\\deps\\mirror_auth-fc534850fa167b2d.exe)\n"
+    },
+    {
+      "label": "successful_create_is_private_and_owner_can_read_modify_delete_continue",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo\\bin\\cargo.exe",
+        "test",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\Cargo.toml",
+        "--test",
+        "coord_acl_contract",
+        "successful_create_is_private_and_owner_can_read_modify_delete_continue",
+        "--",
+        "--exact",
+        "--nocapture"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12",
+      "exit_status": 0,
+      "stdout": "\nrunning 1 test\ntest successful_create_is_private_and_owner_can_read_modify_delete_continue ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 27 filtered out; finished in 0.00s\n\n",
+      "stderr": "   Compiling mirror-gateway v0.1.0 (C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.93s\n     Running tests\\coord_acl_contract.rs (build\\debug\\deps\\coord_acl_contract-35260a1c549e44ca.exe)\n"
+    },
+    {
+      "label": "build-current-snapshot",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo\\bin\\cargo.exe",
+        "build",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\Cargo.toml",
+        "--bin",
+        "mirror-gateway"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12",
+      "exit_status": 0,
+      "stdout": "",
+      "stderr": "    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.25s\n"
+    },
+    {
+      "label": "isolated-lifecycle-probe",
+      "command": [
+        "C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\probe_lifecycle.py"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12",
+      "exit_status": 0,
+      "stdout": "{\"id\": \"inflight_relogin\", \"old_inflight_status\": 200, \"next_old_request_status\": 401, \"selected_credential\": \"synthetic-alice-new\", \"selected_cookie\": \"fixture_device=alice-new\", \"interpretation\": \"old validated in-flight request selected replacement credentials for same user/account\"}\r\n{\"id\": \"shared_account\", \"account\": \"shared@example.invalid\", \"separate_session_credentials\": true, \"separate_extra_cookies\": true, \"user_acl_not_tested_by_http\": true}\r\n{\"id\": \"configured_proxy_unused\", \"save_status\": 200, \"proxy_trap_hits\": 0}\r\n{\"id\": \"persisted_binding\", \"rows_without_tokens\": [[\"alice\", \"shared@example.invalid\", 71], [\"bob\", \"shared@example.invalid\", 71]], \"tokens_hashed\": true}\r\n{\"id\": \"restart\", \"same_db_same_key_sessions_survive\": true, \"cookie_jar_did_not_capture_upstream_set_cookie\": true, \"real_device_protocol_validity\": \"not_verified\"}\r\n{\"id\": \"logout\", \"alice_status\": 401, \"bob_status\": 200}\r\nSECTION12_LOOPBACK_PROBE_OK\r\n",
+      "stderr": "----------------------------------------\r\n----------------------------------------\r\nException occurred during processing of request from ('127.0.0.1', 62599)\r\nException occurred during processing of request from ('127.0.0.1', 62604)\r\nTraceback (most recent call last):\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\socketserver.py\", line 697, in process_request_thread\r\n    self.finish_request(request, client_address)\r\n    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\r\nTraceback (most recent call last):\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\socketserver.py\", line 362, in finish_request\r\n    self.RequestHandlerClass(request, client_address, self)\r\n    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\socketserver.py\", line 697, in process_request_thread\r\n    self.finish_request(request, client_address)\r\n    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\socketserver.py\", line 362, in finish_request\r\n    self.RequestHandlerClass(request, client_address, self)\r\n    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\socketserver.py\", line 766, in __init__\r\n    self.handle()\r\n    ~~~~~~~~~~~^^\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\socketserver.py\", line 766, in __init__\r\n    self.handle()\r\n    ~~~~~~~~~~~^^\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\http\\server.py\", line 498, in handle\r\n    self.handle_one_request()\r\n    ~~~~~~~~~~~~~~~~~~~~~~~^^\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\http\\server.py\", line 464, in handle_one_request\r\n    self.raw_requestline = self.rfile.readline(65537)\r\n                           ~~~~~~~~~~~~~~~~~~~^^^^^^^\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\http\\server.py\", line 498, in handle\r\n    self.handle_one_request()\r\n    ~~~~~~~~~~~~~~~~~~~~~~~^^\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\socket.py\", line 729, in readinto\r\n    return self._sock.recv_into(b)\r\n           ~~~~~~~~~~~~~~~~~~~~^^^\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\http\\server.py\", line 464, in handle_one_request\r\n    self.raw_requestline = self.rfile.readline(65537)\r\n                           ~~~~~~~~~~~~~~~~~~~^^^^^^^\r\nConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\socket.py\", line 729, in readinto\r\n    return self._sock.recv_into(b)\r\n           ~~~~~~~~~~~~~~~~~~~~^^^\r\nConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。\r\n----------------------------------------\r\n----------------------------------------\r\n----------------------------------------\r\nException occurred during processing of request from ('127.0.0.1', 62611)\r\nTraceback (most recent call last):\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\socketserver.py\", line 697, in process_request_thread\r\n    self.finish_request(request, client_address)\r\n    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\socketserver.py\", line 362, in finish_request\r\n    self.RequestHandlerClass(request, client_address, self)\r\n    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\socketserver.py\", line 766, in __init__\r\n    self.handle()\r\n    ~~~~~~~~~~~^^\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\http\\server.py\", line 498, in handle\r\n    self.handle_one_request()\r\n    ~~~~~~~~~~~~~~~~~~~~~~~^^\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\http\\server.py\", line 464, in handle_one_request\r\n    self.raw_requestline = self.rfile.readline(65537)\r\n                           ~~~~~~~~~~~~~~~~~~~^^^^^^^\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\socket.py\", line 729, in readinto\r\n    return self._sock.recv_into(b)\r\n           ~~~~~~~~~~~~~~~~~~~~^^^\r\nConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。\r\n----------------------------------------\r\n"
+    }
+  ],
+  "loopback_probe_observations": [
+    {
+      "id": "inflight_relogin",
+      "old_inflight_status": 200,
+      "next_old_request_status": 401,
+      "selected_credential": "synthetic-alice-new",
+      "selected_cookie": "fixture_device=alice-new",
+      "interpretation": "old validated in-flight request selected replacement credentials for same user/account"
+    },
+    {
+      "id": "shared_account",
+      "account": "shared@example.invalid",
+      "separate_session_credentials": true,
+      "separate_extra_cookies": true,
+      "user_acl_not_tested_by_http": true
+    },
+    {
+      "id": "configured_proxy_unused",
+      "save_status": 200,
+      "proxy_trap_hits": 0
+    },
+    {
+      "id": "persisted_binding",
+      "rows_without_tokens": [
+        [
+          "alice",
+          "shared@example.invalid",
+          71
+        ],
+        [
+          "bob",
+          "shared@example.invalid",
+          71
+        ]
+      ],
+      "tokens_hashed": true
+    },
+    {
+      "id": "restart",
+      "same_db_same_key_sessions_survive": true,
+      "cookie_jar_did_not_capture_upstream_set_cookie": true,
+      "real_device_protocol_validity": "not_verified"
+    },
+    {
+      "id": "logout",
+      "alice_status": 401,
+      "bob_status": 200
+    }
+  ],
+  "processes": {
+    "binary": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\build\\debug\\mirror-gateway.exe",
+    "binary_sha256": "028864a6ca1f6fc13285b00e5faca3d433b41590bd14fce8f2b3c4fe750e7767",
+    "processes": [
+      {
+        "label": "initial",
+        "command": [
+          "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\build\\debug\\mirror-gateway.exe"
+        ],
+        "pid": 9700,
+        "terminated_exit_status": 1
+      },
+      {
+        "label": "restart",
+        "command": [
+          "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\build\\debug\\mirror-gateway.exe"
+        ],
+        "pid": 32164,
+        "terminated_exit_status": 1
+      }
+    ],
+    "network_scope": "127.0.0.1 only; fixture credentials only"
+  },
+  "boundaries": {
+    "product_source_modified": false,
+    "input_files_unchanged": 33,
+    "public_network_used": false,
+    "real_credentials_or_production_db_used": false,
+    "main_roles_or_checkpoint_modified": false,
+    "no_proxy_undetectability_claim": true,
+    "full_109_suite_rerun": false
+  },
+  "prior_roles_reopened": {
+    "MODIFIED_FILE": {
+      "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\MODIFIED_FILE.zip",
+      "sha256": "3d5b43797e945f26cc69723ba3ef526483179e4448bacd039b657f499ed4e695",
+      "bytes": 125835
+    },
+    "DIFF_FILE": {
+      "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\DIFF_FILE.patch",
+      "sha256": "5c678238cda0235aeac30fb0d84ddf3a800ab0bacf6502f3d4ceb5f03b7c5ce1",
+      "bytes": 44467
+    },
+    "VERIFICATION": {
+      "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\VERIFICATION.txt",
+      "sha256": "673f1f9514f4a5e289bf6b5e5c5efefaaba9f8f43a0f2a8f56fc577ed0aac9ce",
+      "bytes": 9165
+    },
+    "ROLLBACK": {
+      "path": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\ROLLBACK.sh",
+      "sha256": "a364b4bfca90ad45c86d228461decae56ae474fc1669559644cd6c5f70b8f359",
+      "bytes": 613
+    }
+  },
+  "prior_behaviors_historical_only": [
+    {
+      "label": "BASELINE",
+      "command": [
+        "C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\run_gate.py",
+        "--source",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\verification-verified-final\\baseline-source"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild",
+      "stdout": "ACL_CONTRACT_V1_UNAVAILABLE: resource_acl module absent\r\n",
+      "stderr": "",
+      "exit_status": 3,
+      "expected_exit": 3,
+      "passed": true
+    },
+    {
+      "label": "MODIFIED",
+      "command": [
+        "C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\run_gate.py",
+        "--source",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coord-input\\Mirror\\gateway-rust\\artifacts\\phase1\\source"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild",
+      "stdout": "COMMAND=['E:\\\\M\\\\Project\\\\MiRebuild\\\\Mirror\\\\gateway-rust\\\\.build\\\\phase1-toolchain\\\\cargo\\\\bin\\\\cargo.exe', 'test', '--locked', '--offline', '--manifest-path', 'C:\\\\Users\\\\Administrator\\\\.codex\\\\worktrees\\\\24c5\\\\MiRebuild\\\\coord-input\\\\Mirror\\\\gateway-rust\\\\artifacts\\\\phase1\\\\source\\\\Cargo.toml', '--test', 'coord_acl_contract', '--', '--test-threads=1']\r\n\nrunning 28 tests\ntest account_namespace_cannot_be_changed_and_cross_account_links_fail ... ok\ntest acl_survives_reopen_without_importing_legacy_state ... ok\ntest administrative_demotion_and_version_change_reject_pinned_admin ... ok\ntest attaching_old_content_to_a_different_project_owner_expands_visibility ... ok\ntest attaching_old_private_resource_with_new_viewers_requires_admin ... ok\ntest audit_contains_real_actor_and_is_admin_only ... ok\ntest audit_failure_rolls_back_acl_mutation_instead_of_granting ... ok\ntest connector_metadata_link_does_not_expand_visibility ... ok\ntest connector_permissions_never_inherit_from_project ... ok\ntest direct_share_survives_project_revocation_and_does_not_allow_reshare ... ok\ntest duplicate_resource_or_creation_receipt_never_reassigns_owner ... ok\ntest every_resource_kind_is_private_and_only_conversations_can_continue ... ok\ntest failed_create_records_nothing_and_unknown_is_admin_read_only ... ok\ntest fresh_version_role_user_subject_and_expiry_are_rechecked ... ok\ntest invalid_associations_and_inputs_fail_before_commit ... ok\ntest moving_between_projects_compares_entire_audience_and_rolls_back ... ok\ntest nonexpanding_move_and_detach_are_allowed_without_admin ... ok\ntest only_administrator_can_grant_and_revoke_even_owner_cannot_reshare ... ok\ntest project_owner_inherits_new_content_created_by_a_recipient ... ok\ntest projects_dynamically_share_existing_and_future_content ... ok\ntest revoke_rejects_next_check_and_returns_invalidation_intent ... ok\ntest separate_connections_observe_revoke_on_the_next_authorization ... ok\ntest sqlite_trigger_prevents_rebinding_even_with_direct_update ... ok\ntest successful_create_is_private_and_owner_can_read_modify_delete_continue ... ok\ntest trusted_identity_is_strict_and_wire_version_stays_opaque ... ok\ntest unknown_parent_or_unprivileged_parent_cannot_register_a_child ... ok\ntest user_ids_must_be_canonical_positive_decimal_strings ... ok\ntest visitor_missing_identity_and_service_key_do_not_supply_an_actor ... ok\n\ntest result: ok. 28 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s\n\n",
+      "stderr": "   Compiling mirror-gateway v0.1.0 (C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coord-input\\Mirror\\gateway-rust\\artifacts\\phase1\\source)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.90s\n     Running tests\\coord_acl_contract.rs (coordination\\acl\\build\\debug\\deps\\coord_acl_contract-35260a1c549e44ca.exe)\n",
+      "exit_status": 0,
+      "expected_exit": 0,
+      "passed": true
+    },
+    {
+      "label": "ROLLBACK",
+      "command": [
+        "C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\run_gate.py",
+        "--source",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\verification-verified-final\\rollback-source"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild",
+      "stdout": "ACL_CONTRACT_V1_UNAVAILABLE: resource_acl module absent\r\n",
+      "stderr": "",
+      "exit_status": 3,
+      "expected_exit": 3,
+      "passed": true
+    }
+  ],
+  "reports": {
+    "report": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\REPORT_SECTION12.md",
+    "ledger": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\VERIFICATION_SECTION12.txt"
+  },
+  "next_step": "Owner review this evidence; if later authorized, bind ordinary me/list credentials to exact session generation and test the recorded race before broader context/egress integration. No product fix authorized or performed in this turn."
+}

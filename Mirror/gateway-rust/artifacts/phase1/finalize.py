@@ -89,16 +89,21 @@ ledger = {
 status = {
     "ACTIVE_OBJECT": str(here / "source"),
     "LAST_CONFIRMED_RESULT": summary,
-    "NEXT_EXECUTABLE_ACTION": "Create and run an HTML/bootstrap resource-leakage fixture against the retained original and current candidate, then design the safe page/same-origin adapter. Keep unproven HTML/media routes closed; trusted identity/new-DB ACL and backup wiring remain a separate next stage.",
-    "INPUT_PATHS": [str(here / "source/PHASE1_CONTRACT.md"), str(here / "page-original-001/results.json"), str(here / "source/src/server.rs"), str(here / "COORDINATION.json")],
-    "ACCEPTANCE_EVENT": "HTML/bootstrap data and URL rewrite contract recorded with unauthorized resource leakage denied; no product ACL or complete replacement claim from independent tests.",
+    "NEXT_EXECUTABLE_ACTION": "Create and execute focused regressions for ordinary me/list credential-generation binding and saved proxy/profile effective egress, then make the smallest authorized local fix. No silent direct/identity fallback. Keep pages/media/realtime gated; architecture changes and real-account testing require separate confirmation.",
+    "INPUT_PATHS": [str(here / "section12-intake.json"), str(here / "integrations/section12/SECTION12_REPORT.md"), str(here / "source/src/server.rs"), str(here / "source/src/server/proxy.rs"), str(here / "COORDINATION.json")],
+    "ACCEPTANCE_EVENT": "Focused tests prove no adoption of new credentials by old in-flight requests and actual approved egress/profile selection or fail-closed behavior. Existing regressions retained; this does not imply end-to-end browser identity acceptance.",
     "roles": roles,
     "phase": 1,
     "phase_complete": False,
-    "remaining": ["页面初始化隔离及同源改写，字体/图片/其他静态类型", "初次登录accounts检查、更多真实响应/失败协议", "第二阶段可信身份、账号映射、新库ACL/备份/后台/实时撤权接线；ACL仅独立暂存", "第三至五阶段业务能力及第六阶段统一验收与部署交付"],
+    "remaining": ["第12节：普通请求代次、实际出口绑定及浏览器/传输身份一致性门禁", "页面初始化隔离及同源改写，字体/图片/其他静态类型", "初次登录accounts检查、更多真实响应/失败协议", "第二阶段可信身份、账号映射、新库ACL/备份/后台/实时撤权接线；ACL仅独立暂存", "第三至五阶段业务能力及第六阶段统一验收与部署交付"],
     "rollback_scope": "restore a disposable source archive; not databases or already-executed upstream operations",
     "legacy_evidence": str(root / "STATUS.json"),
 }
+# Source packaging must not silently drop the separately received identity gate.
+if (here / "STATUS.json").exists():
+    previous = read("STATUS.json")
+    if "upstream_visible_identity_acceptance" in previous:
+        status["upstream_visible_identity_acceptance"] = previous["upstream_visible_identity_acceptance"]
 (here / "STATUS.json").write_text(json.dumps(status, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 print(json.dumps(summary, ensure_ascii=False))
 for role, path in roles.items():

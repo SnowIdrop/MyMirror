@@ -1,0 +1,492 @@
+{
+  "schema_version": 1,
+  "section": 12,
+  "workline": 4,
+  "status": "audit_and_targeted_offline_checks_complete_not_browser_acceptance",
+  "captured_at": "2026-09-22T16:52:46.348478+00:00",
+  "coordinator_thread": "01a0c9c9-4508-75d1-a709-20aa6dbb69f9",
+  "integration_owner_thread": "01a0c9af-fab7-7780-af7f-537dde662636",
+  "handoff": false,
+  "write_scope": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12/**",
+  "input": {
+    "source_zip": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\coordination\\integrated-f95fc1eeb7d2.zip",
+    "sha256": "f95fc1eeb7d239dfc5b5e6e999b7c2443dc082a63bc9f6f6f7007e6bc3c53c6e",
+    "expected_sha256": "f95fc1eeb7d239dfc5b5e6e999b7c2443dc082a63bc9f6f6f7007e6bc3c53c6e",
+    "sha256_matches": true,
+    "source_commit_as_supplied": "1e1e30e8d0dd500e38f9d45d416bb911c4778c3a",
+    "commit_provenance": "coordinator supplied; ZIP does not establish commit identity alone",
+    "extracted_input": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input",
+    "extracted_file_count": 33,
+    "captured_at": "2026-09-22T16:37:41.844004+00:00",
+    "files": [
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\.dockerignore",
+        "sha256": "5fc4d87caf418bbaf05d4fd83e693e3ffd24e7d3a0c5d8e334ecaee9bf06a52a"
+      },
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\.env.configured.example",
+        "sha256": "ba0e0e02b7807adb8cdf6028397eee23817286dd6f47f62eca30b8cd9ac27631"
+      },
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\Cargo.lock",
+        "sha256": "74673949565cf45110dedef719b65f7ec8fc380415b70f356c0fe3d4a7a18e16"
+      },
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\Cargo.toml",
+        "sha256": "e5aeb82d72704700969a88ba8d1f73703c3cb5fe6ff046f9724998711fcde31d"
+      },
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\COMPATIBILITY.md",
+        "sha256": "a5272faa372edcafc3e1fe66d7e5fa1008591a97ef433cca5a38a8480cf444f1"
+      },
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\compose.offline.yml",
+        "sha256": "306c407f5e5afe6a479757bb3c782abcd7e9dd6e2723053cc1fb0fed00fc46cb"
+      },
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\Dockerfile",
+        "sha256": "72962f2eb09d3c491e3dc59a3ad7dbbf63b4ee16a552354167ffd5eb451684a2"
+      },
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\examples\\check_config.rs",
+        "sha256": "f05e1e549366234963a767658883a299ae9cc76e1b28d97fa04e75da770a3e67"
+      },
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\PHASE1_CONTRACT.md",
+        "sha256": "6205eddbc1993f3ee9b41b48c053b555a17799e55dbc8cdd1f10bc1261b4a8dd"
+      },
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\README.md",
+        "sha256": "b80ab6ed94025272c52568f356d3357c591451fcf223ad95e51534f23614c145"
+      },
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\assets\\gateway-client-hosts.json",
+        "sha256": "d7ef6a13e22df4df9e097229fb28352d50da0eb40b33425e4029e4dffe9f14ff"
+      },
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\assets\\gateway-client.html",
+        "sha256": "465719ae5e4ffcd33dd7e35605d82c9ef73cb3a5689a79daf747a44af06208dc"
+      },
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\config.rs",
+        "sha256": "52fe253f3afaab1be81e8e7062bfc9eed400530543996e7d1b44a645e7267f3a"
+      },
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\crypto.rs",
+        "sha256": "c59203a66264aaa3ffb08fd006e3ccaf23ff7ed675d1a6650256f9330db03a5f"
+      },
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\lib.rs",
+        "sha256": "6377ef21bc1b7fab9123f06883911d07c372130767c760b0eada2143c135f560"
+      },
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\main.rs",
+        "sha256": "8fd4c3b9d1e924da0d1b937fdb2614e020e8a5bc5ac79d43ca65ba4fc1ab1ad2"
+      },
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\policy.rs",
+        "sha256": "e8898ccf2a1ad28352e667e073a3f8a513f9fba2637d12144a63a23281357d7c"
+      },
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\resource_acl.rs",
+        "sha256": "80ee34100574d8b746905ae71ea42b67d25c13410e247b4408e47db4ea0caa39"
+      },
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\schema.sql",
+        "sha256": "1d368f1ab010628495516aa619dcf13c210d1b53710e7a8f1f608fb7a04649af"
+      },
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\server\\compression.rs",
+        "sha256": "fb8659679eae7f3bfeef0ee31f7e9e8e17821968fc1c2ed46473580aa890d00d"
+      },
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\server\\management.rs",
+        "sha256": "d2b3bfba9b327ce3e624f5d65383cae32161be769f0912a03932bc945f75cf9b"
+      },
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\server\\proxy.rs",
+        "sha256": "c4db0dc057ad6f56cde97d315e0406858a73604d8e6d82747b529e0c6b89a094"
+      },
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\server\\static_assets.rs",
+        "sha256": "0be41000463d9a802ddbb52df6a23bfcb6b3b49242348a1cc64bf379521792e8"
+      },
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\server.rs",
+        "sha256": "7c6f0f220b6ae31ed72accc351f6e94b0577f3c7344ef179bc847f24b9cb49ff"
+      },
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\storage.rs",
+        "sha256": "cbedbfcb9390ac569736921ae98771432a3c8c38841c223f0dfe12d4e85546c9"
+      },
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\tests\\auth_refresh.rs",
+        "sha256": "7e1d36c93c18bbb2e30618994063a3100262d0de1c22208c422d52bd43c4cbba"
+      },
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\tests\\backup_contract.rs",
+        "sha256": "350adca97f7978cc69d313e3e53712c86a50f32ac9133df32007fe708bdd5637"
+      },
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\tests\\coord_acl_contract.rs",
+        "sha256": "8b06f74d703632fce6546d0b5463d50c8f830d81547f605ce4e8f180b419dbfa"
+      },
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\tests\\coord_boundary_regression.rs",
+        "sha256": "7fccb8e6ac1cd2176c1814ef979fd0dd671898419c630800a86380f8fb6f0c6f"
+      },
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\tests\\migration.rs",
+        "sha256": "887a6ddf6dc1b7f3c4928503fa6a995d25dfde6ce807b64166863774d0cc9b51"
+      },
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\tests\\mirror_auth.rs",
+        "sha256": "2a21848325a3f074a317bdc5a301864412199b07a7abb35d987edd20b4164ff9"
+      },
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\tests\\original_crypto.rs",
+        "sha256": "1b211d9c1b2e4661f77872b7e1ded9f45b85c2e1188a3d95399750d2942ddd3e"
+      },
+      {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\tests\\static_assets.rs",
+        "sha256": "7fb5b8d558b37f5876eae291c11605cecea450d6c3e7ab09ea7905ea6dedc578"
+      }
+    ],
+    "read_only_policy": "do not edit input files; final hashes checked"
+  },
+  "input_final_verification": {
+    "zip_matches": true,
+    "file_count": 33,
+    "all_input_files_unchanged": true
+  },
+  "findings": [
+    {
+      "id": "ua_header",
+      "classification": "已验证一致",
+      "scope": "source rule only, no Rust/network run",
+      "claim": "proxy and static code use the same fixed UA constant, not a browser identity guarantee",
+      "evidence": [
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\server\\proxy.rs",
+          "lines": "65,393-415"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\server\\static_assets.rs",
+          "lines": "56-73"
+        }
+      ]
+    },
+    {
+      "id": "client_hints_language",
+      "classification": "存在可解释差异",
+      "scope": "source conditional forwarding",
+      "claim": "proxy may retain client CH while overriding UA; static allowlist omits CH; Accept-Language can remain client-specific",
+      "evidence": [
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\server\\proxy.rs",
+          "lines": "73-92,393-415"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\server\\static_assets.rs",
+          "lines": "59-73"
+        }
+      ]
+    },
+    {
+      "id": "js_identity_fields",
+      "classification": "存在可解释差异",
+      "scope": "bounded literal search of bundled template, not external JS",
+      "claim": "no overrides found for navigator UA/CH/platform/languages or Intl/Date timezone; browser environment is not set by HTTP UA constant",
+      "evidence": [
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\assets\\gateway-client.html",
+          "lines": "1-1900,1169-1175,1314-1328"
+        }
+      ]
+    },
+    {
+      "id": "browser_capabilities",
+      "classification": "尚未验证",
+      "claim": "no real browser capability/font/media/graphics/storage consistency evidence",
+      "evidence": [
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\assets\\gateway-client.html",
+          "lines": "1074-1402"
+        }
+      ]
+    },
+    {
+      "id": "tls_h2",
+      "classification": "存在可解释差异",
+      "scope": "implementation layer distinction; actual handshake unknown",
+      "claim": "upstream client uses reqwest/rustls, not visitor browser; no handshake/H2 equivalence demonstrated",
+      "evidence": [
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\server.rs",
+          "lines": "76-80"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\Cargo.toml",
+          "lines": "18,25"
+        }
+      ]
+    },
+    {
+      "id": "webrtc",
+      "classification": "尚未验证",
+      "claim": "no WebRTC/ICE/STUN/TURN egress verification; WS/fetch/CSP is not a substitute",
+      "evidence": [
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\assets\\gateway-client.html",
+          "lines": "1331-1382"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\PHASE1_CONTRACT.md",
+          "lines": "46"
+        }
+      ]
+    },
+    {
+      "id": "known_http_rewrite",
+      "classification": "已验证一致",
+      "scope": "isolated helper outputs only",
+      "claim": "known/generic HTTP URL helpers produce same-origin paths; host list is not server allowlist",
+      "evidence": [
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\assets\\gateway-client.html",
+          "lines": "11-128"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\assets\\gateway-client-hosts.json",
+          "lines": "1"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\server\\proxy.rs",
+          "lines": "123-154"
+        }
+      ]
+    },
+    {
+      "id": "direct_navigation",
+      "classification": "存在可解释差异",
+      "scope": "helper tested plus static call chain; browser click not run",
+      "claim": "anchor/user-activated window.open can use direct external URLs and unwrap external/internal paths",
+      "evidence": [
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\assets\\gateway-client.html",
+          "lines": "129-147,870-891,1035-1055,1314-1328"
+        }
+      ]
+    },
+    {
+      "id": "ws_coverage",
+      "classification": "存在可解释差异",
+      "scope": "helper tested, connection not run",
+      "claim": "only ws.chatgpt.com exact prefixes rewritten; other WS preserved; CSP allows ws:/wss:; same-origin WS business path remains gated",
+      "evidence": [
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\assets\\gateway-client.html",
+          "lines": "1333-1352"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\server.rs",
+          "lines": "156"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\server\\proxy.rs",
+          "lines": "123-154"
+        }
+      ]
+    },
+    {
+      "id": "uncovered_url_types",
+      "classification": "存在可解释差异",
+      "scope": "srcset mock and source-only absence review",
+      "claim": "srcset not in element list; no general EventSource/worker/serviceworker/module-import interception; Mapbox Blob patch is signature-specific",
+      "evidence": [
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\assets\\gateway-client.html",
+          "lines": "270-278,870-901,1149-1164,1181-1184,1271-1305"
+        }
+      ]
+    },
+    {
+      "id": "raw_assets_and_install_timing",
+      "classification": "存在可解释差异",
+      "claim": "static JS/CSS body streams unchanged; runtime helper not whole-parser rewrite; injection appends after original body and may miss early fetches if HTML executes",
+      "evidence": [
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\server\\static_assets.rs",
+          "lines": "108-129"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\server\\proxy.rs",
+          "lines": "540-576"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\assets\\gateway-client.html",
+          "lines": "797-869,1250-1296,1384-1402"
+        }
+      ]
+    },
+    {
+      "id": "csp_not_network_confinement",
+      "classification": "存在可解释差异",
+      "claim": "CSP allows external destinations; private-host non-rewrite/blob/data preservation is not proof of blocking",
+      "evidence": [
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\server.rs",
+          "lines": "156,235-239"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\assets\\gateway-client.html",
+          "lines": "104-128"
+        }
+      ]
+    },
+    {
+      "id": "page_reachability",
+      "classification": "尚未验证",
+      "scope": "source-based conditional reachability, not a leak observation",
+      "claim": "normal chat pages gated; me HTML response could still enter injection; no blanket claim script is unreachable or leak happened",
+      "evidence": [
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\server\\proxy.rs",
+          "lines": "131-154,184-194,239-249,523-551"
+        }
+      ]
+    },
+    {
+      "id": "django_frontend",
+      "classification": "尚未验证",
+      "claim": "Django admin forwarding does not call chat injection; actual frontend runtime/build outside supplied snapshot not audited this round",
+      "evidence": [
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\server.rs",
+          "lines": "137-140"
+        },
+        {
+          "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input\\src\\server\\proxy.rs",
+          "lines": "162-181"
+        }
+      ]
+    }
+  ],
+  "validation": {
+    "pure_function_test_count": 15,
+    "passed": 15,
+    "node_version": "v24.18.0",
+    "commands": [
+      {
+        "command": [
+          "E:/T/NodeJs2026_6/node.exe",
+          "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\check_url_boundaries.cjs"
+        ],
+        "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild",
+        "stdin": "none",
+        "exit_code": 0,
+        "stdout": "PASS known_chat_http_rewrites {\"changed\":true,\"value\":\"/backend-api/me\"}\nPASS host_list_only_builds_internal_path {\"changed\":true,\"value\":\"/internal-upstream/https/cdn.auth0.com/a.js\"}\nPASS generic_http_builds_gated_external_path {\"changed\":true,\"value\":\"/external/https/fixture.invalid/a.js\"}\nPASS private_host_not_rewritten_not_blocked_here {\"changed\":false,\"value\":\"http://127.0.0.1/fixture\"}\nPASS same_origin_unchanged {\"changed\":false,\"value\":\"https://mirror.invalid/asset\"}\nPASS generic_rewriter_does_not_handle_wss {\"changed\":false,\"value\":\"wss://fixture.invalid/socket\"}\nPASS known_ws_rewrites_to_gated_path \"wss://mirror.invalid/ws-chatgpt/socket\"\nPASS unknown_ws_remains_direct \"wss://fixture.invalid/socket\"\nPASS direct_navigation_unwraps_external_path \"https://fixture.invalid/path\"\nPASS direct_navigation_unwraps_internal_path \"https://cdn.auth0.com/a.js\"\nPASS blob_data_schemes_unchanged [{\"changed\":false,\"value\":\"blob:https://mirror.invalid/fixture\"},{\"changed\":false,\"value\":\"data:text/plain,fixture\"}]\nPASS css_literal_http_rewritten_when_helper_called \"a{background:url(/external/https/fixture.invalid/a.png)}\"\nPASS srcset_not_covered_by_element_helper {\"srcset\":\"https://fixture.invalid/a.png 1x\"}\nPASS anchor_href_intentionally_not_rewritten {\"href\":\"https://fixture.invalid/path\"}\nPASS image_src_is_rewritten_by_element_helper {\"src\":\"/external/https/fixture.invalid/a.png\"}\nTOTAL=15 PASS=15 NETWORK_CALLS=0 REAL_BROWSER=false\n",
+        "stderr": "",
+        "captured_at": "2026-09-22T16:40:50.453267+00:00",
+        "scope": "offline pure URL/element helper execution only; no complete page or Rust runtime"
+      },
+      {
+        "command": [
+          "C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+          "-B",
+          "-c",
+          "from pathlib import Path\nimport json,hashlib,sys\nroot=Path(sys.argv[1]); manifest=json.loads((root/'snapshot.json').read_text(encoding='utf-8'))\nactual=hashlib.sha256(Path(manifest['source_zip']).read_bytes()).hexdigest()\nrows=[{'path':row['path'],'initial_sha256':row['sha256'],'final_sha256':hashlib.sha256(Path(row['path']).read_bytes()).hexdigest()} for row in manifest['files']]\nfor row in rows: row['unchanged']=row['initial_sha256']==row['final_sha256']\nstable=all(row['unchanged'] for row in rows)\nreport={'source_zip':manifest['source_zip'],'final_zip_sha256':actual,'zip_matches':actual==manifest['expected_sha256'],'file_count':len(rows),'all_input_files_unchanged':stable,'files':rows}\n(root/'input-stability.json').write_text(json.dumps(report,indent=2)+'\\n',encoding='utf-8')\nprint('ZIP_SHA256='+actual); print('ZIP_MATCH='+str(report['zip_matches'])); print('INPUT_FILES='+str(len(rows))); print('ALL_INPUT_FILES_UNCHANGED='+str(stable))\nraise SystemExit(0 if report['zip_matches'] and stable else 1)\n",
+          "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12"
+        ],
+        "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild",
+        "stdin": "none",
+        "exit_code": 0,
+        "stdout": "ZIP_SHA256=f95fc1eeb7d239dfc5b5e6e999b7c2443dc082a63bc9f6f6f7007e6bc3c53c6e\r\nZIP_MATCH=True\r\nINPUT_FILES=33\r\nALL_INPUT_FILES_UNCHANGED=True\r\n",
+        "stderr": "",
+        "captured_at": "2026-09-22T16:48:34.648005+00:00",
+        "scope": "final ZIP and all extracted source file SHA256 checks"
+      }
+    ],
+    "execution_events": [
+      {
+        "chunk_id": "91381f",
+        "exit_code": 0,
+        "scope": "verify ZIP and extract read-only input"
+      },
+      {
+        "chunk_id": "54c7fa",
+        "exit_code": 0,
+        "scope": "15 offline extracted helper checks"
+      },
+      {
+        "chunk_id": "9aa361",
+        "exit_code": 0,
+        "scope": "final ZIP/33 file SHA256 verification"
+      }
+    ],
+    "real_browser": false,
+    "rust_runtime": false,
+    "network_requests": false,
+    "network_capture": false,
+    "tls_h2_verified": false,
+    "webrtc_verified": false,
+    "all_109_tests_rerun": false,
+    "limitations": [
+      "Node VM evaluates selected pure helpers, not full page",
+      "mock DOM is not browser loading/CSP enforcement",
+      "literal symbol absence search does not cover fetched upstream JS",
+      "unopened/unimplemented routes are not accepted as passing features"
+    ]
+  },
+  "changes": {
+    "product_files": [],
+    "fingerprint_spoofing_scripts_added": false,
+    "isolated_test_only": true,
+    "main_artifacts_or_status_updated": false,
+    "earlier_reports_preserved": true,
+    "subagents_or_tasks_started": false
+  },
+  "architecture": {
+    "classification": "尚未验证",
+    "decision_made": false,
+    "ordinary_reverse_proxy": "can control selected server-forwarded headers/target/credentials; cannot unify browser JS, media/ICE, or all outbound requests",
+    "remote_browser_option_only": "requires separate review of existing-page interaction transport, audio latency/permissions/ICE, file bridge, CPU/GPU/bandwidth and per-user isolated profiles/storage/ACL",
+    "undetectable_proxy_promised": false,
+    "shared_network_identity_merges_acl": false
+  },
+  "next_action": {
+    "classification": "尚未验证",
+    "execute_automatically": false,
+    "action": "owner keeps chat gates; separately authorize an egress-denied browser + loopback fixture suite for parser/srcset/import/worker/navigation/WS/CSP and conditional HTML responses; decide architecture only after explicit execution-environment requirement"
+  },
+  "artifacts": [
+    {
+      "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\REPORT_SECTION12.md",
+      "sha256": "b2f63a9567fa342366dc1ca199cb077e2a3a0ac063cadeb21e1edc6eeff42066"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\check_url_boundaries.cjs",
+      "sha256": "f05a2c4d1523a66c391b8ecce14808e950b0c19dbdf1d91c070892e25f5311f1"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\url-checks.json",
+      "sha256": "0d4c234cdce5ee89496e40363bd8b338ec5c0f0f627385c67ed225de8e8f0b9e"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\snapshot.json",
+      "sha256": "97d0abf70eacc67b84d275627bbf75714258a46cd2b041e64a509361f1d4d502"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\input-stability.json",
+      "sha256": "59b63e7ebee7ee2106850fd1fde79ec630fc0a28ff0112a3200315a2c4d70e32"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\commands-section12.json",
+      "sha256": "6dde2ba3fcf7cc415f7cf2f1e1151b879fd826a0ba906ee6ebc2f09f2493f03d"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\VERIFICATION_SECTION12.txt",
+      "sha256": "c6a1846f38f2fa02368cd0848682e920abcd15b0287c86521b035f95f1a34dad"
+    }
+  ]
+}

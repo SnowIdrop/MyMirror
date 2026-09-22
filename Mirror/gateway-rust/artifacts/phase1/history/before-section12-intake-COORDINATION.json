@@ -75,14 +75,14 @@
     "binary": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-probe-targets\\modified\\debug\\mirror-gateway.exe",
     "binary_note": "Prefer immutable source snapshot; binary is current modified-only target output, may be rebuilt in later turns."
   },
-  "next_owner_work": "Create and execute focused regressions for me/list credential-generation pinning and saved proxy/profile effective egress; then implement the smallest in-scope fix with no silent direct/identity fallback. This bounded development remains authorized. Keep pages/media/realtime gated; do not start remote-browser/fingerprint implementation or real-account tests.",
+  "next_owner_work": "HTML/bootstrap isolation and same-origin adapter; login accounts-check gap; then trusted identity/ACL/new DB/backup wiring. Keep unproven paths closed.",
   "reviewed_identity_proposal": "user_id canonical decimal string; is_admin staff|superuser; wire version opaque authorization_version; principal_kind separates FREE_ACCOUNT visitor. New ACL visitors fail closed; existing login unchanged. Not yet product-wired.",
   "auth_contract_delta": "auth_session now snapshots credentials for exact mirror token, drops DB lock, sends accounts/check then me each request, revalidates session after network; account-lookup HTTP failure=>free with me still checked, me auth failure/account mismatch=>empty object. Login request chain unchanged (one me); malformed/transport refresh=>502.",
   "regression_handoff_ack": "Completed: reviewed boundary file integrated, accounts fixture added, old no-egress assumption replaced with ordered accounts/check -> me assertions per account. All 8 tests executed in the 109-test combined gate; credential/isolation assertions retained. Original and upgraded hashes are in integrations/manifest.json. Login still calls only me.",
   "pending_integration": "This reviewed batch integrated. ACL remains unexported and unused by product routes/DB. Admin is contract-only. No handoff.",
   "metadata_history": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\history\\coordination-before-identity-gate.json",
   "upstream_visible_identity_gate": {
-    "status": "Final section12 audit received, hashed and indexed. Narrow offline consistency observations accepted as scoped evidence; six explained differences require follow-up; end-to-end identity remains 尚未验证 and pages remain gated.",
+    "status": "New differences reported; source inspection confirms distinct credential lookup and egress paths. Runtime evidence pending coordinator handoff; gate not cleared for opening pages.",
     "binding": [
       "upstream account",
       "authenticated session",
@@ -105,72 +105,7 @@
     "architecture_boundary": "Report ordinary reverse-proxy limits and tradeoffs. No added fingerprint-spoofing scripts or remote-browser architecture; architecture direction changes require user confirmation. No promise of an undetectable proxy.",
     "authorization_boundary": "No real-account requests, external writes or production switching authorized",
     "owner_activity": "Read-only source review and metadata update only; no product patch or duplicate runtime reproduction.",
-    "pending_findings": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\upstream-identity-pending-findings.json",
-    "acceptance": {
-      "section": 12,
-      "status": "尚未验证",
-      "page_opening_gate": "not cleared",
-      "source_snapshot_sha256": "f95fc1eeb7d239dfc5b5e6e999b7c2443dc082a63bc9f6f6f7007e6bc3c53c6e",
-      "verified_consistent": [
-        {
-          "scope": "合成HTTP固定源、环境代理不介入、两个故障用例无出口fallback、单次503只一次请求",
-          "evidence": "regression/section12 17-case loopback probe; not TLS/browser/WS acceptance"
-        },
-        {
-          "scope": "同账号Alice/Bob凭据及Cookie不合并，精确token刷新与后续登出/撤权，受控同DB/key重启保留绑定",
-          "evidence": "acl/section12 7 targeted existing tests plus lifecycle probe; not complete resource ACL"
-        }
-      ],
-      "explained_differences": [
-        {
-          "id": "S12-D1",
-          "finding": "保存mirror_proxy/proxy_node_id没有约束普通业务出口",
-          "status": "requires correction before egress-binding acceptance",
-          "evidence": "server.rs:76-80; lifecycle proxy-trap0; regression business direct vs diagnostic explicit proxy"
-        },
-        {
-          "id": "S12-D2",
-          "finding": "普通me旧在途请求在同用户同账号重登录后选中新凭据代次",
-          "status": "requires per-token/generation binding; not cross-user leakage",
-          "evidence": "server.rs:888-942; proxy.rs:313-325; deterministic local trace"
-        },
-        {
-          "id": "S12-D3",
-          "finding": "登录/诊断与代理/刷新/静态头策略不同，固定UA不绑定CH或真实浏览器JS环境",
-          "status": "profile policy absent; not full fingerprint coherence",
-          "evidence": "server.rs:421-446,748-758; proxy.rs:393-415"
-        },
-        {
-          "id": "S12-D4",
-          "finding": "模板主动外链导航、非匹配WS、srcset/worker/import等无完整覆盖，CSP允许外部源，末尾注入不能保证先于原HTML加载",
-          "status": "conditional source/helper behavior; no observed browser leak",
-          "evidence": "gateway-client.html:870-901,1314-1352; proxy.rs:540-576; server.rs:156"
-        },
-        {
-          "id": "S12-D5",
-          "finding": "诊断client跟随302而主client不跟随；受限协议重试不是明确的生成不重放策略",
-          "status": "redirect difference observed; ProtocolNacks behavior untested and generation not open",
-          "evidence": "server.rs:76-80,743-761; 17-case probe; local reqwest sources"
-        },
-        {
-          "id": "S12-D6",
-          "finding": "当前Permissions-Policy禁microphone，语音启用还需浏览器能力和实际媒体路径验收",
-          "status": "source and synthetic response header observed; no actual voice session tested",
-          "evidence": "server.rs:246; regression/section12/probe-cases.json"
-        }
-      ],
-      "not_verified": [
-        "真实TLS/ALPN/HTTP2特征和公网IP/DNS/NAT出口",
-        "真实浏览器UA/Client Hints/平台/语言/时区/能力与完整请求瀑布",
-        "文件/私有媒体、成功WebSocket、实际语音协议及其出口",
-        "上游device/session/cookie续期与全局CF缓存的作用域/profile绑定",
-        "重连/故障/重启全部组合，协议NACK重试与未来生成不自动重放",
-        "完整资源ACL路由/实时撤权仍未接线"
-      ],
-      "evidence_intake": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\section12-intake.json",
-      "scope_note": "Local audit checks have narrow scopes. Explained differences are not accepted or passed; unopened capabilities are not passed. Historical 109 Rust result remains unchanged."
-    },
-    "pending_findings_superseded_by": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\section12-intake.json"
+    "pending_findings": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\upstream-identity-pending-findings.json"
   },
   "integration_complete": {
     "snapshot": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\coordination\\integrated-f95fc1eeb7d2.zip",
@@ -214,17 +149,5 @@
     "base_commit": "680aed1"
   },
   "credential_generation_guarantee_scope": "Exact-token credential snapshot and post-IO revocation test apply only to auth_session refresh. Generic me/list use a different unpinned user/account credential lookup; not covered by that guarantee.",
-  "current_audit_action": "Intake complete. This turn changed metadata only; no product fix started. Next bounded generation/egress regression and local fixes are already authorized; architecture/real-account changes are not.",
-  "section12_receipt": {
-    "path": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\section12-intake.json",
-    "sha256": "a3d02a140ce920ceb326b3426eaff0990a67ad0bb70142da032d90884d727217",
-    "report": "E:\\M\\Project\\MiRebuild\\Mirror\\coordination\\20260922-team\\SECTION12_REPORT.md",
-    "results": "E:\\M\\Project\\MiRebuild\\Mirror\\coordination\\20260922-team\\SECTION12_RESULTS.json",
-    "provenance": "E:\\M\\Project\\MiRebuild\\Mirror\\coordination\\20260922-team\\section12-provenance.json",
-    "product_unchanged": true,
-    "zip_diff_rollback_unchanged": true,
-    "historical_109_unchanged": true,
-    "runtime_tests_rerun_by_owner": false,
-    "coordinator_handoff": "complete evidence received; ownership not transferred"
-  }
+  "current_audit_action": "Await complete line-2 evidence; retain source-confirmed risks and distinguish reported runtime results. No product implementation changes this turn."
 }

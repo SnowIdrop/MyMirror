@@ -13,14 +13,15 @@
     "real_environment_acceptance": "not run",
     "full_replacement_complete": false
   },
-  "NEXT_EXECUTABLE_ACTION": "Create and run an HTML/bootstrap resource-leakage fixture against the retained original and current candidate, then design the safe page/same-origin adapter. Keep unproven HTML/media routes closed; trusted identity/new-DB ACL and backup wiring remain a separate next stage.",
+  "NEXT_EXECUTABLE_ACTION": "Create and execute focused regressions for me/list credential-generation pinning and saved proxy/profile effective egress; then implement the smallest in-scope fix with no silent direct/identity fallback. This bounded development remains authorized. Keep pages/media/realtime gated; do not start remote-browser/fingerprint implementation or real-account tests.",
   "INPUT_PATHS": [
-    "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\PHASE1_CONTRACT.md",
-    "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\page-original-001\\results.json",
+    "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\section12-intake.json",
+    "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\integrations\\section12\\SECTION12_REPORT.md",
     "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\src\\server.rs",
+    "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\src\\server\\proxy.rs",
     "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\COORDINATION.json"
   ],
-  "ACCEPTANCE_EVENT": "HTML/bootstrap data and URL rewrite contract recorded with unauthorized resource leakage denied; no product ACL or complete replacement claim from independent tests.",
+  "ACCEPTANCE_EVENT": "Focused tests prove ordinary reads never adopt a new credential generation after relogin, and actual approved egress/profile is used or fails closed without silent direct fallback. Recheck existing regressions; do not infer end-to-end browser identity acceptance.",
   "roles": {
     "MODIFIED_FILE": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\MODIFIED_FILE.zip",
     "DIFF_FILE": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\DIFF_FILE.patch",
@@ -30,11 +31,76 @@
   "phase": 1,
   "phase_complete": false,
   "remaining": [
+    "第12节：普通请求代次、实际出口绑定及浏览器/传输身份一致性门禁",
     "页面初始化隔离及同源改写，字体/图片/其他静态类型",
     "初次登录accounts检查、更多真实响应/失败协议",
     "第二阶段可信身份、账号映射、新库ACL/备份/后台/实时撤权接线；ACL仅独立暂存",
     "第三至五阶段业务能力及第六阶段统一验收与部署交付"
   ],
   "rollback_scope": "restore a disposable source archive; not databases or already-executed upstream operations",
-  "legacy_evidence": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\STATUS.json"
+  "legacy_evidence": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\STATUS.json",
+  "upstream_visible_identity_acceptance": {
+    "section": 12,
+    "status": "尚未验证",
+    "page_opening_gate": "not cleared",
+    "source_snapshot_sha256": "f95fc1eeb7d239dfc5b5e6e999b7c2443dc082a63bc9f6f6f7007e6bc3c53c6e",
+    "verified_consistent": [
+      {
+        "scope": "合成HTTP固定源、环境代理不介入、两个故障用例无出口fallback、单次503只一次请求",
+        "evidence": "regression/section12 17-case loopback probe; not TLS/browser/WS acceptance"
+      },
+      {
+        "scope": "同账号Alice/Bob凭据及Cookie不合并，精确token刷新与后续登出/撤权，受控同DB/key重启保留绑定",
+        "evidence": "acl/section12 7 targeted existing tests plus lifecycle probe; not complete resource ACL"
+      }
+    ],
+    "explained_differences": [
+      {
+        "id": "S12-D1",
+        "finding": "保存mirror_proxy/proxy_node_id没有约束普通业务出口",
+        "status": "requires correction before egress-binding acceptance",
+        "evidence": "server.rs:76-80; lifecycle proxy-trap0; regression business direct vs diagnostic explicit proxy"
+      },
+      {
+        "id": "S12-D2",
+        "finding": "普通me旧在途请求在同用户同账号重登录后选中新凭据代次",
+        "status": "requires per-token/generation binding; not cross-user leakage",
+        "evidence": "server.rs:888-942; proxy.rs:313-325; deterministic local trace"
+      },
+      {
+        "id": "S12-D3",
+        "finding": "登录/诊断与代理/刷新/静态头策略不同，固定UA不绑定CH或真实浏览器JS环境",
+        "status": "profile policy absent; not full fingerprint coherence",
+        "evidence": "server.rs:421-446,748-758; proxy.rs:393-415"
+      },
+      {
+        "id": "S12-D4",
+        "finding": "模板主动外链导航、非匹配WS、srcset/worker/import等无完整覆盖，CSP允许外部源，末尾注入不能保证先于原HTML加载",
+        "status": "conditional source/helper behavior; no observed browser leak",
+        "evidence": "gateway-client.html:870-901,1314-1352; proxy.rs:540-576; server.rs:156"
+      },
+      {
+        "id": "S12-D5",
+        "finding": "诊断client跟随302而主client不跟随；受限协议重试不是明确的生成不重放策略",
+        "status": "redirect difference observed; ProtocolNacks behavior untested and generation not open",
+        "evidence": "server.rs:76-80,743-761; 17-case probe; local reqwest sources"
+      },
+      {
+        "id": "S12-D6",
+        "finding": "当前Permissions-Policy禁microphone，语音启用还需浏览器能力和实际媒体路径验收",
+        "status": "source and synthetic response header observed; no actual voice session tested",
+        "evidence": "server.rs:246; regression/section12/probe-cases.json"
+      }
+    ],
+    "not_verified": [
+      "真实TLS/ALPN/HTTP2特征和公网IP/DNS/NAT出口",
+      "真实浏览器UA/Client Hints/平台/语言/时区/能力与完整请求瀑布",
+      "文件/私有媒体、成功WebSocket、实际语音协议及其出口",
+      "上游device/session/cookie续期与全局CF缓存的作用域/profile绑定",
+      "重连/故障/重启全部组合，协议NACK重试与未来生成不自动重放",
+      "完整资源ACL路由/实时撤权仍未接线"
+    ],
+    "evidence_intake": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\section12-intake.json",
+    "scope_note": "Local audit checks have narrow scopes. Explained differences are not accepted or passed; unopened capabilities are not passed. Historical 109 Rust result remains unchanged."
+  }
 }

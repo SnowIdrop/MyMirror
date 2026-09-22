@@ -2112,6 +2112,110 @@
       "runtime_tests_rerun": false,
       "runtime_evidence_status": "reported by coordinator; full handoff pending",
       "findings": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\upstream-identity-pending-findings.json"
+    },
+    {
+      "id": "section12-final-intake",
+      "scope": "metadata-only; intake/integrity exit0, no runtime rerun",
+      "intake": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\section12-intake.json",
+      "intake_sha256": "a3d02a140ce920ceb326b3426eaff0990a67ad0bb70142da032d90884d727217",
+      "evidence_index": [
+        {
+          "source": "E:\\M\\Project\\MiRebuild\\Mirror\\coordination\\20260922-team\\SECTION12_REPORT.md",
+          "archived": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\integrations\\section12\\SECTION12_REPORT.md",
+          "sha256": "0aa7432ca96c8251979df0ad70df67f66b13716f100cb5d2cb2a53bd3a47280d"
+        },
+        {
+          "source": "E:\\M\\Project\\MiRebuild\\Mirror\\coordination\\20260922-team\\SECTION12_RESULTS.json",
+          "archived": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\integrations\\section12\\SECTION12_RESULTS.json",
+          "sha256": "e9fe5040c452aa219543b8a5ec5ea99a666b7889c776f77153947d564193d27f"
+        },
+        {
+          "source": "E:\\M\\Project\\MiRebuild\\Mirror\\coordination\\20260922-team\\section12-provenance.json",
+          "archived": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\integrations\\section12\\section12-provenance.json",
+          "sha256": "40edc61500a5153c352363b8a30b538ea0f5b91889381cd6e5b80c190ddf59ae"
+        },
+        {
+          "source": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\REPORT_SECTION12.md",
+          "archived": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\integrations\\section12\\acl\\REPORT_SECTION12.md",
+          "sha256": "06942256a7e8160668598148bc72d2e642110de8830ca2ba40cd63e1cdfd558f"
+        },
+        {
+          "source": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\results-section12.json",
+          "archived": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\integrations\\section12\\acl\\results-section12.json",
+          "sha256": "f7cfac1c08de21e9cfad31b82e994356707ff76c76c4f001c7adab279d866730"
+        },
+        {
+          "source": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\commands-section12.json",
+          "archived": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\integrations\\section12\\acl\\commands-section12.json",
+          "sha256": "4e5c25f4ced81ebc4d3f7c35d7d8c0217b1ed14e58b393370dc976db412ad395"
+        },
+        {
+          "source": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\section12\\REPORT_SECTION12.md",
+          "archived": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\integrations\\section12\\regression\\REPORT_SECTION12.md",
+          "sha256": "3d0dce68583ff6966949fe6a13fe2f02d455f6b4e0e3b412034ac9910a4a22f1"
+        },
+        {
+          "source": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\section12\\results-section12.json",
+          "archived": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\integrations\\section12\\regression\\results-section12.json",
+          "sha256": "3d4ee94e08a925ccf53881324242020b28f93b09a7053baa46c35d884eaaaa46"
+        },
+        {
+          "source": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\section12\\probe-command.json",
+          "archived": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\integrations\\section12\\regression\\probe-command.json",
+          "sha256": "e129ec23015dc898e6b8b859656dfe8ce86d49dbe0ed552b7fbbed6fbccbf7ae"
+        },
+        {
+          "source": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\REPORT_SECTION12.md",
+          "archived": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\integrations\\section12\\admin\\REPORT_SECTION12.md",
+          "sha256": "b2f63a9567fa342366dc1ca199cb077e2a3a0ac063cadeb21e1edc6eeff42066"
+        },
+        {
+          "source": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\results-section12.json",
+          "archived": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\integrations\\section12\\admin\\results-section12.json",
+          "sha256": "3fb7c52652fa7c4a99c0fb5e5aaed240f840caa411622e99ab8f9f1d480ee511"
+        },
+        {
+          "source": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\commands-section12.json",
+          "archived": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\integrations\\section12\\admin\\commands-section12.json",
+          "sha256": "6dde2ba3fcf7cc415f7cf2f1e1151b879fd826a0ba906ee6ebc2f09f2493f03d"
+        }
+      ],
+      "command_evidence_index": [
+        {
+          "workline": "acl",
+          "source": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\commands-section12.json",
+          "archived": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\integrations\\section12\\acl\\commands-section12.json",
+          "sha256": "4e5c25f4ced81ebc4d3f7c35d7d8c0217b1ed14e58b393370dc976db412ad395",
+          "checks_as_reported": "7 targeted existing Rust tests + lifecycle probe, exit0; controlled gateway termination exit1",
+          "literal_stdout_stderr_and_exit_status": "retained in command/result JSON; controlled gateway teardown exit1 is not treated as natural exit0"
+        },
+        {
+          "workline": "regression",
+          "source": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\section12\\probe-command.json",
+          "archived": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\integrations\\section12\\regression\\probe-command.json",
+          "sha256": "e129ec23015dc898e6b8b859656dfe8ce86d49dbe0ed552b7fbbed6fbccbf7ae",
+          "checks_as_reported": "build/features/17-case probe exit0; gateway controlled termination exit1",
+          "literal_stdout_stderr_and_exit_status": "retained in command/result JSON; controlled gateway teardown exit1 is not treated as natural exit0"
+        },
+        {
+          "workline": "admin",
+          "source": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\commands-section12.json",
+          "archived": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\integrations\\section12\\admin\\commands-section12.json",
+          "sha256": "6dde2ba3fcf7cc415f7cf2f1e1151b879fd826a0ba906ee6ebc2f09f2493f03d",
+          "checks_as_reported": "15 Node VM pure-helper checks exit0; no actual browser/network",
+          "literal_stdout_stderr_and_exit_status": "retained in command/result JSON; controlled gateway teardown exit1 is not treated as natural exit0"
+        }
+      ],
+      "source_snapshot_sha256": "f95fc1eeb7d239dfc5b5e6e999b7c2443dc082a63bc9f6f6f7007e6bc3c53c6e",
+      "source_git_comparison": "32 byte-identical; COMPATIBILITY.md differs only CRLF vs LF; snapshot hash is authoritative test input",
+      "end_to_end_identity_acceptance": "尚未验证",
+      "historical_109_and_three_way_behaviors": "retained without replacement",
+      "immutable_role_hashes": {
+        "MODIFIED_FILE.zip": "f95fc1eeb7d239dfc5b5e6e999b7c2443dc082a63bc9f6f6f7007e6bc3c53c6e",
+        "DIFF_FILE.patch": "06e832389505a6ec8f486a43974bfdfed634461f77bcdf25877b85bddfe7b90c",
+        "ROLLBACK.sh": "6eea2a464f4cad6ed20986deed97fa7b68f403693556458a00a9535625f66309"
+      },
+      "product_changed": false
     }
   ]
 }

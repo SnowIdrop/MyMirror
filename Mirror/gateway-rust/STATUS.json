@@ -146,10 +146,17 @@
     "完整 SSE/WebSocket、指纹传输、MCP/Skills 请求侧与限额、会话/项目读写隔离独立门禁",
     "Docker 未验证；真实账号/真实上游/浏览器联调未批准，本次未运行"
   ],
-  "next_work": "第一阶段：配置、公共JS/CSS及auth/session刷新已接通；109项组合Rust测试通过。下一步页面初始化隔离和同源改写。协调交付3份Rust文件已集成，其中ACL仅独立暂存，未接产品。最新状态及同一四角色见development_checkpoint；旧v3结果不代表本批验收。",
+  "next_work": "第12节审计已收件：先做普通请求凭据代次/实际出口绑定最小回归与局部修复；既有开发授权仍有效。页面身份门禁未通过，不实施远程浏览器或指纹伪装。完整分类见development_checkpoint。",
   "rollback_scope": "程序副本恢复；不回滚数据库；生产切换未执行",
   "history": "D:\\Project\\Mirror\\gateway-rust\\evidence\\verification-before-v3.txt",
   "development_checkpoint": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\STATUS.json",
   "legacy_status_snapshot": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\legacy-STATUS.json",
-  "development_note": "同一候选源码副本；原源码24文件哈希未变。109项组合Rust测试（含3刷新、28独立ACL、8边界回归）、Clippy、30配置用例通过；原版QEMU无网卡40条观测。三方配置退出1/0/1、静态HTTP401/200/401、刷新plan free/plus/free且调用0/2/0，回滚哈希一致。验证器构建目录已完全隔离。ACL未导出/未初始化产品库/未接路由；后台仅契约提案。页面、字体/图片、初次登录accounts检查及后续阶段未完成。上面的roles/hash/reports仍属旧v3二进制证据。"
+  "development_note": "同一候选源码副本；原源码24文件哈希未变。109项组合Rust测试（含3刷新、28独立ACL、8边界回归）、Clippy、30配置用例通过；原版QEMU无网卡40条观测。三方配置退出1/0/1、静态HTTP401/200/401、刷新plan free/plus/free且调用0/2/0，回滚哈希一致。验证器构建目录已完全隔离。ACL未导出/未初始化产品库/未接路由；后台仅契约提案。页面、字体/图片、初次登录accounts检查及后续阶段未完成。上面的roles/hash/reports仍属旧v3二进制证据。",
+  "section12_acceptance": {
+    "status": "尚未验证",
+    "page_opening_gate": "not cleared",
+    "checkpoint": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\STATUS.json",
+    "evidence_intake": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\section12-intake.json",
+    "note": "7 targeted Rust checks, lifecycle/17-request egress probes and 15 pure-JS checks are independent audit evidence, not a new whole-product test total."
+  }
 }

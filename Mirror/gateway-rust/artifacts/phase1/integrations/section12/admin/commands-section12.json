@@ -1,0 +1,31 @@
+[
+  {
+    "command": [
+      "E:/T/NodeJs2026_6/node.exe",
+      "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12\\check_url_boundaries.cjs"
+    ],
+    "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild",
+    "stdin": "none",
+    "exit_code": 0,
+    "stdout": "PASS known_chat_http_rewrites {\"changed\":true,\"value\":\"/backend-api/me\"}\nPASS host_list_only_builds_internal_path {\"changed\":true,\"value\":\"/internal-upstream/https/cdn.auth0.com/a.js\"}\nPASS generic_http_builds_gated_external_path {\"changed\":true,\"value\":\"/external/https/fixture.invalid/a.js\"}\nPASS private_host_not_rewritten_not_blocked_here {\"changed\":false,\"value\":\"http://127.0.0.1/fixture\"}\nPASS same_origin_unchanged {\"changed\":false,\"value\":\"https://mirror.invalid/asset\"}\nPASS generic_rewriter_does_not_handle_wss {\"changed\":false,\"value\":\"wss://fixture.invalid/socket\"}\nPASS known_ws_rewrites_to_gated_path \"wss://mirror.invalid/ws-chatgpt/socket\"\nPASS unknown_ws_remains_direct \"wss://fixture.invalid/socket\"\nPASS direct_navigation_unwraps_external_path \"https://fixture.invalid/path\"\nPASS direct_navigation_unwraps_internal_path \"https://cdn.auth0.com/a.js\"\nPASS blob_data_schemes_unchanged [{\"changed\":false,\"value\":\"blob:https://mirror.invalid/fixture\"},{\"changed\":false,\"value\":\"data:text/plain,fixture\"}]\nPASS css_literal_http_rewritten_when_helper_called \"a{background:url(/external/https/fixture.invalid/a.png)}\"\nPASS srcset_not_covered_by_element_helper {\"srcset\":\"https://fixture.invalid/a.png 1x\"}\nPASS anchor_href_intentionally_not_rewritten {\"href\":\"https://fixture.invalid/path\"}\nPASS image_src_is_rewritten_by_element_helper {\"src\":\"/external/https/fixture.invalid/a.png\"}\nTOTAL=15 PASS=15 NETWORK_CALLS=0 REAL_BROWSER=false\n",
+    "stderr": "",
+    "captured_at": "2026-09-22T16:40:50.453267+00:00",
+    "scope": "offline pure URL/element helper execution only; no complete page or Rust runtime"
+  },
+  {
+    "command": [
+      "C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "-B",
+      "-c",
+      "from pathlib import Path\nimport json,hashlib,sys\nroot=Path(sys.argv[1]); manifest=json.loads((root/'snapshot.json').read_text(encoding='utf-8'))\nactual=hashlib.sha256(Path(manifest['source_zip']).read_bytes()).hexdigest()\nrows=[{'path':row['path'],'initial_sha256':row['sha256'],'final_sha256':hashlib.sha256(Path(row['path']).read_bytes()).hexdigest()} for row in manifest['files']]\nfor row in rows: row['unchanged']=row['initial_sha256']==row['final_sha256']\nstable=all(row['unchanged'] for row in rows)\nreport={'source_zip':manifest['source_zip'],'final_zip_sha256':actual,'zip_matches':actual==manifest['expected_sha256'],'file_count':len(rows),'all_input_files_unchanged':stable,'files':rows}\n(root/'input-stability.json').write_text(json.dumps(report,indent=2)+'\\n',encoding='utf-8')\nprint('ZIP_SHA256='+actual); print('ZIP_MATCH='+str(report['zip_matches'])); print('INPUT_FILES='+str(len(rows))); print('ALL_INPUT_FILES_UNCHANGED='+str(stable))\nraise SystemExit(0 if report['zip_matches'] and stable else 1)\n",
+      "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild\\coordination\\admin\\section12"
+    ],
+    "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\42ea\\MiRebuild",
+    "stdin": "none",
+    "exit_code": 0,
+    "stdout": "ZIP_SHA256=f95fc1eeb7d239dfc5b5e6e999b7c2443dc082a63bc9f6f6f7007e6bc3c53c6e\r\nZIP_MATCH=True\r\nINPUT_FILES=33\r\nALL_INPUT_FILES_UNCHANGED=True\r\n",
+    "stderr": "",
+    "captured_at": "2026-09-22T16:48:34.648005+00:00",
+    "scope": "final ZIP and all extracted source file SHA256 checks"
+  }
+]

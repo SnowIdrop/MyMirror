@@ -1,0 +1,133 @@
+[
+  {
+    "label": "coord_shared_account_token_rotation_preserves_other_user",
+    "command": [
+      "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo\\bin\\cargo.exe",
+      "test",
+      "--locked",
+      "--offline",
+      "--manifest-path",
+      "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\Cargo.toml",
+      "--test",
+      "coord_boundary_regression",
+      "coord_shared_account_token_rotation_preserves_other_user",
+      "--",
+      "--exact",
+      "--nocapture"
+    ],
+    "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12",
+    "exit_status": 0,
+    "stdout": "\nrunning 1 test\nCOORD_EVIDENCE test=shared_account events=42 panicking=false\ntest coord_shared_account_token_rotation_preserves_other_user ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.10s\n\n",
+    "stderr": "   Compiling proc-macro2 v1.0.107\n   Compiling unicode-ident v1.0.26\n   Compiling quote v1.0.47\n   Compiling cfg-if v1.0.5\n   Compiling version_check v0.9.5\n   Compiling once_cell v1.21.4\n   Compiling windows-link v0.2.1\n   Compiling smallvec v1.16.1\n   Compiling typenum v1.20.1\n   Compiling find-msvc-tools v0.1.13\n   Compiling shlex v2.0.1\n   Compiling bytes v1.12.1\n   Compiling pin-project-lite v0.2.17\n   Compiling stable_deref_trait v1.2.1\n   Compiling itoa v1.0.18\n   Compiling futures-core v0.3.34\n   Compiling getrandom v0.2.17\n   Compiling windows-sys v0.61.2\n   Compiling parking_lot_core v0.9.12\n   Compiling scopeguard v1.2.0\n   Compiling log v0.4.34\n   Compiling rand_core v0.6.4\n   Compiling lock_api v0.4.14\n   Compiling zerocopy v0.8.57\n   Compiling zeroize v1.9.0\n   Compiling subtle v2.6.1\n   Compiling tracing-core v0.1.36\n   Compiling futures-sink v0.3.34\n   Compiling generic-array v0.14.7\n   Compiling rustls-pki-types v1.15.1\n   Compiling slab v0.4.12\n   Compiling cpufeatures v0.2.17\n   Compiling untrusted v0.9.0\n   Compiling httparse v1.10.1\n   Compiling litemap v0.8.3\n   Compiling cc v1.4.7\n   Compiling futures-task v0.3.34\n   Compiling writeable v0.6.4\n   Compiling http v1.5.0\n   Compiling parking_lot v0.12.5\n   Compiling serde_core v1.0.229\n   Compiling percent-encoding v2.3.2\n   Compiling icu_normalizer_data v2.3.0\n   Compiling rustls v0.23.45\n   Compiling icu_properties_data v2.3.0\n   Compiling utf8_iter v1.0.4\n   Compiling tower-service v0.3.3\n   Compiling libc v0.2.189\n   Compiling try-lock v0.2.5\n   Compiling form_urlencoded v1.2.2\n   Compiling webpki-roots v1.0.9\n   Compiling ahash v0.8.12\n   Compiling want v0.3.1\n   Compiling sync_wrapper v1.0.2\n   Compiling futures-channel v0.3.34\n   Compiling atomic-waker v1.1.2\n   Compiling syn v3.0.6\n   Compiling syn v2.0.119\n   Compiling http-body v1.1.0\n   Compiling crypto-common v0.1.7\n   Compiling block-buffer v0.10.4\n   Compiling thiserror v1.0.69\n   Compiling tower-layer v0.3.3\n   Compiling httpdate v1.0.3\n   Compiling zmij v1.0.23\n   Compiling serde v1.0.229\n   Compiling digest v0.10.7\n   Compiling inout v0.1.4\n   Compiling base64 v0.22.1\n   Compiling serde_json v1.0.151\n   Compiling rustversion v1.0.23\n   Compiling pkg-config v0.3.34\n   Compiling vcpkg v0.2.15\n   Compiling ipnet v2.12.2\n   Compiling sha1 v0.10.7\n   Compiling cipher v0.4.4\n   Compiling universal-hash v0.5.1\n   Compiling http-body-util v0.1.5\n   Compiling byteorder v1.5.0\n   Compiling data-encoding v2.11.1\n   Compiling opaque-debug v0.3.1\n   Compiling memchr v2.8.3\n   Compiling ring v0.17.14\n   Compiling bitflags v2.13.2\n   Compiling utf-8 v0.7.6\n   Compiling crc32fast v1.5.2\n   Compiling regex-syntax v0.8.11\n   Compiling ryu v1.0.23\n   Compiling polyval v0.6.2\n   Compiling webpki-roots v0.26.11\n   Compiling anyhow v1.0.104\n   Compiling adler2 v2.0.1\n   Compiling mime v0.3.17\n   Compiling libsqlite3-sys v0.28.0\n   Compiling simd-adler32 v0.3.10\n   Compiling socket2 v0.6.5\n   Compiling mio v1.2.3\n   Compiling lazy_static v1.5.0\n   Compiling miniz_oxide v0.9.1\n   Compiling sharded-slab v0.1.7\n   Compiling nu-ansi-term v0.50.3\n   Compiling ghash v0.5.1\n   Compiling ctr v0.9.2\n   Compiling aes v0.8.4\n   Compiling aead v0.5.2\n   Compiling regex-automata v0.4.18\n   Compiling tracing-log v0.2.0\n   Compiling thread_local v1.1.10\n   Compiling serde_path_to_error v0.1.20\n   Compiling fallible-streaming-iterator v0.1.9\n   Compiling fallible-iterator v0.3.0\n   Compiling matchit v0.7.3\n   Compiling getrandom v0.4.3\n   Compiling aes-gcm v0.10.3\n   Compiling flate2 v1.1.10\n   Compiling sha2 v0.10.9\n   Compiling fastrand v2.5.0\n   Compiling tempfile v3.27.0\n   Compiling ppv-lite86 v0.2.21\n   Compiling hashbrown v0.14.5\n   Compiling rand_chacha v0.3.1\n   Compiling synstructure v0.14.0\n   Compiling tracing-attributes v0.1.31\n   Compiling thiserror-impl v1.0.69\n   Compiling axum-macros v0.4.2\n   Compiling matchers v0.2.0\n   Compiling rand v0.8.8\n   Compiling hashlink v0.9.1\n   Compiling rusqlite v0.31.0\n   Compiling zerofrom-derive v0.1.8\n   Compiling yoke-derive v0.8.3\n   Compiling zerovec-derive v0.11.6\n   Compiling displaydoc v0.2.7\n   Compiling tokio-macros v2.7.2\n   Compiling futures-macro v0.3.34\n   Compiling serde_derive v1.0.229\n   Compiling async-trait v0.1.92\n   Compiling tracing v0.1.44\n   Compiling rustls-webpki v0.103.15\n   Compiling tracing-subscriber v0.3.23\n   Compiling tokio v1.53.1\n   Compiling futures-util v0.3.34\n   Compiling zerofrom v0.1.8\n   Compiling yoke v0.8.3\n   Compiling zerovec v0.11.8\n   Compiling zerotrie v0.2.5\n   Compiling tinystr v0.8.4\n   Compiling potential_utf v0.1.6\n   Compiling icu_collections v2.3.0\n   Compiling icu_locale_core v2.3.0\n   Compiling icu_provider v2.3.1\n   Compiling serde_urlencoded v0.7.1\n   Compiling icu_normalizer v2.3.0\n   Compiling icu_properties v2.3.0\n   Compiling axum-core v0.4.5\n   Compiling idna_adapter v1.2.2\n   Compiling idna v1.1.0\n   Compiling tungstenite v0.24.0\n   Compiling url v2.5.8\n   Compiling hyper v1.11.1\n   Compiling tokio-rustls v0.26.5\n   Compiling tower v0.5.3\n   Compiling tokio-util v0.7.19\n   Compiling tokio-tungstenite v0.24.0\n   Compiling tower-http v0.6.11\n   Compiling hyper-util v0.1.20\n   Compiling hyper-rustls v0.27.10\n   Compiling axum v0.7.9\n   Compiling reqwest v0.12.28\n   Compiling mirror-gateway v0.1.0 (C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 24.51s\n     Running tests\\coord_boundary_regression.rs (build\\debug\\deps\\coord_boundary_regression-41443e0c916205db.exe)\n"
+  },
+  {
+    "label": "coord_local_sessions_distinct_accounts_and_logout_are_isolated",
+    "command": [
+      "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo\\bin\\cargo.exe",
+      "test",
+      "--locked",
+      "--offline",
+      "--manifest-path",
+      "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\Cargo.toml",
+      "--test",
+      "coord_boundary_regression",
+      "coord_local_sessions_distinct_accounts_and_logout_are_isolated",
+      "--",
+      "--exact",
+      "--nocapture"
+    ],
+    "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12",
+    "exit_status": 0,
+    "stdout": "\nrunning 1 test\nCOORD_EVIDENCE test=distinct_accounts events=67 panicking=false\ntest coord_local_sessions_distinct_accounts_and_logout_are_isolated ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.09s\n\n",
+    "stderr": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.32s\n     Running tests\\coord_boundary_regression.rs (build\\debug\\deps\\coord_boundary_regression-41443e0c916205db.exe)\n"
+  },
+  {
+    "label": "auth_refresh",
+    "command": [
+      "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo\\bin\\cargo.exe",
+      "test",
+      "--locked",
+      "--offline",
+      "--manifest-path",
+      "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\Cargo.toml",
+      "--test",
+      "auth_refresh",
+      "--",
+      "--test-threads=1"
+    ],
+    "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12",
+    "exit_status": 0,
+    "stdout": "\nrunning 3 tests\ntest preserves_observed_failure_shapes_without_rebinding_accounts ... ok\ntest refreshes_account_then_me_on_every_request ... ok\ntest revocation_completes_during_network_wait_and_invalidates_refresh_result ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s\n\n",
+    "stderr": "   Compiling mirror-gateway v0.1.0 (C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.67s\n     Running tests\\auth_refresh.rs (build\\debug\\deps\\auth_refresh-b9a0befcc8e8089f.exe)\n"
+  },
+  {
+    "label": "mirror_authority_revocation_and_relogin_are_enforced",
+    "command": [
+      "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo\\bin\\cargo.exe",
+      "test",
+      "--locked",
+      "--offline",
+      "--manifest-path",
+      "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\Cargo.toml",
+      "--test",
+      "mirror_auth",
+      "mirror_authority_revocation_and_relogin_are_enforced",
+      "--",
+      "--exact",
+      "--nocapture"
+    ],
+    "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12",
+    "exit_status": 0,
+    "stdout": "\nrunning 1 test\ntest mirror_authority_revocation_and_relogin_are_enforced ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.07s\n\n",
+    "stderr": "   Compiling mirror-gateway v0.1.0 (C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.12s\n     Running tests\\mirror_auth.rs (build\\debug\\deps\\mirror_auth-fc534850fa167b2d.exe)\n"
+  },
+  {
+    "label": "successful_create_is_private_and_owner_can_read_modify_delete_continue",
+    "command": [
+      "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo\\bin\\cargo.exe",
+      "test",
+      "--locked",
+      "--offline",
+      "--manifest-path",
+      "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\Cargo.toml",
+      "--test",
+      "coord_acl_contract",
+      "successful_create_is_private_and_owner_can_read_modify_delete_continue",
+      "--",
+      "--exact",
+      "--nocapture"
+    ],
+    "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12",
+    "exit_status": 0,
+    "stdout": "\nrunning 1 test\ntest successful_create_is_private_and_owner_can_read_modify_delete_continue ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 27 filtered out; finished in 0.00s\n\n",
+    "stderr": "   Compiling mirror-gateway v0.1.0 (C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.93s\n     Running tests\\coord_acl_contract.rs (build\\debug\\deps\\coord_acl_contract-35260a1c549e44ca.exe)\n"
+  },
+  {
+    "label": "build-current-snapshot",
+    "command": [
+      "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo\\bin\\cargo.exe",
+      "build",
+      "--locked",
+      "--offline",
+      "--manifest-path",
+      "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\input\\Cargo.toml",
+      "--bin",
+      "mirror-gateway"
+    ],
+    "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12",
+    "exit_status": 0,
+    "stdout": "",
+    "stderr": "    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.25s\n"
+  },
+  {
+    "label": "isolated-lifecycle-probe",
+    "command": [
+      "C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12\\probe_lifecycle.py"
+    ],
+    "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\section12",
+    "exit_status": 0,
+    "stdout": "{\"id\": \"inflight_relogin\", \"old_inflight_status\": 200, \"next_old_request_status\": 401, \"selected_credential\": \"synthetic-alice-new\", \"selected_cookie\": \"fixture_device=alice-new\", \"interpretation\": \"old validated in-flight request selected replacement credentials for same user/account\"}\r\n{\"id\": \"shared_account\", \"account\": \"shared@example.invalid\", \"separate_session_credentials\": true, \"separate_extra_cookies\": true, \"user_acl_not_tested_by_http\": true}\r\n{\"id\": \"configured_proxy_unused\", \"save_status\": 200, \"proxy_trap_hits\": 0}\r\n{\"id\": \"persisted_binding\", \"rows_without_tokens\": [[\"alice\", \"shared@example.invalid\", 71], [\"bob\", \"shared@example.invalid\", 71]], \"tokens_hashed\": true}\r\n{\"id\": \"restart\", \"same_db_same_key_sessions_survive\": true, \"cookie_jar_did_not_capture_upstream_set_cookie\": true, \"real_device_protocol_validity\": \"not_verified\"}\r\n{\"id\": \"logout\", \"alice_status\": 401, \"bob_status\": 200}\r\nSECTION12_LOOPBACK_PROBE_OK\r\n",
+    "stderr": "----------------------------------------\r\n----------------------------------------\r\nException occurred during processing of request from ('127.0.0.1', 62599)\r\nException occurred during processing of request from ('127.0.0.1', 62604)\r\nTraceback (most recent call last):\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\socketserver.py\", line 697, in process_request_thread\r\n    self.finish_request(request, client_address)\r\n    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\r\nTraceback (most recent call last):\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\socketserver.py\", line 362, in finish_request\r\n    self.RequestHandlerClass(request, client_address, self)\r\n    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\socketserver.py\", line 697, in process_request_thread\r\n    self.finish_request(request, client_address)\r\n    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\socketserver.py\", line 362, in finish_request\r\n    self.RequestHandlerClass(request, client_address, self)\r\n    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\socketserver.py\", line 766, in __init__\r\n    self.handle()\r\n    ~~~~~~~~~~~^^\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\socketserver.py\", line 766, in __init__\r\n    self.handle()\r\n    ~~~~~~~~~~~^^\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\http\\server.py\", line 498, in handle\r\n    self.handle_one_request()\r\n    ~~~~~~~~~~~~~~~~~~~~~~~^^\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\http\\server.py\", line 464, in handle_one_request\r\n    self.raw_requestline = self.rfile.readline(65537)\r\n                           ~~~~~~~~~~~~~~~~~~~^^^^^^^\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\http\\server.py\", line 498, in handle\r\n    self.handle_one_request()\r\n    ~~~~~~~~~~~~~~~~~~~~~~~^^\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\socket.py\", line 729, in readinto\r\n    return self._sock.recv_into(b)\r\n           ~~~~~~~~~~~~~~~~~~~~^^^\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\http\\server.py\", line 464, in handle_one_request\r\n    self.raw_requestline = self.rfile.readline(65537)\r\n                           ~~~~~~~~~~~~~~~~~~~^^^^^^^\r\nConnectionResetError: [WinError 10054] \u8fdc\u7a0b\u4e3b\u673a\u5f3a\u8feb\u5173\u95ed\u4e86\u4e00\u4e2a\u73b0\u6709\u7684\u8fde\u63a5\u3002\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\socket.py\", line 729, in readinto\r\n    return self._sock.recv_into(b)\r\n           ~~~~~~~~~~~~~~~~~~~~^^^\r\nConnectionResetError: [WinError 10054] \u8fdc\u7a0b\u4e3b\u673a\u5f3a\u8feb\u5173\u95ed\u4e86\u4e00\u4e2a\u73b0\u6709\u7684\u8fde\u63a5\u3002\r\n----------------------------------------\r\n----------------------------------------\r\n----------------------------------------\r\nException occurred during processing of request from ('127.0.0.1', 62611)\r\nTraceback (most recent call last):\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\socketserver.py\", line 697, in process_request_thread\r\n    self.finish_request(request, client_address)\r\n    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\socketserver.py\", line 362, in finish_request\r\n    self.RequestHandlerClass(request, client_address, self)\r\n    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\socketserver.py\", line 766, in __init__\r\n    self.handle()\r\n    ~~~~~~~~~~~^^\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\http\\server.py\", line 498, in handle\r\n    self.handle_one_request()\r\n    ~~~~~~~~~~~~~~~~~~~~~~~^^\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\http\\server.py\", line 464, in handle_one_request\r\n    self.raw_requestline = self.rfile.readline(65537)\r\n                           ~~~~~~~~~~~~~~~~~~~^^^^^^^\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\socket.py\", line 729, in readinto\r\n    return self._sock.recv_into(b)\r\n           ~~~~~~~~~~~~~~~~~~~~^^^\r\nConnectionResetError: [WinError 10054] \u8fdc\u7a0b\u4e3b\u673a\u5f3a\u8feb\u5173\u95ed\u4e86\u4e00\u4e2a\u73b0\u6709\u7684\u8fde\u63a5\u3002\r\n----------------------------------------\r\n"
+  }
+]
