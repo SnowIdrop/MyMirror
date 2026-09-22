@@ -63,6 +63,7 @@ ledger = {
     "changed_symbols": ["Config::from_env", "Config.cdn_upstream", "service_url", "GATEWAY_UPSTREAM_MODE", "server::static_assets::serve", "server::static_assets::asset_path", "server::proxy::chat_proxy", "server::auth_session", "server::proxy::refresh_auth_session", "resource_acl (unexported independent module)"],
     "roles": roles,
     "summary": summary,
+    "metadata_followups": read("metadata-followups.json") if (here / "metadata-followups.json").exists() else [],
     "same_input_behaviors": behaviors,
     "same_input_static_behaviors": static_behaviors,
     "same_input_auth_behaviors": auth_behaviors,

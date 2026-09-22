@@ -1,0 +1,36 @@
+[
+  {
+    "id": "upstream-visible-identity-gate-ack",
+    "observed_at": "2026-09-23T00:39:28.120555+08:00",
+    "scope": "metadata-only; product source and source archive unchanged",
+    "source_commit": "1e1e30e8d0dd500e38f9d45d416bb911c4778c3a",
+    "candidate_sha256": "f95fc1eeb7d239dfc5b5e6e999b7c2443dc082a63bc9f6f6f7007e6bc3c53c6e",
+    "checks": [
+      "COORDINATION current implementation agrees with implemented auth_session and staged-only ACL",
+      "candidate archive CRC and all packaged source bytes match live source",
+      "original 24 source-file hashes match baseline",
+      "Get-CimInstance names mirror-gateway.exe/qemu-system-x86_64.exe returned 0 processes",
+      "main acceptance results not changed pending coordinator audit"
+    ],
+    "result": "passed",
+    "gate_classification": "not yet verified; requirement acknowledged only",
+    "runtime_tests_rerun": false,
+    "retained_observations": {
+      "configuration_exit": [
+        1,
+        0,
+        1
+      ],
+      "static_http": [
+        401,
+        200,
+        401
+      ],
+      "auth_plan": [
+        "free",
+        "plus",
+        "free"
+      ]
+    }
+  }
+]

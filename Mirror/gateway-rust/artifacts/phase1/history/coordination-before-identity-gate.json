@@ -2,20 +2,16 @@
   "owner_thread": "01a0c9af-fab7-7780-af7f-537dde662636",
   "coordinator_thread": "01a0c9c9-4508-75d1-a709-20aa6dbb69f9",
   "handoff": false,
-  "commit": "1e1e30e8d0dd500e38f9d45d416bb911c4778c3a",
+  "commit": "b837ba2",
   "branch": "codex/mirror-gateway-phase1",
-  "stable_snapshot": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\coordination\\integrated-f95fc1eeb7d2.zip",
-  "sha256": "f95fc1eeb7d239dfc5b5e6e999b7c2443dc082a63bc9f6f6f7007e6bc3c53c6e",
+  "stable_snapshot": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\coordination\\config-b837ba2.zip",
+  "sha256": "a7f812bb44750d5686f58cdc7ad7bb4c1b5934c247f7a247057b0ef7be8d6c2e",
   "current_archive_safe_to_read": "Yes; use stable_snapshot for independent work. Live MODIFIED_FILE.zip will be repackaged by owner only.",
   "owned_live_files": [
     "source/src/server.rs",
     "source/src/server/proxy.rs",
     "source/src/server/static_assets.rs",
     "source/tests/static_assets.rs",
-    "source/tests/auth_refresh.rs",
-    "source/src/resource_acl.rs",
-    "source/tests/coord_acl_contract.rs",
-    "source/tests/coord_boundary_regression.rs",
     "source/src/config.rs",
     "source/src/storage.rs",
     "source/src/schema.sql",
@@ -33,14 +29,9 @@
   ],
   "live_result": "Combined current candidate passed 109 Rust tests + Clippy -D warnings + 30 config cases, after integrating all 3 reviewed files and upgrading auth boundary fixture. Config1/0/1; static401/200/401; auth free/plus/free and egress0/2/0; rollback hash matched. No processes running.",
   "new_evidence": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\page-original-001\\summary.json",
-  "current_implementation": "Configured Django/chat/CDN origins, restricted public JS/CSS proxy, and auth_session accounts/check -> me refresh are implemented. Refresh snapshots exact-token credentials, releases DB lock before network, and revalidates authorization before returning. Chat HTML, guessed /c IDs and private media remain gated. Reviewed resource_acl is staged only, with no lib export, product DB initialization or route wiring.",
-  "interfaces": "Config includes cdn_upstream Option<Url>; static_assets and refresh_auth_session are private server helpers. Trusted resource identity/admin API adapters remain unimplemented; staged ACL is only compiled through its independent tests.",
+  "current_implementation": "Public JS/CSS routes /assets/* and /cdn/* from fixed CDN; no credentials forwarded, response Set-Cookie removed; MIME and redirect gate. Chat HTML, guessed /c IDs, media and auth refresh not opened/modified yet.",
+  "interfaces": "Config unchanged from snapshot (cdn_upstream Option<Url>). static_assets private sibling module only. Resource identity/API contracts remain unintegrated.",
   "delegable": [
-    {
-      "scope": "Current cycle: coordinator-assigned read-only/offline upstream-visible identity audits from immutable f95fc1 snapshot. No live product/source/STATUS/four-role writes or fingerprint/remote-browser implementation by audit lines."
-    }
-  ],
-  "completed_initial_work_line_scopes": [
     {
       "line": 2,
       "scope": "Independent resource ACL module design + tests in own worktree based on b837ba2; propose TrustedIdentity and account-bound resource/share/project inheritance/audit APIs; may implement only independent resource_acl.rs and tests/resource_acl.rs after coordinator review; do not change lib.rs, schema/init, Cargo or routes. Only integrator adds module and production wiring."
@@ -78,25 +69,8 @@
   "next_owner_work": "HTML/bootstrap isolation and same-origin adapter; login accounts-check gap; then trusted identity/ACL/new DB/backup wiring. Keep unproven paths closed.",
   "reviewed_identity_proposal": "user_id canonical decimal string; is_admin staff|superuser; wire version opaque authorization_version; principal_kind separates FREE_ACCOUNT visitor. New ACL visitors fail closed; existing login unchanged. Not yet product-wired.",
   "auth_contract_delta": "auth_session now snapshots credentials for exact mirror token, drops DB lock, sends accounts/check then me each request, revalidates session after network; account-lookup HTTP failure=>free with me still checked, me auth failure/account mismatch=>empty object. Login request chain unchanged (one me); malformed/transport refresh=>502.",
-  "regression_handoff_ack": "Completed: reviewed boundary file integrated, accounts fixture added, old no-egress assumption replaced with ordered accounts/check -> me assertions per account. All 8 tests executed in the 109-test combined gate; credential/isolation assertions retained. Original and upgraded hashes are in integrations/manifest.json. Login still calls only me.",
+  "regression_handoff_ack": "Acknowledged old boundary-regression auth local-snapshot assumption (line435). On formal handoff/hash, integrator will add accounts stub and update expected request sequence, preserving credential/isolation assertions; not skip tests. Login single-me assumptions remain current for this auth-session-only batch.",
   "pending_integration": "This reviewed batch integrated. ACL remains unexported and unused by product routes/DB. Admin is contract-only. No handoff.",
-  "metadata_history": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\history\\coordination-before-identity-gate.json",
-  "upstream_visible_identity_gate": {
-    "status": "Required before opening pages; end-to-end consistency not yet verified. Await coordinator's read-only/offline audit, then review before changing main acceptance results.",
-    "binding": ["upstream account", "authenticated session", "egress profile", "client profile"],
-    "invariants": [
-      "No random or silent identity/profile switching within a session",
-      "Verify HTTP, downloads, WebSocket and actual voice transport separately; do not assume voice uses WebSocket",
-      "Check server connection properties separately from browser UA/client hints/platform/language/timezone/capabilities; equal UA is not fingerprint consistency",
-      "Do not share Cookie/device/session IDs across users or leak credentials to CDN",
-      "Refresh/reconnect/restart/egress failure must not silently switch identity or automatically replay generation",
-      "Network identity is not a substitute for resource ACL"
-    ],
-    "acceptance_categories": ["verified consistent", "explained differences", "not yet verified"],
-    "architecture_boundary": "Report ordinary reverse-proxy limits and tradeoffs. No added fingerprint-spoofing scripts or remote-browser architecture; architecture direction changes require user confirmation. No promise of an undetectable proxy.",
-    "authorization_boundary": "No real-account requests, external writes or production switching authorized",
-    "owner_activity": "Metadata-only correction at stable checkpoint; no product source writes or owned gateway/QEMU processes running at observation"
-  },
   "integration_complete": {
     "snapshot": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\coordination\\integrated-f95fc1eeb7d2.zip",
     "sha256": "f95fc1eeb7d239dfc5b5e6e999b7c2443dc082a63bc9f6f6f7007e6bc3c53c6e",
