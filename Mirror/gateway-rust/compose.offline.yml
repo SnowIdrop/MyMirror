@@ -1,0 +1,17 @@
+# No Internet, no published ports, no production credentials or mounts.
+# Django/ChatGPT loopback fixtures must be provided within the same isolated environment.
+services:
+  gateway:
+    build: .
+    network_mode: none
+    environment:
+      HOST: 127.0.0.1
+      PORT: "40002"
+      GATEWAY_ADMIN_SECRET: offline-fixture-admin-secret
+      CREDENTIAL_ENCRYPTION_KEY: offline-fixture-credential-key-0000001
+      GATEWAY_COMPAT_PROFILE: mirror
+      DJANGO_UPSTREAM: http://127.0.0.1:18090
+      CHATGPT_BASE_URL: http://127.0.0.1:18090
+    tmpfs:
+      - /data
+    restart: "no"

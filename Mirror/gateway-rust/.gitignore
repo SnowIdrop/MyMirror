@@ -1,0 +1,14 @@
+/target/
+/.build/
+/evidence/**/qemu.stderr
+*.db
+*.db-wal
+*.db-shm
+__pycache__/
+
+# Generated transaction payloads stay local; source, hashes and evidence are tracked.
+/artifacts/MODIFIED_FILE
+/artifacts/baseline.gateway
+/artifacts/DIFF_FILE.patch
+/artifacts/SOURCE.patch
+/artifacts/gateway-rust-source.zip

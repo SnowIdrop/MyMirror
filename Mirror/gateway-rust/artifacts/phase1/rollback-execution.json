@@ -1,0 +1,11 @@
+{
+  "command": [
+    "E:/T/Git2026_6/bin/bash.exe",
+    "-c",
+    "artifacts/phase1/ROLLBACK.sh artifacts/phase1/rollback-copy.zip"
+  ],
+  "exit_status": 0,
+  "stdout": "Restored pristine source archive; databases and upstream resources were not modified.\n",
+  "stderr": "",
+  "restored_sha256": "bc0b14a57a4e1106ebf0fb5500831f8e659879cd3a6f8a2db466a7f28c8cb6c2"
+}

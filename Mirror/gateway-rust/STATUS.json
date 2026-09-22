@@ -1,0 +1,155 @@
+{
+  "state": "in_progress",
+  "release_gate": "failed",
+  "batch_complete": false,
+  "baseline_sha256": "4ff1a3b933dda0b9e0569d2f3ee9cf34993b0b3e21f734c4262a75b4c67ae098",
+  "candidate_sha256": "ba22ef7e8aa87298c9a661de63b3781a94003f9d282b8dd3de3cd7e8a5fdf6cd",
+  "roles": {
+    "MODIFIED_FILE": "D:\\Project\\Mirror\\gateway-rust\\artifacts\\MODIFIED_FILE",
+    "DIFF_FILE.patch": "D:\\Project\\Mirror\\gateway-rust\\artifacts\\DIFF_FILE.patch",
+    "VERIFICATION.txt": "D:\\Project\\Mirror\\gateway-rust\\artifacts\\VERIFICATION.txt",
+    "ROLLBACK.sh": "D:\\Project\\Mirror\\gateway-rust\\artifacts\\ROLLBACK.sh"
+  },
+  "response_comparison": {
+    "response_cases": 101,
+    "matched": 101,
+    "different": 0,
+    "scope": "response status, JSON/text body, headers; no whole-product equivalence claim"
+  },
+  "reports": {
+    "core/candidate": {
+      "response_cases": 101,
+      "matched": 101,
+      "different": 0,
+      "scope": "response status, JSON/text body, headers; no whole-product equivalence claim"
+    },
+    "core/rollback": {
+      "response_cases": 101,
+      "matched": 101,
+      "different": 0,
+      "scope": "response status, JSON/text body, headers; no whole-product equivalence claim"
+    },
+    "headers/candidate": {
+      "response_cases": 86,
+      "matched": 86,
+      "different": 0,
+      "scope": "response status, JSON/text body, headers; no whole-product equivalence claim"
+    },
+    "headers/candidate/audit": {
+      "scope": "raw wire length, digest, gzip integrity and decoded-body binding",
+      "baseline_checked": 85,
+      "candidate_checked": 85,
+      "different": 0
+    },
+    "headers/rollback": {
+      "response_cases": 86,
+      "matched": 86,
+      "different": 0,
+      "scope": "response status, JSON/text body, headers; no whole-product equivalence claim"
+    },
+    "headers/rollback/audit": {
+      "scope": "raw wire length, digest, gzip integrity and decoded-body binding",
+      "baseline_checked": 85,
+      "candidate_checked": 85,
+      "different": 0
+    },
+    "management/candidate": {
+      "response_cases": 283,
+      "matched": 278,
+      "different": 5,
+      "scope": "response status, JSON/text body, headers; no whole-product equivalence claim"
+    },
+    "management/candidate/audit": {
+      "scope": "management recorded DB projections, seed time offsets, and upstream request sequences/headers/bodies",
+      "cases": 47,
+      "matched": 32,
+      "different": 15
+    },
+    "management/rollback": {
+      "response_cases": 283,
+      "matched": 283,
+      "different": 0,
+      "scope": "response status, JSON/text body, headers; no whole-product equivalence claim"
+    },
+    "management/rollback/audit": {
+      "scope": "management recorded DB projections, seed time offsets, and upstream request sequences/headers/bodies",
+      "cases": 47,
+      "matched": 47,
+      "different": 0
+    },
+    "proxy/candidate": {
+      "response_cases": 68,
+      "matched": 66,
+      "different": 2,
+      "scope": "response status, JSON/text body, headers; no whole-product equivalence claim"
+    },
+    "proxy/candidate/audit": {
+      "scope": "proxy recorded DB projections, seed time offsets, and upstream request sequences/headers/bodies",
+      "cases": 75,
+      "matched": 71,
+      "different": 4
+    },
+    "proxy/rollback": {
+      "response_cases": 68,
+      "matched": 68,
+      "different": 0,
+      "scope": "response status, JSON/text body, headers; no whole-product equivalence claim"
+    },
+    "proxy/rollback/audit": {
+      "scope": "proxy recorded DB projections, seed time offsets, and upstream request sequences/headers/bodies",
+      "cases": 75,
+      "matched": 75,
+      "different": 0
+    },
+    "backup/candidate": {
+      "cases": 84,
+      "matched": 84,
+      "different": 0,
+      "scope": "HTTP status/body/headers, submitted payload, original eight table relations before and after restore; candidate authorization table must remain empty"
+    },
+    "backup/rollback": {
+      "cases": 84,
+      "matched": 84,
+      "different": 0,
+      "scope": "HTTP status/body/headers, submitted payload, original eight table relations before and after restore; candidate authorization table must remain empty"
+    }
+  },
+  "same_input_contracts": {
+    "core": {
+      "baseline": "baseline-final-2",
+      "guest_script_sha256": "0de5a7e3fc142f1abeb77e086e7502a18911cfc2220d866e862d5e319d82e662"
+    },
+    "headers": {
+      "baseline": "headers-v3-original-008",
+      "guest_script_sha256": "a8bbe8a2b3e8012bcee77528cbc46e215e4e11e30adfdbd5b7749f81dfda1d00"
+    },
+    "management": {
+      "baseline": "management-v3-original-006",
+      "guest_script_sha256": "331b58ffe0d83c742ac2aa0c27558cc5d679f94dbc597ae8332d38eb9cf7753d"
+    },
+    "proxy": {
+      "baseline": "proxy-v3-original-011",
+      "guest_script_sha256": "d49ff3c7cb61d31a4399e1b219e6724441e0c2930c8c96e1c6204f44339af9e9"
+    },
+    "backup": {
+      "baseline": "backup-v3-original-014",
+      "guest_script_sha256": "7c00e5ae37341ff28f76d13d8a67f499f53349172b2c1794123fd41c0a9dd248"
+    }
+  },
+  "remaining": [
+    "审核 provider 成功请求/校准协议未获原版 TLS 观测；5 个扩展响应用例保留显式 503 门禁差异",
+    "管理非空数据库 gateway_sessions 自增 ID 偏移与上游调用序列仍有差异，未忽略 ID",
+    "auth/session 上游 accounts/check + me 刷新链未对齐",
+    "Connection 命名头按安全要求过滤，与原版泄漏行为显式不同",
+    "两个未知 chat 探针路径继续 503；不为通过测试整体开放聊天路由",
+    "login extra_cookies 字符串/缺失/错误类型的严格原版提取契约仍需完善",
+    "完整 SSE/WebSocket、指纹传输、MCP/Skills 请求侧与限额、会话/项目读写隔离独立门禁",
+    "Docker 未验证；真实账号/真实上游/浏览器联调未批准，本次未运行"
+  ],
+  "next_work": "新替换计划第一阶段：在 artifacts/phase1/source 同一候选副本扩充页面、静态及 auth/session 刷新离线契约，再实现和回归；最新开发状态及四角色见 development_checkpoint。旧 v3 比较结果保留，不代表本批验收。",
+  "rollback_scope": "程序副本恢复；不回滚数据库；生产切换未执行",
+  "history": "D:\\Project\\Mirror\\gateway-rust\\evidence\\verification-before-v3.txt",
+  "development_checkpoint": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\STATUS.json",
+  "legacy_status_snapshot": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\legacy-STATUS.json",
+  "development_note": "配置批次仅修改源码副本；原源码24个文件哈希未变。64项Rust测试、Clippy、30项配置回归通过；页面/静态/刷新及后续阶段未完成，真实环境验收未执行。上面的roles/hash/reports仍属旧v3二进制证据，不是新源码包。"
+}

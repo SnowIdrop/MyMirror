@@ -1,0 +1,1050 @@
+{
+  "TARGET": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust",
+  "candidate_source": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source",
+  "changed_symbols": [
+    "Config::from_env",
+    "Config.cdn_upstream",
+    "service_url",
+    "GATEWAY_UPSTREAM_MODE"
+  ],
+  "roles": {
+    "MODIFIED_FILE": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\MODIFIED_FILE.zip",
+    "DIFF_FILE": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\DIFF_FILE.patch",
+    "VERIFICATION": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\VERIFICATION.txt",
+    "ROLLBACK": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\ROLLBACK.sh"
+  },
+  "summary": {
+    "implementation": "phase1 configuration batch implemented in a source copy; original source unchanged",
+    "rust_tests": 64,
+    "clippy": "passed --all-targets -- -D warnings",
+    "configuration_cases": 30,
+    "real_environment_acceptance": "not run",
+    "full_replacement_complete": false
+  },
+  "same_input_behaviors": [
+    {
+      "label": "BASELINE",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo\\bin\\cargo.exe",
+        "run",
+        "--locked",
+        "--offline",
+        "--quiet",
+        "--manifest-path",
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\Cargo.toml",
+        "--example",
+        "upstream_probe"
+      ],
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "configured",
+        "DJANGO_UPSTREAM": "http://django:8000",
+        "CHATGPT_BASE_URL": "https://chat.example.invalid",
+        "CHATGPT_CDN_BASE_URL": "https://static.example.invalid"
+      },
+      "stdout": "",
+      "stderr": "当前候选制品只允许 http 数字回环上游；真实传输兼容门禁尚未通过\n",
+      "exit_status": 1
+    },
+    {
+      "label": "MODIFIED",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo\\bin\\cargo.exe",
+        "run",
+        "--locked",
+        "--offline",
+        "--quiet",
+        "--manifest-path",
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\Cargo.toml",
+        "--example",
+        "upstream_probe"
+      ],
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "configured",
+        "DJANGO_UPSTREAM": "http://django:8000",
+        "CHATGPT_BASE_URL": "https://chat.example.invalid",
+        "CHATGPT_CDN_BASE_URL": "https://static.example.invalid"
+      },
+      "stdout": "accepted django=http://django:8000/ chat=https://chat.example.invalid/\n",
+      "stderr": "",
+      "exit_status": 0
+    },
+    {
+      "label": "ROLLBACK",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo\\bin\\cargo.exe",
+        "run",
+        "--locked",
+        "--offline",
+        "--quiet",
+        "--manifest-path",
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\rollback-source\\Cargo.toml",
+        "--example",
+        "upstream_probe"
+      ],
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "configured",
+        "DJANGO_UPSTREAM": "http://django:8000",
+        "CHATGPT_BASE_URL": "https://chat.example.invalid",
+        "CHATGPT_CDN_BASE_URL": "https://static.example.invalid"
+      },
+      "stdout": "",
+      "stderr": "当前候选制品只允许 http 数字回环上游；真实传输兼容门禁尚未通过\n",
+      "exit_status": 1
+    }
+  ],
+  "rollback_execution": {
+    "command": [
+      "E:/T/Git2026_6/bin/bash.exe",
+      "-c",
+      "artifacts/phase1/ROLLBACK.sh artifacts/phase1/rollback-copy.zip"
+    ],
+    "exit_status": 0,
+    "stdout": "Restored pristine source archive; databases and upstream resources were not modified.\n",
+    "stderr": "",
+    "restored_sha256": "bc0b14a57a4e1106ebf0fb5500831f8e659879cd3a6f8a2db466a7f28c8cb6c2"
+  },
+  "package": {
+    "baseline_sha256": "bc0b14a57a4e1106ebf0fb5500831f8e659879cd3a6f8a2db466a7f28c8cb6c2",
+    "modified_sha256": "a7f812bb44750d5686f58cdc7ad7bb4c1b5934c247f7a247057b0ef7be8d6c2e",
+    "patch_sha256": "d79bbeae991d0eae1640485956877da40596edb93941953aea6e4248afa5035a",
+    "patch_reconstruction": true,
+    "original_source_files_unchanged": 24,
+    "commands": [
+      {
+        "command": [
+          "git",
+          "-C",
+          "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\patch-work",
+          "init",
+          "--quiet"
+        ],
+        "exit_status": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "git",
+          "-C",
+          "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\patch-work",
+          "-c",
+          "core.autocrlf=false",
+          "add",
+          "source.zip"
+        ],
+        "exit_status": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "git",
+          "-C",
+          "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\patch-work",
+          "diff",
+          "--binary",
+          "--",
+          "source.zip"
+        ],
+        "exit_status": 0,
+        "stdout": "diff --git a/source.zip b/source.zip\nindex ad03382041aacdc45ec6102f730cd68306971b43..48b017df42f34fa9d623484b3595503f21007025 100644\nGIT binary patch\ndelta 13635\n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\n\ndelta 7726\n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\nSHHaFt_t&Stton<ELH`BFtc?8t\n\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "git",
+          "-C",
+          "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\patch-work",
+          "checkout",
+          "--",
+          "source.zip"
+        ],
+        "exit_status": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "git",
+          "-C",
+          "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\patch-work",
+          "apply",
+          "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\DIFF_FILE.patch"
+        ],
+        "exit_status": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    ]
+  },
+  "reapplied_goal": {
+    "reapplied_sha256": "a7f812bb44750d5686f58cdc7ad7bb4c1b5934c247f7a247057b0ef7be8d6c2e",
+    "commands": [
+      {
+        "command": [
+          "git",
+          "-C",
+          "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\patch-work",
+          "apply",
+          "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\DIFF_FILE.patch"
+        ],
+        "exit_status": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "git",
+          "-C",
+          "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source-patch-work",
+          "init",
+          "--quiet"
+        ],
+        "exit_status": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "git",
+          "-C",
+          "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source-patch-work",
+          "-c",
+          "core.autocrlf=false",
+          "add",
+          "."
+        ],
+        "exit_status": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "git",
+          "-C",
+          "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source-patch-work",
+          "add",
+          "-N",
+          "."
+        ],
+        "exit_status": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "git",
+          "-C",
+          "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source-patch-work",
+          "-c",
+          "core.autocrlf=false",
+          "diff",
+          "--binary",
+          "--"
+        ],
+        "exit_status": 0,
+        "stdout": "diff --git a/.env.configured.example b/.env.configured.example\nnew file mode 100644\nindex 0000000..4a9abf2\n--- /dev/null\n+++ b/.env.configured.example\n@@ -0,0 +1,15 @@\n+# Configuration template only: not an approved production deployment.\n+# Keep secrets in the service environment; never ship them to the browser.\n+GATEWAY_UPSTREAM_MODE=configured\n+GATEWAY_COMPAT_PROFILE=mirror\n+HOST=127.0.0.1\n+PORT=40002\n+DATABASE_PATH=data/gateway-new.db\n+GATEWAY_ADMIN_SECRET=SET_A_UNIQUE_SERVICE_SECRET\n+CREDENTIAL_ENCRYPTION_KEY=SET_A_UNIQUE_ENCRYPTION_KEY_AT_LEAST_32_BYTES\n+DJANGO_UPSTREAM=http://django:8000\n+CHATGPT_BASE_URL=https://chat.example.invalid\n+CHATGPT_CDN_BASE_URL=https://static.example.invalid\n+# CF_BYPASS_URL=http://cfbypass:8000\n+COOKIE_SECURE=true\n+REQUEST_TIMEOUT_SECS=180\ndiff --git a/PHASE1_CONTRACT.md b/PHASE1_CONTRACT.md\nnew file mode 100644\nindex 0000000..815e069\n--- /dev/null\n+++ b/PHASE1_CONTRACT.md\n@@ -0,0 +1,59 @@\n+# 新替换计划：第一阶段工作批次 1（未完成整体替换）\n+\n+## 当前边界\n+\n+本候选沿用 `gateway-rust`，没有改为官方 API 产品，没有接入闭源回退。\n+本批只实现服务端上游配置拆分，补充本地契约与回归。原始源码、既有二进制证据、\n+Django 用户库、旧网关库及线上资源均保留；没有导入旧数据。\n+\n+`Config::from_env` 新增 `GATEWAY_UPSTREAM_MODE`：\n+\n+- 缺省或 `offline`：继续仅接受数字 HTTP 回环地址；旧测试无需 CDN 配置。\n+- `configured`：Django、聊天、CDN 必须显式配置；可选 CF 服务单独配置。\n+  接受 HTTP/HTTPS 服务源（含端口），拒绝 URL 凭据、路径前缀、查询串、片段和其他协议。\n+  不回退到默认公网目标，不关闭 TLS 证书校验，不跟随上游重定向。\n+- `CHATGPT_CDN_BASE_URL` 存入 `Config.cdn_upstream`，与 `django`、`upstream` 分离。\n+  **它尚未接入静态资源路由，配置成功不代表聊天页面可用。**\n+- 请求不能覆盖配置目标。已开放路由仍使用服务端固定源；未知业务路径仍失败。\n+  原有模型、配额、MCP/Skills 策略代码、授权版本检查没有删除或放宽。\n+- 提供 `.env.configured.example`，仅作候选配置说明；没有改动现有部署 compose。\n+\n+## 已检查的契约和证据等级\n+\n+“源码”只表明本地实现；“旧观测”指已有离线模拟上游对原版的观测，不是本次真实环境验收。\n+\n+| 能力/请求 | 请求、ID、返回/错误 | 证据与结论 |\n+|---|---|---|\n+| 登录 | 服务间 `POST /api/login`；`user_name`、`authorization`、上游 token 与已有策略字段；返回 `login_url` | `src/server.rs::login`；`tests/mirror_auth.rs` 合成回归。管理员服务密钥不等于操作者身份 |\n+| 登录交接 | `GET /api/not-login?user_gateway_token=...`；轮换 `mirror_token` Cookie，跳转 `/` | `src/server.rs::handoff/session_cookies`；原有 `/` 尚未开放，因此聊天闭环未完成 |\n+| Django 授权 | `POST /0x/user/gateway-authorization`，服务密钥＋`authorization/subject`；返回 `active/version/expires_at` | `chatgpt-mirror-build/backend/app/accounts/session_authority.py:99-151`。签名内含 user_id，但响应尚无稳定 ID/管理员角色；不能从客户端字段补造 |\n+| 角色失效 | 策略摘要含 `is_staff/is_superuser`，签名校验会核对摘要 | 同文件 `policy_digest/authorization_details`；第二阶段仍需可信角色返回、用户标识与权限接线 |\n+| 管理代理 | `/0x/*`、`/admin*` 固定 Django 源、保留查询、响应流转发 | `src/server/proxy.rs::django_forward/stream_response`；旧观测 `tools/observe_proxy_v3.py`；不是通往任意主机的代理 |\n+| 当前用户 | `GET /backend-api/me`，上游账号 token 替换浏览器凭据；原样状态/正文 | `src/server/proxy.rs::me_passthrough`，旧观测 `p1-me-*`；只有读取接口，不代表普通聊天完成 |\n+| 会话列表 | `GET /backend-api/conversations?offset=&limit=`；`items[].id`、`total`；按账号+user_name 过滤 | `src/server/proxy.rs::conversations_response/rebuild_conversations`；旧观测 `p2-*`。这不是完整统一资源授权，未知资源不认领 |\n+| 刷新 | `GET /api/auth/session` 当前读取本地账号/plan，返回用户、loginMode、planType | `src/server.rs::auth_session`；`STATUS.json:139-149` 留存 `accounts/check + me` 刷新副作用差异；不能宣称已对齐 |\n+| 页面、静态、URL 改写 | 旧模板中存在主机改写/拦截代码；聊天 HTML 路径、静态路径与初始化数据边界尚未验证 | `src/assets/gateway-client.html`、`gateway-client-hosts.json` 和 `server/proxy.rs::inject_client_resource` 仅证明模板存在；不能据主机列表开放任意媒体路径 |\n+| 错误 | 未认证读取 401；未知聊天业务路径 503；未知 `/api/*` 404 | `src/server/proxy.rs::chat_proxy`；新增本地回归保留门禁 |\n+\n+## 尚无足够证据的必选能力（不得按猜测开放）\n+\n+| 能力 | 仍需收集的实际契约与隔离条件 |\n+|---|---|\n+| 普通聊天、共享续聊 | 创建/续聊请求、conversation/message ID、SSE 事件、停止、历史、重命名/删除；成功创建才登记；单会话生成互斥；断线不得重发 |\n+| 文件、图片 | 上传步骤、引用字段、下载/生成结果 ID；请求引用鉴权与受控媒体访问；不能透出长期直链 |\n+| 项目 | 创建/编辑及关联协议；动态继承共享；移动旧私有内容扩大可见性须管理员授权 |\n+| Pro、研究、搜索 | 任务 ID/状态、引用、查询/取消与已证实恢复协议；重启不重新创建 |\n+| 语音 | 客户端实际信令与音频协议；不预设 WebSocket；资源权限和撤权断连 |\n+| 连接器/MCP | 配置、调用、授权各自权限；凭据加密；外部写操作确认；不继承项目共享 |\n+| 账号记忆、自动检索 | 能否限制到当前授权资源；未证实时暂停，不能只隐藏列表 |\n+\n+以上不是路由猜测表。没有把网上通用 ChatGPT API 名称当成本项目的已观测协议。\n+\n+## 按原顺序继续\n+\n+1. 第一阶段未完：针对页面/静态请求及刷新链补离线观测，随后实现明确白名单和同源 URL 改写；先审查 HTML 是否含跨用户资源初始化数据。\n+2. 第二阶段：Django 可信身份响应 → Rust 新库资源/关联/共享/审计 → 所有访问统一判权 → 后台资源页面及版本化完整备份。既有开关不得关闭默认私有。\n+3. 第三至五阶段：按用户计划接通普通聊天、文件/图片/项目、研究/搜索/语音/连接器；证据不足或无法隔离时保留未完成门禁。\n+4. 第六阶段才执行整体镜像、浏览器、三身份隔离、重启/故障/并发、备份与部署回滚验收。\n+\n+本批未执行真实账号、外部写操作或生产切换。程序/源码回滚不撤销数据库或上游已执行操作。\ndiff --git a/README.md b/README.md\nindex 48deb3d..9e0c78e 100644\n--- a/README.md\n+++ b/README.md\n@@ -1,7 +1,9 @@\n # Mirror Rust gateway — offline candidate, NOT a completed replacement\n \n 独立 Rust 工程，当前交付是可编译、可运行、可回滚的开发候选，**不是原版行为等价验收通过的网关**。\n-原版及已有 Mirror 工程未改动。不可部署到真实账号环境；真实上游传输被数字回环地址白名单明确阻止。\n+原版及已有 Mirror 工程未改动。本副本推进新替换计划第一阶段，仍不可作为完整替换部署。\n+默认只允许离线回环上游；显式 configured 模式支持服务名及 HTTPS，但不代表真实环境验收通过。\n+本批契约、实现和下一步见 [PHASE1_CONTRACT.md](PHASE1_CONTRACT.md)。\n \n ## 已实现与边界\n \n@@ -34,7 +36,9 @@ Linux x86-64 musl 制品使用本工程 `.build/zig/ziglang` 中的 Zig 0.13.0 \n ## 配置\n \n `GATEWAY_ADMIN_SECRET` 至少 16 字节；`CREDENTIAL_ENCRYPTION_KEY` 去除两端空白后至少 32 字节。\n-`DJANGO_UPSTREAM`、`CHATGPT_BASE_URL`、可选 `CF_BYPASS_URL` 只接受 `http://127.x.x.x` 或 `http://[::1]`，不接受域名、HTTPS 或外网地址。\n+`GATEWAY_UPSTREAM_MODE` 默认 `offline`：`DJANGO_UPSTREAM`、`CHATGPT_BASE_URL`、可选 `CHATGPT_CDN_BASE_URL` / `CF_BYPASS_URL` 只接受数字 HTTP 回环服务源。\n+显式设为 `configured` 时接受 HTTP/HTTPS 服务名和端口，Django、聊天、CDN 三个源必须各自配置，CF 源可选。拒绝凭据、路径前缀、查询串和片段；不提供默认公网地址。配置模板见 `.env.configured.example`。\n+CDN 字段已独立解析，但静态路由仍未开放。TLS 校验保持启用，上游重定向不自动跟随，请求无法改写配置目标。\n `GATEWAY_COMPAT_PROFILE=mirror` 是默认值，必须传 Django 授权与策略字段；`original` 只用于原版契约观测，不自动降级到该模式。\n `COOKIE_SECURE` 默认 true。局部合成 HTTP 测试可设 false；这不是公网部署配置。\n \n@@ -54,7 +58,7 @@ mirror-gateway migrate SOURCE_COPY NEW_DATABASE\n `artifacts/ROLLBACK.sh TARGET_COPY` 从同目录 `baseline.gateway` 恢复原版程序。它只回滚程序，不回滚数据库；生产数据回滚必须使用维护窗口前的一致性快照。\n `artifacts/DIFF_FILE.patch` 是原版 `gateway` 到候选 `gateway` 的 Git binary patch，已在独立副本用 `git apply` 验证重建哈希。\n \n-## 下一工作项\n+## 旧候选的兼容差异（保留记录）\n \n 旧 45 项响应差异已消除；下一步处理扩展审核协议、管理自增 ID 与上游序列差异、严格输入提取契约，再补齐按用户归属的聊天读写与 SSE/WebSocket、指纹传输及 MCP/Skills 实际请求协议。准确当前结果与证据入口见 STATUS.json、COMPATIBILITY.md；本批仍未完整通过。\n 每一步都要扩充原版观测再实现；禁止将缺口改为固定成功或移除共享账号保护来提高表面通过率。\ndiff --git a/compose.offline.yml b/compose.offline.yml\nindex b3fb8cd..46afca4 100644\n--- a/compose.offline.yml\n+++ b/compose.offline.yml\n@@ -10,6 +10,7 @@ services:\n       GATEWAY_ADMIN_SECRET: offline-fixture-admin-secret\n       CREDENTIAL_ENCRYPTION_KEY: offline-fixture-credential-key-0000001\n       GATEWAY_COMPAT_PROFILE: mirror\n+      GATEWAY_UPSTREAM_MODE: offline\n       DJANGO_UPSTREAM: http://127.0.0.1:18090\n       CHATGPT_BASE_URL: http://127.0.0.1:18090\n     tmpfs:\ndiff --git a/examples/check_config.rs b/examples/check_config.rs\nnew file mode 100644\nindex 0000000..e4930c2\n--- /dev/null\n+++ b/examples/check_config.rs\n@@ -0,0 +1,14 @@\n+// Validate configured service origins without opening a database or making requests.\n+fn main() -> anyhow::Result<()> {\n+    let config = mirror_gateway::config::Config::from_env()?;\n+    println!(\n+        \"{}\",\n+        serde_json::json!({\n+            \"django\": config.django.as_str(),\n+            \"chat\": config.upstream.as_str(),\n+            \"cdn\": config.cdn_upstream.as_ref().map(url::Url::as_str),\n+            \"cfbypass\": config.cfbypass.as_ref().map(url::Url::as_str),\n+        })\n+    );\n+    Ok(())\n+}\ndiff --git a/src/config.rs b/src/config.rs\nindex c0cc1bc..e85dea8 100644\n--- a/src/config.rs\n+++ b/src/config.rs\n@@ -1,4 +1,4 @@\n-// Author: MingTea. Unverified Internet transports are intentionally not enabled.\n+// Author: MingTea. Upstream origins are selected by server configuration only.\n use anyhow::{bail, Context, Result};\n use std::{env, path::PathBuf, time::Duration};\n use url::Url;\n@@ -12,6 +12,8 @@ pub struct Config {\n     pub key: String,\n     pub django: Url,\n     pub upstream: Url,\n+    /// Public static origin; routes remain gated until their contract is verified.\n+    pub cdn_upstream: Option<Url>,\n     pub cfbypass: Option<Url>,\n     pub timeout: Duration,\n     pub mirror_profile: bool,\n@@ -32,6 +34,27 @@ pub fn loopback_url(value: &str) -> Result<Url> {\n     Ok(url)\n }\n \n+fn service_url(value: &str, offline: bool) -> Result<Url> {\n+    let url = if offline {\n+        loopback_url(value)?\n+    } else {\n+        Url::parse(value)?\n+    };\n+    // Callers replace the path or join absolute API paths. Reject a base path\n+    // rather than silently discarding a deployment's prefix or query settings.\n+    if !matches!(url.scheme(), \"http\" | \"https\")\n+        || url.host().is_none()\n+        || !url.username().is_empty()\n+        || url.password().is_some()\n+        || url.path() != \"/\"\n+        || url.query().is_some()\n+        || url.fragment().is_some()\n+    {\n+        bail!(\"上游必须是 HTTP(S) 服务源地址，不能含凭据、路径前缀、查询串或片段\");\n+    }\n+    Ok(url)\n+}\n+\n impl Config {\n     pub fn from_env() -> Result<Self> {\n         let secret = env::var(\"GATEWAY_ADMIN_SECRET\")\n@@ -50,6 +73,31 @@ impl Config {\n         if !matches!(profile.as_str(), \"mirror\" | \"original\") {\n             bail!(\"GATEWAY_COMPAT_PROFILE 必须是 mirror 或 original\");\n         }\n+        let offline = match env::var(\"GATEWAY_UPSTREAM_MODE\").as_deref() {\n+            Ok(\"offline\") | Err(env::VarError::NotPresent) => true,\n+            Ok(\"configured\") => false,\n+            _ => bail!(\"GATEWAY_UPSTREAM_MODE 必须是 offline 或 configured\"),\n+        };\n+        let django = service_url(\n+            &env::var(\"DJANGO_UPSTREAM\").context(\"DJANGO_UPSTREAM 未配置\")?,\n+            offline,\n+        )\n+        .context(\"DJANGO_UPSTREAM 无效\")?;\n+        let upstream = service_url(\n+            &env::var(\"CHATGPT_BASE_URL\").context(\"CHATGPT_BASE_URL 未配置\")?,\n+            offline,\n+        )\n+        .context(\"CHATGPT_BASE_URL 无效\")?;\n+        let cdn_upstream = match env::var(\"CHATGPT_CDN_BASE_URL\") {\n+            Ok(value) => Some(service_url(&value, offline).context(\"CHATGPT_CDN_BASE_URL 无效\")?),\n+            Err(env::VarError::NotPresent) if offline => None,\n+            Err(error) => return Err(error).context(\"CHATGPT_CDN_BASE_URL 未配置或无效\"),\n+        };\n+        let cfbypass = match env::var(\"CF_BYPASS_URL\") {\n+            Ok(value) => Some(service_url(&value, offline).context(\"CF_BYPASS_URL 无效\")?),\n+            Err(env::VarError::NotPresent) => None,\n+            Err(error) => return Err(error).context(\"CF_BYPASS_URL 无效\"),\n+        };\n         Ok(Self {\n             host: env::var(\"HOST\").unwrap_or_else(|_| \"127.0.0.1\".into()),\n             port: env::var(\"PORT\")\n@@ -60,14 +108,10 @@ impl Config {\n                 .into(),\n             secret,\n             key,\n-            django: loopback_url(&env::var(\"DJANGO_UPSTREAM\").context(\"DJANGO_UPSTREAM 未配置\")?)?,\n-            upstream: loopback_url(\n-                &env::var(\"CHATGPT_BASE_URL\").context(\"CHATGPT_BASE_URL 未配置\")?,\n-            )?,\n-            cfbypass: env::var(\"CF_BYPASS_URL\")\n-                .ok()\n-                .map(|s| loopback_url(&s))\n-                .transpose()?,\n+            django,\n+            upstream,\n+            cdn_upstream,\n+            cfbypass,\n             timeout: Duration::from_secs(\n                 env::var(\"REQUEST_TIMEOUT_SECS\")\n                     .unwrap_or_else(|_| \"180\".into())\n@@ -80,3 +124,58 @@ impl Config {\n         })\n     }\n }\n+\n+#[cfg(test)]\n+mod tests {\n+    use super::*;\n+\n+    #[test]\n+    fn configured_services_accept_http_and_https_origins() {\n+        for value in [\n+            \"http://django:8000\",\n+            \"https://chat.example.invalid\",\n+            \"https://static.example.invalid:8443/\",\n+            \"http://[::1]:18090\",\n+            \"https://127.0.0.1:18443\",\n+        ] {\n+            assert!(service_url(value, false).is_ok(), \"{value}\");\n+        }\n+    }\n+\n+    #[test]\n+    fn offline_services_still_require_numeric_http_loopback() {\n+        for value in [\"http://127.0.0.1:18090\", \"http://[::1]:18090\"] {\n+            assert!(service_url(value, true).is_ok(), \"{value}\");\n+        }\n+        for value in [\n+            \"https://127.0.0.1\",\n+            \"http://localhost:8000\",\n+            \"http://django:8000\",\n+            \"https://chat.example.invalid\",\n+            \"http://192.0.2.1\",\n+        ] {\n+            assert!(service_url(value, true).is_err(), \"{value}\");\n+        }\n+    }\n+\n+    #[test]\n+    fn service_origins_reject_ambiguous_or_credential_bearing_bases() {\n+        for value in [\n+            \"file:///tmp/upstream\",\n+            \"ftp://example.invalid\",\n+            \"ws://example.invalid\",\n+            \"//example.invalid\",\n+            \"https://user:password@example.invalid\",\n+            \"https://user@example.invalid\",\n+            \"http://127.0.0.1/prefix/\",\n+            \"http://127.0.0.1/?target=example.invalid\",\n+            \"http://127.0.0.1/#fragment\",\n+            \"http://127.0.0.1/?\",\n+            \"http://127.0.0.1/#\",\n+            \"\",\n+        ] {\n+            assert!(service_url(value, false).is_err(), \"{value}\");\n+            assert!(service_url(value, true).is_err(), \"{value}\");\n+        }\n+    }\n+}\ndiff --git a/src/main.rs b/src/main.rs\nindex 4de130e..4dde778 100644\n--- a/src/main.rs\n+++ b/src/main.rs\n@@ -33,7 +33,7 @@ async fn run() -> Result<()> {\n     let address = format!(\"{}:{}\", config.host, config.port);\n     let router = server::router(config).await?;\n     let listener = tokio::net::TcpListener::bind(&address).await?;\n-    println!(\"gateway listening on http://{address} (offline candidate; release gate incomplete)\");\n+    println!(\"gateway listening on http://{address} (development candidate; release gate incomplete)\");\n     axum::serve(\n         listener,\n         router.into_make_service_with_connect_info::<std::net::SocketAddr>(),\ndiff --git a/tests/mirror_auth.rs b/tests/mirror_auth.rs\nindex 4bf9f0a..f292e2c 100644\n--- a/tests/mirror_auth.rs\n+++ b/tests/mirror_auth.rs\n@@ -30,6 +30,7 @@ async fn mirror_authority_revocation_and_relogin_are_enforced() {\n         key: \"fixture-encryption-key-000000000001\".into(),\n         django: loopback_url(&stub_url).unwrap(),\n         upstream: loopback_url(&stub_url).unwrap(),\n+        cdn_upstream: None,\n         cfbypass: None,\n         timeout: Duration::from_secs(3),\n         mirror_profile: true,\n@@ -81,6 +82,30 @@ async fn mirror_authority_revocation_and_relogin_are_enforced() {\n         .await\n         .unwrap();\n     assert_eq!(response.status(), 200);\n+    // A client-supplied URL stays request data; only the configured chat origin\n+    // is contacted. The fixture verifies the account's upstream credential.\n+    assert_eq!(\n+        client\n+            .get(format!(\"{base}/backend-api/me?url=http://192.0.2.99/&target=https://example.invalid\"))\n+            .header(\"x-mirror-token\", token)\n+            .send()\n+            .await\n+            .unwrap()\n+            .status(),\n+        200\n+    );\n+    for path in [\"/backend-api/conversation\", \"/assets/unverified.js\", \"/\"] {\n+        assert_eq!(\n+            client\n+                .get(format!(\"{base}{path}\"))\n+                .header(\"x-mirror-token\", token)\n+                .send()\n+                .await\n+                .unwrap()\n+                .status(),\n+            503\n+        );\n+    }\n     let event = json!({\"subject\":\"alice\",\"version\":\"v1\",\"include_visitors\":false,\"expires_at\":SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs()+3600});\n     let response = client\n         .post(format!(\"{base}/api/revoke-authorization\"))\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "git",
+          "-C",
+          "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source-patch-work",
+          "apply",
+          "--reverse",
+          "--check",
+          "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\SOURCE.patch"
+        ],
+        "exit_status": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "git",
+          "-C",
+          "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source-patch-work",
+          "diff",
+          "--check"
+        ],
+        "exit_status": 0,
+        "stdout": "",
+        "stderr": "warning: in the working copy of 'README.md', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'compose.offline.yml', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'src/config.rs', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'src/main.rs', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'tests/mirror_auth.rs', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of '.env.configured.example', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'PHASE1_CONTRACT.md', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'examples/check_config.rs', LF will be replaced by CRLF the next time Git touches it\n"
+      }
+    ]
+  },
+  "checks": [
+    {
+      "label": "rust-tests",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo\\bin\\cargo.exe",
+        "test",
+        "--all-targets",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\Cargo.toml"
+      ],
+      "stdout": "\nrunning 45 tests\ntest crypto::tests::sha256_prefix_hash ... ok\ntest config::tests::configured_services_accept_http_and_https_origins ... ok\ntest crypto::tests::key_min_length_enforced ... ok\ntest config::tests::offline_services_still_require_numeric_http_loopback ... ok\ntest policy::tests::capability_allowlist_matches_id_and_alias ... ok\ntest policy::tests::check_request_enforces_model_when_present ... ok\ntest config::tests::service_origins_reject_ambiguous_or_credential_bearing_bases ... ok\ntest policy::tests::config_type_errors_are_rejected_instead_of_silent_fallback ... ok\ntest policy::tests::disabled_capability_isolation_allows_any_id ... ok\ntest policy::tests::delayed_revocation_does_not_hit_new_session ... ok\ntest crypto::tests::wrong_key_and_bad_payload_fail ... ok\ntest policy::tests::empty_model_allowlist_denies_every_model ... ok\ntest crypto::tests::roundtrip_and_prefix_rules ... ok\ntest policy::tests::empty_model_or_capability_id_is_rejected ... ok\ntest policy::tests::check_request_rejects_non_string_model ... ok\ntest policy::tests::disabled_model_isolation_allows_any_model ... ok\ntest policy::tests::expired_revocation_matches_nothing ... ok\ntest policy::tests::explicitly_empty_allowlist_denies_capability ... ok\ntest policy::tests::login_defaults_version_and_expiry_when_absent ... ok\ntest policy::tests::login_requires_identity_and_non_negative_quota ... ok\ntest policy::tests::missing_capability_initialization_fails_closed ... ok\ntest policy::tests::model_allowlist_rejects_unlisted_and_normalizes_case ... ok\ntest policy::tests::revocation_from_json_parses_delivery_and_rejects_invalid ... ok\ntest policy::tests::revocation_matches_exact_subject_and_version ... ok\ntest policy::tests::revocation_without_visitors_does_not_hit_visitor_session ... ok\ntest policy::tests::revocation_visitor_prefix_is_strict ... ok\ntest server::compression::tests::vary_detection_is_case_insensitive_substring ... ok\ntest server::compression::tests::predicate_uses_size_type_and_existing_encoding ... ok\ntest server::compression::tests::negotiation_prefers_quality_then_encoding_order ... ok\ntest server::management::tests::protocol_and_mode_whitelists_match_observed_rejections ... ok\ntest server::management::tests::base_url_rules_match_observed_messages ... ok\ntest server::proxy::tests::cf_clearance_prefers_named_cookie_and_joins ... ok\ntest server::proxy::tests::chat_origin_drops_port_and_referer_appends_slash ... ok\ntest server::proxy::tests::conversations_filter_keeps_scope_and_extra_keys ... ok\ntest server::proxy::tests::conversations_without_items_fall_back_to_empty_envelope ... ok\ntest server::proxy::tests::request_headers_drop_client_proxy_ip_headers ... ok\ntest server::proxy::tests::cookie_header_order_and_extra_cookie_parsing ... ok\ntest server::proxy::tests::request_headers_drop_credentials_and_connection_named_headers ... ok\ntest server::proxy::tests::response_headers_drop_transfer_encoding_and_mark_proxied ... ok\ntest server::compression::tests::gzip_encodes_multiple_frames_and_propagates_stream_failure ... ok\ntest storage::tests::schema_has_eight_tables_and_settings_roundtrip ... ok\ntest storage::tests::open_backfills_legacy_columns_and_encrypts_rows ... ok\ntest storage::tests::backup_roundtrip_rejects_bad_payload_and_rolls_back ... ok\ntest storage::tests::migrate_wrong_source_key_stops_without_writes ... ok\ntest storage::tests::migrate_reencrypts_and_clears_sessions ... ok\n\ntest result: ok. 45 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 13 tests\ntest http_restore_strict_requires_every_table ... ok\ntest http_restore_legacy_ignores_non_array_and_unknown_keys ... ok\ntest restore_backup_keeps_strict_v2_contract ... ok\ntest runtime_validation_failure_rolls_back_the_complete_restore ... ok\ntest http_restore_failure_rolls_back_every_table ... ok\ntest http_restore_strict_requires_row_fields_with_observed_messages ... ok\ntest http_restore_legacy_settings_upsert_keeps_other_rows ... ok\ntest http_restore_legacy_updates_existing_account_row ... ok\ntest http_restore_empty_object_is_noop ... ok\ntest http_restore_strict_all_empty_arrays_clears_tables ... ok\ntest http_restore_strict_defaults_match_observations ... ok\ntest http_restore_non_v2_version_uses_legacy_upsert ... ok\ntest http_restore_stores_values_as_is_without_crypto ... ok\n\ntest result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.17s\n\n\nrunning 3 tests\ntest unknown_source_column_stops_before_destination_creation ... ok\ntest restore_wrong_key_leaves_existing_database_unchanged ... ok\ntest migration_preserves_source_and_refuses_repeated_destination ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s\n\n\nrunning 2 tests\ntest offline_transport_rejects_external_and_ambiguous_targets ... ok\ntest mirror_authority_revocation_and_relogin_are_enforced ... ok\n\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s\n\n\nrunning 1 test\ntest decrypts_original_observed_session_credential ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+      "stderr": "   Compiling mirror-gateway v0.1.0 (E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.43s\n     Running unittests src\\lib.rs (.build\\phase1-target\\debug\\deps\\mirror_gateway-94355bbcb5791012.exe)\n     Running unittests src\\main.rs (.build\\phase1-target\\debug\\deps\\mirror_gateway-09faed94f6cab362.exe)\n     Running tests\\backup_contract.rs (.build\\phase1-target\\debug\\deps\\backup_contract-bae0075f1b3ad05e.exe)\n     Running tests\\migration.rs (.build\\phase1-target\\debug\\deps\\migration-5321f70edd972806.exe)\n     Running tests\\mirror_auth.rs (.build\\phase1-target\\debug\\deps\\mirror_auth-fc534850fa167b2d.exe)\n     Running tests\\original_crypto.rs (.build\\phase1-target\\debug\\deps\\original_crypto-8a74ed12c32c0f8a.exe)\n     Running unittests examples\\check_config.rs (.build\\phase1-target\\debug\\examples\\check_config-ab896fa343b5abd7.exe)\n     Running unittests examples\\upstream_probe.rs (.build\\phase1-target\\debug\\examples\\upstream_probe-e4bce7c35bc2dd7c.exe)\n",
+      "exit_status": 0,
+      "expected_exit": 0,
+      "passed": true
+    },
+    {
+      "label": "clippy",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo\\bin\\cargo.exe",
+        "clippy",
+        "--all-targets",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\Cargo.toml",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "stdout": "",
+      "stderr": "    Checking cfg-if v1.0.5\n    Checking once_cell v1.21.4\n    Checking smallvec v1.16.1\n    Checking windows-link v0.2.1\n    Checking typenum v1.20.1\n    Checking pin-project-lite v0.2.17\n    Checking bytes v1.12.1\n    Checking itoa v1.0.18\n    Checking stable_deref_trait v1.2.1\n    Checking futures-core v0.3.34\n    Checking scopeguard v1.2.0\n    Checking log v0.4.34\n    Checking zeroize v1.9.0\n    Checking zerofrom v0.1.8\n    Checking subtle v2.6.1\n    Checking zerocopy v0.8.57\n    Checking getrandom v0.2.17\n    Checking windows-sys v0.61.2\n    Checking futures-sink v0.3.34\n    Checking writeable v0.6.4\n    Checking lock_api v0.4.14\n    Checking untrusted v0.9.0\n    Checking cpufeatures v0.2.17\n    Checking tracing-core v0.1.36\n    Checking yoke v0.8.3\n    Checking slab v0.4.12\n    Checking rustls-pki-types v1.15.1\n    Checking rand_core v0.6.4\n    Checking parking_lot_core v0.9.12\n    Checking litemap v0.8.3\n    Checking futures-task v0.3.34\n    Checking ring v0.17.14\n    Checking percent-encoding v2.3.2\n    Checking utf8_iter v1.0.4\n    Checking zerovec v0.11.8\n    Checking zerotrie v0.2.5\n    Checking httparse v1.10.1\n    Checking tower-service v0.3.3\n    Checking futures-util v0.3.34\n    Checking parking_lot v0.12.5\n    Checking serde_core v1.0.229\n    Checking icu_normalizer_data v2.3.0\n    Checking icu_properties_data v2.3.0\n    Checking try-lock v0.2.5\n    Checking webpki-roots v1.0.9\n    Checking form_urlencoded v1.2.2\n    Checking http v1.5.0\n    Checking tracing v0.1.44\n    Checking want v0.3.1\n    Checking futures-channel v0.3.34\n    Checking sync_wrapper v1.0.2\n    Checking atomic-waker v1.1.2\n    Checking httpdate v1.0.3\n    Checking tower-layer v0.3.3\n    Checking libc v0.2.189\n    Checking base64 v0.22.1\n    Checking ipnet v2.12.2\n    Checking thiserror v1.0.69\n    Checking zmij v1.0.23\n    Checking opaque-debug v0.3.1\n    Checking bitflags v2.13.2\n    Checking utf-8 v0.7.6\n    Checking data-encoding v2.11.1\n    Checking byteorder v1.5.0\n    Checking tinystr v0.8.4\n    Checking generic-array v0.14.7\n    Checking potential_utf v0.1.6\n    Checking ryu v1.0.23\n    Checking memchr v2.8.3\n    Checking regex-syntax v0.8.11\n    Checking webpki-roots v0.26.11\n    Checking icu_collections v2.3.0\n    Checking simd-adler32 v0.3.10\n    Checking icu_locale_core v2.3.0\n    Checking lazy_static v1.5.0\n    Checking mime v0.3.17\n    Checking adler2 v2.0.1\n    Checking libsqlite3-sys v0.28.0\n    Checking sharded-slab v0.1.7\n    Checking crc32fast v1.5.2\n    Checking http-body v1.1.0\n    Checking miniz_oxide v0.9.1\n    Checking tracing-log v0.2.0\n    Checking thread_local v1.1.10\n    Checking fallible-streaming-iterator v0.1.9\n    Checking http-body-util v0.1.5\n    Checking fallible-iterator v0.3.0\n    Checking matchit v0.7.3\n    Checking rustls-webpki v0.103.15\n    Checking anyhow v1.0.104\n    Checking crypto-common v0.1.7\n    Checking block-buffer v0.10.4\n    Checking inout v0.1.4\n    Checking getrandom v0.4.3\n    Checking universal-hash v0.5.1\n    Checking aead v0.5.2\n    Checking flate2 v1.1.10\n    Checking fastrand v2.5.0\n    Checking cipher v0.4.4\n    Checking digest v0.10.7\n    Checking regex-automata v0.4.18\n    Checking icu_provider v2.3.1\n    Checking polyval v0.6.2\n    Checking rustls v0.23.45\n    Checking aes v0.8.4\n    Checking ctr v0.9.2\n    Checking sha1 v0.10.7\n    Checking sha2 v0.10.9\n    Checking icu_normalizer v2.3.0\n    Checking icu_properties v2.3.0\n    Checking ghash v0.5.1\n    Checking serde v1.0.229\n    Checking serde_json v1.0.151\n    Checking serde_path_to_error v0.1.20\n    Checking mio v1.2.3\n    Checking socket2 v0.6.5\n    Checking nu-ansi-term v0.50.3\n    Checking tempfile v3.27.0\n    Checking axum-core v0.4.5\n    Checking aes-gcm v0.10.3\n    Checking serde_urlencoded v0.7.1\n    Checking tokio v1.53.1\n    Checking idna_adapter v1.2.2\n    Checking idna v1.1.0\n    Checking ppv-lite86 v0.2.21\n    Checking ahash v0.8.12\n    Checking matchers v0.2.0\n    Checking hashbrown v0.14.5\n    Checking url v2.5.8\n    Checking tracing-subscriber v0.3.23\n    Checking rand_chacha v0.3.1\n    Checking rand v0.8.8\n    Checking hashlink v0.9.1\n    Checking rusqlite v0.31.0\n    Checking tungstenite v0.24.0\n    Checking hyper v1.11.1\n    Checking tokio-rustls v0.26.5\n    Checking tower v0.5.3\n    Checking tokio-util v0.7.19\n    Checking tokio-tungstenite v0.24.0\n    Checking tower-http v0.6.11\n    Checking hyper-util v0.1.20\n    Checking hyper-rustls v0.27.10\n    Checking axum v0.7.9\n    Checking reqwest v0.12.28\n    Checking mirror-gateway v0.1.0 (E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 14.30s\n",
+      "exit_status": 0,
+      "expected_exit": 0,
+      "passed": true
+    },
+    {
+      "label": "examples-build",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo\\bin\\cargo.exe",
+        "build",
+        "--examples",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\Cargo.toml"
+      ],
+      "stdout": "",
+      "stderr": "   Compiling mirror-gateway v0.1.0 (E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.39s\n",
+      "exit_status": 0,
+      "expected_exit": 0,
+      "passed": true
+    },
+    {
+      "label": "configured-separated-origins",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-target\\debug\\examples\\check_config.exe"
+      ],
+      "stdout": "{\"cdn\":\"https://static.example.invalid:8443/\",\"cfbypass\":\"http://cfbypass:8000/\",\"chat\":\"https://chat.example.invalid/\",\"django\":\"http://django:8000/\"}\n",
+      "stderr": "",
+      "exit_status": 0,
+      "expected_exit": 0,
+      "passed": true,
+      "expected_json": {
+        "django": "http://django:8000/",
+        "chat": "https://chat.example.invalid/",
+        "cdn": "https://static.example.invalid:8443/",
+        "cfbypass": "http://cfbypass:8000/"
+      },
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "configured",
+        "DJANGO_UPSTREAM": "http://django:8000",
+        "CHATGPT_BASE_URL": "https://chat.example.invalid",
+        "CHATGPT_CDN_BASE_URL": "https://static.example.invalid:8443",
+        "CF_BYPASS_URL": "http://cfbypass:8000"
+      }
+    },
+    {
+      "label": "configured-no-cf-service",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-target\\debug\\examples\\check_config.exe"
+      ],
+      "stdout": "{\"cdn\":\"https://static.example.invalid:8443/\",\"cfbypass\":null,\"chat\":\"https://chat.example.invalid/\",\"django\":\"http://django:8000/\"}\n",
+      "stderr": "",
+      "exit_status": 0,
+      "expected_exit": 0,
+      "passed": true,
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "configured",
+        "DJANGO_UPSTREAM": "http://django:8000",
+        "CHATGPT_BASE_URL": "https://chat.example.invalid",
+        "CHATGPT_CDN_BASE_URL": "https://static.example.invalid:8443"
+      }
+    },
+    {
+      "label": "configured-missing-cdn",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-target\\debug\\examples\\check_config.exe"
+      ],
+      "stdout": "",
+      "stderr": "Error: CHATGPT_CDN_BASE_URL 未配置或无效\n\nCaused by:\n    environment variable not found\n",
+      "exit_status": 1,
+      "expected_exit": 1,
+      "passed": true,
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "configured",
+        "DJANGO_UPSTREAM": "http://django:8000",
+        "CHATGPT_BASE_URL": "https://chat.example.invalid",
+        "CF_BYPASS_URL": "http://cfbypass:8000"
+      }
+    },
+    {
+      "label": "configured-empty-cdn",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-target\\debug\\examples\\check_config.exe"
+      ],
+      "stdout": "",
+      "stderr": "Error: CHATGPT_CDN_BASE_URL 无效\n\nCaused by:\n    relative URL without a base\n",
+      "exit_status": 1,
+      "expected_exit": 1,
+      "passed": true,
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "configured",
+        "DJANGO_UPSTREAM": "http://django:8000",
+        "CHATGPT_BASE_URL": "https://chat.example.invalid",
+        "CHATGPT_CDN_BASE_URL": "",
+        "CF_BYPASS_URL": "http://cfbypass:8000"
+      }
+    },
+    {
+      "label": "configured-empty-cf",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-target\\debug\\examples\\check_config.exe"
+      ],
+      "stdout": "",
+      "stderr": "Error: CF_BYPASS_URL 无效\n\nCaused by:\n    relative URL without a base\n",
+      "exit_status": 1,
+      "expected_exit": 1,
+      "passed": true,
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "configured",
+        "DJANGO_UPSTREAM": "http://django:8000",
+        "CHATGPT_BASE_URL": "https://chat.example.invalid",
+        "CHATGPT_CDN_BASE_URL": "https://static.example.invalid:8443",
+        "CF_BYPASS_URL": ""
+      }
+    },
+    {
+      "label": "invalid-mode",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-target\\debug\\examples\\check_config.exe"
+      ],
+      "stdout": "",
+      "stderr": "Error: GATEWAY_UPSTREAM_MODE 必须是 offline 或 configured\n",
+      "exit_status": 1,
+      "expected_exit": 1,
+      "passed": true,
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "configure",
+        "DJANGO_UPSTREAM": "http://django:8000",
+        "CHATGPT_BASE_URL": "https://chat.example.invalid",
+        "CHATGPT_CDN_BASE_URL": "https://static.example.invalid:8443",
+        "CF_BYPASS_URL": "http://cfbypass:8000"
+      }
+    },
+    {
+      "label": "default-offline-rejects-domains",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-target\\debug\\examples\\check_config.exe"
+      ],
+      "stdout": "",
+      "stderr": "Error: DJANGO_UPSTREAM 无效\n\nCaused by:\n    当前候选制品只允许 http 数字回环上游；真实传输兼容门禁尚未通过\n",
+      "exit_status": 1,
+      "expected_exit": 1,
+      "passed": true,
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "DJANGO_UPSTREAM": "http://django:8000",
+        "CHATGPT_BASE_URL": "https://chat.example.invalid",
+        "CHATGPT_CDN_BASE_URL": "https://static.example.invalid:8443",
+        "CF_BYPASS_URL": "http://cfbypass:8000"
+      }
+    },
+    {
+      "label": "explicit-offline-rejects-domains",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-target\\debug\\examples\\check_config.exe"
+      ],
+      "stdout": "",
+      "stderr": "Error: DJANGO_UPSTREAM 无效\n\nCaused by:\n    当前候选制品只允许 http 数字回环上游；真实传输兼容门禁尚未通过\n",
+      "exit_status": 1,
+      "expected_exit": 1,
+      "passed": true,
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "offline",
+        "DJANGO_UPSTREAM": "http://django:8000",
+        "CHATGPT_BASE_URL": "https://chat.example.invalid",
+        "CHATGPT_CDN_BASE_URL": "https://static.example.invalid:8443",
+        "CF_BYPASS_URL": "http://cfbypass:8000"
+      }
+    },
+    {
+      "label": "DJANGO_UPSTREAM-credentials",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-target\\debug\\examples\\check_config.exe"
+      ],
+      "stdout": "",
+      "stderr": "Error: DJANGO_UPSTREAM 无效\n\nCaused by:\n    上游必须是 HTTP(S) 服务源地址，不能含凭据、路径前缀、查询串或片段\n",
+      "exit_status": 1,
+      "expected_exit": 1,
+      "passed": true,
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "configured",
+        "DJANGO_UPSTREAM": "https://user:secret@example.invalid",
+        "CHATGPT_BASE_URL": "https://chat.example.invalid",
+        "CHATGPT_CDN_BASE_URL": "https://static.example.invalid:8443",
+        "CF_BYPASS_URL": "http://cfbypass:8000"
+      }
+    },
+    {
+      "label": "DJANGO_UPSTREAM-path",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-target\\debug\\examples\\check_config.exe"
+      ],
+      "stdout": "",
+      "stderr": "Error: DJANGO_UPSTREAM 无效\n\nCaused by:\n    上游必须是 HTTP(S) 服务源地址，不能含凭据、路径前缀、查询串或片段\n",
+      "exit_status": 1,
+      "expected_exit": 1,
+      "passed": true,
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "configured",
+        "DJANGO_UPSTREAM": "http://127.0.0.1/prefix",
+        "CHATGPT_BASE_URL": "https://chat.example.invalid",
+        "CHATGPT_CDN_BASE_URL": "https://static.example.invalid:8443",
+        "CF_BYPASS_URL": "http://cfbypass:8000"
+      }
+    },
+    {
+      "label": "DJANGO_UPSTREAM-query",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-target\\debug\\examples\\check_config.exe"
+      ],
+      "stdout": "",
+      "stderr": "Error: DJANGO_UPSTREAM 无效\n\nCaused by:\n    上游必须是 HTTP(S) 服务源地址，不能含凭据、路径前缀、查询串或片段\n",
+      "exit_status": 1,
+      "expected_exit": 1,
+      "passed": true,
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "configured",
+        "DJANGO_UPSTREAM": "http://127.0.0.1/?url=https://example.invalid",
+        "CHATGPT_BASE_URL": "https://chat.example.invalid",
+        "CHATGPT_CDN_BASE_URL": "https://static.example.invalid:8443",
+        "CF_BYPASS_URL": "http://cfbypass:8000"
+      }
+    },
+    {
+      "label": "DJANGO_UPSTREAM-fragment",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-target\\debug\\examples\\check_config.exe"
+      ],
+      "stdout": "",
+      "stderr": "Error: DJANGO_UPSTREAM 无效\n\nCaused by:\n    上游必须是 HTTP(S) 服务源地址，不能含凭据、路径前缀、查询串或片段\n",
+      "exit_status": 1,
+      "expected_exit": 1,
+      "passed": true,
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "configured",
+        "DJANGO_UPSTREAM": "http://127.0.0.1/#part",
+        "CHATGPT_BASE_URL": "https://chat.example.invalid",
+        "CHATGPT_CDN_BASE_URL": "https://static.example.invalid:8443",
+        "CF_BYPASS_URL": "http://cfbypass:8000"
+      }
+    },
+    {
+      "label": "DJANGO_UPSTREAM-scheme",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-target\\debug\\examples\\check_config.exe"
+      ],
+      "stdout": "",
+      "stderr": "Error: DJANGO_UPSTREAM 无效\n\nCaused by:\n    上游必须是 HTTP(S) 服务源地址，不能含凭据、路径前缀、查询串或片段\n",
+      "exit_status": 1,
+      "expected_exit": 1,
+      "passed": true,
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "configured",
+        "DJANGO_UPSTREAM": "file:///tmp/target",
+        "CHATGPT_BASE_URL": "https://chat.example.invalid",
+        "CHATGPT_CDN_BASE_URL": "https://static.example.invalid:8443",
+        "CF_BYPASS_URL": "http://cfbypass:8000"
+      }
+    },
+    {
+      "label": "CHATGPT_BASE_URL-credentials",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-target\\debug\\examples\\check_config.exe"
+      ],
+      "stdout": "",
+      "stderr": "Error: CHATGPT_BASE_URL 无效\n\nCaused by:\n    上游必须是 HTTP(S) 服务源地址，不能含凭据、路径前缀、查询串或片段\n",
+      "exit_status": 1,
+      "expected_exit": 1,
+      "passed": true,
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "configured",
+        "DJANGO_UPSTREAM": "http://django:8000",
+        "CHATGPT_BASE_URL": "https://user:secret@example.invalid",
+        "CHATGPT_CDN_BASE_URL": "https://static.example.invalid:8443",
+        "CF_BYPASS_URL": "http://cfbypass:8000"
+      }
+    },
+    {
+      "label": "CHATGPT_BASE_URL-path",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-target\\debug\\examples\\check_config.exe"
+      ],
+      "stdout": "",
+      "stderr": "Error: CHATGPT_BASE_URL 无效\n\nCaused by:\n    上游必须是 HTTP(S) 服务源地址，不能含凭据、路径前缀、查询串或片段\n",
+      "exit_status": 1,
+      "expected_exit": 1,
+      "passed": true,
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "configured",
+        "DJANGO_UPSTREAM": "http://django:8000",
+        "CHATGPT_BASE_URL": "http://127.0.0.1/prefix",
+        "CHATGPT_CDN_BASE_URL": "https://static.example.invalid:8443",
+        "CF_BYPASS_URL": "http://cfbypass:8000"
+      }
+    },
+    {
+      "label": "CHATGPT_BASE_URL-query",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-target\\debug\\examples\\check_config.exe"
+      ],
+      "stdout": "",
+      "stderr": "Error: CHATGPT_BASE_URL 无效\n\nCaused by:\n    上游必须是 HTTP(S) 服务源地址，不能含凭据、路径前缀、查询串或片段\n",
+      "exit_status": 1,
+      "expected_exit": 1,
+      "passed": true,
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "configured",
+        "DJANGO_UPSTREAM": "http://django:8000",
+        "CHATGPT_BASE_URL": "http://127.0.0.1/?url=https://example.invalid",
+        "CHATGPT_CDN_BASE_URL": "https://static.example.invalid:8443",
+        "CF_BYPASS_URL": "http://cfbypass:8000"
+      }
+    },
+    {
+      "label": "CHATGPT_BASE_URL-fragment",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-target\\debug\\examples\\check_config.exe"
+      ],
+      "stdout": "",
+      "stderr": "Error: CHATGPT_BASE_URL 无效\n\nCaused by:\n    上游必须是 HTTP(S) 服务源地址，不能含凭据、路径前缀、查询串或片段\n",
+      "exit_status": 1,
+      "expected_exit": 1,
+      "passed": true,
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "configured",
+        "DJANGO_UPSTREAM": "http://django:8000",
+        "CHATGPT_BASE_URL": "http://127.0.0.1/#part",
+        "CHATGPT_CDN_BASE_URL": "https://static.example.invalid:8443",
+        "CF_BYPASS_URL": "http://cfbypass:8000"
+      }
+    },
+    {
+      "label": "CHATGPT_BASE_URL-scheme",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-target\\debug\\examples\\check_config.exe"
+      ],
+      "stdout": "",
+      "stderr": "Error: CHATGPT_BASE_URL 无效\n\nCaused by:\n    上游必须是 HTTP(S) 服务源地址，不能含凭据、路径前缀、查询串或片段\n",
+      "exit_status": 1,
+      "expected_exit": 1,
+      "passed": true,
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "configured",
+        "DJANGO_UPSTREAM": "http://django:8000",
+        "CHATGPT_BASE_URL": "file:///tmp/target",
+        "CHATGPT_CDN_BASE_URL": "https://static.example.invalid:8443",
+        "CF_BYPASS_URL": "http://cfbypass:8000"
+      }
+    },
+    {
+      "label": "CHATGPT_CDN_BASE_URL-credentials",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-target\\debug\\examples\\check_config.exe"
+      ],
+      "stdout": "",
+      "stderr": "Error: CHATGPT_CDN_BASE_URL 无效\n\nCaused by:\n    上游必须是 HTTP(S) 服务源地址，不能含凭据、路径前缀、查询串或片段\n",
+      "exit_status": 1,
+      "expected_exit": 1,
+      "passed": true,
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "configured",
+        "DJANGO_UPSTREAM": "http://django:8000",
+        "CHATGPT_BASE_URL": "https://chat.example.invalid",
+        "CHATGPT_CDN_BASE_URL": "https://user:secret@example.invalid",
+        "CF_BYPASS_URL": "http://cfbypass:8000"
+      }
+    },
+    {
+      "label": "CHATGPT_CDN_BASE_URL-path",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-target\\debug\\examples\\check_config.exe"
+      ],
+      "stdout": "",
+      "stderr": "Error: CHATGPT_CDN_BASE_URL 无效\n\nCaused by:\n    上游必须是 HTTP(S) 服务源地址，不能含凭据、路径前缀、查询串或片段\n",
+      "exit_status": 1,
+      "expected_exit": 1,
+      "passed": true,
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "configured",
+        "DJANGO_UPSTREAM": "http://django:8000",
+        "CHATGPT_BASE_URL": "https://chat.example.invalid",
+        "CHATGPT_CDN_BASE_URL": "http://127.0.0.1/prefix",
+        "CF_BYPASS_URL": "http://cfbypass:8000"
+      }
+    },
+    {
+      "label": "CHATGPT_CDN_BASE_URL-query",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-target\\debug\\examples\\check_config.exe"
+      ],
+      "stdout": "",
+      "stderr": "Error: CHATGPT_CDN_BASE_URL 无效\n\nCaused by:\n    上游必须是 HTTP(S) 服务源地址，不能含凭据、路径前缀、查询串或片段\n",
+      "exit_status": 1,
+      "expected_exit": 1,
+      "passed": true,
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "configured",
+        "DJANGO_UPSTREAM": "http://django:8000",
+        "CHATGPT_BASE_URL": "https://chat.example.invalid",
+        "CHATGPT_CDN_BASE_URL": "http://127.0.0.1/?url=https://example.invalid",
+        "CF_BYPASS_URL": "http://cfbypass:8000"
+      }
+    },
+    {
+      "label": "CHATGPT_CDN_BASE_URL-fragment",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-target\\debug\\examples\\check_config.exe"
+      ],
+      "stdout": "",
+      "stderr": "Error: CHATGPT_CDN_BASE_URL 无效\n\nCaused by:\n    上游必须是 HTTP(S) 服务源地址，不能含凭据、路径前缀、查询串或片段\n",
+      "exit_status": 1,
+      "expected_exit": 1,
+      "passed": true,
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "configured",
+        "DJANGO_UPSTREAM": "http://django:8000",
+        "CHATGPT_BASE_URL": "https://chat.example.invalid",
+        "CHATGPT_CDN_BASE_URL": "http://127.0.0.1/#part",
+        "CF_BYPASS_URL": "http://cfbypass:8000"
+      }
+    },
+    {
+      "label": "CHATGPT_CDN_BASE_URL-scheme",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-target\\debug\\examples\\check_config.exe"
+      ],
+      "stdout": "",
+      "stderr": "Error: CHATGPT_CDN_BASE_URL 无效\n\nCaused by:\n    上游必须是 HTTP(S) 服务源地址，不能含凭据、路径前缀、查询串或片段\n",
+      "exit_status": 1,
+      "expected_exit": 1,
+      "passed": true,
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "configured",
+        "DJANGO_UPSTREAM": "http://django:8000",
+        "CHATGPT_BASE_URL": "https://chat.example.invalid",
+        "CHATGPT_CDN_BASE_URL": "file:///tmp/target",
+        "CF_BYPASS_URL": "http://cfbypass:8000"
+      }
+    },
+    {
+      "label": "CF_BYPASS_URL-credentials",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-target\\debug\\examples\\check_config.exe"
+      ],
+      "stdout": "",
+      "stderr": "Error: CF_BYPASS_URL 无效\n\nCaused by:\n    上游必须是 HTTP(S) 服务源地址，不能含凭据、路径前缀、查询串或片段\n",
+      "exit_status": 1,
+      "expected_exit": 1,
+      "passed": true,
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "configured",
+        "DJANGO_UPSTREAM": "http://django:8000",
+        "CHATGPT_BASE_URL": "https://chat.example.invalid",
+        "CHATGPT_CDN_BASE_URL": "https://static.example.invalid:8443",
+        "CF_BYPASS_URL": "https://user:secret@example.invalid"
+      }
+    },
+    {
+      "label": "CF_BYPASS_URL-path",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-target\\debug\\examples\\check_config.exe"
+      ],
+      "stdout": "",
+      "stderr": "Error: CF_BYPASS_URL 无效\n\nCaused by:\n    上游必须是 HTTP(S) 服务源地址，不能含凭据、路径前缀、查询串或片段\n",
+      "exit_status": 1,
+      "expected_exit": 1,
+      "passed": true,
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "configured",
+        "DJANGO_UPSTREAM": "http://django:8000",
+        "CHATGPT_BASE_URL": "https://chat.example.invalid",
+        "CHATGPT_CDN_BASE_URL": "https://static.example.invalid:8443",
+        "CF_BYPASS_URL": "http://127.0.0.1/prefix"
+      }
+    },
+    {
+      "label": "CF_BYPASS_URL-query",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-target\\debug\\examples\\check_config.exe"
+      ],
+      "stdout": "",
+      "stderr": "Error: CF_BYPASS_URL 无效\n\nCaused by:\n    上游必须是 HTTP(S) 服务源地址，不能含凭据、路径前缀、查询串或片段\n",
+      "exit_status": 1,
+      "expected_exit": 1,
+      "passed": true,
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "configured",
+        "DJANGO_UPSTREAM": "http://django:8000",
+        "CHATGPT_BASE_URL": "https://chat.example.invalid",
+        "CHATGPT_CDN_BASE_URL": "https://static.example.invalid:8443",
+        "CF_BYPASS_URL": "http://127.0.0.1/?url=https://example.invalid"
+      }
+    },
+    {
+      "label": "CF_BYPASS_URL-fragment",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-target\\debug\\examples\\check_config.exe"
+      ],
+      "stdout": "",
+      "stderr": "Error: CF_BYPASS_URL 无效\n\nCaused by:\n    上游必须是 HTTP(S) 服务源地址，不能含凭据、路径前缀、查询串或片段\n",
+      "exit_status": 1,
+      "expected_exit": 1,
+      "passed": true,
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "configured",
+        "DJANGO_UPSTREAM": "http://django:8000",
+        "CHATGPT_BASE_URL": "https://chat.example.invalid",
+        "CHATGPT_CDN_BASE_URL": "https://static.example.invalid:8443",
+        "CF_BYPASS_URL": "http://127.0.0.1/#part"
+      }
+    },
+    {
+      "label": "CF_BYPASS_URL-scheme",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-target\\debug\\examples\\check_config.exe"
+      ],
+      "stdout": "",
+      "stderr": "Error: CF_BYPASS_URL 无效\n\nCaused by:\n    上游必须是 HTTP(S) 服务源地址，不能含凭据、路径前缀、查询串或片段\n",
+      "exit_status": 1,
+      "expected_exit": 1,
+      "passed": true,
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "configured",
+        "DJANGO_UPSTREAM": "http://django:8000",
+        "CHATGPT_BASE_URL": "https://chat.example.invalid",
+        "CHATGPT_CDN_BASE_URL": "https://static.example.invalid:8443",
+        "CF_BYPASS_URL": "file:///tmp/target"
+      }
+    },
+    {
+      "label": "old-offline-environment",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-target\\debug\\examples\\check_config.exe"
+      ],
+      "stdout": "{\"cdn\":null,\"cfbypass\":null,\"chat\":\"http://[::1]:18091/\",\"django\":\"http://127.0.0.1:18090/\"}\n",
+      "stderr": "",
+      "exit_status": 0,
+      "expected_exit": 0,
+      "passed": true,
+      "expected_json": {
+        "django": "http://127.0.0.1:18090/",
+        "chat": "http://[::1]:18091/",
+        "cdn": null,
+        "cfbypass": null
+      },
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "DJANGO_UPSTREAM": "http://127.0.0.1:18090",
+        "CHATGPT_BASE_URL": "http://[::1]:18091"
+      }
+    },
+    {
+      "label": "offline-cdn-cannot-escape",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-target\\debug\\examples\\check_config.exe"
+      ],
+      "stdout": "",
+      "stderr": "Error: CHATGPT_CDN_BASE_URL 无效\n\nCaused by:\n    当前候选制品只允许 http 数字回环上游；真实传输兼容门禁尚未通过\n",
+      "exit_status": 1,
+      "expected_exit": 1,
+      "passed": true,
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "DJANGO_UPSTREAM": "http://127.0.0.1:18090",
+        "CHATGPT_BASE_URL": "http://[::1]:18091",
+        "CHATGPT_CDN_BASE_URL": "https://static.example.invalid"
+      }
+    }
+  ],
+  "rollback_executable_check": {
+    "command": [
+      "E:/T/Git2026_6/bin/bash.exe",
+      "-c",
+      "test -x artifacts/phase1/ROLLBACK.sh"
+    ],
+    "exit_status": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "original_source_manifest": {
+    ".dockerignore": "5fc4d87caf418bbaf05d4fd83e693e3ffd24e7d3a0c5d8e334ecaee9bf06a52a",
+    "Cargo.lock": "74673949565cf45110dedef719b65f7ec8fc380415b70f356c0fe3d4a7a18e16",
+    "Cargo.toml": "e5aeb82d72704700969a88ba8d1f73703c3cb5fe6ff046f9724998711fcde31d",
+    "COMPATIBILITY.md": "a5272faa372edcafc3e1fe66d7e5fa1008591a97ef433cca5a38a8480cf444f1",
+    "compose.offline.yml": "dd1f1746ab270c183ad3f68f3b3328bbcb3929c2d89c7ed5fb691953372fa53b",
+    "Dockerfile": "72962f2eb09d3c491e3dc59a3ad7dbbf63b4ee16a552354167ffd5eb451684a2",
+    "README.md": "f971f38bce48215f53c873f0ae5ca74e4222931094b5735a6374bdc08a60c370",
+    "src/assets/gateway-client-hosts.json": "d7ef6a13e22df4df9e097229fb28352d50da0eb40b33425e4029e4dffe9f14ff",
+    "src/assets/gateway-client.html": "465719ae5e4ffcd33dd7e35605d82c9ef73cb3a5689a79daf747a44af06208dc",
+    "src/config.rs": "8690349357b8e334c4fa78ef0c7d18f6b27b21d181c39b45fa6a627663b2a534",
+    "src/crypto.rs": "c59203a66264aaa3ffb08fd006e3ccaf23ff7ed675d1a6650256f9330db03a5f",
+    "src/lib.rs": "6377ef21bc1b7fab9123f06883911d07c372130767c760b0eada2143c135f560",
+    "src/main.rs": "6bdae036b1252c2ec3966e7e2e1fc0e77142387d54a142edc6dcae10dc313667",
+    "src/policy.rs": "e8898ccf2a1ad28352e667e073a3f8a513f9fba2637d12144a63a23281357d7c",
+    "src/schema.sql": "1d368f1ab010628495516aa619dcf13c210d1b53710e7a8f1f608fb7a04649af",
+    "src/server/compression.rs": "fb8659679eae7f3bfeef0ee31f7e9e8e17821968fc1c2ed46473580aa890d00d",
+    "src/server/management.rs": "d2b3bfba9b327ce3e624f5d65383cae32161be769f0912a03932bc945f75cf9b",
+    "src/server/proxy.rs": "d2ddc6529bc6a25b5d63d50b635fca09b8f2eb8e77b8cc599ef84c4fd25826aa",
+    "src/server.rs": "ef318c894d34a227e70445eb10caa2dada1df9e2f4a56cfaf033eafcc0609c9e",
+    "src/storage.rs": "cbedbfcb9390ac569736921ae98771432a3c8c38841c223f0dfe12d4e85546c9",
+    "tests/backup_contract.rs": "350adca97f7978cc69d313e3e53712c86a50f32ac9133df32007fe708bdd5637",
+    "tests/migration.rs": "887a6ddf6dc1b7f3c4928503fa6a995d25dfde6ce807b64166863774d0cc9b51",
+    "tests/mirror_auth.rs": "9af5618fcc0c9da9c9d1c949c9e15a5db0fa711ae34230d027ad72a07dbb6b0f",
+    "tests/original_crypto.rs": "1b211d9c1b2e4661f77872b7e1ded9f45b85c2e1188a3d95399750d2942ddd3e"
+  },
+  "archive_entries": [
+    ".dockerignore",
+    ".env.configured.example",
+    "Cargo.lock",
+    "Cargo.toml",
+    "COMPATIBILITY.md",
+    "compose.offline.yml",
+    "Dockerfile",
+    "examples/check_config.rs",
+    "PHASE1_CONTRACT.md",
+    "README.md",
+    "src/assets/gateway-client-hosts.json",
+    "src/assets/gateway-client.html",
+    "src/config.rs",
+    "src/crypto.rs",
+    "src/lib.rs",
+    "src/main.rs",
+    "src/policy.rs",
+    "src/schema.sql",
+    "src/server/compression.rs",
+    "src/server/management.rs",
+    "src/server/proxy.rs",
+    "src/server.rs",
+    "src/storage.rs",
+    "tests/backup_contract.rs",
+    "tests/migration.rs",
+    "tests/mirror_auth.rs",
+    "tests/original_crypto.rs"
+  ],
+  "baseline_tests": {
+    "command": "cargo test --locked --manifest-path artifacts/phase1/source/Cargo.toml",
+    "exit_status": 0,
+    "combined_output_path": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\baseline-tests.log",
+    "note": "dependency download enabled on baseline preparation; all subsequent Cargo checks used --locked --offline"
+  },
+  "defensive_review": "Reviewed scoped source diff. Kept fail-fast origin validation because existing callers replace/join absolute paths; kept offline guard, TLS verification and unknown-route gate. No generic fallback/retry/framework introduced. No unrelated simplifications needed.",
+  "scope": "Source archive rollback only; no database restore, upstream rollback, browser validation, TLS live validation, Docker build or production switch.",
+  "environment": "Private workspace Rust 1.98.1 toolchain installed without changing global PATH; existing Cargo.lock unchanged. Subagent routing failed, investigation completed by primary agent."
+}

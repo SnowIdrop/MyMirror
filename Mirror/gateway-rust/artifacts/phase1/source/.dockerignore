@@ -1,0 +1,5 @@
+*
+!artifacts/
+artifacts/*
+!artifacts/MODIFIED_FILE
+!Dockerfile

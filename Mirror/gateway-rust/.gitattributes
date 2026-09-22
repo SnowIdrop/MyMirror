@@ -1,0 +1,6 @@
+* text=auto eol=lf
+*.sh text eol=lf
+
+# Literal execution evidence: preserve bytes, including whitespace and CRLF.
+evidence/** -text -whitespace
+artifacts/VERIFICATION.txt -text -whitespace

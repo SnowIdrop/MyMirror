@@ -1,0 +1,1900 @@
+<script id="gateway-user-logout-button">(function() {
+  if (window.__gatewayUserLogoutMounted) return;
+  window.__gatewayUserLogoutMounted = true;
+  var enableUserControls = true;
+  var forceChatMode = @@FORCE_CHAT@@;
+  var _gwBlockedPaths = @@BLOCKED_PATHS@@;
+  var _gwBlockedPathsEndpoint = "/api/user-blocked-paths";
+  var _gwSessionLogoutPath = "/api/user-logout";
+  var _gwSessionRedirecting = false;
+  var _gwInternalUpstreamHosts = @@INTERNAL_HOSTS@@;
+  var rewriteAbsoluteUrl = function(input) {
+    var raw = '';
+    if (typeof input === 'string') {
+      raw = input;
+    } else if (input && typeof input === 'object' && typeof input.url === 'string') {
+      raw = input.url;
+    } else if (input && typeof input.toString === 'function') {
+      raw = String(input);
+    }
+    if (!raw) {
+      return { changed: false, value: input };
+    }
+    var replacements = [
+      ['https://chatgpt.com/backend-api/estuary/', '/backend-api/estuary/'],
+      ['https://chatgpt.com/backend-api/', '/backend-api/'],
+      ['https://chatgpt.com/backend-anon/', '/backend-anon/'],
+      ['https://chatgpt.com/api/', '/api/'],
+      ['https://chatgpt.com/public-api/', '/public-api/'],
+      ['https://chatgpt.com/v1/', '/v1/'],
+      ['https://chatgpt.com/ces/', '/ces/'],
+      ['https://chatgpt.com/realtime/', '/realtime/'],
+      ['https://chatgpt.com/cdn/assets/', '/cdn/assets/'],
+      ['http://chatgpt.com/cdn/assets/', '/cdn/assets/'],
+      ['//chatgpt.com/cdn/assets/', '/cdn/assets/'],
+      ['https://web-sandbox.oaiusercontent.com/assets/', '/cdn/assets/'],
+      ['http://web-sandbox.oaiusercontent.com/assets/', '/cdn/assets/'],
+      ['//web-sandbox.oaiusercontent.com/assets/', '/cdn/assets/'],
+      ['https://cdn.oaistatic.com/assets/', '/assets/'],
+      ['https://cdn.oaistatic.com/', '/cdn/'],
+      ['https://ab.chatgpt.com/', '/ab/'],
+      ['https://cdn.openai.com/common/', '/common/'],
+      ['https://images.openai.com/static-rsc-1/', '/static-rsc-1/'],
+      ['https://images.openai.com/static-rsc-4/', '/static-rsc-4/'],
+      ['https://images.openai.com/', '/images-openai/'],
+      ['https://api.mapbox.com/styles/v1/oai-data/', '/mapbox/styles/v1/oai-data/'],
+      ['https://api.mapbox.com/', '/mapbox/'],
+      ['https://events.mapbox.com/events/', '/mapbox-events/events/'],
+      ['https://sdmntprwestus3.oaiusercontent.com/files/', '/files/'],
+      ['https://sdmntprsouthcentralus.oaiusercontent.com/files/', '/files-southcentral/'],
+      ['https://sdmntprnznorth.oaiusercontent.com/files/', '/files-north/'],
+      ['https://connector-openai-deep-research.web-sandbox.oaiusercontent.com/assets/', '/connector-assets/'],
+      ['http://connector-openai-deep-research.web-sandbox.oaiusercontent.com/assets/', '/connector-assets/'],
+      ['//connector-openai-deep-research.web-sandbox.oaiusercontent.com/assets/', '/connector-assets/'],
+      ['https://connector-openai-deep-research.web-sandbox.oaiusercontent.com/', '/connector-deep-research/'],
+      ['http://connector-openai-deep-research.web-sandbox.oaiusercontent.com/', '/connector-deep-research/'],
+      ['//connector-openai-deep-research.web-sandbox.oaiusercontent.com/', '/connector-deep-research/'],
+      ['https://connector-openai-deep-research.web-sandbox.oaiusercontent.com', '/connector-deep-research'],
+      ['http://connector-openai-deep-research.web-sandbox.oaiusercontent.com', '/connector-deep-research'],
+      ['//connector-openai-deep-research.web-sandbox.oaiusercontent.com', '/connector-deep-research'],
+      ['https://files.openai.com/', '/openai-files/'],
+      ['https://www.google.com/s2/', '/google-s2/'],
+      ['https://persistent.oaistatic.com/images-app/', '/images-app/'],
+      ['https://persistent.oaistatic.com/deep-research/', '/persistent-deep-research/'],
+      ['https://t0.gstatic.com/', '/gstatic-t0/'],
+      ['https://t1.gstatic.com/', '/gstatic-t1/'],
+      ['https://t2.gstatic.com/', '/gstatic-t2/'],
+      ['https://t3.gstatic.com/', '/gstatic-t3/'],
+      ['https://static.cloudflareinsights.com/beacon.min.js', '/vendor-static'],
+      ['http://static.cloudflareinsights.com/beacon.min.js', '/vendor-static'],
+      ['//static.cloudflareinsights.com/beacon.min.js', '/vendor-static'],
+      ['https://static.cloudflareinsights.com/', '/cloudflare-insights/'],
+      ['http://static.cloudflareinsights.com/', '/cloudflare-insights/'],
+      ['//static.cloudflareinsights.com/', '/cloudflare-insights/'],
+      ['/cloudflare-insights/beacon.min.js', '/vendor-static'],
+      ['https://www.googletagmanager.com/gtag/', '/vendor-script/'],
+      ['http://www.googletagmanager.com/gtag/', '/vendor-script/'],
+      ['//www.googletagmanager.com/gtag/', '/vendor-script/'],
+      ['/gtag/', '/vendor-script/'],
+      ['https://www.google-analytics.com/g/collect', '/vendor-batch/collect'],
+      ['http://www.google-analytics.com/g/collect', '/vendor-batch/collect'],
+      ['//www.google-analytics.com/g/collect', '/vendor-batch/collect'],
+      ['https://www.google.com/g/collect', '/vendor-batch/collect'],
+      ['http://www.google.com/g/collect', '/vendor-batch/collect'],
+      ['//www.google.com/g/collect', '/vendor-batch/collect'],
+      ['/ga/collect', '/vendor-batch/collect'],
+      ['https://lh3.googleusercontent.com/a/', '/google-avatar/a/'],
+      ['https://chatgpt.com/', '/'],
+      ['http://chatgpt.com/', '/'],
+      ['//chatgpt.com/', '/']
+    ];
+    for (var i = 0; i < replacements.length; i += 1) {
+      var from = replacements[i][0];
+      var to = replacements[i][1];
+      if (raw.indexOf(from) === 0) {
+        return { changed: true, value: to + raw.slice(from.length) };
+      }
+    }
+    var generic = externalProxyUrlFor(raw);
+    if (generic) {
+      return { changed: true, value: generic };
+    }
+    return { changed: false, value: input };
+  };
+  var isBlockedExternalHost = function(hostname) {
+    var host = String(hostname || '').toLowerCase().replace(/^\[/, '').replace(/\]$/, '');
+    if (!host || host === window.location.hostname.toLowerCase()) return true;
+    if (host === 'localhost' || host.endsWith('.localhost') || host.endsWith('.local') || host.endsWith('.internal') || host.endsWith('.lan') || host.endsWith('.home')) return true;
+    if (/^(127\.|10\.|0\.|169\.254\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/.test(host)) return true;
+    if (host === '::1' || host.indexOf('fc') === 0 || host.indexOf('fd') === 0 || host.indexOf('fe80') === 0) return true;
+    return host.indexOf('.') === -1 && !/^\d+\.\d+\.\d+\.\d+$/.test(host);
+  };
+  var externalProxyUrlFor = function(value) {
+    if (typeof value !== 'string' || !value) return null;
+    if (!/^(https?:)?\/\//i.test(value)) return null;
+    try {
+      var url = new URL(value, window.location.href);
+      if ((url.protocol !== 'http:' && url.protocol !== 'https:') || url.origin === window.location.origin) return null;
+      if (isBlockedExternalHost(url.hostname)) return null;
+      var normalizedHost = String(url.hostname || '').toLowerCase();
+      if (!url.port && _gwInternalUpstreamHosts.indexOf(normalizedHost) !== -1) {
+        url.protocol = 'https:';
+        return '/internal-upstream/https/' + url.host + url.pathname + url.search + url.hash;
+      }
+      return '/external/' + url.protocol.slice(0, -1) + '/' + url.host + url.pathname + url.search + url.hash;
+    } catch (error) {
+      return null;
+    }
+  };
+  var directNavigationUrlFor = function(value) {
+    if (typeof value !== 'string' || !value) return null;
+    try {
+      var url = new URL(value, window.location.href);
+      if (url.protocol !== 'http:' && url.protocol !== 'https:') return null;
+      if (url.origin !== window.location.origin) return url.href;
+      var externalMatch = url.pathname.match(/^\/external\/(https?)\/([^/]+)(\/.*)?$/);
+      if (externalMatch) {
+        return externalMatch[1] + '://' + externalMatch[2] +
+          (externalMatch[3] || '/') + url.search + url.hash;
+      }
+      var internalMatch = url.pathname.match(/^\/internal-upstream\/https\/([^/]+)(\/.*)?$/);
+      if (internalMatch) {
+        return 'https://' + internalMatch[1] +
+          (internalMatch[2] || '/') + url.search + url.hash;
+      }
+    } catch (error) {}
+    return null;
+  };
+  if (window.top === window && typeof window.addEventListener === 'function') {
+    window.addEventListener('message', function(event) {
+      if (!event || event.origin !== window.location.origin ||
+          !event.data || event.data.type !== 'init') {
+        return;
+      }
+      var replyPort = event.data.replyPort;
+      var replySent = false;
+      if (replyPort && typeof replyPort.postMessage === 'function') {
+        try {
+          var originalReplyPostMessage = replyPort.postMessage.bind(replyPort);
+          replyPort.postMessage = function() {
+            replySent = true;
+            return originalReplyPostMessage.apply(null, arguments);
+          };
+        } catch (error) {}
+      }
+      window.setTimeout(function() {
+        if (replySent) return;
+        try {
+          window.dispatchEvent(new MessageEvent('message', {
+            data: event.data,
+            origin: 'https://web-sandbox.oaiusercontent.com',
+            lastEventId: event.lastEventId,
+            source: event.source,
+            ports: event.ports
+          }));
+          console.info('[gateway] sandbox init retried with upstream origin');
+        } catch (error) {}
+      }, 500);
+    }, true);
+  }
+  if (window.top === window && typeof document !== 'undefined' &&
+      !window.__gatewayMermaidFallbackInstalled) {
+    window.__gatewayMermaidFallbackInstalled = true;
+    window.__gatewayMermaidSources = window.__gatewayMermaidSources || [];
+    var gatewayMermaidLocationKey = window.location.pathname + window.location.search;
+    var gatewayMermaidCardSources = new WeakMap();
+    var syncGatewayMermaidLocation = function() {
+      var nextKey = window.location.pathname + window.location.search;
+      if (nextKey === gatewayMermaidLocationKey) return;
+      gatewayMermaidLocationKey = nextKey;
+      window.__gatewayMermaidSources = [];
+      gatewayMermaidCardSources = new WeakMap();
+    };
+    var gatewayMermaidStart = /^\s*(?:flowchart|graph|sequenceDiagram|classDiagram|stateDiagram(?:-v2)?|erDiagram|journey|gantt|pie|mindmap|timeline|gitGraph|quadrantChart|xychart-beta|sankey-beta|block-beta|architecture-beta|kanban|requirementDiagram|C4Context|C4Container|C4Component|C4Dynamic|C4Deployment|packet-beta|radar-beta|treemap-beta)\b/i;
+    var rememberGatewayMermaidSource = function(source) {
+      syncGatewayMermaidLocation();
+      if (typeof source !== 'string') return null;
+      var fenced = /```mermaid\s*([\s\S]*?)```/i.exec(source);
+      var normalized = (fenced ? fenced[1] : source).trim();
+      if (!gatewayMermaidStart.test(normalized)) return null;
+      if (window.__gatewayMermaidSources.indexOf(normalized) === -1) {
+        window.__gatewayMermaidSources.push(normalized);
+      }
+      return normalized;
+    };
+    var inspectGatewayMermaidValue = function(value, seen, depth, budget) {
+      if (budget.count > 1600 || depth > 8 || value == null) return null;
+      budget.count += 1;
+      if (typeof value === 'string') {
+        return rememberGatewayMermaidSource(value);
+      }
+      if (typeof value !== 'object') return null;
+      if (seen.has(value)) return null;
+      seen.add(value);
+      var preferred = [
+        'source', 'code', 'text', 'value', 'content', 'parts', 'children',
+        'memoizedProps', 'pendingProps', 'memoizedState', 'return', 'child'
+      ];
+      for (var i = 0; i < preferred.length; i += 1) {
+        var key = preferred[i];
+        if (!(key in value)) continue;
+        var found = inspectGatewayMermaidValue(value[key], seen, depth + 1, budget);
+        if (found) return found;
+      }
+      var keys;
+      try { keys = Object.keys(value).slice(0, 80); } catch (error) { return null; }
+      for (var j = 0; j < keys.length; j += 1) {
+        if (preferred.indexOf(keys[j]) !== -1) continue;
+        var nested = inspectGatewayMermaidValue(value[keys[j]], seen, depth + 1, budget);
+        if (nested) return nested;
+      }
+      return null;
+    };
+    var captureGatewayMermaidText = function(text) {
+      if (typeof text !== 'string' || text.length > 8 * 1024 * 1024) return;
+      try {
+        inspectGatewayMermaidValue(JSON.parse(text), new WeakSet(), 0, { count: 0 });
+      } catch (error) {}
+      var lines = text.split(/\r?\n/);
+      for (var i = 0; i < lines.length; i += 1) {
+        if (lines[i].indexOf('data:') !== 0) continue;
+        var payload = lines[i].slice(5).trim();
+        if (!payload || payload === '[DONE]') continue;
+        try {
+          inspectGatewayMermaidValue(JSON.parse(payload), new WeakSet(), 0, { count: 0 });
+        } catch (error) {}
+      }
+      var decoded = text.replace(/\\n/g, '\n').replace(/\\"/g, '"');
+      var matches = decoded.matchAll(/```mermaid\s*([\s\S]*?)```/gi);
+      for (var match of matches) rememberGatewayMermaidSource(match[1]);
+    };
+    if (typeof window.fetch === 'function') {
+      var gatewayMermaidFetch = window.fetch.bind(window);
+      window.fetch = function(input, init) {
+        return gatewayMermaidFetch(input, init).then(function(response) {
+          try {
+            var contentType = response.headers.get('content-type') || '';
+            var url = typeof input === 'string' ? input : (input && input.url) || '';
+            if ((contentType.indexOf('json') !== -1 ||
+                 contentType.indexOf('text/event-stream') !== -1) &&
+                /(?:conversation|backend-api)/.test(url)) {
+              response.clone().text().then(captureGatewayMermaidText).catch(function() {});
+            }
+          } catch (error) {}
+          return response;
+        });
+      };
+    }
+    var gatewayMermaidRendererPromise = null;
+    var gatewayMermaidRendererAttempt = 0;
+    var loadGatewayMermaidRenderer = function() {
+      if (!gatewayMermaidRendererPromise) {
+        var rendererUrl = '/assets/render-mermaid-svg-DmPueOQv.js';
+        if (gatewayMermaidRendererAttempt > 0) {
+          rendererUrl += '?gateway-retry=' + Date.now() + '-' + gatewayMermaidRendererAttempt;
+        }
+        gatewayMermaidRendererAttempt += 1;
+        gatewayMermaidRendererPromise = import(
+          rendererUrl
+        ).then(function(module) {
+          if (!module || typeof module.renderMermaidSvg !== 'function') {
+            throw new Error('模块未导出 renderMermaidSvg');
+          }
+          return module.renderMermaidSvg;
+        }).catch(function(error) {
+          gatewayMermaidRendererPromise = null;
+          throw new Error(
+            'Mermaid 渲染模块加载失败：' +
+            String((error && error.message) || error)
+          );
+        });
+      }
+      return gatewayMermaidRendererPromise;
+    };
+    var sourceFromGatewayMermaidCard = function(card, label, index) {
+      syncGatewayMermaidLocation();
+      var cachedSource = gatewayMermaidCardSources.get(card);
+      if (cachedSource) return cachedSource;
+      var localNodes = [];
+      try {
+        localNodes = Array.from(card.querySelectorAll(
+          'pre,code,textarea,[data-language="mermaid"],[class*="mermaid"]'
+        ));
+      } catch (error) {}
+      localNodes.unshift(label);
+      for (var i = 0; i < localNodes.length; i += 1) {
+        var localText = localNodes[i] && (
+          localNodes[i].value || localNodes[i].textContent || ''
+        );
+        var direct = rememberGatewayMermaidSource(localText);
+        if (direct) {
+          gatewayMermaidCardSources.set(card, direct);
+          return direct;
+        }
+      }
+      var reactNodes = [label, card];
+      for (var j = 0; j < reactNodes.length; j += 1) {
+        var node = reactNodes[j];
+        var keys;
+        try { keys = Object.keys(node); } catch (error) { keys = []; }
+        for (var k = 0; k < keys.length; k += 1) {
+          if (keys[k].indexOf('__reactProps$') !== 0 &&
+              keys[k].indexOf('__reactFiber$') !== 0) continue;
+          var found = inspectGatewayMermaidValue(
+            node[keys[k]], new WeakSet(), 0, { count: 0 }
+          );
+          if (found) {
+            gatewayMermaidCardSources.set(card, found);
+            return found;
+          }
+        }
+      }
+      var fallback = window.__gatewayMermaidSources[index] || null;
+      if (fallback) gatewayMermaidCardSources.set(card, fallback);
+      return fallback;
+    };
+    var findGatewayMermaidCard = function(label) {
+      var current = label;
+      for (var i = 0; current && i < 8; i += 1, current = current.parentElement) {
+        var rect;
+        try { rect = current.getBoundingClientRect(); } catch (error) { continue; }
+        if (rect.width >= 240 && rect.height >= 120 && rect.height <= 900 &&
+            current.querySelectorAll('button').length > 0) {
+          return current;
+        }
+      }
+      return null;
+    };
+    var createGatewayMermaidSvg = function(source, index) {
+      return loadGatewayMermaidRenderer().then(function(renderMermaidSvg) {
+        return renderMermaidSvg({
+          source: source,
+          theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default',
+          isDarkMode: document.documentElement.classList.contains('dark'),
+          diagramId: 'gateway-mermaid-' + Date.now() + '-' + index
+        });
+      });
+    };
+    var mountGatewayMermaidSvg = function(card, svg) {
+      if (typeof svg !== 'string' || !/<svg(?:\s|>)/i.test(svg)) {
+        throw new Error('Mermaid 渲染器未返回有效 SVG');
+      }
+      var oldHolders = card.querySelectorAll('.gateway-mermaid-fallback');
+      for (var i = 0; i < oldHolders.length; i += 1) oldHolders[i].remove();
+      var holder = document.createElement('div');
+      holder.className = 'gateway-mermaid-fallback';
+      holder.style.cssText = 'box-sizing:border-box;width:100%;min-height:180px;padding:16px;overflow:auto;display:flex;align-items:center;justify-content:center';
+      holder.innerHTML = svg;
+      var svgElement = holder.querySelector('svg');
+      if (!svgElement) throw new Error('Mermaid SVG 挂载失败');
+      svgElement.style.maxWidth = '100%';
+      svgElement.style.height = 'auto';
+      card.appendChild(holder);
+    };
+    var hasGatewayNativeMermaid = function(card) {
+      if (card.querySelector('svg[id^="mermaid"]')) return true;
+      var images = card.querySelectorAll('img[src^="data:image/svg+xml"]');
+      for (var i = 0; i < images.length; i += 1) {
+        var src = images[i].getAttribute('src') || '';
+        var rect = images[i].getBoundingClientRect();
+        if (/mermaid(?:-|%2d|_)/i.test(src) && rect.width >= 40 && rect.height >= 40) {
+          return true;
+        }
+      }
+      return false;
+    };
+    var renderGatewayMermaidFallback = function(card, label, source, index) {
+      if (!source || card.getAttribute('data-gateway-mermaid-state')) return;
+      if (hasGatewayNativeMermaid(card)) return;
+      card.setAttribute('data-gateway-mermaid-state', 'loading');
+      createGatewayMermaidSvg(source, index).then(function(svg) {
+        if (hasGatewayNativeMermaid(card)) {
+          card.setAttribute('data-gateway-mermaid-state', 'native');
+          return;
+        }
+        mountGatewayMermaidSvg(card, svg);
+        card.setAttribute('data-gateway-mermaid-state', 'rendered');
+        console.info('[gateway] Mermaid rendered without sandbox RPC');
+      }).catch(function(error) {
+        card.removeAttribute('data-gateway-mermaid-state');
+        console.warn('[gateway] Mermaid direct renderer failed', error);
+      });
+    };
+    var findGatewayMermaidCodeButton = function(card) {
+      var buttons = Array.from(card.querySelectorAll(
+        'button:not([data-gateway-mermaid-refresh])'
+      ));
+      var codeButton = null;
+      for (var i = 0; i < buttons.length; i += 1) {
+        var buttonName = (
+          buttons[i].getAttribute('aria-label') || buttons[i].getAttribute('title') ||
+          buttons[i].textContent || ''
+        ).toLowerCase();
+        if (/code|source|源码|代码/.test(buttonName)) {
+          codeButton = buttons[i];
+          break;
+        }
+      }
+      return codeButton;
+    };
+    var probeGatewayMermaidCodeView = function(card, label, index) {
+      return new Promise(function(resolve) {
+        var codeButton = findGatewayMermaidCodeButton(card);
+        if (!codeButton) {
+          resolve({
+            source: null,
+            reason: '未找到 Mermaid 代码视图按钮，当前组件结构可能已更新'
+          });
+          return;
+        }
+        var dialogsBefore = new Set(Array.from(document.querySelectorAll(
+          '[role="dialog"],[aria-modal="true"]'
+        )));
+        var previousState = card.getAttribute('data-gateway-mermaid-state');
+        card.setAttribute('data-gateway-mermaid-state', 'opening-code');
+        try { codeButton.click(); } catch (error) {
+          if (previousState) card.setAttribute('data-gateway-mermaid-state', previousState);
+          else card.removeAttribute('data-gateway-mermaid-state');
+          resolve({
+            source: null,
+            reason: '代码视图打开失败：' + String((error && error.message) || error)
+          });
+          return;
+        }
+        var startedAt = Date.now();
+        var inspectCodeView = function() {
+          var source = sourceFromGatewayMermaidCard(card, label, index);
+          if (!source) {
+            var scopes = [card];
+            var dialogs = document.querySelectorAll('[role="dialog"],[aria-modal="true"]');
+            for (var j = 0; j < dialogs.length; j += 1) {
+              if (!dialogsBefore.has(dialogs[j])) scopes.push(dialogs[j]);
+            }
+            for (var k = 0; k < scopes.length && !source; k += 1) {
+              var codeNodes = scopes[k].querySelectorAll(
+                'pre,code,textarea,[data-language="mermaid"],[class*="code"],[class*="Code"],[class*="cm-content"]'
+              );
+              for (var m = 0; m < codeNodes.length && !source; m += 1) {
+                source = rememberGatewayMermaidSource(
+                  codeNodes[m].value || codeNodes[m].textContent || ''
+                );
+              }
+            }
+          }
+          if (!source && Date.now() - startedAt < 1200) {
+            window.setTimeout(inspectCodeView, 100);
+            return;
+          }
+          if (codeButton.isConnected) {
+            try { codeButton.click(); } catch (error) {}
+          }
+          if (previousState) card.setAttribute('data-gateway-mermaid-state', previousState);
+          else card.removeAttribute('data-gateway-mermaid-state');
+          resolve({
+            source: source,
+            reason: source ? null :
+              '代码视图中未检测到 flowchart、graph、mindmap 等 Mermaid 定义'
+          });
+        };
+        window.setTimeout(inspectCodeView, 100);
+      });
+    };
+    var captureGatewayMermaidFromCodeView = function(card, label, index) {
+      if (card.getAttribute('data-gateway-mermaid-state') ||
+          card.getAttribute('data-gateway-mermaid-code-probed') === 'true') return;
+      card.setAttribute('data-gateway-mermaid-code-probed', 'true');
+      probeGatewayMermaidCodeView(card, label, index).then(function(result) {
+        if (result.source) {
+          console.info('[gateway] Mermaid source captured from code view');
+          window.setTimeout(function() {
+            renderGatewayMermaidFallback(card, label, result.source, index);
+          }, 100);
+        }
+      });
+    };
+    var showGatewayMermaidRefreshStatus = function(card, message, type) {
+      var status = card.querySelector('.gateway-mermaid-refresh-status');
+      if (!status) {
+        status = document.createElement('div');
+        status.className = 'gateway-mermaid-refresh-status';
+        card.appendChild(status);
+      }
+      status.setAttribute('role', type === 'error' ? 'alert' : 'status');
+      status.style.cssText = type === 'error'
+        ? 'box-sizing:border-box;margin:8px 12px;padding:8px 10px;border:1px solid rgba(248,113,113,.45);border-radius:8px;background:rgba(127,29,29,.2);color:#fecaca;font-size:12px;line-height:1.45'
+        : 'box-sizing:border-box;margin:8px 12px;padding:8px 10px;border:1px solid rgba(74,222,128,.35);border-radius:8px;background:rgba(20,83,45,.2);color:#bbf7d0;font-size:12px;line-height:1.45';
+      status.textContent = message;
+      if (type !== 'error') {
+        window.setTimeout(function() {
+          if (status.isConnected && status.textContent === message) status.remove();
+        }, 2200);
+      }
+    };
+    var ensureGatewayMermaidRefreshStyle = function() {
+      if (document.getElementById('gateway-mermaid-refresh-style')) return;
+      var style = document.createElement('style');
+      style.id = 'gateway-mermaid-refresh-style';
+      style.textContent = '.gateway-mermaid-refresh-button{display:inline-flex;align-items:center;gap:6px;height:30px;margin-left:8px;padding:0 10px;border:1px solid rgba(148,163,184,.32);border-radius:8px;background:rgba(15,23,42,.58);color:inherit;font:600 12px/1 inherit;cursor:pointer;transition:background-color .2s,border-color .2s,opacity .2s}.gateway-mermaid-refresh-button:hover{background:rgba(51,65,85,.72);border-color:rgba(148,163,184,.52)}.gateway-mermaid-refresh-button:focus-visible{outline:2px solid #60a5fa;outline-offset:2px}.gateway-mermaid-refresh-button:disabled{cursor:wait;opacity:.62}.gateway-mermaid-refresh-button svg{width:14px;height:14px;flex:none}@media (prefers-reduced-motion:reduce){.gateway-mermaid-refresh-button{transition:none}}';
+      document.head.appendChild(style);
+    };
+    var ensureGatewayMermaidRefreshButton = function(card, label, index) {
+      if (card.querySelector('[data-gateway-mermaid-refresh]')) return;
+      ensureGatewayMermaidRefreshStyle();
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'gateway-mermaid-refresh-button';
+      button.setAttribute('data-gateway-mermaid-refresh', 'true');
+      button.setAttribute('aria-label', '刷新 Mermaid 思维导图');
+      button.title = '重新检测源码并刷新 Mermaid 思维导图';
+      button.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8.1 8.1 0 0 0-15.5-2M4 4v5h5"/><path d="M4 13a8.1 8.1 0 0 0 15.5 2M20 20v-5h-5"/></svg><span>刷新图表</span>';
+      var buttonText = button.querySelector('span');
+      button.addEventListener('click', function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        button.disabled = true;
+        buttonText.textContent = '刷新中';
+        var source = sourceFromGatewayMermaidCard(card, label, index);
+        var sourcePromise = source
+          ? Promise.resolve({ source: source, reason: null })
+          : probeGatewayMermaidCodeView(card, label, index);
+        sourcePromise.then(function(result) {
+          if (!result.source) throw new Error(result.reason || '未检测到 Mermaid 源码');
+          return createGatewayMermaidSvg(result.source, index);
+        }).then(function(svg) {
+          mountGatewayMermaidSvg(card, svg);
+          card.setAttribute('data-gateway-mermaid-state', 'rendered');
+          showGatewayMermaidRefreshStatus(card, 'Mermaid 思维导图刷新成功', 'success');
+          console.info('[gateway] Mermaid refreshed manually');
+        }).catch(function(error) {
+          showGatewayMermaidRefreshStatus(
+            card,
+            '刷新失败：' + String((error && error.message) || error),
+            'error'
+          );
+        }).finally(function() {
+          button.disabled = false;
+          buttonText.textContent = '刷新图表';
+        });
+      });
+      var buttonHost = label.parentElement || card;
+      buttonHost.appendChild(button);
+    };
+    var scanGatewayMermaidCards = function() {
+      syncGatewayMermaidLocation();
+      var labels = [];
+      var nodes = document.querySelectorAll('div,span,p');
+      for (var i = 0; i < nodes.length; i += 1) {
+        var labelRect = nodes[i].getBoundingClientRect();
+        if ((nodes[i].textContent || '').trim() === 'Mermaid' &&
+            labelRect.width > 0 && labelRect.height > 0 && labelRect.width < 240) {
+          labels.push(nodes[i]);
+        }
+      }
+      var seenCards = new WeakSet();
+      var diagramIndex = 0;
+      for (var j = 0; j < labels.length; j += 1) {
+        var card = findGatewayMermaidCard(labels[j]);
+        if (!card || seenCards.has(card)) continue;
+        seenCards.add(card);
+        ensureGatewayMermaidRefreshButton(card, labels[j], diagramIndex);
+        var source = sourceFromGatewayMermaidCard(card, labels[j], diagramIndex);
+        if (source) {
+          renderGatewayMermaidFallback(card, labels[j], source, diagramIndex);
+        } else {
+          captureGatewayMermaidFromCodeView(card, labels[j], diagramIndex);
+        }
+        diagramIndex += 1;
+      }
+    };
+    var gatewayMermaidScanTimer = null;
+    var scheduleGatewayMermaidScan = function() {
+      if (gatewayMermaidScanTimer !== null) return;
+      gatewayMermaidScanTimer = window.setTimeout(function() {
+        gatewayMermaidScanTimer = null;
+        scanGatewayMermaidCards();
+      }, 300);
+    };
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', scheduleGatewayMermaidScan, { once: true });
+    } else {
+      scheduleGatewayMermaidScan();
+    }
+    if (typeof MutationObserver !== 'undefined') {
+      new MutationObserver(function(records) {
+        for (var i = 0; i < records.length; i += 1) {
+          for (var j = 0; j < records[i].addedNodes.length; j += 1) {
+            var node = records[i].addedNodes[j];
+            if ((node.textContent || '').indexOf('Mermaid') !== -1) {
+              scheduleGatewayMermaidScan();
+              return;
+            }
+          }
+        }
+      }).observe(
+        document.documentElement,
+        { childList: true, subtree: true }
+      );
+    }
+  }
+  var stripRefreshAccount = function(input) {
+    return { changed: false, value: input };
+  };
+  var rewriteNavigationUrl = function(input) {
+    var stripped = stripRefreshAccount(input);
+    var nextInput = stripped.changed ? stripped.value : input;
+    var rewritten = rewriteAbsoluteUrl(nextInput);
+    if (rewritten.changed) {
+      return { changed: true, value: rewritten.value };
+    }
+    return { changed: stripped.changed, value: nextInput };
+  };
+  console.log('[gw] init suppress');
+  var suppressRefreshAccountNavigation = function(input, nextValue) {
+    console.log('[gw] suppress check', nextValue);
+    if (nextValue.indexOf('refresh_account') !== -1) {
+      console.log('[gw] SUPPRESSED');
+      return true;
+    }
+    return false;
+  };
+  // 清理 URL 栏的 refresh_account 参数
+  (function() {
+    try {
+      if (window.location.search.indexOf('refresh_account') !== -1) {
+        var clean = window.location.pathname + window.location.hash;
+        window.history.replaceState(null, '', clean || '/');
+        console.log('[gw] cleaned URL');
+      }
+    } catch(e) {}
+  })();
+  (function() {
+    if (typeof BroadcastChannel === 'undefined') return;
+    var _OrigBC = BroadcastChannel;
+    window.BroadcastChannel = function(name) {
+      var ch = new _OrigBC(name);
+      if (name === 'session') {
+        var _post = ch.postMessage.bind(ch);
+        ch.postMessage = function(msg) {
+          if (msg === 'refresh') return;
+          return _post(msg);
+        };
+      }
+      return ch;
+    };
+    window.BroadcastChannel.prototype = _OrigBC.prototype;
+  })();
+  var _gwHashHistory = [];
+  var _gwBlockBanner = null;
+  var _gwRedirectingBlockedPath = false;
+  var _gwShowBlockBanner = function(msg) {
+    if (_gwBlockBanner) return;
+    _gwBlockBanner = document.createElement('div');
+    _gwBlockBanner.id = 'gw-block-banner';
+    _gwBlockBanner.setAttribute('role', 'alert');
+    _gwBlockBanner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:2147483647;background:#b91c1c;color:#fff;text-align:center;padding:12px 16px;font-size:14px;line-height:1.5;box-shadow:0 4px 12px rgba(0,0,0,.3)';
+    _gwBlockBanner.textContent = msg;
+    document.body.appendChild(_gwBlockBanner);
+    setTimeout(function() { if (_gwBlockBanner) { _gwBlockBanner.remove(); _gwBlockBanner = null; } }, 3000);
+  };
+  var _gwNormalizeBlockedPath = function(path) {
+    if (typeof path !== 'string') return '';
+    path = path.trim();
+    if (!path) return '';
+    if (path.charAt(0) !== '/') path = '/' + path;
+    if (path.length > 1) path = path.replace(/\/+$/, '');
+    return path;
+  };
+  var _gwBlockedHashes = [];
+  var _gwBlockedOrdinaryPaths = [];
+  var _gwApplyBlockedPaths = function(paths) {
+    _gwBlockedPaths = Array.isArray(paths)
+      ? paths.map(_gwNormalizeBlockedPath).filter(Boolean)
+      : [];
+    _gwBlockedHashes = [];
+    _gwBlockedOrdinaryPaths = [];
+    for (var index = 0; index < _gwBlockedPaths.length; index++) {
+      var value = _gwBlockedPaths[index];
+      if (value.indexOf('/#') === 0) {
+        _gwBlockedHashes.push(value.slice(1));
+      } else {
+        _gwBlockedOrdinaryPaths.push(value);
+      }
+    }
+  };
+  var _gwBlockedPathMatches = function(value, blockedPath) {
+    return value === blockedPath || value.indexOf(blockedPath + '/') === 0;
+  };
+  var _gwFindBlockedPath = function(value, blockedPaths) {
+    for (var index = 0; index < blockedPaths.length; index++) {
+      if (_gwBlockedPathMatches(value, blockedPaths[index])) return blockedPaths[index];
+    }
+    return '';
+  };
+  _gwApplyBlockedPaths(_gwBlockedPaths);
+  var _gwCheckHash = function() {
+    var hash = window.location.hash || '';
+    var blockedHash = _gwFindBlockedPath(hash, _gwBlockedHashes);
+    if (!blockedHash) {
+      if (hash && _gwHashHistory[_gwHashHistory.length - 1] !== hash) {
+        _gwHashHistory.push(hash);
+      }
+      if (_gwHashHistory.length > 3) _gwHashHistory.shift();
+      return;
+    }
+    var target = '#';
+    for (var i = _gwHashHistory.length - 1; i >= 0; i--) {
+      if (!_gwFindBlockedPath(_gwHashHistory[i], _gwBlockedHashes) && _gwHashHistory[i] !== hash) {
+        target = _gwHashHistory[i];
+        break;
+      }
+    }
+    _gwHashHistory = [];
+    window.location.hash = target;
+    _gwShowBlockBanner('当前路径禁止访问，正在返回上一页，如有疑问请在后台配置');
+  };
+  var _gwCheckPath = function() {
+    var pathname = _gwNormalizeBlockedPath(window.location.pathname);
+    if (!_gwFindBlockedPath(pathname, _gwBlockedOrdinaryPaths)) {
+      _gwRedirectingBlockedPath = false;
+      return;
+    }
+    if (_gwRedirectingBlockedPath) return;
+    _gwRedirectingBlockedPath = true;
+    _gwShowBlockBanner('当前路径禁止访问，正在返回上一页，如有疑问请在后台配置');
+    var previousHref = window.location.href;
+    if (window.history.length > 1) window.history.back();
+    setTimeout(function() {
+      if (window.location.href === previousHref && _gwFindBlockedPath(_gwNormalizeBlockedPath(window.location.pathname), _gwBlockedOrdinaryPaths)) {
+        window.location.replace('/');
+      }
+    }, 250);
+  };
+  var _gwWrapHistoryMethod = function(name) {
+    try {
+      var original = window.history[name];
+      window.history[name] = function() {
+        var result = original.apply(this, arguments);
+        setTimeout(function() { _gwCheckHash(); _gwCheckPath(); }, 0);
+        return result;
+      };
+    } catch (e) {}
+  };
+  _gwWrapHistoryMethod('pushState');
+  _gwWrapHistoryMethod('replaceState');
+  var _gwRefreshBlockedPaths = function() {
+    fetch(_gwBlockedPathsEndpoint, { credentials: 'same-origin', cache: 'no-store' })
+      .then(function(response) {
+        if (response.status === 401) {
+          if (!_gwSessionRedirecting) {
+            _gwSessionRedirecting = true;
+            window.location.replace(_gwSessionLogoutPath);
+          }
+          return null;
+        }
+        return response.ok ? response.json() : null;
+      })
+      .then(function(payload) {
+        if (!payload || !Array.isArray(payload.paths)) return;
+        forceChatMode = payload.force_chat_mode === true;
+        _gwApplyBlockedPaths(payload.paths);
+        _gwCheckHash();
+        _gwCheckPath();
+        if (forceChatMode && typeof forceWorkModeToChat === 'function') forceWorkModeToChat();
+      })
+      .catch(function() {});
+  };
+  window.addEventListener('hashchange', _gwCheckHash);
+  window.addEventListener('popstate', _gwCheckPath);
+  window.addEventListener('focus', _gwRefreshBlockedPaths);
+  document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) _gwRefreshBlockedPaths();
+  });
+  if (window.location.hash) _gwCheckHash();
+  _gwCheckPath();
+  _gwRefreshBlockedPaths();
+  window.setInterval(_gwCheckPath, 500);
+  window.setInterval(_gwRefreshBlockedPaths, 3000);
+  var rewriteCssText = function(input) {
+    if (typeof input !== 'string' || !input) {
+      return input;
+    }
+    return input
+      .replaceAll('https://chatgpt.com/cdn/assets/', '/cdn/assets/')
+      .replaceAll('http://chatgpt.com/cdn/assets/', '/cdn/assets/')
+      .replaceAll('//chatgpt.com/cdn/assets/', '/cdn/assets/')
+      .replaceAll('https://web-sandbox.oaiusercontent.com/assets/', '/cdn/assets/')
+      .replaceAll('http://web-sandbox.oaiusercontent.com/assets/', '/cdn/assets/')
+      .replaceAll('//web-sandbox.oaiusercontent.com/assets/', '/cdn/assets/')
+      .replaceAll('https://cdn.openai.com/common/', '/common/')
+      .replaceAll('https://images.openai.com/static-rsc-1/', '/static-rsc-1/')
+      .replaceAll('https://images.openai.com/static-rsc-4/', '/static-rsc-4/')
+      .replaceAll('https://images.openai.com/', '/images-openai/')
+      .replaceAll('https://api.mapbox.com/styles/v1/oai-data/', '/mapbox/styles/v1/oai-data/')
+      .replaceAll('https://api.mapbox.com/', '/mapbox/')
+      .replaceAll('https://events.mapbox.com/events/', '/mapbox-events/events/')
+      .replaceAll('https://sdmntprwestus3.oaiusercontent.com/files/', '/files/')
+      .replaceAll('https://sdmntprsouthcentralus.oaiusercontent.com/files/', '/files-southcentral/')
+      .replaceAll('https://sdmntprnznorth.oaiusercontent.com/files/', '/files-north/')
+      .replaceAll('https://connector-openai-deep-research.web-sandbox.oaiusercontent.com/assets/', '/connector-assets/')
+      .replaceAll('http://connector-openai-deep-research.web-sandbox.oaiusercontent.com/assets/', '/connector-assets/')
+      .replaceAll('//connector-openai-deep-research.web-sandbox.oaiusercontent.com/assets/', '/connector-assets/')
+      .replaceAll('https://connector-openai-deep-research.web-sandbox.oaiusercontent.com/', '/connector-deep-research/')
+      .replaceAll('http://connector-openai-deep-research.web-sandbox.oaiusercontent.com/', '/connector-deep-research/')
+      .replaceAll('//connector-openai-deep-research.web-sandbox.oaiusercontent.com/', '/connector-deep-research/')
+      .replaceAll('https://connector-openai-deep-research.web-sandbox.oaiusercontent.com', '/connector-deep-research')
+      .replaceAll('http://connector-openai-deep-research.web-sandbox.oaiusercontent.com', '/connector-deep-research')
+      .replaceAll('//connector-openai-deep-research.web-sandbox.oaiusercontent.com', '/connector-deep-research')
+      .replaceAll('https://files.openai.com/', '/openai-files/')
+      .replaceAll('https://www.google.com/s2/', '/google-s2/')
+      .replaceAll('https://persistent.oaistatic.com/images-app/', '/images-app/')
+      .replaceAll('https://persistent.oaistatic.com/deep-research/', '/persistent-deep-research/')
+      .replaceAll('https://t0.gstatic.com/', '/gstatic-t0/')
+      .replaceAll('https://t1.gstatic.com/', '/gstatic-t1/')
+      .replaceAll('https://t2.gstatic.com/', '/gstatic-t2/')
+      .replaceAll('https://t3.gstatic.com/', '/gstatic-t3/')
+      .replaceAll('https://static.cloudflareinsights.com/beacon.min.js', '/vendor-static')
+      .replaceAll('http://static.cloudflareinsights.com/beacon.min.js', '/vendor-static')
+      .replaceAll('//static.cloudflareinsights.com/beacon.min.js', '/vendor-static')
+      .replaceAll('https://static.cloudflareinsights.com/', '/cloudflare-insights/')
+      .replaceAll('http://static.cloudflareinsights.com/', '/cloudflare-insights/')
+      .replaceAll('//static.cloudflareinsights.com/', '/cloudflare-insights/')
+      .replaceAll('/cloudflare-insights/beacon.min.js', '/vendor-static')
+      .replaceAll('https://www.googletagmanager.com/gtag/', '/vendor-script/')
+      .replaceAll('http://www.googletagmanager.com/gtag/', '/vendor-script/')
+      .replaceAll('//www.googletagmanager.com/gtag/', '/vendor-script/')
+      .replaceAll('/gtag/', '/vendor-script/')
+      .replaceAll('https://www.google-analytics.com/g/collect', '/vendor-batch/collect')
+      .replaceAll('http://www.google-analytics.com/g/collect', '/vendor-batch/collect')
+      .replaceAll('//www.google-analytics.com/g/collect', '/vendor-batch/collect')
+      .replaceAll('https://www.google.com/g/collect', '/vendor-batch/collect')
+      .replaceAll('http://www.google.com/g/collect', '/vendor-batch/collect')
+      .replaceAll('//www.google.com/g/collect', '/vendor-batch/collect')
+      .replaceAll('/ga/collect', '/vendor-batch/collect')
+      .replaceAll('https://lh3.googleusercontent.com/a/', '/google-avatar/a/')
+      .replaceAll('https://chatgpt.com/realtime/', '/realtime/')
+      .replaceAll('https://chatgpt.com/ces/', '/ces/')
+      .replaceAll('https://chatgpt.com/backend-api/estuary/', '/backend-api/estuary/')
+      .replaceAll('https://chatgpt.com/backend-api/', '/backend-api/')
+      .replaceAll('https://chatgpt.com/backend-anon/', '/backend-anon/')
+      .replaceAll('https://chatgpt.com/', '/')
+      .replaceAll('http://chatgpt.com/', '/')
+      .replaceAll('//chatgpt.com/', '/')
+      .replace(/https?:\/\/[^\s"'<>\)]+/g, function(match) {
+        return externalProxyUrlFor(match) || match;
+      })
+      .replace(/(^|[^:])\/\/[A-Za-z0-9.-]+(?::\d+)?\/[^\s"'<>\)]*/g, function(match, prefix) {
+        var candidate = match.slice(prefix.length);
+        return prefix + (externalProxyUrlFor(candidate) || candidate);
+      });
+  };
+  var rewriteElementUrlProps = function(element) {
+    if (!element || element.nodeType !== 1) return;
+    var attrNames = ['src', 'href', 'action', 'poster', 'data'];
+    for (var i = 0; i < attrNames.length; i += 1) {
+      var attrName = attrNames[i];
+      if (element.tagName === 'A' && attrName === 'href') continue;
+      var current = element.getAttribute && element.getAttribute(attrName);
+      if (!current) continue;
+      var rewritten = rewriteAbsoluteUrl(current);
+      if (rewritten.changed && element.getAttribute(attrName) !== rewritten.value) {
+        element.setAttribute(attrName, rewritten.value);
+      }
+    }
+    if (element.tagName === 'LINK') {
+      var rel = (element.getAttribute('rel') || '').toLowerCase();
+      if ((rel === 'preconnect' || rel === 'dns-prefetch') && element.getAttribute('href')) {
+        var href = element.getAttribute('href');
+        if (/^https?:\/\//i.test(href || '')) {
+          element.removeAttribute('href');
+        }
+      }
+    }
+  };
+  var rewriteNodeTree = function(node) {
+    if (!node || node.nodeType !== 1) return;
+    rewriteElementUrlProps(node);
+    if (typeof node.querySelectorAll === 'function') {
+      var descendants = node.querySelectorAll('[src],[href],[action],[poster],[data]');
+      for (var i = 0; i < descendants.length; i += 1) {
+        rewriteElementUrlProps(descendants[i]);
+      }
+    }
+  };
+  var patchUrlProperty = function(proto, propertyName) {
+    if (!proto) return;
+    var descriptor = Object.getOwnPropertyDescriptor(proto, propertyName);
+    if (!descriptor || typeof descriptor.set !== 'function' || typeof descriptor.get !== 'function') {
+      return;
+    }
+    Object.defineProperty(proto, propertyName, {
+      configurable: true,
+      enumerable: descriptor.enumerable,
+      get: function() {
+        return descriptor.get.call(this);
+      },
+      set: function(value) {
+        if (typeof value === 'string') {
+          var rewritten = rewriteAbsoluteUrl(value);
+          if (rewritten.changed) {
+            value = rewritten.value;
+          }
+        }
+        return descriptor.set.call(this, value);
+      }
+    });
+  };
+  var patchHtmlProperty = function(proto, propertyName) {
+    if (!proto) return;
+    var descriptor = Object.getOwnPropertyDescriptor(proto, propertyName);
+    if (!descriptor || typeof descriptor.set !== 'function' || typeof descriptor.get !== 'function') {
+      return;
+    }
+    Object.defineProperty(proto, propertyName, {
+      configurable: true,
+      enumerable: descriptor.enumerable,
+      get: function() {
+        return descriptor.get.call(this);
+      },
+      set: function(value) {
+        if (typeof value === 'string' && value) {
+          value = rewriteCssText(value);
+        }
+        return descriptor.set.call(this, value);
+      }
+    });
+  };
+  var patchLocationPrototypeForWindow = function(targetWindow) {
+    try {
+      console.log('[gw] patchLocation called');
+      if (!targetWindow || targetWindow.__gatewayLocationPatched) {
+        console.log('[gw] patchLocation skipped', !!targetWindow, !!targetWindow.__gatewayLocationPatched);
+        return;
+      }
+      targetWindow.__gatewayLocationPatched = true;
+      if (!(targetWindow.Location && targetWindow.Location.prototype)) {
+        console.log('[gw] patchLocation no prototype');
+        return;
+      }
+      console.log('[gw] patchLocation applying');
+      var patchLocationMethod = function(name) {
+        var original = targetWindow.Location.prototype[name];
+        if (typeof original !== 'function') return;
+        targetWindow.Location.prototype[name] = function(url) {
+          console.log('[gw] location.' + name, url);
+          var nextUrl = rewriteNavigationUrl(url);
+          if (suppressRefreshAccountNavigation(url, nextUrl.value)) {
+            return;
+          }
+          return original.call(this, nextUrl.value);
+        };
+      };
+      patchLocationMethod('assign');
+      patchLocationMethod('replace');
+      var hrefDescriptor = Object.getOwnPropertyDescriptor(targetWindow.Location.prototype, 'href');
+      if (hrefDescriptor && typeof hrefDescriptor.set === 'function' && typeof hrefDescriptor.get === 'function') {
+        Object.defineProperty(targetWindow.Location.prototype, 'href', {
+          configurable: true,
+          enumerable: hrefDescriptor.enumerable,
+          get: function() {
+            return hrefDescriptor.get.call(this);
+          },
+          set: function(value) {
+            console.log('[gw] location.href =', value);
+            var nextUrl = rewriteNavigationUrl(value);
+            if (suppressRefreshAccountNavigation(value, nextUrl.value)) {
+              return;
+            }
+            return hrefDescriptor.set.call(this, nextUrl.value);
+          }
+        });
+      }
+      var searchDescriptor = Object.getOwnPropertyDescriptor(targetWindow.Location.prototype, 'search');
+      if (searchDescriptor && typeof searchDescriptor.set === 'function' && typeof searchDescriptor.get === 'function') {
+        Object.defineProperty(targetWindow.Location.prototype, 'search', {
+          configurable: true,
+          enumerable: searchDescriptor.enumerable,
+          get: function() {
+            return searchDescriptor.get.call(this);
+          },
+          set: function(value) {
+            var nextUrl = rewriteNavigationUrl(value);
+            if (suppressRefreshAccountNavigation(value, nextUrl.value)) {
+              return;
+            }
+            return searchDescriptor.set.call(this, nextUrl.value);
+          }
+        });
+      }
+    } catch (error) {}
+  };
+  if (!window.__gatewayRuntimeUrlRewriteInstalled) {
+    window.__gatewayRuntimeUrlRewriteInstalled = true;
+    var originalWindowOpen = typeof window.open === 'function'
+      ? window.open.bind(window)
+      : null;
+    if (typeof window.history !== 'undefined') {
+      if (typeof window.history.pushState === 'function') {
+        var originalPushState = window.history.pushState.bind(window.history);
+        window.history.pushState = function(state, title, url) {
+          var nextUrl = rewriteNavigationUrl(url);
+          var result = originalPushState(state, title, nextUrl.value);
+          _gwCheckHash();
+          return result;
+        };
+      }
+      if (typeof window.history.replaceState === 'function') {
+        var originalReplaceState = window.history.replaceState.bind(window.history);
+        window.history.replaceState = function(state, title, url) {
+          var nextUrl = rewriteNavigationUrl(url);
+          var result = originalReplaceState(state, title, nextUrl.value);
+          _gwCheckHash();
+          return result;
+        };
+      }
+    }
+    if (typeof window.addEventListener === 'function' && typeof document !== 'undefined') {
+      document.addEventListener('click', function(event) {
+        var target = event.target;
+        while (target && target.nodeType === 1) {
+          if (target.tagName === 'A') {
+            var href = target.getAttribute('href');
+            var directUrl = directNavigationUrlFor(href);
+            if (directUrl && originalWindowOpen) {
+              event.preventDefault();
+              event.stopImmediatePropagation();
+              var directTarget = target.getAttribute('target');
+              if (!directTarget) {
+                directTarget = event.metaKey || event.ctrlKey || event.shiftKey
+                  ? '_blank'
+                  : '_self';
+              }
+              originalWindowOpen(
+                directUrl,
+                directTarget,
+                directTarget === '_blank' ? 'noopener' : undefined
+              );
+              break;
+            }
+            var nextUrl = rewriteNavigationUrl(href);
+            if (nextUrl.changed) {
+              event.preventDefault();
+              try {
+                window.history.replaceState(window.history.state, document.title, nextUrl.value);
+              } catch (error) {
+                window.location.href = nextUrl.value;
+              }
+            }
+            break;
+          }
+          target = target.parentNode;
+        }
+      }, true);
+    }
+    patchLocationPrototypeForWindow(window);
+    if (typeof window.fetch === 'function') {
+      var originalFetch = window.fetch.bind(window);
+      var withGatewayFetchCredentials = function(value, init) {
+        if (!init || init.credentials !== 'omit' || typeof value !== 'string') {
+          return init;
+        }
+        try {
+          var fetchUrl = new URL(value, window.location.href);
+          var isGatewayDownload = fetchUrl.origin === window.location.origin &&
+            (/^\/backend-(?:api|anon)\//.test(fetchUrl.pathname) ||
+             /^\/(?:files|files-southcentral|files-north|openai-files|external)\//.test(fetchUrl.pathname));
+          if (!isGatewayDownload) {
+            return init;
+          }
+          var nextInit = Object.assign({}, init);
+          nextInit.credentials = 'same-origin';
+          return nextInit;
+        } catch (error) {
+          return init;
+        }
+      };
+      window.fetch = function(input, init) {
+        var rewritten = rewriteAbsoluteUrl(input);
+        if (!rewritten.changed) {
+          if (typeof input === 'string') {
+            return originalFetch(input, withGatewayFetchCredentials(input, init));
+          }
+          return originalFetch(input, init);
+        }
+        if (typeof input === 'string') {
+          return originalFetch(
+            rewritten.value,
+            withGatewayFetchCredentials(rewritten.value, init)
+          );
+        }
+        if (typeof Request !== 'undefined' && input instanceof Request) {
+          var requestInit = {
+            method: input.method,
+            headers: input.headers,
+            mode: input.mode,
+            credentials: input.credentials,
+            cache: input.cache,
+            redirect: input.redirect,
+            referrer: input.referrer,
+            referrerPolicy: input.referrerPolicy,
+            integrity: input.integrity,
+            keepalive: input.keepalive,
+            signal: input.signal
+          };
+          if (input.method !== 'GET' && input.method !== 'HEAD') {
+            try {
+              var clonedRequest = input.clone();
+              if (typeof clonedRequest.arrayBuffer === 'function') {
+                return clonedRequest.arrayBuffer().then(function(body) {
+                  requestInit.body = body;
+                  return originalFetch(new Request(rewritten.value, requestInit), init);
+                });
+              }
+            } catch (error) {}
+          }
+          return originalFetch(new Request(rewritten.value, requestInit), init);
+        }
+        return originalFetch(rewritten.value, init);
+      };
+    }
+    if (typeof XMLHttpRequest !== 'undefined') {
+      var originalOpen = XMLHttpRequest.prototype.open;
+      XMLHttpRequest.prototype.open = function(method, url) {
+        var rewritten = rewriteAbsoluteUrl(url);
+        var nextUrl = rewritten.changed ? rewritten.value : url;
+        return originalOpen.apply(this, [method, nextUrl].concat(Array.prototype.slice.call(arguments, 2)));
+      };
+    }
+    if (typeof Blob !== 'undefined') {
+      var OriginalBlob = Blob;
+      var mapboxWorkerSourceSignature = "mapbox-gl-js/guides/install/#transpiling";
+      var mapboxWorkerBootstrap = "(function() {\n  if (self.__gatewayMapboxWorkerPatched) return;\n  self.__gatewayMapboxWorkerPatched = true;\n  var mirrorOrigin = self.location && self.location.origin;\n  if (!mirrorOrigin || mirrorOrigin === 'null') return;\n  var rewriteMapboxUrl = function(input) {\n    var raw = '';\n    if (typeof input === 'string') {\n      raw = input;\n    } else if (input && typeof input.url === 'string') {\n      raw = input.url;\n    } else if (input && typeof input.toString === 'function') {\n      raw = String(input);\n    }\n    if (raw === 'https://api.mapbox.com') return mirrorOrigin + '/mapbox';\n    if (raw.indexOf('https://api.mapbox.com/') === 0) {\n      return mirrorOrigin + '/mapbox/' + raw.slice('https://api.mapbox.com/'.length);\n    }\n    if (raw === 'https://events.mapbox.com/events') {\n      return mirrorOrigin + '/mapbox-events/events';\n    }\n    if (raw.indexOf('https://events.mapbox.com/events/') === 0) {\n      return mirrorOrigin + '/mapbox-events/events/' + raw.slice('https://events.mapbox.com/events/'.length);\n    }\n    return raw;\n  };\n  if (typeof self.fetch === 'function') {\n    var originalFetch = self.fetch.bind(self);\n    self.fetch = function(input, init) {\n      var rewritten = rewriteMapboxUrl(input);\n      var original = typeof input === 'string' ? input : input && input.url;\n      if (!rewritten || rewritten === original) return originalFetch(input, init);\n      if (typeof Request !== 'undefined' && input instanceof Request) {\n        return originalFetch(new Request(rewritten, input), init);\n      }\n      return originalFetch(rewritten, init);\n    };\n  }\n  if (typeof XMLHttpRequest !== 'undefined') {\n    var originalOpen = XMLHttpRequest.prototype.open;\n    XMLHttpRequest.prototype.open = function(method, url) {\n      var rewritten = rewriteMapboxUrl(url);\n      return originalOpen.apply(this, [method, rewritten].concat(Array.prototype.slice.call(arguments, 2)));\n    };\n  }\n})();";
+      window.Blob = function(parts, options) {
+        var nextParts = parts;
+        try {
+          var sourcePreview = Array.isArray(parts)
+            ? parts.filter(function(part) { return typeof part === 'string'; }).join('')
+            : '';
+          var isMapboxWorker = sourcePreview.indexOf(mapboxWorkerSourceSignature) !== -1 &&
+            sourcePreview.indexOf('https://api.mapbox.com') !== -1 &&
+            sourcePreview.indexOf('__gatewayMapboxWorkerPatched') === -1;
+          if (isMapboxWorker) {
+            nextParts = [mapboxWorkerBootstrap].concat(parts);
+          }
+        } catch (error) {}
+        return new OriginalBlob(nextParts, options);
+      };
+      window.Blob.prototype = OriginalBlob.prototype;
+      try { Object.setPrototypeOf(window.Blob, OriginalBlob); } catch (error) {}
+    }
+    if (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function') {
+      var originalSendBeacon = navigator.sendBeacon.bind(navigator);
+      navigator.sendBeacon = function(url, data) {
+        var rewritten = rewriteAbsoluteUrl(url);
+        var nextUrl = rewritten.changed ? rewritten.value : url;
+        return originalSendBeacon(nextUrl, data);
+      };
+    }
+    if (typeof Element !== 'undefined') {
+      var originalSetAttribute = Element.prototype.setAttribute;
+      Element.prototype.setAttribute = function(name, value) {
+        if (typeof name === 'string' && typeof value === 'string') {
+          var lowerName = name.toLowerCase();
+          var isAnchorHref = this.tagName === 'A' && lowerName === 'href';
+          if (!isAnchorHref && (lowerName === 'src' || lowerName === 'href' || lowerName === 'action' || lowerName === 'poster' || lowerName === 'data')) {
+            var rewritten = rewriteAbsoluteUrl(value);
+            if (rewritten.changed) {
+              value = rewritten.value;
+            }
+          }
+        }
+        return originalSetAttribute.call(this, name, value);
+      };
+      if (typeof Element.prototype.insertAdjacentHTML === 'function') {
+        var originalInsertAdjacentHTML = Element.prototype.insertAdjacentHTML;
+        Element.prototype.insertAdjacentHTML = function(position, text) {
+          var nextText = typeof text === 'string' ? rewriteCssText(text) : text;
+          return originalInsertAdjacentHTML.call(this, position, nextText);
+        };
+      }
+    }
+    if (typeof Document !== 'undefined' && Document.prototype) {
+      if (typeof Document.prototype.write === 'function') {
+        var originalDocumentWrite = Document.prototype.write;
+        Document.prototype.write = function() {
+          var args = Array.prototype.slice.call(arguments);
+          for (var i = 0; i < args.length; i += 1) {
+            if (typeof args[i] === 'string' && args[i]) {
+              args[i] = rewriteCssText(args[i]);
+            }
+          }
+          return originalDocumentWrite.apply(this, args);
+        };
+      }
+      if (typeof Document.prototype.writeln === 'function') {
+        var originalDocumentWriteln = Document.prototype.writeln;
+        Document.prototype.writeln = function() {
+          var args = Array.prototype.slice.call(arguments);
+          for (var i = 0; i < args.length; i += 1) {
+            if (typeof args[i] === 'string' && args[i]) {
+              args[i] = rewriteCssText(args[i]);
+            }
+          }
+          return originalDocumentWriteln.apply(this, args);
+        };
+      }
+    }
+    if (typeof Range !== 'undefined' && Range.prototype && typeof Range.prototype.createContextualFragment === 'function') {
+      var originalCreateContextualFragment = Range.prototype.createContextualFragment;
+      Range.prototype.createContextualFragment = function(fragment) {
+        var nextFragment = typeof fragment === 'string' ? rewriteCssText(fragment) : fragment;
+        return originalCreateContextualFragment.call(this, nextFragment);
+      };
+    }
+    if (typeof Node !== 'undefined') {
+      var originalAppendChild = Node.prototype.appendChild;
+      Node.prototype.appendChild = function(node) {
+        rewriteNodeTree(node);
+        return originalAppendChild.call(this, node);
+      };
+      var originalInsertBefore = Node.prototype.insertBefore;
+      Node.prototype.insertBefore = function(node, child) {
+        rewriteNodeTree(node);
+        return originalInsertBefore.call(this, node, child);
+      };
+      var originalReplaceChild = Node.prototype.replaceChild;
+      Node.prototype.replaceChild = function(node, child) {
+        rewriteNodeTree(node);
+        return originalReplaceChild.call(this, node, child);
+      };
+    }
+    if (typeof MutationObserver !== 'undefined' && typeof document !== 'undefined') {
+      var observer = new MutationObserver(function(mutations) {
+        for (var i = 0; i < mutations.length; i += 1) {
+          var mutation = mutations[i];
+          for (var j = 0; j < mutation.addedNodes.length; j += 1) {
+            rewriteNodeTree(mutation.addedNodes[j]);
+          }
+        }
+      });
+      var startObserve = function() {
+        if (document.documentElement) {
+          observer.observe(document.documentElement, { childList: true, subtree: true });
+          rewriteNodeTree(document.documentElement);
+        }
+      };
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', startObserve, { once: true });
+      } else {
+        startObserve();
+      }
+    }
+    if (typeof HTMLScriptElement !== 'undefined') {
+      patchUrlProperty(HTMLScriptElement.prototype, 'src');
+    }
+    if (typeof HTMLLinkElement !== 'undefined') {
+      patchUrlProperty(HTMLLinkElement.prototype, 'href');
+    }
+    if (typeof HTMLImageElement !== 'undefined') {
+      patchUrlProperty(HTMLImageElement.prototype, 'src');
+    }
+    if (typeof HTMLIFrameElement !== 'undefined') {
+      patchUrlProperty(HTMLIFrameElement.prototype, 'src');
+      patchHtmlProperty(HTMLIFrameElement.prototype, 'srcdoc');
+      try {
+        var contentWindowDescriptor = Object.getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow');
+        if (contentWindowDescriptor && typeof contentWindowDescriptor.get === 'function') {
+          Object.defineProperty(HTMLIFrameElement.prototype, 'contentWindow', {
+            configurable: true,
+            enumerable: contentWindowDescriptor.enumerable,
+            get: function() {
+              var frameWindow = contentWindowDescriptor.get.call(this);
+              patchLocationPrototypeForWindow(frameWindow);
+              return frameWindow;
+            }
+          });
+        }
+      } catch (error) {}
+    }
+    if (typeof HTMLFormElement !== 'undefined') {
+      patchUrlProperty(HTMLFormElement.prototype, 'action');
+    }
+    if (typeof HTMLSourceElement !== 'undefined') {
+      patchUrlProperty(HTMLSourceElement.prototype, 'src');
+    }
+    if (typeof HTMLObjectElement !== 'undefined') {
+      patchUrlProperty(HTMLObjectElement.prototype, 'data');
+    }
+    if (typeof Element !== 'undefined') {
+      patchHtmlProperty(Element.prototype, 'innerHTML');
+      patchHtmlProperty(Element.prototype, 'outerHTML');
+    }
+    if (typeof ShadowRoot !== 'undefined') {
+      patchHtmlProperty(ShadowRoot.prototype, 'innerHTML');
+    }
+    if (typeof window.open === 'function') {
+      window.open = function(url, target, features) {
+        var directUrl = typeof navigator !== 'undefined' && navigator.userActivation &&
+          navigator.userActivation.isActive
+          ? directNavigationUrlFor(url)
+          : null;
+        if (directUrl) {
+          return originalWindowOpen(directUrl, target, features);
+        }
+        var rewritten = rewriteAbsoluteUrl(url);
+        return originalWindowOpen(
+          rewritten.changed ? rewritten.value : url,
+          target,
+          features
+        );
+      };
+    }
+    if (typeof WebSocket !== 'undefined') {
+      var OriginalWebSocket = WebSocket;
+      var normalizeWebSocketUrl = function(url) {
+        if (typeof url !== 'string') return url;
+        if (url.indexOf('/undefined') !== -1) {
+          return null;
+        }
+        var wsOrigin = (window.location.protocol === 'https:' ? 'wss://' : 'ws://') + window.location.host;
+        if (url.indexOf('wss://ws.chatgpt.com/') === 0) {
+          return wsOrigin + '/ws-chatgpt/' + url.slice('wss://ws.chatgpt.com/'.length);
+        }
+        if (url.indexOf('ws://ws.chatgpt.com/') === 0) {
+          return wsOrigin + '/ws-chatgpt/' + url.slice('ws://ws.chatgpt.com/'.length);
+        }
+        if (url.indexOf('https://ws.chatgpt.com/') === 0) {
+          return wsOrigin + '/ws-chatgpt/' + url.slice('https://ws.chatgpt.com/'.length);
+        }
+        if (url.indexOf('http://ws.chatgpt.com/') === 0) {
+          return wsOrigin + '/ws-chatgpt/' + url.slice('http://ws.chatgpt.com/'.length);
+        }
+        return url;
+      };
+      window.WebSocket = function(url, protocols) {
+        var nextUrl = normalizeWebSocketUrl(url);
+        if (!nextUrl) {
+          return {
+            url: String(url),
+            readyState: 3,
+            bufferedAmount: 0,
+            protocol: '',
+            extensions: '',
+            binaryType: 'blob',
+            close: function() {},
+            send: function() {},
+            addEventListener: function() {},
+            removeEventListener: function() {},
+            dispatchEvent: function() { return false; },
+            onopen: null,
+            onerror: null,
+            onclose: null,
+            onmessage: null
+          };
+        }
+        return protocols === undefined
+          ? new OriginalWebSocket(nextUrl)
+          : new OriginalWebSocket(nextUrl, protocols);
+      };
+      window.WebSocket.prototype = OriginalWebSocket.prototype;
+      window.WebSocket.OPEN = OriginalWebSocket.OPEN;
+      window.WebSocket.CLOSED = OriginalWebSocket.CLOSED;
+      window.WebSocket.CLOSING = OriginalWebSocket.CLOSING;
+      window.WebSocket.CONNECTING = OriginalWebSocket.CONNECTING;
+    }
+    if (typeof CSSStyleSheet !== 'undefined') {
+      if (typeof CSSStyleSheet.prototype.insertRule === 'function') {
+        var originalInsertRule = CSSStyleSheet.prototype.insertRule;
+        CSSStyleSheet.prototype.insertRule = function(rule, index) {
+          return originalInsertRule.call(this, rewriteCssText(rule), index);
+        };
+      }
+      if (typeof CSSStyleSheet.prototype.replaceSync === 'function') {
+        var originalReplaceSync = CSSStyleSheet.prototype.replaceSync;
+        CSSStyleSheet.prototype.replaceSync = function(text) {
+          return originalReplaceSync.call(this, rewriteCssText(text));
+        };
+      }
+    }
+    if (typeof CSSStyleDeclaration !== 'undefined' && typeof CSSStyleDeclaration.prototype.setProperty === 'function') {
+      var originalSetProperty = CSSStyleDeclaration.prototype.setProperty;
+      CSSStyleDeclaration.prototype.setProperty = function(name, value, priority) {
+        var nextValue = typeof value === 'string' ? rewriteCssText(value) : value;
+        return originalSetProperty.call(this, name, nextValue, priority);
+      };
+    }
+  }
+  var improveAccessibility = function(root) {
+    var scope = root && root.querySelectorAll ? root : document;
+    var fields = scope.querySelectorAll('input:not([type="hidden"]), textarea, select');
+    for (var i = 0; i < fields.length; i += 1) {
+      var field = fields[i];
+      if (field.hasAttribute('aria-label') || field.hasAttribute('aria-labelledby') || (field.labels && field.labels.length)) continue;
+      var fieldName = field.getAttribute('placeholder') || field.getAttribute('name') || field.getAttribute('title') || '输入内容';
+      field.setAttribute('aria-label', fieldName);
+    }
+    var buttons = scope.querySelectorAll('button');
+    for (var j = 0; j < buttons.length; j += 1) {
+      var button = buttons[j];
+      if (button.hasAttribute('aria-label') || button.hasAttribute('aria-labelledby') || button.textContent.trim()) continue;
+      button.setAttribute('aria-label', button.getAttribute('title') || button.getAttribute('data-testid') || '操作按钮');
+    }
+    var images = scope.querySelectorAll('img:not([alt])');
+    for (var k = 0; k < images.length; k += 1) {
+      images[k].setAttribute('alt', images[k].getAttribute('title') || '');
+    }
+  };
+  var startAccessibilityObserver = function() {
+    improveAccessibility(document);
+    if (typeof MutationObserver === 'undefined' || window.__gatewayAccessibilityObserver) return;
+    window.__gatewayAccessibilityObserver = new MutationObserver(function(mutations) {
+      for (var i = 0; i < mutations.length; i += 1) {
+        for (var j = 0; j < mutations[i].addedNodes.length; j += 1) {
+          var node = mutations[i].addedNodes[j];
+          if (node.nodeType === 1) improveAccessibility(node.parentElement || node);
+        }
+      }
+    });
+    window.__gatewayAccessibilityObserver.observe(document.documentElement, { childList: true, subtree: true });
+  };
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startAccessibilityObserver, { once: true });
+  } else {
+    startAccessibilityObserver();
+  }
+  if (enableUserControls) {
+    var style = document.createElement('style');
+    style.textContent = '#gateway-user-logout-anchor{position:fixed;top:18px;right:18px;z-index:2147483647;display:flex;flex-direction:column;align-items:flex-end;gap:8px;max-width:calc(100vw - 24px)}#gateway-user-logout-anchor[data-side=\"left\"]{align-items:flex-start}#gateway-user-mode-banner{box-sizing:border-box;max-width:min(420px,calc(100vw - 24px));padding:10px 14px;border-radius:14px;background:rgba(15,23,42,.92);color:#fff;font-size:12px;line-height:1.5;box-shadow:0 10px 30px rgba(15,23,42,.18);overflow-wrap:anywhere}#gateway-user-mode-banner strong{display:block;margin-bottom:2px;font-size:13px}#gateway-user-logout-shell{display:flex;align-items:stretch;max-width:calc(100vw - 24px);border-radius:999px;background:#111827;box-shadow:0 10px 30px rgba(15,23,42,.18);overflow:hidden}#gateway-user-logout-shell[data-dragging=\"true\"]{opacity:.9}#gateway-user-logout-handle{width:16px;align-self:stretch;cursor:grab;background:linear-gradient(180deg,#374151 0%,#1f2937 100%);position:relative;flex:0 0 16px;touch-action:none}#gateway-user-logout-handle:before{content:\"\";position:absolute;top:50%;left:50%;width:2px;height:18px;transform:translate(-50%,-50%);background:repeating-linear-gradient(180deg,#9ca3af 0 2px,transparent 2px 4px);border-radius:999px}#gateway-user-logout-shell[data-dragging=\"true\"] #gateway-user-logout-handle{cursor:grabbing}#gateway-user-logout-actions{display:flex;align-items:stretch;min-width:0}#gateway-user-logout-shell button{border:none;padding:10px 16px;background:#111827;color:#fff;font-size:13px;font-weight:600;line-height:1.2;white-space:nowrap;cursor:pointer}#gateway-user-logout-shell button:hover{background:#1f2937}#gateway-user-refresh-button{border-left:1px solid rgba(255,255,255,.08)!important;background:#3f2a14!important}#gateway-user-refresh-button:hover{background:#9a3412!important}#gateway-user-switch-button{border-left:1px solid rgba(255,255,255,.08)!important;background:#172554!important}#gateway-user-switch-button:hover{background:#1d4ed8!important}#gateway-user-collapse-button{width:38px;min-width:38px;padding:0!important;border-left:1px solid rgba(255,255,255,.08)!important;background:#0f172a!important;font-size:18px!important;line-height:1!important}#gateway-user-collapse-button:hover{background:#1f2937!important}#gateway-user-logout-anchor[data-collapsed=\"true\"]{gap:0}#gateway-user-logout-anchor[data-collapsed=\"true\"] #gateway-user-mode-banner{display:none}#gateway-user-logout-anchor[data-collapsed=\"true\"] #gateway-user-logout-handle,#gateway-user-logout-anchor[data-collapsed=\"true\"] #gateway-user-logout-actions{display:none}#gateway-user-logout-anchor[data-collapsed=\"true\"] #gateway-user-logout-shell{border-radius:0 999px 999px 0;box-shadow:0 8px 24px rgba(15,23,42,.2)}#gateway-user-logout-anchor[data-collapsed=\"true\"][data-side=\"right\"] #gateway-user-logout-shell{border-radius:999px 0 0 999px}#gateway-user-logout-anchor[data-collapsed=\"true\"] #gateway-user-collapse-button{width:44px;min-width:44px;height:44px;border-left:0!important;background:#111827!important}@media (max-width:640px){#gateway-user-logout-anchor{top:max(10px,env(safe-area-inset-top));right:max(10px,env(safe-area-inset-right));max-width:calc(100vw - 20px)}#gateway-user-mode-banner{max-width:calc(100vw - 20px);padding:9px 12px;font-size:12px}#gateway-user-logout-shell{max-width:calc(100vw - 20px)}#gateway-user-logout-actions{display:grid;grid-template-columns:1fr;min-width:min(220px,calc(100vw - 76px))}#gateway-user-logout-shell button{padding:10px 12px;text-align:center}#gateway-user-refresh-button,#gateway-user-switch-button{border-left:0!important;border-top:1px solid rgba(255,255,255,.08)!important}#gateway-user-collapse-button{width:40px;min-width:40px}#gateway-user-logout-anchor[data-collapsed=\"true\"] #gateway-user-collapse-button{width:46px;min-width:46px;height:46px}}';
+    style.textContent += '#gateway-user-logout-anchor{--gw-surface:rgba(255,255,255,.92);--gw-text:#0d0d0d;--gw-muted:#676767;--gw-border:rgba(0,0,0,.1);--gw-hover:rgba(0,0,0,.06);--gw-pressed:rgba(0,0,0,.1);--gw-shadow:0 4px 18px rgba(0,0,0,.1);--gw-focus:#0d0d0d;color-scheme:light;font-family:inherit;gap:6px}#gateway-user-logout-anchor[data-theme=\"dark\"]{--gw-surface:rgba(47,47,47,.94);--gw-text:#ececec;--gw-muted:#b4b4b4;--gw-border:rgba(255,255,255,.1);--gw-hover:rgba(255,255,255,.08);--gw-pressed:rgba(255,255,255,.13);--gw-shadow:0 4px 18px rgba(0,0,0,.24);--gw-focus:#fff;color-scheme:dark}#gateway-user-mode-banner{max-width:min(360px,calc(100vw - 24px));padding:9px 12px;border:1px solid var(--gw-border);border-radius:14px;background:var(--gw-surface);color:var(--gw-text);box-shadow:var(--gw-shadow);backdrop-filter:blur(16px) saturate(1.15);-webkit-backdrop-filter:blur(16px) saturate(1.15)}#gateway-user-mode-banner strong{margin-bottom:1px;font-size:13px;font-weight:600;letter-spacing:0}#gateway-user-mode-banner>div{color:var(--gw-muted)}#gateway-user-logout-shell{padding:3px;border:1px solid var(--gw-border);border-radius:14px;background:var(--gw-surface);box-shadow:var(--gw-shadow);backdrop-filter:blur(16px) saturate(1.15);-webkit-backdrop-filter:blur(16px) saturate(1.15)}#gateway-user-logout-handle{width:14px;flex-basis:14px;border-right:1px solid var(--gw-border);background:transparent}#gateway-user-logout-handle:before{height:16px;background:repeating-linear-gradient(180deg,var(--gw-muted) 0 2px,transparent 2px 4px);opacity:.65}#gateway-user-logout-actions{gap:2px}#gateway-user-logout-shell button{margin:0;padding:8px 11px;border:0!important;border-radius:10px;background:transparent!important;color:var(--gw-text)!important;font:inherit;font-size:13px;font-weight:500;line-height:1.25;transition:background-color .15s ease,opacity .15s ease}#gateway-user-logout-shell button:hover{background:var(--gw-hover)!important}#gateway-user-logout-shell button:active{background:var(--gw-pressed)!important}#gateway-user-logout-shell button:focus-visible{outline:2px solid var(--gw-focus);outline-offset:-2px}#gateway-user-logout-shell button:disabled{cursor:default;opacity:.55}#gateway-user-refresh-button,#gateway-user-switch-button{border:0!important;background:transparent!important}#gateway-user-refresh-button:hover,#gateway-user-switch-button:hover{background:var(--gw-hover)!important}#gateway-user-collapse-button{width:34px;min-width:34px;padding:0!important;border:0!important;border-left:1px solid var(--gw-border)!important;border-radius:0 10px 10px 0;background:transparent!important;color:var(--gw-muted)!important;font-size:18px!important}#gateway-user-collapse-button:hover{background:var(--gw-hover)!important;color:var(--gw-text)!important}#gateway-user-logout-anchor[data-collapsed=\"true\"] #gateway-user-logout-shell{padding:2px;border-radius:0 12px 12px 0;box-shadow:var(--gw-shadow)}#gateway-user-logout-anchor[data-collapsed=\"true\"][data-side=\"right\"] #gateway-user-logout-shell{border-radius:12px 0 0 12px}#gateway-user-logout-anchor[data-collapsed=\"true\"] #gateway-user-collapse-button{width:38px;min-width:38px;height:38px;border:0!important;border-radius:10px;background:transparent!important}@media (max-width:640px){#gateway-user-logout-shell{border-radius:14px}#gateway-user-logout-actions{gap:0}#gateway-user-logout-shell button{padding:9px 11px}#gateway-user-refresh-button,#gateway-user-switch-button{border-top:1px solid var(--gw-border)!important}}@media (prefers-reduced-motion:reduce){#gateway-user-logout-shell button{transition:none}}';
+    document.head.appendChild(style);
+    var storageKey = 'gateway-user-logout-position';
+    var collapsedStorageKey = 'gateway-user-logout-collapsed';
+    var gatewayThemeObserverInstalled = false;
+    var gatewayThemeMedia = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+    var gatewayBackgroundLuminance = function(value) {
+      if (!value || value === 'transparent') return null;
+      var components = value.match(/[\d.]+/g);
+      if (!components || components.length < 3) return null;
+      if (components.length > 3 && Number(components[3]) === 0) return null;
+      return (Number(components[0]) * .2126) + (Number(components[1]) * .7152) + (Number(components[2]) * .0722);
+    };
+    var detectGatewayTheme = function() {
+      var root = document.documentElement;
+      var body = document.body;
+      var rootHint = String(root.getAttribute('data-theme') || root.getAttribute('data-color-scheme') || root.className || '').toLowerCase();
+      var bodyHint = body ? String(body.getAttribute('data-theme') || body.getAttribute('data-color-scheme') || body.className || '').toLowerCase() : '';
+      var hint = rootHint + ' ' + bodyHint;
+      if (/(^|[\s_-])dark($|[\s_-])/.test(hint)) return 'dark';
+      if (/(^|[\s_-])light($|[\s_-])/.test(hint)) return 'light';
+      var rootStyle = window.getComputedStyle(root);
+      var bodyStyle = body ? window.getComputedStyle(body) : null;
+      var colorScheme = String((bodyStyle && bodyStyle.colorScheme) || rootStyle.colorScheme || '').toLowerCase();
+      if (colorScheme === 'dark') return 'dark';
+      if (colorScheme === 'light') return 'light';
+      var bodyLuminance = gatewayBackgroundLuminance(bodyStyle && bodyStyle.backgroundColor);
+      if (bodyLuminance !== null) return bodyLuminance < 145 ? 'dark' : 'light';
+      var rootLuminance = gatewayBackgroundLuminance(rootStyle.backgroundColor);
+      if (rootLuminance !== null) return rootLuminance < 145 ? 'dark' : 'light';
+      return gatewayThemeMedia && gatewayThemeMedia.matches ? 'dark' : 'light';
+    };
+    var syncGatewayTheme = function(anchor) {
+      anchor = anchor || document.getElementById('gateway-user-logout-anchor');
+      if (anchor) anchor.setAttribute('data-theme', detectGatewayTheme());
+    };
+    var ensureGatewayThemeObserver = function() {
+      if (gatewayThemeObserverInstalled) return;
+      gatewayThemeObserverInstalled = true;
+      var sync = function() { syncGatewayTheme(); };
+      var observer = new MutationObserver(sync);
+      observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'data-theme', 'data-color-scheme', 'style'] });
+      if (document.body) observer.observe(document.body, { attributes: true, attributeFilter: ['class', 'data-theme', 'data-color-scheme', 'style'] });
+      if (gatewayThemeMedia) {
+        if (gatewayThemeMedia.addEventListener) gatewayThemeMedia.addEventListener('change', sync);
+        else if (gatewayThemeMedia.addListener) gatewayThemeMedia.addListener(sync);
+      }
+    };
+    var readCookie = function(name) {
+      var parts = document.cookie.split(';');
+      for (var i = 0; i < parts.length; i += 1) {
+        var item = parts[i].trim();
+        if (item.indexOf(name + '=') === 0) {
+          return decodeURIComponent(item.slice(name.length + 1));
+        }
+      }
+      return '';
+    };
+    var lastForceChatClickAt = 0;
+    var lastForceWorkMenuClickAt = 0;
+    var modeRadioLabel = function(element) {
+      if (!element) return '';
+      return [
+        element.textContent || '',
+        element.getAttribute('aria-label') || '',
+        element.getAttribute('title') || '',
+        element.getAttribute('data-value') || '',
+        element.getAttribute('value') || ''
+      ].join(' ').replace(/\s+/g, ' ').trim().toLowerCase();
+    };
+    var labelContainsMode = function(label, mode) {
+      if (!label) return false;
+      if (mode === 'chat') return /(^|\s)(chat|聊天)(\s|$)/i.test(label);
+      return /(^|\s)(work|工作)(\s|$)/i.test(label);
+    };
+    var elementHasExactModeLabel = function(element, mode) {
+      if (!element) return false;
+      var labels = [
+        element.textContent || '',
+        element.getAttribute('aria-label') || '',
+        element.getAttribute('title') || '',
+        element.getAttribute('data-value') || '',
+        element.getAttribute('value') || ''
+      ];
+      var pattern = mode === 'chat'
+        ? /^(?:(?:chat|聊天)\s*)+$/i
+        : /^(?:(?:work|工作)\s*)+$/i;
+      for (var i = 0; i < labels.length; i += 1) {
+        var label = labels[i].replace(/[·•]/g, ' ').replace(/\s+/g, ' ').trim();
+        if (pattern.test(label)) return true;
+      }
+      return false;
+    };
+    var elementOrChildHasExactModeLabel = function(element, mode) {
+      if (elementHasExactModeLabel(element, mode)) return true;
+      var children = element.querySelectorAll('span, [aria-label], [title], [data-value], [value]');
+      for (var i = 0; i < children.length; i += 1) {
+        if (elementHasExactModeLabel(children[i], mode)) return true;
+      }
+      return false;
+    };
+    var modeElementIsVisible = function(element) {
+      return !!(element && element.isConnected && element.getClientRects().length);
+    };
+    var modeElementIsDisabled = function(element) {
+      return !!(element && (element.disabled || element.getAttribute('aria-disabled') === 'true'));
+    };
+    var clickChatModeCandidate = function(candidate) {
+      if (!modeElementIsVisible(candidate) || modeElementIsDisabled(candidate)) return false;
+      if (!elementOrChildHasExactModeLabel(candidate, 'chat')) return false;
+      if (candidate.getAttribute('aria-checked') === 'true' ||
+          candidate.getAttribute('aria-selected') === 'true' ||
+          candidate.getAttribute('aria-pressed') === 'true') return true;
+      lastForceChatClickAt = Date.now();
+      candidate.click();
+      return true;
+    };
+    var clickVisibleChatMode = function() {
+      var directCandidates = document.querySelectorAll(
+        '[role="menuitem"], [role="option"], [role="radio"]'
+      );
+      for (var i = 0; i < directCandidates.length; i += 1) {
+        if (clickChatModeCandidate(directCandidates[i])) return true;
+      }
+      var popupRoots = document.querySelectorAll(
+        '[role="menu"], [role="listbox"], [data-radix-menu-content], [data-headlessui-menu-items]'
+      );
+      for (var rootIndex = 0; rootIndex < popupRoots.length; rootIndex += 1) {
+        if (!modeElementIsVisible(popupRoots[rootIndex])) continue;
+        var popupCandidates = popupRoots[rootIndex].querySelectorAll('button, [role="button"]');
+        for (var candidateIndex = 0; candidateIndex < popupCandidates.length; candidateIndex += 1) {
+          if (clickChatModeCandidate(popupCandidates[candidateIndex])) return true;
+        }
+      }
+      var workControls = document.querySelectorAll('button, [role="button"], [aria-haspopup]');
+      var workMenuExpanded = false;
+      for (var workIndex = 0; workIndex < workControls.length; workIndex += 1) {
+        if (workControls[workIndex].getAttribute('aria-expanded') === 'true' &&
+            elementOrChildHasExactModeLabel(workControls[workIndex], 'work')) {
+          workMenuExpanded = true;
+          break;
+        }
+      }
+      if (workMenuExpanded) {
+        var expandedMenuCandidates = document.querySelectorAll('button, [role="button"]');
+        for (var expandedIndex = 0; expandedIndex < expandedMenuCandidates.length; expandedIndex += 1) {
+          if (clickChatModeCandidate(expandedMenuCandidates[expandedIndex])) return true;
+        }
+      }
+      return false;
+    };
+    var findWorkModeTrigger = function() {
+      var candidates = document.querySelectorAll('button, [role="button"], [aria-haspopup]');
+      var fallback = null;
+      for (var i = 0; i < candidates.length; i += 1) {
+        var candidate = candidates[i];
+        if (!modeElementIsVisible(candidate) || modeElementIsDisabled(candidate)) continue;
+        if (!elementOrChildHasExactModeLabel(candidate, 'work')) continue;
+        if (candidate.getAttribute('aria-expanded') === 'true') return null;
+        if (candidate.hasAttribute('aria-haspopup')) return candidate;
+        var rect = candidate.getBoundingClientRect();
+        if (!fallback || rect.top < fallback.getBoundingClientRect().top) fallback = candidate;
+      }
+      return fallback;
+    };
+    var forceWorkModeToChat = function() {
+      if (!forceChatMode) return;
+      var now = Date.now();
+      if (now - lastForceChatClickAt < 1000) return;
+      var radios = document.querySelectorAll('button[role="radio"], [role="radio"]');
+      var chatRadio = null;
+      var activeWorkRadio = null;
+      for (var i = 0; i < radios.length; i += 1) {
+        var label = modeRadioLabel(radios[i]);
+        if (!chatRadio && labelContainsMode(label, 'chat')) chatRadio = radios[i];
+        if (radios[i].getAttribute('aria-checked') === 'true' && labelContainsMode(label, 'work')) {
+          activeWorkRadio = radios[i];
+        }
+      }
+      if (!chatRadio && activeWorkRadio) {
+        var group = activeWorkRadio.closest('[role="radiogroup"]') || activeWorkRadio.parentElement;
+        if (group) {
+          var groupRadios = group.querySelectorAll('button[role="radio"], [role="radio"]');
+          if (groupRadios.length === 2) {
+            chatRadio = groupRadios[0] === activeWorkRadio ? groupRadios[1] : groupRadios[0];
+          }
+        }
+      }
+      if (chatRadio && chatRadio.getAttribute('aria-checked') !== 'true' && !chatRadio.disabled) {
+        lastForceChatClickAt = now;
+        chatRadio.click();
+        return;
+      }
+      if (clickVisibleChatMode()) return;
+      if (now - lastForceWorkMenuClickAt < 1000) return;
+      var workTrigger = findWorkModeTrigger();
+      if (!workTrigger) return;
+      lastForceWorkMenuClickAt = now;
+      workTrigger.click();
+      window.setTimeout(forceWorkModeToChat, 150);
+    };
+    if (forceChatMode) {
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', forceWorkModeToChat, { once: true });
+      } else {
+        forceWorkModeToChat();
+      }
+      window.setInterval(forceWorkModeToChat, 500);
+    }
+    var clamp = function(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    };
+    var setAnchorSide = function(anchor, side) {
+      anchor.setAttribute('data-side', side === 'left' ? 'left' : 'right');
+    };
+    var getNearestSide = function(anchor) {
+      return anchor.offsetLeft + anchor.offsetWidth / 2 < window.innerWidth / 2 ? 'left' : 'right';
+    };
+    var applyPosition = function(anchor, x, y) {
+      var maxX = Math.max(0, window.innerWidth - anchor.offsetWidth);
+      var maxY = Math.max(0, window.innerHeight - anchor.offsetHeight);
+      var nextX = clamp(x, 0, maxX);
+      anchor.style.left = nextX + 'px';
+      anchor.style.top = clamp(y, 0, maxY) + 'px';
+      anchor.style.right = 'auto';
+      setAnchorSide(anchor, nextX + anchor.offsetWidth / 2 < window.innerWidth / 2 ? 'left' : 'right');
+    };
+    var restorePosition = function(anchor) {
+      try {
+        var raw = window.localStorage.getItem(storageKey);
+        if (!raw) return false;
+        var saved = JSON.parse(raw);
+        if (typeof saved.x !== 'number' || typeof saved.y !== 'number') return false;
+        applyPosition(anchor, saved.x, saved.y);
+        return true;
+      } catch (error) {}
+      return false;
+    };
+    var persistPosition = function(anchor) {
+      if (anchor.getAttribute('data-collapsed') === 'true') return;
+      try {
+        window.localStorage.setItem(storageKey, JSON.stringify({
+          x: anchor.offsetLeft,
+          y: anchor.offsetTop
+        }));
+      } catch (error) {}
+    };
+    var readCollapsedState = function() {
+      try {
+        var raw = window.localStorage.getItem(collapsedStorageKey);
+        if (!raw) return null;
+        var saved = JSON.parse(raw);
+        if (!saved || typeof saved !== 'object') return null;
+        return saved;
+      } catch (error) {}
+      return null;
+    };
+    var persistCollapsedState = function(anchor) {
+      try {
+        window.localStorage.setItem(collapsedStorageKey, JSON.stringify({
+          collapsed: anchor.getAttribute('data-collapsed') === 'true',
+          side: anchor.getAttribute('data-side') === 'left' ? 'left' : 'right',
+          y: anchor.offsetTop
+        }));
+      } catch (error) {}
+    };
+    var dockCollapsed = function(anchor, side, y) {
+      var nextSide = side === 'left' ? 'left' : 'right';
+      setAnchorSide(anchor, nextSide);
+      var maxY = Math.max(0, window.innerHeight - anchor.offsetHeight);
+      var nextY = typeof y === 'number' ? y : anchor.offsetTop;
+      anchor.style.top = clamp(nextY, 0, maxY) + 'px';
+      anchor.style.right = 'auto';
+      anchor.style.left = nextSide === 'left'
+        ? '0px'
+        : Math.max(0, window.innerWidth - anchor.offsetWidth) + 'px';
+    };
+    var restoreExpandedPosition = function(anchor) {
+      if (restorePosition(anchor)) return;
+      var side = anchor.getAttribute('data-side') === 'left' ? 'left' : 'right';
+      var gutter = window.innerWidth <= 640 ? 10 : 18;
+      var x = side === 'left' ? gutter : window.innerWidth - anchor.offsetWidth - gutter;
+      applyPosition(anchor, x, anchor.offsetTop || gutter);
+    };
+    var mount = function() {
+      if (document.getElementById('gateway-user-logout-anchor')) return;
+      var anchor = document.createElement('div');
+      anchor.id = 'gateway-user-logout-anchor';
+      var shell = document.createElement('div');
+      shell.id = 'gateway-user-logout-shell';
+      shell.setAttribute('data-dragging', 'false');
+      var loginMode = readCookie('login_mode');
+      var banner = document.createElement('div');
+      banner.id = 'gateway-user-mode-banner';
+      var bannerRisk = document.createElement('strong');
+      bannerRisk.textContent = "当前降智风险: 未知";
+      var bannerDifficulty = document.createElement('div');
+      bannerDifficulty.textContent = "当前POW难度检测值为: 等待检测";
+      banner.appendChild(bannerRisk);
+      banner.appendChild(bannerDifficulty);
+      anchor.appendChild(banner);
+      var applyPowSnapshot = function(data) {
+        data = data || {};
+        bannerRisk.textContent = '当前降智风险: ' + (data.current_risk || '未知');
+        bannerDifficulty.textContent = '当前POW难度检测值为: ' + (data.difficulty || '等待检测');
+      };
+      var handle = document.createElement('div');
+      handle.id = 'gateway-user-logout-handle';
+      handle.title = '拖动换位置';
+      var actions = document.createElement('div');
+      actions.id = 'gateway-user-logout-actions';
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = '返回后台 / 换号';
+      button.onclick = function() { window.location.href = '/api/user-logout'; };
+      var refreshButton = document.createElement('button');
+      refreshButton.type = 'button';
+      refreshButton.id = 'gateway-user-refresh-button';
+      refreshButton.textContent = 'CFToken失效';
+      refreshButton.onclick = function() {
+        refreshButton.disabled = true;
+        refreshButton.textContent = '刷新中...';
+        fetch('/api/refresh-cfbypass', {
+          method: 'POST',
+          credentials: 'same-origin'
+        }).then(function(response) {
+          if (!response.ok) throw new Error('refresh failed');
+          window.location.reload();
+        }).catch(function() {
+          refreshButton.disabled = false;
+          refreshButton.textContent = 'CFToken失效';
+          alert('刷新 CFToken 失败');
+        });
+      };
+      var switchButton = document.createElement('button');
+      switchButton.type = 'button';
+      switchButton.id = 'gateway-user-switch-button';
+      if (loginMode === 'web') {
+        switchButton.textContent = '切到 API 模式';
+        switchButton.onclick = function() { window.location.href = '/api/user-logout?mode=api'; };
+      } else {
+        switchButton.textContent = '切到混合模式';
+        switchButton.onclick = function() { window.location.href = '/api/user-logout?mode=web'; };
+      }
+      var collapseButton = document.createElement('button');
+      collapseButton.type = 'button';
+      collapseButton.id = 'gateway-user-collapse-button';
+      collapseButton.textContent = '收起控制条';
+      collapseButton.title = '收起到侧边栏';
+      collapseButton.setAttribute('aria-label', collapseButton.title);
+      var syncCollapseButton = function() {
+        var collapsed = anchor.getAttribute('data-collapsed') === 'true';
+        var side = anchor.getAttribute('data-side') === 'left' ? 'left' : 'right';
+        collapseButton.textContent = collapsed
+          ? (side === 'left' ? '›' : '‹')
+          : (side === 'left' ? '‹' : '›');
+        collapseButton.title = collapsed ? '展开控制条' : '收起到侧边栏';
+        collapseButton.setAttribute('aria-label', collapseButton.title);
+      };
+      var setCollapsed = function(collapsed, side, y) {
+        anchor.setAttribute('data-collapsed', collapsed ? 'true' : 'false');
+        if (collapsed) {
+          dockCollapsed(anchor, side || getNearestSide(anchor), y);
+          window.requestAnimationFrame(function() {
+            dockCollapsed(anchor, anchor.getAttribute('data-side'), y);
+            syncCollapseButton();
+            persistCollapsedState(anchor);
+          });
+        } else {
+          window.requestAnimationFrame(function() {
+            restoreExpandedPosition(anchor);
+            syncCollapseButton();
+            persistCollapsedState(anchor);
+            persistPosition(anchor);
+          });
+        }
+        syncCollapseButton();
+      };
+      collapseButton.onclick = function(event) {
+        event.stopPropagation();
+        var collapsed = anchor.getAttribute('data-collapsed') === 'true';
+        if (collapsed) {
+          setCollapsed(false);
+        } else {
+          setCollapsed(true, getNearestSide(anchor));
+        }
+      };
+      var dragState = null;
+      handle.addEventListener('pointerdown', function(event) {
+        if (anchor.getAttribute('data-collapsed') === 'true') return;
+        dragState = {
+          offsetX: event.clientX - anchor.offsetLeft,
+          offsetY: event.clientY - anchor.offsetTop,
+        };
+        shell.setAttribute('data-dragging', 'true');
+        handle.setPointerCapture(event.pointerId);
+        event.preventDefault();
+      });
+      handle.addEventListener('pointermove', function(event) {
+        if (!dragState) return;
+        applyPosition(anchor, event.clientX - dragState.offsetX, event.clientY - dragState.offsetY);
+        syncCollapseButton();
+      });
+      var stopDrag = function(event) {
+        if (!dragState) return;
+        dragState = null;
+        shell.setAttribute('data-dragging', 'false');
+        try {
+          handle.releasePointerCapture(event.pointerId);
+        } catch (error) {}
+        persistPosition(anchor);
+        persistCollapsedState(anchor);
+      };
+      handle.addEventListener('pointerup', stopDrag);
+      handle.addEventListener('pointercancel', stopDrag);
+      window.addEventListener('resize', function() {
+        if (anchor.getAttribute('data-collapsed') === 'true') {
+          dockCollapsed(anchor, anchor.getAttribute('data-side'), anchor.offsetTop);
+          syncCollapseButton();
+          persistCollapsedState(anchor);
+        } else {
+          applyPosition(anchor, anchor.offsetLeft, anchor.offsetTop);
+          syncCollapseButton();
+          persistPosition(anchor);
+        }
+      });
+      shell.appendChild(handle);
+      actions.appendChild(button);
+      actions.appendChild(refreshButton);
+      actions.appendChild(switchButton);
+      shell.appendChild(actions);
+      shell.appendChild(collapseButton);
+      anchor.appendChild(shell);
+      document.body.appendChild(anchor);
+      syncGatewayTheme(anchor);
+      ensureGatewayThemeObserver();
+      anchor.setAttribute('data-collapsed', 'false');
+      setAnchorSide(anchor, getNearestSide(anchor));
+      restorePosition(anchor);
+      var savedCollapsed = readCollapsedState();
+      if (savedCollapsed && savedCollapsed.collapsed === true) {
+        setCollapsed(true, savedCollapsed.side, savedCollapsed.y);
+      } else {
+        syncCollapseButton();
+      }
+    };
+    if (document.readyState === 'complete') {
+      mount();
+    } else {
+      window.addEventListener('load', mount, { once: true });
+    }
+    setInterval(mount, 2000);
+  }
+})();</script>

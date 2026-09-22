@@ -1,0 +1,26 @@
+{
+  "label": "MODIFIED",
+  "command": [
+    "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo\\bin\\cargo.exe",
+    "run",
+    "--locked",
+    "--offline",
+    "--quiet",
+    "--manifest-path",
+    "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\Cargo.toml",
+    "--example",
+    "upstream_probe"
+  ],
+  "input": {
+    "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+    "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+    "GATEWAY_COMPAT_PROFILE": "mirror",
+    "GATEWAY_UPSTREAM_MODE": "configured",
+    "DJANGO_UPSTREAM": "http://django:8000",
+    "CHATGPT_BASE_URL": "https://chat.example.invalid",
+    "CHATGPT_CDN_BASE_URL": "https://static.example.invalid"
+  },
+  "stdout": "accepted django=http://django:8000/ chat=https://chat.example.invalid/\n",
+  "stderr": "",
+  "exit_status": 0
+}
