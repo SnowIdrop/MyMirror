@@ -1,0 +1,48 @@
+{
+  "candidate_sha256": "f95fc1eeb7d239dfc5b5e6e999b7c2443dc082a63bc9f6f6f7007e6bc3c53c6e",
+  "scope": "read-only source review plus coordinator-reported synthetic behavior; no product patch or duplicate runtime reproduction",
+  "runtime_evidence_status": "await complete coordinator handoff and primary evidence review",
+  "items": [
+    {
+      "id": "ordinary-read-generation-not-pinned",
+      "source_confirmed": [
+        {
+          "path": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\src\\server.rs",
+          "lines": "883-942",
+          "fact": "Session stores user/account/policy; authority network await follows token lookup and does not pin credential generation in the returned Session."
+        },
+        {
+          "path": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\src\\server\\proxy.rs",
+          "lines": "185-203,313-318",
+          "fact": "me and conversations both call load_credentials, whose lookup uses user_name/chatgpt_username but not mirror_token."
+        }
+      ],
+      "reported_runtime": "Coordinator reports a pending me request used the new token/cookie generation after same-user same-account relogin, returned 200, and the next old-token request returned 401.",
+      "limits": "No cross-user or cross-account behavior reported. List shares the source helper but has not been independently reproduced here.",
+      "refresh_distinction": "refresh_auth_session uses user/account/mirror_token in its credential query (proxy.rs:263-274) and auth_session revalidates after IO. Its tested guarantee must not be extended to me/list."
+    },
+    {
+      "id": "saved-proxy-profile-not-proven-on-request-path",
+      "source_confirmed": [
+        {
+          "path": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\src\\server.rs",
+          "lines": "73-80",
+          "fact": "Shared App client is built with no_proxy."
+        },
+        {
+          "path": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\src\\server\\proxy.rs",
+          "lines": "479-507",
+          "fact": "Ordinary upstream sender uses app.client directly."
+        },
+        {
+          "path": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\src\\server.rs",
+          "lines": "747-754",
+          "fact": "The proxy test endpoint builds a different client with an explicit Proxy::all; it is not proof of ordinary request routing."
+        }
+      ],
+      "reported_runtime": "Coordinator reports enabled proxy config saved with 200 and proxy_node_id=71 persisted, but the me proxy-trap observed zero hits.",
+      "limits": "Complete input validity, runtime traces and profile-resolution behavior still await evidence handoff; no broader transport/OS-egress conclusion."
+    }
+  ],
+  "action_boundary": "Record both risks in the identity gate. No concurrent product fix, fingerprint scripts, architecture change or real-account testing authorized."
+}

@@ -32,5 +32,16 @@
         "free"
       ]
     }
+  },
+  {
+    "id": "generation-and-proxy-pending-findings",
+    "observed_at": "2026-09-23T00:54:41.123804+08:00",
+    "check": "candidate archive/live-source byte equality and targeted source query/client-path review",
+    "exit_status": 0,
+    "candidate_sha256": "f95fc1eeb7d239dfc5b5e6e999b7c2443dc082a63bc9f6f6f7007e6bc3c53c6e",
+    "product_changed": false,
+    "runtime_tests_rerun": false,
+    "runtime_evidence_status": "reported by coordinator; full handoff pending",
+    "findings": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\upstream-identity-pending-findings.json"
   }
 ]

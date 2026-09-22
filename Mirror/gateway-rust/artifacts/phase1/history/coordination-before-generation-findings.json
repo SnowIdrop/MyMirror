@@ -82,13 +82,8 @@
   "pending_integration": "This reviewed batch integrated. ACL remains unexported and unused by product routes/DB. Admin is contract-only. No handoff.",
   "metadata_history": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\history\\coordination-before-identity-gate.json",
   "upstream_visible_identity_gate": {
-    "status": "New differences reported; source inspection confirms distinct credential lookup and egress paths. Runtime evidence pending coordinator handoff; gate not cleared for opening pages.",
-    "binding": [
-      "upstream account",
-      "authenticated session",
-      "egress profile",
-      "client profile"
-    ],
+    "status": "Required before opening pages; end-to-end consistency not yet verified. Await coordinator's read-only/offline audit, then review before changing main acceptance results.",
+    "binding": ["upstream account", "authenticated session", "egress profile", "client profile"],
     "invariants": [
       "No random or silent identity/profile switching within a session",
       "Verify HTTP, downloads, WebSocket and actual voice transport separately; do not assume voice uses WebSocket",
@@ -97,15 +92,10 @@
       "Refresh/reconnect/restart/egress failure must not silently switch identity or automatically replay generation",
       "Network identity is not a substitute for resource ACL"
     ],
-    "acceptance_categories": [
-      "verified consistent",
-      "explained differences",
-      "not yet verified"
-    ],
+    "acceptance_categories": ["verified consistent", "explained differences", "not yet verified"],
     "architecture_boundary": "Report ordinary reverse-proxy limits and tradeoffs. No added fingerprint-spoofing scripts or remote-browser architecture; architecture direction changes require user confirmation. No promise of an undetectable proxy.",
     "authorization_boundary": "No real-account requests, external writes or production switching authorized",
-    "owner_activity": "Read-only source review and metadata update only; no product patch or duplicate runtime reproduction.",
-    "pending_findings": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\upstream-identity-pending-findings.json"
+    "owner_activity": "Metadata-only correction at stable checkpoint; no product source writes or owned gateway/QEMU processes running at observation"
   },
   "integration_complete": {
     "snapshot": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\coordination\\integrated-f95fc1eeb7d2.zip",
@@ -147,7 +137,5 @@
     "roles_unchanged": true,
     "processes": "all fixture/build/probe processes completed",
     "base_commit": "680aed1"
-  },
-  "credential_generation_guarantee_scope": "Exact-token credential snapshot and post-IO revocation test apply only to auth_session refresh. Generic me/list use a different unpinned user/account credential lookup; not covered by that guarantee.",
-  "current_audit_action": "Await complete line-2 evidence; retain source-confirmed risks and distinguish reported runtime results. No product implementation changes this turn."
+  }
 }
