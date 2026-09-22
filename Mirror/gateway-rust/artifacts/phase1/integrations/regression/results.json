@@ -1,0 +1,954 @@
+{
+  "status": "completed_for_assigned_test_scope",
+  "owner_integration_status": "ready_not_applied_to_owner",
+  "worktree": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild",
+  "commit": "b837ba2556bc3363570d247e61246e6b8f43421c",
+  "static_input_sha256": "60ab65054a9aadec73aa222a21ff363295c5fda4e896fcbd7e5453fa3b2eb783",
+  "changed_file": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coord-input\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\tests\\coord_boundary_regression.rs",
+  "changed_file_sha256": "e2f09e37db56ff7f25129304933d0b42332bc1da2aa169a90ad7bd2dd0845ecc",
+  "changed_symbols": [
+    "coord_unknown_route_matrix_stays_closed",
+    "coord_client_target_overrides_cannot_select_egress",
+    "coord_browser_credentials_absent_from_chat_and_responses",
+    "coord_transport_error_does_not_echo_credentials",
+    "coord_local_sessions_distinct_accounts_and_logout_are_isolated",
+    "coord_shared_account_token_rotation_preserves_other_user",
+    "coord_invalid_credentials_fail_without_egress_or_echo",
+    "coord_inactive_authority_blocks_chat_without_cross_user_fallback"
+  ],
+  "production_changes": [],
+  "roles": {
+    "MODIFIED_FILE": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\MODIFIED_FILE.zip",
+    "DIFF_FILE": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\DIFF_FILE.patch",
+    "VERIFICATION": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\VERIFICATION.txt",
+    "ROLLBACK": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\ROLLBACK.sh"
+  },
+  "integration_patch": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\INTEGRATION.patch",
+  "runs": {
+    "baseline": {
+      "record": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\baseline\\command.json",
+      "exit_status": 0,
+      "passed": 64,
+      "failed": 0,
+      "sha256": "d5b8b4f2a955d8dfa35c8be129cde4257fd6d676da705cd01dbbc1a2c1e783da",
+      "literal_test_summaries": [
+        "test result: ok. 45 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.23s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.61s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s",
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+      ]
+    },
+    "modified": {
+      "record": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\modified\\command.json",
+      "exit_status": 101,
+      "passed": 65,
+      "failed": 1,
+      "sha256": "bf0f9c7bd4ca942edc97925034ab5d5c7bf13c035b9fc00df75b3fec8a99a1ed",
+      "literal_test_summaries": [
+        "test result: ok. 45 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.31s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.66s",
+        "test result: FAILED. 7 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.48s"
+      ],
+      "retained_input": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\modified\\input.zip"
+    },
+    "modified-final": {
+      "record": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\modified-final\\command.json",
+      "exit_status": 0,
+      "passed": 72,
+      "failed": 0,
+      "sha256": "5277bebb58ee411ec2ca0fac56b74a95063a16a86d35d82530e86eae8f1a774c",
+      "literal_test_summaries": [
+        "test result: ok. 45 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.61s",
+        "test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.43s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s",
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+      ],
+      "retained_input": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\modified-final\\input.zip"
+    },
+    "modified-verified": {
+      "record": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\modified-verified\\command.json",
+      "exit_status": 0,
+      "passed": 72,
+      "failed": 0,
+      "sha256": "8d8476e218de3c8bddec3a1c35bc1ae51c69782f2661bc1df3f7b0a3bf704d17",
+      "literal_test_summaries": [
+        "test result: ok. 45 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.58s",
+        "test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.39s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s",
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+      ]
+    },
+    "rollback": {
+      "record": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\rollback\\command.json",
+      "exit_status": 0,
+      "passed": 64,
+      "failed": 0,
+      "sha256": "d5b8b4f2a955d8dfa35c8be129cde4257fd6d676da705cd01dbbc1a2c1e783da",
+      "literal_test_summaries": [
+        "test result: ok. 45 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.59s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.14s",
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+      ]
+    },
+    "static-60ab6505": {
+      "record": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\static-60ab6505\\command.json",
+      "exit_status": 0,
+      "passed": 78,
+      "failed": 0,
+      "sha256": "60ab65054a9aadec73aa222a21ff363295c5fda4e896fcbd7e5453fa3b2eb783",
+      "literal_test_summaries": [
+        "test result: ok. 46 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.22s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.60s",
+        "test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.41s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s",
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+      ]
+    }
+  },
+  "events": {
+    "modified-verified": {
+      "browser_credentials": {
+        "file": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\modified-verified\\events\\browser_credentials.json",
+        "sha256": "5aa808f3b16a044bc7b2eb72dd0db0bbc6ea571168389d229be02c5392572df9",
+        "client_requests": 3,
+        "client_responses": 3,
+        "statuses": {
+          "200": 2,
+          "503": 1
+        },
+        "egress": {
+          "django": 3,
+          "chat": 3,
+          "cdn-unwired": 0,
+          "client-target-decoy": 0
+        }
+      },
+      "distinct_accounts": {
+        "file": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\modified-verified\\events\\distinct_accounts.json",
+        "sha256": "3deda9a17dfd1346f86fb63b391692ca31e59d8270b3986fe94501e077ad5a62",
+        "client_requests": 13,
+        "client_responses": 13,
+        "statuses": {
+          "200": 13
+        },
+        "egress": {
+          "django": 11,
+          "chat": 2,
+          "cdn-unwired": 0,
+          "client-target-decoy": 0
+        }
+      },
+      "inactive_authority": {
+        "file": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\modified-verified\\events\\inactive_authority.json",
+        "sha256": "eba64eb04825f754f9f42db4effd637fb9eb8b8050cd4427c21e837a563316c2",
+        "client_requests": 3,
+        "client_responses": 3,
+        "statuses": {
+          "200": 2,
+          "401": 1
+        },
+        "egress": {
+          "django": 3,
+          "chat": 1,
+          "cdn-unwired": 0,
+          "client-target-decoy": 0
+        }
+      },
+      "invalid_credentials": {
+        "file": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\modified-verified\\events\\invalid_credentials.json",
+        "sha256": "4b254bcfc2cfc0182b981fba4c11f9e2bc0f01fed85668ce2617ca6337232015",
+        "client_requests": 5,
+        "client_responses": 5,
+        "statuses": {
+          "401": 5
+        },
+        "egress": {
+          "django": 0,
+          "chat": 0,
+          "cdn-unwired": 0,
+          "client-target-decoy": 0
+        }
+      },
+      "shared_account": {
+        "file": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\modified-verified\\events\\shared_account.json",
+        "sha256": "53eeb6c73ddb0c1f210126e8fbf4e86af31377f21c1d96bedbe714767333e87b",
+        "client_requests": 11,
+        "client_responses": 11,
+        "statuses": {
+          "200": 10,
+          "302": 1
+        },
+        "egress": {
+          "django": 7,
+          "chat": 3,
+          "cdn-unwired": 0,
+          "client-target-decoy": 0
+        }
+      },
+      "target_overrides": {
+        "file": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\modified-verified\\events\\target_overrides.json",
+        "sha256": "9fa6c0d50f601acc0680fd2916a9712fde5ff69e60f7d5f25c0a47f81da563da",
+        "client_requests": 8,
+        "client_responses": 8,
+        "statuses": {
+          "200": 8
+        },
+        "egress": {
+          "django": 8,
+          "chat": 8,
+          "cdn-unwired": 0,
+          "client-target-decoy": 0
+        }
+      },
+      "transport_error": {
+        "file": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\modified-verified\\events\\transport_error.json",
+        "sha256": "b8ebd3965889615a5c1f1e6f5211443e060a80b3d0570635ccff0df56dd07545",
+        "client_requests": 2,
+        "client_responses": 2,
+        "statuses": {
+          "200": 1,
+          "502": 1
+        },
+        "egress": {
+          "django": 2,
+          "chat": 1,
+          "cdn-unwired": 0,
+          "client-target-decoy": 0
+        }
+      },
+      "unknown_route_matrix": {
+        "file": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\modified-verified\\events\\unknown_route_matrix.json",
+        "sha256": "97880dcdb1d1b6256791ad335a9d413762826d5b497cc7ddd08b58fb2e20e109",
+        "client_requests": 45,
+        "client_responses": 45,
+        "statuses": {
+          "200": 1,
+          "401": 20,
+          "503": 20,
+          "404": 4
+        },
+        "egress": {
+          "django": 21,
+          "chat": 1,
+          "cdn-unwired": 0,
+          "client-target-decoy": 0
+        }
+      }
+    },
+    "static-60ab6505": {
+      "browser_credentials": {
+        "file": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\static-60ab6505\\events\\browser_credentials.json",
+        "sha256": "67a547264166822354b06a5ecc9ee7c2fd60c62a4828d359c036c34cef6be917",
+        "client_requests": 3,
+        "client_responses": 3,
+        "statuses": {
+          "200": 2,
+          "503": 1
+        },
+        "egress": {
+          "django": 3,
+          "chat": 3,
+          "cdn-unwired": 0,
+          "client-target-decoy": 0
+        }
+      },
+      "distinct_accounts": {
+        "file": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\static-60ab6505\\events\\distinct_accounts.json",
+        "sha256": "ec5165a80b5a57f7a20bceab89cb56278fa4ca3919330de5b1e30d1724f01ecc",
+        "client_requests": 13,
+        "client_responses": 13,
+        "statuses": {
+          "200": 13
+        },
+        "egress": {
+          "django": 11,
+          "chat": 2,
+          "cdn-unwired": 0,
+          "client-target-decoy": 0
+        }
+      },
+      "inactive_authority": {
+        "file": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\static-60ab6505\\events\\inactive_authority.json",
+        "sha256": "fbe9e138ac6689ca2b01c8708e4b51ed27573400617e1fb7fe4367a6d55eadb0",
+        "client_requests": 3,
+        "client_responses": 3,
+        "statuses": {
+          "200": 2,
+          "401": 1
+        },
+        "egress": {
+          "django": 3,
+          "chat": 1,
+          "cdn-unwired": 0,
+          "client-target-decoy": 0
+        }
+      },
+      "invalid_credentials": {
+        "file": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\static-60ab6505\\events\\invalid_credentials.json",
+        "sha256": "fa5d28dee2dbecfe4cadab68d6124711a46272080bedfdba454e90eaf698821c",
+        "client_requests": 5,
+        "client_responses": 5,
+        "statuses": {
+          "401": 5
+        },
+        "egress": {
+          "django": 0,
+          "chat": 0,
+          "cdn-unwired": 0,
+          "client-target-decoy": 0
+        }
+      },
+      "shared_account": {
+        "file": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\static-60ab6505\\events\\shared_account.json",
+        "sha256": "60564e868c81d66758880967852c22994d3f182bda8df932c837e95d52cba62b",
+        "client_requests": 11,
+        "client_responses": 11,
+        "statuses": {
+          "200": 10,
+          "302": 1
+        },
+        "egress": {
+          "django": 7,
+          "chat": 3,
+          "cdn-unwired": 0,
+          "client-target-decoy": 0
+        }
+      },
+      "target_overrides": {
+        "file": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\static-60ab6505\\events\\target_overrides.json",
+        "sha256": "1e71644d80cd94a1b1f6c05e89ffb9ba79bc93ddd179e64ed93f609bbd5e7c65",
+        "client_requests": 8,
+        "client_responses": 8,
+        "statuses": {
+          "200": 8
+        },
+        "egress": {
+          "django": 8,
+          "chat": 8,
+          "cdn-unwired": 0,
+          "client-target-decoy": 0
+        }
+      },
+      "transport_error": {
+        "file": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\static-60ab6505\\events\\transport_error.json",
+        "sha256": "451a9b70d9eafe839185da0b8cb563307d6edf8aa334ace97388e7f789a1736b",
+        "client_requests": 2,
+        "client_responses": 2,
+        "statuses": {
+          "200": 1,
+          "502": 1
+        },
+        "egress": {
+          "django": 2,
+          "chat": 1,
+          "cdn-unwired": 0,
+          "client-target-decoy": 0
+        }
+      },
+      "unknown_route_matrix": {
+        "file": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\static-60ab6505\\events\\unknown_route_matrix.json",
+        "sha256": "c7707b2f784d98a8dc0cbcd3a54c1a7bd87e05ca88bed4a515bd99f7f6eb8da5",
+        "client_requests": 45,
+        "client_responses": 45,
+        "statuses": {
+          "200": 1,
+          "401": 20,
+          "503": 20,
+          "404": 4
+        },
+        "egress": {
+          "django": 21,
+          "chat": 1,
+          "cdn-unwired": 0,
+          "client-target-decoy": 0
+        }
+      }
+    }
+  },
+  "limitations": [
+    "Only synthetic numeric-loopback HTTP fixtures; no real account, TLS, browser, or production acceptance.",
+    "HTML/bootstrap/resource-ID probes assert closed gates only, not successful HTML initialization or real upstream routes.",
+    "New tests do not implement or duplicate static/page/refresh fixtures. Owner's five static tests were rerun in static all-targets.",
+    "Local session isolation is not resource ACL, stable Django identity/admin-role, shared-generation, or refresh-chain verification.",
+    "Test lines 336/398 assume fixed login egress counts and line 435 assumes local auth_session causes no chat call: these apply only to b837/static60ab. When owner implements refresh, upgrade fixtures/counts using observed accounts/check then me; retain safety assertions, do not prohibit refresh or skip tests.",
+    "Egress evidence is received HTTP at the four local fixture listeners, not full-system packet capture.",
+    "Common Cookie/Authorization/X-Mirror-Token/Proxy-Authorization fields are checked; no universal arbitrary-header/body leak claim.",
+    "Config is constructed with split local origins; the separate 30-case environment configuration script was not rerun.",
+    "No original workspace source, primary STATUS/four roles, production DB, credentials, or deployment state was written.",
+    "Archive rollback restores pristine b837 source bytes; does not restore databases or undo upstream actions."
+  ],
+  "hashes": {
+    "BASELINE.zip": "d5b8b4f2a955d8dfa35c8be129cde4257fd6d676da705cd01dbbc1a2c1e783da",
+    "MODIFIED_FILE.zip": "8d8476e218de3c8bddec3a1c35bc1ae51c69782f2661bc1df3f7b0a3bf704d17",
+    "RESTORED.zip": "d5b8b4f2a955d8dfa35c8be129cde4257fd6d676da705cd01dbbc1a2c1e783da",
+    "DIFF_FILE.patch": "c58cb538132ea6e720b68e4e8cb2c04b9f764795e62768b27cb2d8e42db8814e",
+    "ROLLBACK.sh": "41bc2cc4cc6fbedf7e05fd73aebf96037bbfd783f44df75ecb00758db4912169",
+    "INTEGRATION.patch": "08a1d1deea217769f08d81aa1a2b8ee0178bb220046c477d49dabc1196001b05",
+    "STATIC_BASELINE.zip": "60ab65054a9aadec73aa222a21ff363295c5fda4e896fcbd7e5453fa3b2eb783",
+    "STATIC_WITH_REGRESSION.zip": "bc016391d8192536a85061fffc395d1c9bdd98549442d8463a000a7415f1d8d7"
+  },
+  "public_wiring": "Only add tests/coord_boundary_regression.rs. Cargo discovers it automatically; no route/config/schema/dependency changes.",
+  "prior_failures": [
+    {
+      "kind": "fixture_lifecycle",
+      "run": "modified",
+      "exit_status": 101,
+      "observation": "left: 200; right: 502",
+      "cause": "Aborting Axum listener left pooled keep-alive connection alive; egress log showed second chat request.",
+      "fix": "Fixture responses close connections; unchanged product and 502/no-echo assertion passed on rerun."
+    },
+    {
+      "kind": "artifact_validation",
+      "exit_status": 1,
+      "observation": "AssertionError: source bytes differ after git apply",
+      "cause": "Git core.autocrlf converted 553 LF endings into CRLF; normalized bytes equal.",
+      "fix": "git -c core.autocrlf=false apply; exact byte equality verified."
+    },
+    {
+      "kind": "verification_runner",
+      "exit_status": 1,
+      "observation": "git diff --no-index --check returned 1 with no whitespace diagnostics",
+      "cause": "Runner incorrectly treated expected differences exit 1 as failure.",
+      "fix": "Retained outcome; explicit expected_exit=1 and empty stdout/stderr checked on corrected invocation."
+    },
+    {
+      "kind": "inspection_tool",
+      "observation": "The top-level limit parameter cannot be combined with files",
+      "fix": "Moved limits into files entries; no files modified by the failed inspection."
+    }
+  ],
+  "defensive_review": "Reviewed test/harness diff; no product fallbacks or broad refactor. Lifecycle cleanup and error assertions retained; find_map used directly.",
+  "command_records": [
+    {
+      "label": "baseline",
+      "archive": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\BASELINE.zip",
+      "sha256": "d5b8b4f2a955d8dfa35c8be129cde4257fd6d676da705cd01dbbc1a2c1e783da",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+        "test",
+        "--all-targets",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\baseline\\source\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\Cargo.toml",
+        "--",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression",
+      "input": "synthetic loopback fixtures; unchanged cargo arguments",
+      "env": {
+        "CARGO_HOME": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\cargo-home",
+        "CARGO_TARGET_DIR": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\target",
+        "RUSTUP_HOME": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\rustup",
+        "TEMP": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\baseline\\temp",
+        "TMP": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\baseline\\temp",
+        "COORD_EVIDENCE_DIR": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\baseline\\events",
+        "CARGO_NET_OFFLINE": "true"
+      },
+      "stdout": "\nrunning 45 tests\ntest config::tests::configured_services_accept_http_and_https_origins ... ok\ntest config::tests::offline_services_still_require_numeric_http_loopback ... ok\ntest config::tests::service_origins_reject_ambiguous_or_credential_bearing_bases ... ok\ntest crypto::tests::key_min_length_enforced ... ok\ntest crypto::tests::roundtrip_and_prefix_rules ... ok\ntest crypto::tests::sha256_prefix_hash ... ok\ntest crypto::tests::wrong_key_and_bad_payload_fail ... ok\ntest policy::tests::capability_allowlist_matches_id_and_alias ... ok\ntest policy::tests::check_request_enforces_model_when_present ... ok\ntest policy::tests::check_request_rejects_non_string_model ... ok\ntest policy::tests::config_type_errors_are_rejected_instead_of_silent_fallback ... ok\ntest policy::tests::delayed_revocation_does_not_hit_new_session ... ok\ntest policy::tests::disabled_capability_isolation_allows_any_id ... ok\ntest policy::tests::disabled_model_isolation_allows_any_model ... ok\ntest policy::tests::empty_model_allowlist_denies_every_model ... ok\ntest policy::tests::empty_model_or_capability_id_is_rejected ... ok\ntest policy::tests::expired_revocation_matches_nothing ... ok\ntest policy::tests::explicitly_empty_allowlist_denies_capability ... ok\ntest policy::tests::login_defaults_version_and_expiry_when_absent ... ok\ntest policy::tests::login_requires_identity_and_non_negative_quota ... ok\ntest policy::tests::missing_capability_initialization_fails_closed ... ok\ntest policy::tests::model_allowlist_rejects_unlisted_and_normalizes_case ... ok\ntest policy::tests::revocation_from_json_parses_delivery_and_rejects_invalid ... ok\ntest policy::tests::revocation_matches_exact_subject_and_version ... ok\ntest policy::tests::revocation_visitor_prefix_is_strict ... ok\ntest policy::tests::revocation_without_visitors_does_not_hit_visitor_session ... ok\ntest server::compression::tests::gzip_encodes_multiple_frames_and_propagates_stream_failure ... ok\ntest server::compression::tests::negotiation_prefers_quality_then_encoding_order ... ok\ntest server::compression::tests::predicate_uses_size_type_and_existing_encoding ... ok\ntest server::compression::tests::vary_detection_is_case_insensitive_substring ... ok\ntest server::management::tests::base_url_rules_match_observed_messages ... ok\ntest server::management::tests::protocol_and_mode_whitelists_match_observed_rejections ... ok\ntest server::proxy::tests::cf_clearance_prefers_named_cookie_and_joins ... ok\ntest server::proxy::tests::chat_origin_drops_port_and_referer_appends_slash ... ok\ntest server::proxy::tests::conversations_filter_keeps_scope_and_extra_keys ... ok\ntest server::proxy::tests::conversations_without_items_fall_back_to_empty_envelope ... ok\ntest server::proxy::tests::cookie_header_order_and_extra_cookie_parsing ... ok\ntest server::proxy::tests::request_headers_drop_client_proxy_ip_headers ... ok\ntest server::proxy::tests::request_headers_drop_credentials_and_connection_named_headers ... ok\ntest server::proxy::tests::response_headers_drop_transfer_encoding_and_mark_proxied ... ok\ntest storage::tests::backup_roundtrip_rejects_bad_payload_and_rolls_back ... ok\ntest storage::tests::migrate_reencrypts_and_clears_sessions ... ok\ntest storage::tests::migrate_wrong_source_key_stops_without_writes ... ok\ntest storage::tests::open_backfills_legacy_columns_and_encrypts_rows ... ok\ntest storage::tests::schema_has_eight_tables_and_settings_roundtrip ... ok\n\ntest result: ok. 45 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.23s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 13 tests\ntest http_restore_empty_object_is_noop ... ok\ntest http_restore_failure_rolls_back_every_table ... ok\ntest http_restore_legacy_ignores_non_array_and_unknown_keys ... ok\ntest http_restore_legacy_settings_upsert_keeps_other_rows ... ok\ntest http_restore_legacy_updates_existing_account_row ... ok\ntest http_restore_non_v2_version_uses_legacy_upsert ... ok\ntest http_restore_stores_values_as_is_without_crypto ... ok\ntest http_restore_strict_all_empty_arrays_clears_tables ... ok\ntest http_restore_strict_defaults_match_observations ... ok\ntest http_restore_strict_requires_every_table ... ok\ntest http_restore_strict_requires_row_fields_with_observed_messages ... ok\ntest restore_backup_keeps_strict_v2_contract ... ok\ntest runtime_validation_failure_rolls_back_the_complete_restore ... ok\n\ntest result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.61s\n\n\nrunning 3 tests\ntest migration_preserves_source_and_refuses_repeated_destination ... ok\ntest restore_wrong_key_leaves_existing_database_unchanged ... ok\ntest unknown_source_column_stops_before_destination_creation ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s\n\n\nrunning 2 tests\ntest mirror_authority_revocation_and_relogin_are_enforced ... ok\ntest offline_transport_rejects_external_and_ambiguous_targets ... ok\n\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s\n\n\nrunning 1 test\ntest decrypts_original_observed_session_credential ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+      "stderr": "   Compiling proc-macro2 v1.0.107\n   Compiling quote v1.0.47\n   Compiling unicode-ident v1.0.26\n   Compiling cfg-if v1.0.5\n   Compiling version_check v0.9.5\n   Compiling once_cell v1.21.4\n   Compiling windows-link v0.2.1\n   Compiling smallvec v1.16.1\n   Compiling typenum v1.20.1\n   Compiling shlex v2.0.1\n   Compiling find-msvc-tools v0.1.13\n   Compiling pin-project-lite v0.2.17\n   Compiling bytes v1.12.1\n   Compiling itoa v1.0.18\n   Compiling stable_deref_trait v1.2.1\n   Compiling parking_lot_core v0.9.12\n   Compiling getrandom v0.2.17\n   Compiling windows-sys v0.61.2\n   Compiling futures-core v0.3.34\n   Compiling scopeguard v1.2.0\n   Compiling zerocopy v0.8.57\n   Compiling rand_core v0.6.4\n   Compiling lock_api v0.4.14\n   Compiling log v0.4.34\n   Compiling zeroize v1.9.0\n   Compiling subtle v2.6.1\n   Compiling tracing-core v0.1.36\n   Compiling futures-sink v0.3.34\n   Compiling generic-array v0.14.7\n   Compiling slab v0.4.12\n   Compiling litemap v0.8.3\n   Compiling rustls-pki-types v1.15.1\n   Compiling cc v1.4.7\n   Compiling writeable v0.6.4\n   Compiling futures-task v0.3.34\n   Compiling cpufeatures v0.2.17\n   Compiling httparse v1.10.1\n   Compiling untrusted v0.9.0\n   Compiling http v1.5.0\n   Compiling parking_lot v0.12.5\n   Compiling rustls v0.23.45\n   Compiling icu_properties_data v2.3.0\n   Compiling percent-encoding v2.3.2\n   Compiling serde_core v1.0.229\n   Compiling utf8_iter v1.0.4\n   Compiling icu_normalizer_data v2.3.0\n   Compiling tower-service v0.3.3\n   Compiling libc v0.2.189\n   Compiling try-lock v0.2.5\n   Compiling form_urlencoded v1.2.2\n   Compiling webpki-roots v1.0.9\n   Compiling want v0.3.1\n   Compiling ahash v0.8.12\n   Compiling sync_wrapper v1.0.2\n   Compiling futures-channel v0.3.34\n   Compiling zmij v1.0.23\n   Compiling syn v3.0.6\n   Compiling syn v2.0.119\n   Compiling thiserror v1.0.69\n   Compiling httpdate v1.0.3\n   Compiling serde v1.0.229\n   Compiling http-body v1.1.0\n   Compiling tower-layer v0.3.3\n   Compiling atomic-waker v1.1.2\n   Compiling crypto-common v0.1.7\n   Compiling block-buffer v0.10.4\n   Compiling inout v0.1.4\n   Compiling rustversion v1.0.23\n   Compiling ipnet v2.12.2\n   Compiling vcpkg v0.2.15\n   Compiling pkg-config v0.3.34\n   Compiling digest v0.10.7\n   Compiling base64 v0.22.1\n   Compiling serde_json v1.0.151\n   Compiling cipher v0.4.4\n   Compiling universal-hash v0.5.1\n   Compiling sha1 v0.10.7\n   Compiling http-body-util v0.1.5\n   Compiling memchr v2.8.3\n   Compiling opaque-debug v0.3.1\n   Compiling ring v0.17.14\n   Compiling crc32fast v1.5.2\n   Compiling byteorder v1.5.0\n   Compiling regex-syntax v0.8.11\n   Compiling utf-8 v0.7.6\n   Compiling ryu v1.0.23\n   Compiling data-encoding v2.11.1\n   Compiling bitflags v2.13.2\n   Compiling polyval v0.6.2\n   Compiling webpki-roots v0.26.11\n   Compiling lazy_static v1.5.0\n   Compiling libsqlite3-sys v0.28.0\n   Compiling adler2 v2.0.1\n   Compiling mime v0.3.17\n   Compiling anyhow v1.0.104\n   Compiling simd-adler32 v0.3.10\n   Compiling ghash v0.5.1\n   Compiling sharded-slab v0.1.7\n   Compiling socket2 v0.6.5\n   Compiling mio v1.2.3\n   Compiling miniz_oxide v0.9.1\n   Compiling nu-ansi-term v0.50.3\n   Compiling aes v0.8.4\n   Compiling ctr v0.9.2\n   Compiling aead v0.5.2\n   Compiling regex-automata v0.4.18\n   Compiling tracing-log v0.2.0\n   Compiling thread_local v1.1.10\n   Compiling getrandom v0.4.3\n   Compiling serde_path_to_error v0.1.20\n   Compiling fallible-streaming-iterator v0.1.9\n   Compiling matchit v0.7.3\n   Compiling fallible-iterator v0.3.0\n   Compiling aes-gcm v0.10.3\n   Compiling flate2 v1.1.10\n   Compiling sha2 v0.10.9\n   Compiling fastrand v2.5.0\n   Compiling tempfile v3.27.0\n   Compiling ppv-lite86 v0.2.21\n   Compiling hashbrown v0.14.5\n   Compiling rand_chacha v0.3.1\n   Compiling rand v0.8.8\n   Compiling hashlink v0.9.1\n   Compiling synstructure v0.14.0\n   Compiling tracing-attributes v0.1.31\n   Compiling thiserror-impl v1.0.69\n   Compiling axum-macros v0.4.2\n   Compiling matchers v0.2.0\n   Compiling zerofrom-derive v0.1.8\n   Compiling yoke-derive v0.8.3\n   Compiling zerovec-derive v0.11.6\n   Compiling displaydoc v0.2.7\n   Compiling tokio-macros v2.7.2\n   Compiling futures-macro v0.3.34\n   Compiling serde_derive v1.0.229\n   Compiling async-trait v0.1.92\n   Compiling rustls-webpki v0.103.15\n   Compiling rusqlite v0.31.0\n   Compiling tokio v1.53.1\n   Compiling tracing v0.1.44\n   Compiling tracing-subscriber v0.3.23\n   Compiling futures-util v0.3.34\n   Compiling zerofrom v0.1.8\n   Compiling yoke v0.8.3\n   Compiling zerovec v0.11.8\n   Compiling zerotrie v0.2.5\n   Compiling tinystr v0.8.4\n   Compiling potential_utf v0.1.6\n   Compiling icu_collections v2.3.0\n   Compiling icu_locale_core v2.3.0\n   Compiling icu_provider v2.3.1\n   Compiling icu_properties v2.3.0\n   Compiling icu_normalizer v2.3.0\n   Compiling serde_urlencoded v0.7.1\n   Compiling axum-core v0.4.5\n   Compiling idna_adapter v1.2.2\n   Compiling idna v1.1.0\n   Compiling tungstenite v0.24.0\n   Compiling url v2.5.8\n   Compiling hyper v1.11.1\n   Compiling tokio-rustls v0.26.5\n   Compiling tower v0.5.3\n   Compiling tokio-util v0.7.19\n   Compiling tokio-tungstenite v0.24.0\n   Compiling tower-http v0.6.11\n   Compiling hyper-util v0.1.20\n   Compiling hyper-rustls v0.27.10\n   Compiling axum v0.7.9\n   Compiling reqwest v0.12.28\n   Compiling mirror-gateway v0.1.0 (C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\baseline\\source\\Mirror\\gateway-rust\\artifacts\\phase1\\source)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 25.64s\n     Running unittests src\\lib.rs (target\\debug\\deps\\mirror_gateway-94355bbcb5791012.exe)\n     Running unittests src\\main.rs (target\\debug\\deps\\mirror_gateway-09faed94f6cab362.exe)\n     Running tests\\backup_contract.rs (target\\debug\\deps\\backup_contract-bae0075f1b3ad05e.exe)\n     Running tests\\migration.rs (target\\debug\\deps\\migration-5321f70edd972806.exe)\n     Running tests\\mirror_auth.rs (target\\debug\\deps\\mirror_auth-fc534850fa167b2d.exe)\n     Running tests\\original_crypto.rs (target\\debug\\deps\\original_crypto-8a74ed12c32c0f8a.exe)\n     Running unittests examples\\check_config.rs (target\\debug\\examples\\check_config-ab896fa343b5abd7.exe)\n     Running unittests examples\\upstream_probe.rs (target\\debug\\examples\\upstream_probe-e4bce7c35bc2dd7c.exe)\n",
+      "exit_status": 0
+    },
+    {
+      "label": "modified",
+      "archive": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\MODIFIED_FILE.zip",
+      "sha256": "bf0f9c7bd4ca942edc97925034ab5d5c7bf13c035b9fc00df75b3fec8a99a1ed",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+        "test",
+        "--all-targets",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\modified\\source\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\Cargo.toml",
+        "--",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression",
+      "input": "synthetic loopback fixtures; unchanged cargo arguments",
+      "env": {
+        "CARGO_HOME": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\cargo-home",
+        "CARGO_TARGET_DIR": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\target",
+        "RUSTUP_HOME": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\rustup",
+        "TEMP": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\modified\\temp",
+        "TMP": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\modified\\temp",
+        "COORD_EVIDENCE_DIR": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\modified\\events",
+        "CARGO_NET_OFFLINE": "true"
+      },
+      "stdout": "\nrunning 45 tests\ntest config::tests::configured_services_accept_http_and_https_origins ... ok\ntest config::tests::offline_services_still_require_numeric_http_loopback ... ok\ntest config::tests::service_origins_reject_ambiguous_or_credential_bearing_bases ... ok\ntest crypto::tests::key_min_length_enforced ... ok\ntest crypto::tests::roundtrip_and_prefix_rules ... ok\ntest crypto::tests::sha256_prefix_hash ... ok\ntest crypto::tests::wrong_key_and_bad_payload_fail ... ok\ntest policy::tests::capability_allowlist_matches_id_and_alias ... ok\ntest policy::tests::check_request_enforces_model_when_present ... ok\ntest policy::tests::check_request_rejects_non_string_model ... ok\ntest policy::tests::config_type_errors_are_rejected_instead_of_silent_fallback ... ok\ntest policy::tests::delayed_revocation_does_not_hit_new_session ... ok\ntest policy::tests::disabled_capability_isolation_allows_any_id ... ok\ntest policy::tests::disabled_model_isolation_allows_any_model ... ok\ntest policy::tests::empty_model_allowlist_denies_every_model ... ok\ntest policy::tests::empty_model_or_capability_id_is_rejected ... ok\ntest policy::tests::expired_revocation_matches_nothing ... ok\ntest policy::tests::explicitly_empty_allowlist_denies_capability ... ok\ntest policy::tests::login_defaults_version_and_expiry_when_absent ... ok\ntest policy::tests::login_requires_identity_and_non_negative_quota ... ok\ntest policy::tests::missing_capability_initialization_fails_closed ... ok\ntest policy::tests::model_allowlist_rejects_unlisted_and_normalizes_case ... ok\ntest policy::tests::revocation_from_json_parses_delivery_and_rejects_invalid ... ok\ntest policy::tests::revocation_matches_exact_subject_and_version ... ok\ntest policy::tests::revocation_visitor_prefix_is_strict ... ok\ntest policy::tests::revocation_without_visitors_does_not_hit_visitor_session ... ok\ntest server::compression::tests::gzip_encodes_multiple_frames_and_propagates_stream_failure ... ok\ntest server::compression::tests::negotiation_prefers_quality_then_encoding_order ... ok\ntest server::compression::tests::predicate_uses_size_type_and_existing_encoding ... ok\ntest server::compression::tests::vary_detection_is_case_insensitive_substring ... ok\ntest server::management::tests::base_url_rules_match_observed_messages ... ok\ntest server::management::tests::protocol_and_mode_whitelists_match_observed_rejections ... ok\ntest server::proxy::tests::cf_clearance_prefers_named_cookie_and_joins ... ok\ntest server::proxy::tests::chat_origin_drops_port_and_referer_appends_slash ... ok\ntest server::proxy::tests::conversations_filter_keeps_scope_and_extra_keys ... ok\ntest server::proxy::tests::conversations_without_items_fall_back_to_empty_envelope ... ok\ntest server::proxy::tests::cookie_header_order_and_extra_cookie_parsing ... ok\ntest server::proxy::tests::request_headers_drop_client_proxy_ip_headers ... ok\ntest server::proxy::tests::request_headers_drop_credentials_and_connection_named_headers ... ok\ntest server::proxy::tests::response_headers_drop_transfer_encoding_and_mark_proxied ... ok\ntest storage::tests::backup_roundtrip_rejects_bad_payload_and_rolls_back ... ok\ntest storage::tests::migrate_reencrypts_and_clears_sessions ... ok\ntest storage::tests::migrate_wrong_source_key_stops_without_writes ... ok\ntest storage::tests::open_backfills_legacy_columns_and_encrypts_rows ... ok\ntest storage::tests::schema_has_eight_tables_and_settings_roundtrip ... ok\n\ntest result: ok. 45 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.31s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 13 tests\ntest http_restore_empty_object_is_noop ... ok\ntest http_restore_failure_rolls_back_every_table ... ok\ntest http_restore_legacy_ignores_non_array_and_unknown_keys ... ok\ntest http_restore_legacy_settings_upsert_keeps_other_rows ... ok\ntest http_restore_legacy_updates_existing_account_row ... ok\ntest http_restore_non_v2_version_uses_legacy_upsert ... ok\ntest http_restore_stores_values_as_is_without_crypto ... ok\ntest http_restore_strict_all_empty_arrays_clears_tables ... ok\ntest http_restore_strict_defaults_match_observations ... ok\ntest http_restore_strict_requires_every_table ... ok\ntest http_restore_strict_requires_row_fields_with_observed_messages ... ok\ntest restore_backup_keeps_strict_v2_contract ... ok\ntest runtime_validation_failure_rolls_back_the_complete_restore ... ok\n\ntest result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.66s\n\n\nrunning 8 tests\ntest coord_browser_credentials_absent_from_chat_and_responses ... COORD_EVIDENCE test=browser_credentials events=13 panicking=false\nok\ntest coord_client_target_overrides_cannot_select_egress ... COORD_EVIDENCE test=target_overrides events=33 panicking=false\nok\ntest coord_inactive_authority_blocks_chat_without_cross_user_fallback ... COORD_EVIDENCE test=inactive_authority events=11 panicking=false\nok\ntest coord_invalid_credentials_fail_without_egress_or_echo ... COORD_EVIDENCE test=invalid_credentials events=11 panicking=false\nok\ntest coord_local_sessions_distinct_accounts_and_logout_are_isolated ... COORD_EVIDENCE test=distinct_accounts events=40 panicking=false\nok\ntest coord_shared_account_token_rotation_preserves_other_user ... COORD_EVIDENCE test=shared_account events=33 panicking=false\nok\ntest coord_transport_error_does_not_echo_credentials ... COORD_EVIDENCE test=transport_error events=9 panicking=true\nFAILED\ntest coord_unknown_route_matrix_stays_closed ... COORD_EVIDENCE test=unknown_route_matrix events=113 panicking=false\nok\n\nfailures:\n\nfailures:\n    coord_transport_error_does_not_echo_credentials\n\ntest result: FAILED. 7 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.48s\n\n",
+      "stderr": "   Compiling mirror-gateway v0.1.0 (C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\modified\\source\\Mirror\\gateway-rust\\artifacts\\phase1\\source)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 18.73s\n     Running unittests src\\lib.rs (target\\debug\\deps\\mirror_gateway-94355bbcb5791012.exe)\n     Running unittests src\\main.rs (target\\debug\\deps\\mirror_gateway-09faed94f6cab362.exe)\n     Running tests\\backup_contract.rs (target\\debug\\deps\\backup_contract-bae0075f1b3ad05e.exe)\n     Running tests\\coord_boundary_regression.rs (target\\debug\\deps\\coord_boundary_regression-41443e0c916205db.exe)\n\nthread 'coord_transport_error_does_not_echo_credentials' (4884) panicked at tests\\coord_boundary_regression.rs:377:5:\nassertion `left == right` failed\n  left: 200\n right: 502\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\nerror: test failed, to rerun pass `--test coord_boundary_regression`\n",
+      "exit_status": 101
+    },
+    {
+      "label": "modified-final",
+      "archive": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\MODIFIED_FILE.zip",
+      "sha256": "5277bebb58ee411ec2ca0fac56b74a95063a16a86d35d82530e86eae8f1a774c",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+        "test",
+        "--all-targets",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\modified-final\\source\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\Cargo.toml",
+        "--",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression",
+      "input": "synthetic loopback fixtures; unchanged cargo arguments",
+      "env": {
+        "CARGO_HOME": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\cargo-home",
+        "CARGO_TARGET_DIR": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\target",
+        "RUSTUP_HOME": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\rustup",
+        "TEMP": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\modified-final\\temp",
+        "TMP": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\modified-final\\temp",
+        "COORD_EVIDENCE_DIR": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\modified-final\\events",
+        "CARGO_NET_OFFLINE": "true"
+      },
+      "stdout": "\nrunning 45 tests\ntest config::tests::configured_services_accept_http_and_https_origins ... ok\ntest config::tests::offline_services_still_require_numeric_http_loopback ... ok\ntest config::tests::service_origins_reject_ambiguous_or_credential_bearing_bases ... ok\ntest crypto::tests::key_min_length_enforced ... ok\ntest crypto::tests::roundtrip_and_prefix_rules ... ok\ntest crypto::tests::sha256_prefix_hash ... ok\ntest crypto::tests::wrong_key_and_bad_payload_fail ... ok\ntest policy::tests::capability_allowlist_matches_id_and_alias ... ok\ntest policy::tests::check_request_enforces_model_when_present ... ok\ntest policy::tests::check_request_rejects_non_string_model ... ok\ntest policy::tests::config_type_errors_are_rejected_instead_of_silent_fallback ... ok\ntest policy::tests::delayed_revocation_does_not_hit_new_session ... ok\ntest policy::tests::disabled_capability_isolation_allows_any_id ... ok\ntest policy::tests::disabled_model_isolation_allows_any_model ... ok\ntest policy::tests::empty_model_allowlist_denies_every_model ... ok\ntest policy::tests::empty_model_or_capability_id_is_rejected ... ok\ntest policy::tests::expired_revocation_matches_nothing ... ok\ntest policy::tests::explicitly_empty_allowlist_denies_capability ... ok\ntest policy::tests::login_defaults_version_and_expiry_when_absent ... ok\ntest policy::tests::login_requires_identity_and_non_negative_quota ... ok\ntest policy::tests::missing_capability_initialization_fails_closed ... ok\ntest policy::tests::model_allowlist_rejects_unlisted_and_normalizes_case ... ok\ntest policy::tests::revocation_from_json_parses_delivery_and_rejects_invalid ... ok\ntest policy::tests::revocation_matches_exact_subject_and_version ... ok\ntest policy::tests::revocation_visitor_prefix_is_strict ... ok\ntest policy::tests::revocation_without_visitors_does_not_hit_visitor_session ... ok\ntest server::compression::tests::gzip_encodes_multiple_frames_and_propagates_stream_failure ... ok\ntest server::compression::tests::negotiation_prefers_quality_then_encoding_order ... ok\ntest server::compression::tests::predicate_uses_size_type_and_existing_encoding ... ok\ntest server::compression::tests::vary_detection_is_case_insensitive_substring ... ok\ntest server::management::tests::base_url_rules_match_observed_messages ... ok\ntest server::management::tests::protocol_and_mode_whitelists_match_observed_rejections ... ok\ntest server::proxy::tests::cf_clearance_prefers_named_cookie_and_joins ... ok\ntest server::proxy::tests::chat_origin_drops_port_and_referer_appends_slash ... ok\ntest server::proxy::tests::conversations_filter_keeps_scope_and_extra_keys ... ok\ntest server::proxy::tests::conversations_without_items_fall_back_to_empty_envelope ... ok\ntest server::proxy::tests::cookie_header_order_and_extra_cookie_parsing ... ok\ntest server::proxy::tests::request_headers_drop_client_proxy_ip_headers ... ok\ntest server::proxy::tests::request_headers_drop_credentials_and_connection_named_headers ... ok\ntest server::proxy::tests::response_headers_drop_transfer_encoding_and_mark_proxied ... ok\ntest storage::tests::backup_roundtrip_rejects_bad_payload_and_rolls_back ... ok\ntest storage::tests::migrate_reencrypts_and_clears_sessions ... ok\ntest storage::tests::migrate_wrong_source_key_stops_without_writes ... ok\ntest storage::tests::open_backfills_legacy_columns_and_encrypts_rows ... ok\ntest storage::tests::schema_has_eight_tables_and_settings_roundtrip ... ok\n\ntest result: ok. 45 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 13 tests\ntest http_restore_empty_object_is_noop ... ok\ntest http_restore_failure_rolls_back_every_table ... ok\ntest http_restore_legacy_ignores_non_array_and_unknown_keys ... ok\ntest http_restore_legacy_settings_upsert_keeps_other_rows ... ok\ntest http_restore_legacy_updates_existing_account_row ... ok\ntest http_restore_non_v2_version_uses_legacy_upsert ... ok\ntest http_restore_stores_values_as_is_without_crypto ... ok\ntest http_restore_strict_all_empty_arrays_clears_tables ... ok\ntest http_restore_strict_defaults_match_observations ... ok\ntest http_restore_strict_requires_every_table ... ok\ntest http_restore_strict_requires_row_fields_with_observed_messages ... ok\ntest restore_backup_keeps_strict_v2_contract ... ok\ntest runtime_validation_failure_rolls_back_the_complete_restore ... ok\n\ntest result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.61s\n\n\nrunning 8 tests\ntest coord_browser_credentials_absent_from_chat_and_responses ... COORD_EVIDENCE test=browser_credentials events=13 panicking=false\nok\ntest coord_client_target_overrides_cannot_select_egress ... COORD_EVIDENCE test=target_overrides events=33 panicking=false\nok\ntest coord_inactive_authority_blocks_chat_without_cross_user_fallback ... COORD_EVIDENCE test=inactive_authority events=11 panicking=false\nok\ntest coord_invalid_credentials_fail_without_egress_or_echo ... COORD_EVIDENCE test=invalid_credentials events=11 panicking=false\nok\ntest coord_local_sessions_distinct_accounts_and_logout_are_isolated ... COORD_EVIDENCE test=distinct_accounts events=40 panicking=false\nok\ntest coord_shared_account_token_rotation_preserves_other_user ... COORD_EVIDENCE test=shared_account events=33 panicking=false\nok\ntest coord_transport_error_does_not_echo_credentials ... COORD_EVIDENCE test=transport_error events=8 panicking=false\nok\ntest coord_unknown_route_matrix_stays_closed ... COORD_EVIDENCE test=unknown_route_matrix events=113 panicking=false\nok\n\ntest result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.43s\n\n\nrunning 3 tests\ntest migration_preserves_source_and_refuses_repeated_destination ... ok\ntest restore_wrong_key_leaves_existing_database_unchanged ... ok\ntest unknown_source_column_stops_before_destination_creation ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s\n\n\nrunning 2 tests\ntest mirror_authority_revocation_and_relogin_are_enforced ... ok\ntest offline_transport_rejects_external_and_ambiguous_targets ... ok\n\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s\n\n\nrunning 1 test\ntest decrypts_original_observed_session_credential ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+      "stderr": "   Compiling mirror-gateway v0.1.0 (C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\modified-final\\source\\Mirror\\gateway-rust\\artifacts\\phase1\\source)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 9.06s\n     Running unittests src\\lib.rs (target\\debug\\deps\\mirror_gateway-94355bbcb5791012.exe)\n     Running unittests src\\main.rs (target\\debug\\deps\\mirror_gateway-09faed94f6cab362.exe)\n     Running tests\\backup_contract.rs (target\\debug\\deps\\backup_contract-bae0075f1b3ad05e.exe)\n     Running tests\\coord_boundary_regression.rs (target\\debug\\deps\\coord_boundary_regression-41443e0c916205db.exe)\n     Running tests\\migration.rs (target\\debug\\deps\\migration-5321f70edd972806.exe)\n     Running tests\\mirror_auth.rs (target\\debug\\deps\\mirror_auth-fc534850fa167b2d.exe)\n     Running tests\\original_crypto.rs (target\\debug\\deps\\original_crypto-8a74ed12c32c0f8a.exe)\n     Running unittests examples\\check_config.rs (target\\debug\\examples\\check_config-ab896fa343b5abd7.exe)\n     Running unittests examples\\upstream_probe.rs (target\\debug\\examples\\upstream_probe-e4bce7c35bc2dd7c.exe)\n",
+      "exit_status": 0
+    },
+    {
+      "label": "modified-verified",
+      "archive": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\MODIFIED_FILE.zip",
+      "sha256": "8d8476e218de3c8bddec3a1c35bc1ae51c69782f2661bc1df3f7b0a3bf704d17",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+        "test",
+        "--all-targets",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\modified-verified\\source\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\Cargo.toml",
+        "--",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression",
+      "input": "synthetic loopback fixtures; unchanged cargo arguments",
+      "env": {
+        "CARGO_HOME": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\cargo-home",
+        "CARGO_TARGET_DIR": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\target",
+        "RUSTUP_HOME": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\rustup",
+        "TEMP": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\modified-verified\\temp",
+        "TMP": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\modified-verified\\temp",
+        "COORD_EVIDENCE_DIR": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\modified-verified\\events",
+        "CARGO_NET_OFFLINE": "true"
+      },
+      "stdout": "\nrunning 45 tests\ntest config::tests::configured_services_accept_http_and_https_origins ... ok\ntest config::tests::offline_services_still_require_numeric_http_loopback ... ok\ntest config::tests::service_origins_reject_ambiguous_or_credential_bearing_bases ... ok\ntest crypto::tests::key_min_length_enforced ... ok\ntest crypto::tests::roundtrip_and_prefix_rules ... ok\ntest crypto::tests::sha256_prefix_hash ... ok\ntest crypto::tests::wrong_key_and_bad_payload_fail ... ok\ntest policy::tests::capability_allowlist_matches_id_and_alias ... ok\ntest policy::tests::check_request_enforces_model_when_present ... ok\ntest policy::tests::check_request_rejects_non_string_model ... ok\ntest policy::tests::config_type_errors_are_rejected_instead_of_silent_fallback ... ok\ntest policy::tests::delayed_revocation_does_not_hit_new_session ... ok\ntest policy::tests::disabled_capability_isolation_allows_any_id ... ok\ntest policy::tests::disabled_model_isolation_allows_any_model ... ok\ntest policy::tests::empty_model_allowlist_denies_every_model ... ok\ntest policy::tests::empty_model_or_capability_id_is_rejected ... ok\ntest policy::tests::expired_revocation_matches_nothing ... ok\ntest policy::tests::explicitly_empty_allowlist_denies_capability ... ok\ntest policy::tests::login_defaults_version_and_expiry_when_absent ... ok\ntest policy::tests::login_requires_identity_and_non_negative_quota ... ok\ntest policy::tests::missing_capability_initialization_fails_closed ... ok\ntest policy::tests::model_allowlist_rejects_unlisted_and_normalizes_case ... ok\ntest policy::tests::revocation_from_json_parses_delivery_and_rejects_invalid ... ok\ntest policy::tests::revocation_matches_exact_subject_and_version ... ok\ntest policy::tests::revocation_visitor_prefix_is_strict ... ok\ntest policy::tests::revocation_without_visitors_does_not_hit_visitor_session ... ok\ntest server::compression::tests::gzip_encodes_multiple_frames_and_propagates_stream_failure ... ok\ntest server::compression::tests::negotiation_prefers_quality_then_encoding_order ... ok\ntest server::compression::tests::predicate_uses_size_type_and_existing_encoding ... ok\ntest server::compression::tests::vary_detection_is_case_insensitive_substring ... ok\ntest server::management::tests::base_url_rules_match_observed_messages ... ok\ntest server::management::tests::protocol_and_mode_whitelists_match_observed_rejections ... ok\ntest server::proxy::tests::cf_clearance_prefers_named_cookie_and_joins ... ok\ntest server::proxy::tests::chat_origin_drops_port_and_referer_appends_slash ... ok\ntest server::proxy::tests::conversations_filter_keeps_scope_and_extra_keys ... ok\ntest server::proxy::tests::conversations_without_items_fall_back_to_empty_envelope ... ok\ntest server::proxy::tests::cookie_header_order_and_extra_cookie_parsing ... ok\ntest server::proxy::tests::request_headers_drop_client_proxy_ip_headers ... ok\ntest server::proxy::tests::request_headers_drop_credentials_and_connection_named_headers ... ok\ntest server::proxy::tests::response_headers_drop_transfer_encoding_and_mark_proxied ... ok\ntest storage::tests::backup_roundtrip_rejects_bad_payload_and_rolls_back ... ok\ntest storage::tests::migrate_reencrypts_and_clears_sessions ... ok\ntest storage::tests::migrate_wrong_source_key_stops_without_writes ... ok\ntest storage::tests::open_backfills_legacy_columns_and_encrypts_rows ... ok\ntest storage::tests::schema_has_eight_tables_and_settings_roundtrip ... ok\n\ntest result: ok. 45 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 13 tests\ntest http_restore_empty_object_is_noop ... ok\ntest http_restore_failure_rolls_back_every_table ... ok\ntest http_restore_legacy_ignores_non_array_and_unknown_keys ... ok\ntest http_restore_legacy_settings_upsert_keeps_other_rows ... ok\ntest http_restore_legacy_updates_existing_account_row ... ok\ntest http_restore_non_v2_version_uses_legacy_upsert ... ok\ntest http_restore_stores_values_as_is_without_crypto ... ok\ntest http_restore_strict_all_empty_arrays_clears_tables ... ok\ntest http_restore_strict_defaults_match_observations ... ok\ntest http_restore_strict_requires_every_table ... ok\ntest http_restore_strict_requires_row_fields_with_observed_messages ... ok\ntest restore_backup_keeps_strict_v2_contract ... ok\ntest runtime_validation_failure_rolls_back_the_complete_restore ... ok\n\ntest result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.58s\n\n\nrunning 8 tests\ntest coord_browser_credentials_absent_from_chat_and_responses ... COORD_EVIDENCE test=browser_credentials events=13 panicking=false\nok\ntest coord_client_target_overrides_cannot_select_egress ... COORD_EVIDENCE test=target_overrides events=33 panicking=false\nok\ntest coord_inactive_authority_blocks_chat_without_cross_user_fallback ... COORD_EVIDENCE test=inactive_authority events=11 panicking=false\nok\ntest coord_invalid_credentials_fail_without_egress_or_echo ... COORD_EVIDENCE test=invalid_credentials events=11 panicking=false\nok\ntest coord_local_sessions_distinct_accounts_and_logout_are_isolated ... COORD_EVIDENCE test=distinct_accounts events=40 panicking=false\nok\ntest coord_shared_account_token_rotation_preserves_other_user ... COORD_EVIDENCE test=shared_account events=33 panicking=false\nok\ntest coord_transport_error_does_not_echo_credentials ... COORD_EVIDENCE test=transport_error events=8 panicking=false\nok\ntest coord_unknown_route_matrix_stays_closed ... COORD_EVIDENCE test=unknown_route_matrix events=113 panicking=false\nok\n\ntest result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.39s\n\n\nrunning 3 tests\ntest migration_preserves_source_and_refuses_repeated_destination ... ok\ntest restore_wrong_key_leaves_existing_database_unchanged ... ok\ntest unknown_source_column_stops_before_destination_creation ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s\n\n\nrunning 2 tests\ntest mirror_authority_revocation_and_relogin_are_enforced ... ok\ntest offline_transport_rejects_external_and_ambiguous_targets ... ok\n\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s\n\n\nrunning 1 test\ntest decrypts_original_observed_session_credential ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+      "stderr": "   Compiling mirror-gateway v0.1.0 (C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\modified-verified\\source\\Mirror\\gateway-rust\\artifacts\\phase1\\source)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.25s\n     Running unittests src\\lib.rs (target\\debug\\deps\\mirror_gateway-94355bbcb5791012.exe)\n     Running unittests src\\main.rs (target\\debug\\deps\\mirror_gateway-09faed94f6cab362.exe)\n     Running tests\\backup_contract.rs (target\\debug\\deps\\backup_contract-bae0075f1b3ad05e.exe)\n     Running tests\\coord_boundary_regression.rs (target\\debug\\deps\\coord_boundary_regression-41443e0c916205db.exe)\n     Running tests\\migration.rs (target\\debug\\deps\\migration-5321f70edd972806.exe)\n     Running tests\\mirror_auth.rs (target\\debug\\deps\\mirror_auth-fc534850fa167b2d.exe)\n     Running tests\\original_crypto.rs (target\\debug\\deps\\original_crypto-8a74ed12c32c0f8a.exe)\n     Running unittests examples\\check_config.rs (target\\debug\\examples\\check_config-ab896fa343b5abd7.exe)\n     Running unittests examples\\upstream_probe.rs (target\\debug\\examples\\upstream_probe-e4bce7c35bc2dd7c.exe)\n",
+      "exit_status": 0
+    },
+    {
+      "label": "rollback",
+      "archive": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\RESTORED.zip",
+      "sha256": "d5b8b4f2a955d8dfa35c8be129cde4257fd6d676da705cd01dbbc1a2c1e783da",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+        "test",
+        "--all-targets",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\rollback\\source\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\Cargo.toml",
+        "--",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression",
+      "input": "synthetic loopback fixtures; unchanged cargo arguments",
+      "env": {
+        "CARGO_HOME": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\cargo-home",
+        "CARGO_TARGET_DIR": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\target",
+        "RUSTUP_HOME": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\rustup",
+        "TEMP": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\rollback\\temp",
+        "TMP": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\rollback\\temp",
+        "COORD_EVIDENCE_DIR": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\rollback\\events",
+        "CARGO_NET_OFFLINE": "true"
+      },
+      "stdout": "\nrunning 45 tests\ntest config::tests::configured_services_accept_http_and_https_origins ... ok\ntest config::tests::offline_services_still_require_numeric_http_loopback ... ok\ntest config::tests::service_origins_reject_ambiguous_or_credential_bearing_bases ... ok\ntest crypto::tests::key_min_length_enforced ... ok\ntest crypto::tests::roundtrip_and_prefix_rules ... ok\ntest crypto::tests::sha256_prefix_hash ... ok\ntest crypto::tests::wrong_key_and_bad_payload_fail ... ok\ntest policy::tests::capability_allowlist_matches_id_and_alias ... ok\ntest policy::tests::check_request_enforces_model_when_present ... ok\ntest policy::tests::check_request_rejects_non_string_model ... ok\ntest policy::tests::config_type_errors_are_rejected_instead_of_silent_fallback ... ok\ntest policy::tests::delayed_revocation_does_not_hit_new_session ... ok\ntest policy::tests::disabled_capability_isolation_allows_any_id ... ok\ntest policy::tests::disabled_model_isolation_allows_any_model ... ok\ntest policy::tests::empty_model_allowlist_denies_every_model ... ok\ntest policy::tests::empty_model_or_capability_id_is_rejected ... ok\ntest policy::tests::expired_revocation_matches_nothing ... ok\ntest policy::tests::explicitly_empty_allowlist_denies_capability ... ok\ntest policy::tests::login_defaults_version_and_expiry_when_absent ... ok\ntest policy::tests::login_requires_identity_and_non_negative_quota ... ok\ntest policy::tests::missing_capability_initialization_fails_closed ... ok\ntest policy::tests::model_allowlist_rejects_unlisted_and_normalizes_case ... ok\ntest policy::tests::revocation_from_json_parses_delivery_and_rejects_invalid ... ok\ntest policy::tests::revocation_matches_exact_subject_and_version ... ok\ntest policy::tests::revocation_visitor_prefix_is_strict ... ok\ntest policy::tests::revocation_without_visitors_does_not_hit_visitor_session ... ok\ntest server::compression::tests::gzip_encodes_multiple_frames_and_propagates_stream_failure ... ok\ntest server::compression::tests::negotiation_prefers_quality_then_encoding_order ... ok\ntest server::compression::tests::predicate_uses_size_type_and_existing_encoding ... ok\ntest server::compression::tests::vary_detection_is_case_insensitive_substring ... ok\ntest server::management::tests::base_url_rules_match_observed_messages ... ok\ntest server::management::tests::protocol_and_mode_whitelists_match_observed_rejections ... ok\ntest server::proxy::tests::cf_clearance_prefers_named_cookie_and_joins ... ok\ntest server::proxy::tests::chat_origin_drops_port_and_referer_appends_slash ... ok\ntest server::proxy::tests::conversations_filter_keeps_scope_and_extra_keys ... ok\ntest server::proxy::tests::conversations_without_items_fall_back_to_empty_envelope ... ok\ntest server::proxy::tests::cookie_header_order_and_extra_cookie_parsing ... ok\ntest server::proxy::tests::request_headers_drop_client_proxy_ip_headers ... ok\ntest server::proxy::tests::request_headers_drop_credentials_and_connection_named_headers ... ok\ntest server::proxy::tests::response_headers_drop_transfer_encoding_and_mark_proxied ... ok\ntest storage::tests::backup_roundtrip_rejects_bad_payload_and_rolls_back ... ok\ntest storage::tests::migrate_reencrypts_and_clears_sessions ... ok\ntest storage::tests::migrate_wrong_source_key_stops_without_writes ... ok\ntest storage::tests::open_backfills_legacy_columns_and_encrypts_rows ... ok\ntest storage::tests::schema_has_eight_tables_and_settings_roundtrip ... ok\n\ntest result: ok. 45 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 13 tests\ntest http_restore_empty_object_is_noop ... ok\ntest http_restore_failure_rolls_back_every_table ... ok\ntest http_restore_legacy_ignores_non_array_and_unknown_keys ... ok\ntest http_restore_legacy_settings_upsert_keeps_other_rows ... ok\ntest http_restore_legacy_updates_existing_account_row ... ok\ntest http_restore_non_v2_version_uses_legacy_upsert ... ok\ntest http_restore_stores_values_as_is_without_crypto ... ok\ntest http_restore_strict_all_empty_arrays_clears_tables ... ok\ntest http_restore_strict_defaults_match_observations ... ok\ntest http_restore_strict_requires_every_table ... ok\ntest http_restore_strict_requires_row_fields_with_observed_messages ... ok\ntest restore_backup_keeps_strict_v2_contract ... ok\ntest runtime_validation_failure_rolls_back_the_complete_restore ... ok\n\ntest result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.59s\n\n\nrunning 3 tests\ntest migration_preserves_source_and_refuses_repeated_destination ... ok\ntest restore_wrong_key_leaves_existing_database_unchanged ... ok\ntest unknown_source_column_stops_before_destination_creation ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.14s\n\n\nrunning 2 tests\ntest mirror_authority_revocation_and_relogin_are_enforced ... ok\ntest offline_transport_rejects_external_and_ambiguous_targets ... ok\n\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s\n\n\nrunning 1 test\ntest decrypts_original_observed_session_credential ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+      "stderr": "   Compiling mirror-gateway v0.1.0 (C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\rollback\\source\\Mirror\\gateway-rust\\artifacts\\phase1\\source)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.85s\n     Running unittests src\\lib.rs (target\\debug\\deps\\mirror_gateway-94355bbcb5791012.exe)\n     Running unittests src\\main.rs (target\\debug\\deps\\mirror_gateway-09faed94f6cab362.exe)\n     Running tests\\backup_contract.rs (target\\debug\\deps\\backup_contract-bae0075f1b3ad05e.exe)\n     Running tests\\migration.rs (target\\debug\\deps\\migration-5321f70edd972806.exe)\n     Running tests\\mirror_auth.rs (target\\debug\\deps\\mirror_auth-fc534850fa167b2d.exe)\n     Running tests\\original_crypto.rs (target\\debug\\deps\\original_crypto-8a74ed12c32c0f8a.exe)\n     Running unittests examples\\check_config.rs (target\\debug\\examples\\check_config-ab896fa343b5abd7.exe)\n     Running unittests examples\\upstream_probe.rs (target\\debug\\examples\\upstream_probe-e4bce7c35bc2dd7c.exe)\n",
+      "exit_status": 0
+    },
+    {
+      "label": "static-60ab6505",
+      "archive": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\STATIC_BASELINE.zip",
+      "sha256": "60ab65054a9aadec73aa222a21ff363295c5fda4e896fcbd7e5453fa3b2eb783",
+      "modified_archive": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\STATIC_WITH_REGRESSION.zip",
+      "modified_sha256": "bc016391d8192536a85061fffc395d1c9bdd98549442d8463a000a7415f1d8d7",
+      "input_files": {
+        ".dockerignore": "5fc4d87caf418bbaf05d4fd83e693e3ffd24e7d3a0c5d8e334ecaee9bf06a52a",
+        ".env.configured.example": "ba0e0e02b7807adb8cdf6028397eee23817286dd6f47f62eca30b8cd9ac27631",
+        "Cargo.lock": "74673949565cf45110dedef719b65f7ec8fc380415b70f356c0fe3d4a7a18e16",
+        "Cargo.toml": "e5aeb82d72704700969a88ba8d1f73703c3cb5fe6ff046f9724998711fcde31d",
+        "COMPATIBILITY.md": "a5272faa372edcafc3e1fe66d7e5fa1008591a97ef433cca5a38a8480cf444f1",
+        "compose.offline.yml": "306c407f5e5afe6a479757bb3c782abcd7e9dd6e2723053cc1fb0fed00fc46cb",
+        "Dockerfile": "72962f2eb09d3c491e3dc59a3ad7dbbf63b4ee16a552354167ffd5eb451684a2",
+        "examples/check_config.rs": "f05e1e549366234963a767658883a299ae9cc76e1b28d97fa04e75da770a3e67",
+        "PHASE1_CONTRACT.md": "e687bb4e0c7bf5a049d1df771c7286872a316d5939af6c76142787ba0d9e15cd",
+        "README.md": "e2944d15c55c8777dc8bbb08087188693829acff5b56d8be9a93812a6cece0d4",
+        "src/assets/gateway-client-hosts.json": "d7ef6a13e22df4df9e097229fb28352d50da0eb40b33425e4029e4dffe9f14ff",
+        "src/assets/gateway-client.html": "465719ae5e4ffcd33dd7e35605d82c9ef73cb3a5689a79daf747a44af06208dc",
+        "src/config.rs": "52fe253f3afaab1be81e8e7062bfc9eed400530543996e7d1b44a645e7267f3a",
+        "src/crypto.rs": "c59203a66264aaa3ffb08fd006e3ccaf23ff7ed675d1a6650256f9330db03a5f",
+        "src/lib.rs": "6377ef21bc1b7fab9123f06883911d07c372130767c760b0eada2143c135f560",
+        "src/main.rs": "8fd4c3b9d1e924da0d1b937fdb2614e020e8a5bc5ac79d43ca65ba4fc1ab1ad2",
+        "src/policy.rs": "e8898ccf2a1ad28352e667e073a3f8a513f9fba2637d12144a63a23281357d7c",
+        "src/schema.sql": "1d368f1ab010628495516aa619dcf13c210d1b53710e7a8f1f608fb7a04649af",
+        "src/server/compression.rs": "fb8659679eae7f3bfeef0ee31f7e9e8e17821968fc1c2ed46473580aa890d00d",
+        "src/server/management.rs": "d2b3bfba9b327ce3e624f5d65383cae32161be769f0912a03932bc945f75cf9b",
+        "src/server/proxy.rs": "948ea5bffd5e01487f8249bd0d7acba1abfda08a25f40abf2dccbdd7d210e488",
+        "src/server/static_assets.rs": "0be41000463d9a802ddbb52df6a23bfcb6b3b49242348a1cc64bf379521792e8",
+        "src/server.rs": "8516df0e444667ab6e9f0bd2fe7c6f239faa73ea7b3419f9c26fcb3c57adf1e8",
+        "src/storage.rs": "cbedbfcb9390ac569736921ae98771432a3c8c38841c223f0dfe12d4e85546c9",
+        "tests/backup_contract.rs": "350adca97f7978cc69d313e3e53712c86a50f32ac9133df32007fe708bdd5637",
+        "tests/migration.rs": "887a6ddf6dc1b7f3c4928503fa6a995d25dfde6ce807b64166863774d0cc9b51",
+        "tests/mirror_auth.rs": "2a21848325a3f074a317bdc5a301864412199b07a7abb35d987edd20b4164ff9",
+        "tests/original_crypto.rs": "1b211d9c1b2e4661f77872b7e1ded9f45b85c2e1188a3d95399750d2942ddd3e",
+        "tests/static_assets.rs": "7fb5b8d558b37f5876eae291c11605cecea450d6c3e7ab09ea7905ea6dedc578"
+      },
+      "test_sha256": "e2f09e37db56ff7f25129304933d0b42332bc1da2aa169a90ad7bd2dd0845ecc",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+        "test",
+        "--all-targets",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\static-candidate\\Cargo.toml",
+        "--",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression",
+      "env": {
+        "CARGO_HOME": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\cargo-home",
+        "CARGO_TARGET_DIR": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\target-static",
+        "RUSTUP_HOME": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\rustup",
+        "COORD_EVIDENCE_DIR": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\static-60ab6505\\events",
+        "TEMP": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\static-60ab6505\\temp",
+        "TMP": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\static-60ab6505\\temp",
+        "CARGO_NET_OFFLINE": "true"
+      },
+      "stdout": "\nrunning 46 tests\ntest config::tests::configured_services_accept_http_and_https_origins ... ok\ntest config::tests::offline_services_still_require_numeric_http_loopback ... ok\ntest config::tests::service_origins_reject_ambiguous_or_credential_bearing_bases ... ok\ntest crypto::tests::key_min_length_enforced ... ok\ntest crypto::tests::roundtrip_and_prefix_rules ... ok\ntest crypto::tests::sha256_prefix_hash ... ok\ntest crypto::tests::wrong_key_and_bad_payload_fail ... ok\ntest policy::tests::capability_allowlist_matches_id_and_alias ... ok\ntest policy::tests::check_request_enforces_model_when_present ... ok\ntest policy::tests::check_request_rejects_non_string_model ... ok\ntest policy::tests::config_type_errors_are_rejected_instead_of_silent_fallback ... ok\ntest policy::tests::delayed_revocation_does_not_hit_new_session ... ok\ntest policy::tests::disabled_capability_isolation_allows_any_id ... ok\ntest policy::tests::disabled_model_isolation_allows_any_model ... ok\ntest policy::tests::empty_model_allowlist_denies_every_model ... ok\ntest policy::tests::empty_model_or_capability_id_is_rejected ... ok\ntest policy::tests::expired_revocation_matches_nothing ... ok\ntest policy::tests::explicitly_empty_allowlist_denies_capability ... ok\ntest policy::tests::login_defaults_version_and_expiry_when_absent ... ok\ntest policy::tests::login_requires_identity_and_non_negative_quota ... ok\ntest policy::tests::missing_capability_initialization_fails_closed ... ok\ntest policy::tests::model_allowlist_rejects_unlisted_and_normalizes_case ... ok\ntest policy::tests::revocation_from_json_parses_delivery_and_rejects_invalid ... ok\ntest policy::tests::revocation_matches_exact_subject_and_version ... ok\ntest policy::tests::revocation_visitor_prefix_is_strict ... ok\ntest policy::tests::revocation_without_visitors_does_not_hit_visitor_session ... ok\ntest server::compression::tests::gzip_encodes_multiple_frames_and_propagates_stream_failure ... ok\ntest server::compression::tests::negotiation_prefers_quality_then_encoding_order ... ok\ntest server::compression::tests::predicate_uses_size_type_and_existing_encoding ... ok\ntest server::compression::tests::vary_detection_is_case_insensitive_substring ... ok\ntest server::management::tests::base_url_rules_match_observed_messages ... ok\ntest server::management::tests::protocol_and_mode_whitelists_match_observed_rejections ... ok\ntest server::proxy::tests::cf_clearance_prefers_named_cookie_and_joins ... ok\ntest server::proxy::tests::chat_origin_drops_port_and_referer_appends_slash ... ok\ntest server::proxy::tests::conversations_filter_keeps_scope_and_extra_keys ... ok\ntest server::proxy::tests::conversations_without_items_fall_back_to_empty_envelope ... ok\ntest server::proxy::tests::cookie_header_order_and_extra_cookie_parsing ... ok\ntest server::proxy::tests::request_headers_drop_client_proxy_ip_headers ... ok\ntest server::proxy::tests::request_headers_drop_credentials_and_connection_named_headers ... ok\ntest server::proxy::tests::response_headers_drop_transfer_encoding_and_mark_proxied ... ok\ntest server::static_assets::tests::maps_observed_public_routes_only ... ok\ntest storage::tests::backup_roundtrip_rejects_bad_payload_and_rolls_back ... ok\ntest storage::tests::migrate_reencrypts_and_clears_sessions ... ok\ntest storage::tests::migrate_wrong_source_key_stops_without_writes ... ok\ntest storage::tests::open_backfills_legacy_columns_and_encrypts_rows ... ok\ntest storage::tests::schema_has_eight_tables_and_settings_roundtrip ... ok\n\ntest result: ok. 46 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.22s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 13 tests\ntest http_restore_empty_object_is_noop ... ok\ntest http_restore_failure_rolls_back_every_table ... ok\ntest http_restore_legacy_ignores_non_array_and_unknown_keys ... ok\ntest http_restore_legacy_settings_upsert_keeps_other_rows ... ok\ntest http_restore_legacy_updates_existing_account_row ... ok\ntest http_restore_non_v2_version_uses_legacy_upsert ... ok\ntest http_restore_stores_values_as_is_without_crypto ... ok\ntest http_restore_strict_all_empty_arrays_clears_tables ... ok\ntest http_restore_strict_defaults_match_observations ... ok\ntest http_restore_strict_requires_every_table ... ok\ntest http_restore_strict_requires_row_fields_with_observed_messages ... ok\ntest restore_backup_keeps_strict_v2_contract ... ok\ntest runtime_validation_failure_rolls_back_the_complete_restore ... ok\n\ntest result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.60s\n\n\nrunning 8 tests\ntest coord_browser_credentials_absent_from_chat_and_responses ... COORD_EVIDENCE test=browser_credentials events=13 panicking=false\nok\ntest coord_client_target_overrides_cannot_select_egress ... COORD_EVIDENCE test=target_overrides events=33 panicking=false\nok\ntest coord_inactive_authority_blocks_chat_without_cross_user_fallback ... COORD_EVIDENCE test=inactive_authority events=11 panicking=false\nok\ntest coord_invalid_credentials_fail_without_egress_or_echo ... COORD_EVIDENCE test=invalid_credentials events=11 panicking=false\nok\ntest coord_local_sessions_distinct_accounts_and_logout_are_isolated ... COORD_EVIDENCE test=distinct_accounts events=40 panicking=false\nok\ntest coord_shared_account_token_rotation_preserves_other_user ... COORD_EVIDENCE test=shared_account events=33 panicking=false\nok\ntest coord_transport_error_does_not_echo_credentials ... COORD_EVIDENCE test=transport_error events=8 panicking=false\nok\ntest coord_unknown_route_matrix_stays_closed ... COORD_EVIDENCE test=unknown_route_matrix events=113 panicking=false\nok\n\ntest result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.41s\n\n\nrunning 3 tests\ntest migration_preserves_source_and_refuses_repeated_destination ... ok\ntest restore_wrong_key_leaves_existing_database_unchanged ... ok\ntest unknown_source_column_stops_before_destination_creation ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s\n\n\nrunning 2 tests\ntest mirror_authority_revocation_and_relogin_are_enforced ... ok\ntest offline_transport_rejects_external_and_ambiguous_targets ... ok\n\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s\n\n\nrunning 1 test\ntest decrypts_original_observed_session_credential ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 5 tests\ntest forwards_first_chunk_before_upstream_completes ... ok\ntest preserves_head_cache_and_error_status_without_exposing_error_body ... ok\ntest rejects_redirects_html_and_missing_content_type ... ok\ntest routes_public_assets_without_any_credentials_or_response_cookies ... ok\ntest unknown_paths_methods_and_unconfigured_cdn_never_contact_upstream ... ok\n\ntest result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+      "stderr": "   Compiling proc-macro2 v1.0.107\n   Compiling quote v1.0.47\n   Compiling unicode-ident v1.0.26\n   Compiling cfg-if v1.0.5\n   Compiling version_check v0.9.5\n   Compiling once_cell v1.21.4\n   Compiling smallvec v1.16.1\n   Compiling windows-link v0.2.1\n   Compiling typenum v1.20.1\n   Compiling shlex v2.0.1\n   Compiling find-msvc-tools v0.1.13\n   Compiling pin-project-lite v0.2.17\n   Compiling bytes v1.12.1\n   Compiling itoa v1.0.18\n   Compiling stable_deref_trait v1.2.1\n   Compiling futures-core v0.3.34\n   Compiling getrandom v0.2.17\n   Compiling windows-sys v0.61.2\n   Compiling parking_lot_core v0.9.12\n   Compiling scopeguard v1.2.0\n   Compiling log v0.4.34\n   Compiling rand_core v0.6.4\n   Compiling zerocopy v0.8.57\n   Compiling lock_api v0.4.14\n   Compiling generic-array v0.14.7\n   Compiling subtle v2.6.1\n   Compiling zeroize v1.9.0\n   Compiling tracing-core v0.1.36\n   Compiling futures-sink v0.3.34\n   Compiling cpufeatures v0.2.17\n   Compiling cc v1.4.7\n   Compiling httparse v1.10.1\n   Compiling rustls-pki-types v1.15.1\n   Compiling http v1.5.0\n   Compiling futures-task v0.3.34\n   Compiling untrusted v0.9.0\n   Compiling slab v0.4.12\n   Compiling litemap v0.8.3\n   Compiling writeable v0.6.4\n   Compiling serde_core v1.0.229\n   Compiling icu_normalizer_data v2.3.0\n   Compiling rustls v0.23.45\n   Compiling icu_properties_data v2.3.0\n   Compiling percent-encoding v2.3.2\n   Compiling utf8_iter v1.0.4\n   Compiling parking_lot v0.12.5\n   Compiling http-body v1.1.0\n   Compiling tower-service v0.3.3\n   Compiling syn v3.0.6\n   Compiling syn v2.0.119\n   Compiling try-lock v0.2.5\n   Compiling libc v0.2.189\n   Compiling crypto-common v0.1.7\n   Compiling block-buffer v0.10.4\n   Compiling form_urlencoded v1.2.2\n   Compiling webpki-roots v1.0.9\n   Compiling ahash v0.8.12\n   Compiling sync_wrapper v1.0.2\n   Compiling ring v0.17.14\n   Compiling want v0.3.1\n   Compiling socket2 v0.6.5\n   Compiling mio v1.2.3\n   Compiling digest v0.10.7\n   Compiling futures-channel v0.3.34\n   Compiling thiserror v1.0.69\n   Compiling tower-layer v0.3.3\n   Compiling httpdate v1.0.3\n   Compiling atomic-waker v1.1.2\n   Compiling serde v1.0.229\n   Compiling zmij v1.0.23\n   Compiling inout v0.1.4\n   Compiling vcpkg v0.2.15\n   Compiling ipnet v2.12.2\n   Compiling rustversion v1.0.23\n   Compiling base64 v0.22.1\n   Compiling serde_json v1.0.151\n   Compiling pkg-config v0.3.34\n   Compiling cipher v0.4.4\n   Compiling sha1 v0.10.7\n   Compiling universal-hash v0.5.1\n   Compiling http-body-util v0.1.5\n   Compiling memchr v2.8.3\n   Compiling crc32fast v1.5.2\n   Compiling opaque-debug v0.3.1\n   Compiling utf-8 v0.7.6\n   Compiling bitflags v2.13.2\n   Compiling data-encoding v2.11.1\n   Compiling regex-syntax v0.8.11\n   Compiling byteorder v1.5.0\n   Compiling ryu v1.0.23\n   Compiling polyval v0.6.2\n   Compiling webpki-roots v0.26.11\n   Compiling simd-adler32 v0.3.10\n   Compiling libsqlite3-sys v0.28.0\n   Compiling lazy_static v1.5.0\n   Compiling anyhow v1.0.104\n   Compiling mime v0.3.17\n   Compiling adler2 v2.0.1\n   Compiling sharded-slab v0.1.7\n   Compiling miniz_oxide v0.9.1\n   Compiling ghash v0.5.1\n   Compiling aes v0.8.4\n   Compiling ctr v0.9.2\n   Compiling ppv-lite86 v0.2.21\n   Compiling regex-automata v0.4.18\n   Compiling serde_path_to_error v0.1.20\n   Compiling nu-ansi-term v0.50.3\n   Compiling rand_chacha v0.3.1\n   Compiling hashbrown v0.14.5\n   Compiling aead v0.5.2\n   Compiling tracing-log v0.2.0\n   Compiling thread_local v1.1.10\n   Compiling matchit v0.7.3\n   Compiling getrandom v0.4.3\n   Compiling fallible-iterator v0.3.0\n   Compiling rand v0.8.8\n   Compiling fallible-streaming-iterator v0.1.9\n   Compiling aes-gcm v0.10.3\n   Compiling synstructure v0.14.0\n   Compiling flate2 v1.1.10\n   Compiling hashlink v0.9.1\n   Compiling sha2 v0.10.9\n   Compiling fastrand v2.5.0\n   Compiling tempfile v3.27.0\n   Compiling matchers v0.2.0\n   Compiling rusqlite v0.31.0\n   Compiling zerofrom-derive v0.1.8\n   Compiling yoke-derive v0.8.3\n   Compiling zerovec-derive v0.11.6\n   Compiling displaydoc v0.2.7\n   Compiling tokio-macros v2.7.2\n   Compiling futures-macro v0.3.34\n   Compiling serde_derive v1.0.229\n   Compiling async-trait v0.1.92\n   Compiling tracing-attributes v0.1.31\n   Compiling thiserror-impl v1.0.69\n   Compiling axum-macros v0.4.2\n   Compiling rustls-webpki v0.103.15\n   Compiling futures-util v0.3.34\n   Compiling tokio v1.53.1\n   Compiling zerofrom v0.1.8\n   Compiling tracing v0.1.44\n   Compiling yoke v0.8.3\n   Compiling tracing-subscriber v0.3.23\n   Compiling zerovec v0.11.8\n   Compiling zerotrie v0.2.5\n   Compiling tinystr v0.8.4\n   Compiling potential_utf v0.1.6\n   Compiling icu_collections v2.3.0\n   Compiling serde_urlencoded v0.7.1\n   Compiling icu_locale_core v2.3.0\n   Compiling axum-core v0.4.5\n   Compiling icu_provider v2.3.1\n   Compiling icu_properties v2.3.0\n   Compiling icu_normalizer v2.3.0\n   Compiling tungstenite v0.24.0\n   Compiling idna_adapter v1.2.2\n   Compiling idna v1.1.0\n   Compiling url v2.5.8\n   Compiling tokio-rustls v0.26.5\n   Compiling hyper v1.11.1\n   Compiling tower v0.5.3\n   Compiling tokio-util v0.7.19\n   Compiling tokio-tungstenite v0.24.0\n   Compiling tower-http v0.6.11\n   Compiling hyper-util v0.1.20\n   Compiling hyper-rustls v0.27.10\n   Compiling axum v0.7.9\n   Compiling reqwest v0.12.28\n   Compiling mirror-gateway v0.1.0 (C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\static-candidate)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 32.11s\n     Running unittests src\\lib.rs (target-static\\debug\\deps\\mirror_gateway-94355bbcb5791012.exe)\n     Running unittests src\\main.rs (target-static\\debug\\deps\\mirror_gateway-09faed94f6cab362.exe)\n     Running tests\\backup_contract.rs (target-static\\debug\\deps\\backup_contract-bae0075f1b3ad05e.exe)\n     Running tests\\coord_boundary_regression.rs (target-static\\debug\\deps\\coord_boundary_regression-41443e0c916205db.exe)\n     Running tests\\migration.rs (target-static\\debug\\deps\\migration-5321f70edd972806.exe)\n     Running tests\\mirror_auth.rs (target-static\\debug\\deps\\mirror_auth-fc534850fa167b2d.exe)\n     Running tests\\original_crypto.rs (target-static\\debug\\deps\\original_crypto-8a74ed12c32c0f8a.exe)\n     Running tests\\static_assets.rs (target-static\\debug\\deps\\static_assets-5c9b84aa3dd49c08.exe)\n     Running unittests examples\\check_config.rs (target-static\\debug\\examples\\check_config-ab896fa343b5abd7.exe)\n",
+      "exit_status": 0
+    },
+    {
+      "label": "patch-check-init",
+      "command": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\patch-check",
+      "exit_status": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "binary-patch-apply",
+      "command": [
+        "git",
+        "apply",
+        "--binary",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\DIFF_FILE.patch"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\patch-check",
+      "exit_status": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "source-patch-init",
+      "command": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\patch-check\\source\\Mirror\\gateway-rust\\artifacts\\phase1\\source",
+      "exit_status": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "source-patch-check",
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\INTEGRATION.patch"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\patch-check\\source\\Mirror\\gateway-rust\\artifacts\\phase1\\source",
+      "exit_status": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "source-patch-apply",
+      "command": [
+        "git",
+        "apply",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\INTEGRATION.patch"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\patch-check\\source\\Mirror\\gateway-rust\\artifacts\\phase1\\source",
+      "exit_status": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "patch-check-init",
+      "command": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\patch-check-lf",
+      "exit_status": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "binary-patch-apply",
+      "command": [
+        "git",
+        "-c",
+        "core.autocrlf=false",
+        "apply",
+        "--binary",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\DIFF_FILE.patch"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\patch-check-lf",
+      "exit_status": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "source-patch-init",
+      "command": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\patch-check-lf\\source\\Mirror\\gateway-rust\\artifacts\\phase1\\source",
+      "exit_status": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "source-patch-check",
+      "command": [
+        "git",
+        "-c",
+        "core.autocrlf=false",
+        "apply",
+        "--check",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\INTEGRATION.patch"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\patch-check-lf\\source\\Mirror\\gateway-rust\\artifacts\\phase1\\source",
+      "exit_status": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "source-patch-apply",
+      "command": [
+        "git",
+        "-c",
+        "core.autocrlf=false",
+        "apply",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\INTEGRATION.patch"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\patch-check-lf\\source\\Mirror\\gateway-rust\\artifacts\\phase1\\source",
+      "exit_status": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "source-diff-whitespace",
+      "command": [
+        "git",
+        "diff",
+        "--no-index",
+        "--check",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\baseline\\source\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\tests",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\patch-check-lf\\source\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\tests"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression",
+      "exit_status": 1,
+      "stdout": "",
+      "stderr": "warning: in the working copy of 'C:/Users/Administrator/.codex/worktrees/0bb0/MiRebuild/coordination/regression/runs/baseline/source/Mirror/gateway-rust/artifacts/phase1/source/tests/backup_contract.rs', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'C:/Users/Administrator/.codex/worktrees/0bb0/MiRebuild/coordination/regression/patch-check-lf/source/Mirror/gateway-rust/artifacts/phase1/source/tests/backup_contract.rs', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'C:/Users/Administrator/.codex/worktrees/0bb0/MiRebuild/coordination/regression/runs/baseline/source/Mirror/gateway-rust/artifacts/phase1/source/tests/migration.rs', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'C:/Users/Administrator/.codex/worktrees/0bb0/MiRebuild/coordination/regression/patch-check-lf/source/Mirror/gateway-rust/artifacts/phase1/source/tests/migration.rs', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'C:/Users/Administrator/.codex/worktrees/0bb0/MiRebuild/coordination/regression/runs/baseline/source/Mirror/gateway-rust/artifacts/phase1/source/tests/mirror_auth.rs', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'C:/Users/Administrator/.codex/worktrees/0bb0/MiRebuild/coordination/regression/patch-check-lf/source/Mirror/gateway-rust/artifacts/phase1/source/tests/mirror_auth.rs', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'C:/Users/Administrator/.codex/worktrees/0bb0/MiRebuild/coordination/regression/runs/baseline/source/Mirror/gateway-rust/artifacts/phase1/source/tests/original_crypto.rs', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'C:/Users/Administrator/.codex/worktrees/0bb0/MiRebuild/coordination/regression/patch-check-lf/source/Mirror/gateway-rust/artifacts/phase1/source/tests/original_crypto.rs', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'C:/Users/Administrator/.codex/worktrees/0bb0/MiRebuild/coordination/regression/patch-check-lf/source/Mirror/gateway-rust/artifacts/phase1/source/tests/coord_boundary_regression.rs', LF will be replaced by CRLF the next time Git touches it\n"
+    },
+    {
+      "label": "source-diff-whitespace-lf",
+      "command": [
+        "git",
+        "-c",
+        "core.autocrlf=false",
+        "diff",
+        "--no-index",
+        "--check",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\baseline\\source\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\tests",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\patch-check-lf\\source\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\tests"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression",
+      "exit_status": 1,
+      "expected_exit": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "rollback-executable",
+      "command": [
+        "E:/T/Git2026_6/bin/bash.exe",
+        "-c",
+        "chmod +x ROLLBACK.sh && test -x ROLLBACK.sh"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression",
+      "exit_status": 0,
+      "expected_exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "rollback-archive",
+      "command": [
+        "E:/T/Git2026_6/bin/bash.exe",
+        "ROLLBACK.sh",
+        "RESTORED.zip"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression",
+      "exit_status": 0,
+      "expected_exit": 0,
+      "stdout": "ROLLBACK restored pristine b837 source archive\n",
+      "stderr": ""
+    },
+    {
+      "label": "rollback-tests",
+      "command": [
+        "C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\run_suite.py",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\RESTORED.zip",
+        "rollback"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression",
+      "exit_status": 0,
+      "expected_exit": 0,
+      "stdout": "{\"event\": \"command_execution\", \"label\": \"rollback\", \"archive\": \"C:\\\\Users\\\\Administrator\\\\.codex\\\\worktrees\\\\0bb0\\\\MiRebuild\\\\coordination\\\\regression\\\\RESTORED.zip\", \"sha256\": \"d5b8b4f2a955d8dfa35c8be129cde4257fd6d676da705cd01dbbc1a2c1e783da\", \"command\": [\"E:\\\\M\\\\Project\\\\MiRebuild\\\\Mirror\\\\gateway-rust\\\\.build\\\\phase1-toolchain\\\\rustup\\\\toolchains\\\\stable-x86_64-pc-windows-msvc\\\\bin\\\\cargo.exe\", \"test\", \"--all-targets\", \"--locked\", \"--offline\", \"--manifest-path\", \"C:\\\\Users\\\\Administrator\\\\.codex\\\\worktrees\\\\0bb0\\\\MiRebuild\\\\coordination\\\\regression\\\\runs\\\\rollback\\\\source\\\\Mirror\\\\gateway-rust\\\\artifacts\\\\phase1\\\\source\\\\Cargo.toml\", \"--\", \"--nocapture\", \"--test-threads=1\"], \"cwd\": \"C:\\\\Users\\\\Administrator\\\\.codex\\\\worktrees\\\\0bb0\\\\MiRebuild\\\\coordination\\\\regression\", \"input\": \"synthetic loopback fixtures; unchanged cargo arguments\", \"env\": {\"CARGO_HOME\": \"C:\\\\Users\\\\Administrator\\\\.codex\\\\worktrees\\\\0bb0\\\\MiRebuild\\\\coordination\\\\regression\\\\cargo-home\", \"CARGO_TARGET_DIR\": \"C:\\\\Users\\\\Administrator\\\\.codex\\\\worktrees\\\\0bb0\\\\MiRebuild\\\\coordination\\\\regression\\\\target\", \"RUSTUP_HOME\": \"E:\\\\M\\\\Project\\\\MiRebuild\\\\Mirror\\\\gateway-rust\\\\.build\\\\phase1-toolchain\\\\rustup\", \"TEMP\": \"C:\\\\Users\\\\Administrator\\\\.codex\\\\worktrees\\\\0bb0\\\\MiRebuild\\\\coordination\\\\regression\\\\runs\\\\rollback\\\\temp\", \"TMP\": \"C:\\\\Users\\\\Administrator\\\\.codex\\\\worktrees\\\\0bb0\\\\MiRebuild\\\\coordination\\\\regression\\\\runs\\\\rollback\\\\temp\", \"COORD_EVIDENCE_DIR\": \"C:\\\\Users\\\\Administrator\\\\.codex\\\\worktrees\\\\0bb0\\\\MiRebuild\\\\coordination\\\\regression\\\\runs\\\\rollback\\\\events\", \"CARGO_NET_OFFLINE\": \"true\"}}\r\n{\"label\": \"rollback\", \"exit_status\": 0, \"stdout_path\": \"C:\\\\Users\\\\Administrator\\\\.codex\\\\worktrees\\\\0bb0\\\\MiRebuild\\\\coordination\\\\regression\\\\runs\\\\rollback\\\\stdout.txt\", \"stderr_path\": \"C:\\\\Users\\\\Administrator\\\\.codex\\\\worktrees\\\\0bb0\\\\MiRebuild\\\\coordination\\\\regression\\\\runs\\\\rollback\\\\stderr.txt\"}\r\n",
+      "stderr": ""
+    },
+    {
+      "label": "reapply-init",
+      "command": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\reapply-check",
+      "exit_status": 0,
+      "expected_exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "reapply-goal",
+      "command": [
+        "git",
+        "-c",
+        "core.autocrlf=false",
+        "apply",
+        "--binary",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\DIFF_FILE.patch"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\reapply-check",
+      "exit_status": 0,
+      "expected_exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "clippy-coord-test",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+        "clippy",
+        "--test",
+        "coord_boundary_regression",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\modified-verified\\source\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\Cargo.toml",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression",
+      "exit_status": 0,
+      "expected_exit": 0,
+      "stdout": "",
+      "stderr": "    Checking cfg-if v1.0.5\n    Checking once_cell v1.21.4\n    Checking windows-link v0.2.1\n    Checking smallvec v1.16.1\n    Checking typenum v1.20.1\n    Checking bytes v1.12.1\n    Checking pin-project-lite v0.2.17\n    Checking stable_deref_trait v1.2.1\n    Checking itoa v1.0.18\n    Checking futures-core v0.3.34\n    Checking scopeguard v1.2.0\n    Checking log v0.4.34\n    Checking subtle v2.6.1\n    Checking zerofrom v0.1.8\n    Checking zeroize v1.9.0\n    Checking zerocopy v0.8.57\n    Checking futures-sink v0.3.34\n    Checking futures-task v0.3.34\n    Checking getrandom v0.2.17\n    Checking writeable v0.6.4\n    Checking yoke v0.8.3\n    Checking slab v0.4.12\n    Checking windows-sys v0.61.2\n    Checking parking_lot_core v0.9.12\n    Checking rustls-pki-types v1.15.1\n    Checking lock_api v0.4.14\n    Checking untrusted v0.9.0\n    Checking litemap v0.8.3\n    Checking cpufeatures v0.2.17\n    Checking tracing-core v0.1.36\n    Checking rand_core v0.6.4\n    Checking percent-encoding v2.3.2\n    Checking utf8_iter v1.0.4\n    Checking ring v0.17.14\n    Checking httparse v1.10.1\n    Checking zerovec v0.11.8\n    Checking zerotrie v0.2.5\n    Checking http v1.5.0\n    Checking tower-service v0.3.3\n    Checking futures-util v0.3.34\n    Checking icu_normalizer_data v2.3.0\n    Checking parking_lot v0.12.5\n    Checking icu_properties_data v2.3.0\n    Checking tracing v0.1.44\n    Checking serde_core v1.0.229\n    Checking try-lock v0.2.5\n    Checking generic-array v0.14.7\n    Checking form_urlencoded v1.2.2\n    Checking webpki-roots v1.0.9\n    Checking sync_wrapper v1.0.2\n    Checking futures-channel v0.3.34\n    Checking httpdate v1.0.3\n    Checking tower-layer v0.3.3\n    Checking atomic-waker v1.1.2\n    Checking libc v0.2.189\n    Checking ipnet v2.12.2\n    Checking base64 v0.22.1\n    Checking http-body v1.1.0\n    Checking want v0.3.1\n    Checking thiserror v1.0.69\n    Checking zmij v1.0.23\n    Checking data-encoding v2.11.1\n    Checking tinystr v0.8.4\n    Checking potential_utf v0.1.6\n    Checking ryu v1.0.23\n    Checking memchr v2.8.3\n    Checking http-body-util v0.1.5\n    Checking utf-8 v0.7.6\n    Checking regex-syntax v0.8.11\n    Checking byteorder v1.5.0\n    Checking bitflags v2.13.2\n    Checking icu_collections v2.3.0\n    Checking crypto-common v0.1.7\n    Checking icu_locale_core v2.3.0\n    Checking block-buffer v0.10.4\n    Checking inout v0.1.4\n    Checking opaque-debug v0.3.1\n    Checking universal-hash v0.5.1\n    Checking webpki-roots v0.26.11\n    Checking adler2 v2.0.1\n    Checking digest v0.10.7\n    Checking cipher v0.4.4\n    Checking rustls-webpki v0.103.15\n    Checking mime v0.3.17\n    Checking simd-adler32 v0.3.10\n    Checking lazy_static v1.5.0\n    Checking aead v0.5.2\n    Checking aes v0.8.4\n    Checking ctr v0.9.2\n    Checking polyval v0.6.2\n    Checking libsqlite3-sys v0.28.0\n    Checking sharded-slab v0.1.7\n    Checking miniz_oxide v0.9.1\n    Checking crc32fast v1.5.2\n    Checking tracing-log v0.2.0\n    Checking sha1 v0.10.7\n    Checking thread_local v1.1.10\n    Checking regex-automata v0.4.18\n    Checking ghash v0.5.1\n    Checking icu_provider v2.3.1\n    Checking rustls v0.23.45\n    Checking fallible-iterator v0.3.0\n    Checking fallible-streaming-iterator v0.1.9\n    Checking matchit v0.7.3\n    Checking aes-gcm v0.10.3\n    Checking sha2 v0.10.9\n    Checking anyhow v1.0.104\n    Checking getrandom v0.4.3\n    Checking fastrand v2.5.0\n    Checking flate2 v1.1.10\n    Checking serde v1.0.229\n    Checking serde_json v1.0.151\n    Checking socket2 v0.6.5\n    Checking mio v1.2.3\n    Checking nu-ansi-term v0.50.3\n    Checking axum-core v0.4.5\n    Checking serde_path_to_error v0.1.20\n    Checking tempfile v3.27.0\n    Checking icu_normalizer v2.3.0\n    Checking icu_properties v2.3.0\n    Checking serde_urlencoded v0.7.1\n    Checking tokio v1.53.1\n    Checking matchers v0.2.0\n    Checking tracing-subscriber v0.3.23\n    Checking idna_adapter v1.2.2\n    Checking ppv-lite86 v0.2.21\n    Checking ahash v0.8.12\n    Checking idna v1.1.0\n    Checking hashbrown v0.14.5\n    Checking url v2.5.8\n    Checking rand_chacha v0.3.1\n    Checking rand v0.8.8\n    Checking hashlink v0.9.1\n    Checking rusqlite v0.31.0\n    Checking tungstenite v0.24.0\n    Checking tokio-rustls v0.26.5\n    Checking hyper v1.11.1\n    Checking tower v0.5.3\n    Checking tokio-util v0.7.19\n    Checking tokio-tungstenite v0.24.0\n    Checking tower-http v0.6.11\n    Checking hyper-util v0.1.20\n    Checking hyper-rustls v0.27.10\n    Checking axum v0.7.9\n    Checking reqwest v0.12.28\n    Checking mirror-gateway v0.1.0 (C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\modified-verified\\source\\Mirror\\gateway-rust\\artifacts\\phase1\\source)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 21.26s\n"
+    },
+    {
+      "label": "rustfmt-coord-test",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\rustfmt.exe",
+        "--check",
+        "--edition",
+        "2021",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\runs\\modified-verified\\source\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\tests\\coord_boundary_regression.rs"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression",
+      "exit_status": 0,
+      "expected_exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "static-clippy",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+        "clippy",
+        "--test",
+        "coord_boundary_regression",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\static-candidate\\Cargo.toml",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression",
+      "exit_status": 0,
+      "stdout": "",
+      "stderr": "    Checking cfg-if v1.0.5\n    Checking once_cell v1.21.4\n    Checking smallvec v1.16.1\n    Checking windows-link v0.2.1\n    Checking typenum v1.20.1\n    Checking bytes v1.12.1\n    Checking pin-project-lite v0.2.17\n    Checking itoa v1.0.18\n    Checking stable_deref_trait v1.2.1\n    Checking futures-core v0.3.34\n    Checking scopeguard v1.2.0\n    Checking log v0.4.34\n    Checking subtle v2.6.1\n    Checking zeroize v1.9.0\n    Checking zerofrom v0.1.8\n    Checking zerocopy v0.8.57\n    Checking getrandom v0.2.17\n    Checking windows-sys v0.61.2\n    Checking futures-sink v0.3.34\n    Checking litemap v0.8.3\n    Checking lock_api v0.4.14\n    Checking futures-task v0.3.34\n    Checking cpufeatures v0.2.17\n    Checking slab v0.4.12\n    Checking tracing-core v0.1.36\n    Checking rand_core v0.6.4\n    Checking writeable v0.6.4\n    Checking yoke v0.8.3\n    Checking parking_lot_core v0.9.12\n    Checking rustls-pki-types v1.15.1\n    Checking untrusted v0.9.0\n    Checking percent-encoding v2.3.2\n    Checking utf8_iter v1.0.4\n    Checking ring v0.17.14\n    Checking httparse v1.10.1\n    Checking futures-util v0.3.34\n    Checking tower-service v0.3.3\n    Checking serde_core v1.0.229\n    Checking icu_normalizer_data v2.3.0\n    Checking zerovec v0.11.8\n    Checking zerotrie v0.2.5\n    Checking icu_properties_data v2.3.0\n    Checking try-lock v0.2.5\n    Checking parking_lot v0.12.5\n    Checking form_urlencoded v1.2.2\n    Checking want v0.3.1\n    Checking http v1.5.0\n    Checking sync_wrapper v1.0.2\n    Checking futures-channel v0.3.34\n    Checking webpki-roots v1.0.9\n    Checking tower-layer v0.3.3\n    Checking tracing v0.1.44\n    Checking httpdate v1.0.3\n    Checking atomic-waker v1.1.2\n    Checking libc v0.2.189\n    Checking base64 v0.22.1\n    Checking ipnet v2.12.2\n    Checking thiserror v1.0.69\n    Checking zmij v1.0.23\n    Checking opaque-debug v0.3.1\n    Checking utf-8 v0.7.6\n    Checking byteorder v1.5.0\n    Checking ryu v1.0.23\n    Checking bitflags v2.13.2\n    Checking regex-syntax v0.8.11\n    Checking memchr v2.8.3\n    Checking generic-array v0.14.7\n    Checking data-encoding v2.11.1\n    Checking webpki-roots v0.26.11\n    Checking tinystr v0.8.4\n    Checking potential_utf v0.1.6\n    Checking mime v0.3.17\n    Checking simd-adler32 v0.3.10\n    Checking lazy_static v1.5.0\n    Checking adler2 v2.0.1\n    Checking sharded-slab v0.1.7\n    Checking icu_collections v2.3.0\n    Checking libsqlite3-sys v0.28.0\n    Checking icu_locale_core v2.3.0\n    Checking miniz_oxide v0.9.1\n    Checking crc32fast v1.5.2\n    Checking tracing-log v0.2.0\n    Checking http-body v1.1.0\n    Checking thread_local v1.1.10\n    Checking fallible-iterator v0.3.0\n    Checking fallible-streaming-iterator v0.1.9\n    Checking http-body-util v0.1.5\n    Checking matchit v0.7.3\n    Checking anyhow v1.0.104\n    Checking getrandom v0.4.3\n    Checking fastrand v2.5.0\n    Checking crypto-common v0.1.7\n    Checking block-buffer v0.10.4\n    Checking inout v0.1.4\n    Checking flate2 v1.1.10\n    Checking rustls-webpki v0.103.15\n    Checking universal-hash v0.5.1\n    Checking aead v0.5.2\n    Checking digest v0.10.7\n    Checking cipher v0.4.4\n    Checking regex-automata v0.4.18\n    Checking polyval v0.6.2\n    Checking sha1 v0.10.7\n    Checking sha2 v0.10.9\n    Checking aes v0.8.4\n    Checking ctr v0.9.2\n    Checking ghash v0.5.1\n    Checking icu_provider v2.3.1\n    Checking rustls v0.23.45\n    Checking icu_properties v2.3.0\n    Checking icu_normalizer v2.3.0\n    Checking aes-gcm v0.10.3\n    Checking serde v1.0.229\n    Checking serde_json v1.0.151\n    Checking serde_path_to_error v0.1.20\n    Checking axum-core v0.4.5\n    Checking socket2 v0.6.5\n    Checking mio v1.2.3\n    Checking nu-ansi-term v0.50.3\n    Checking tempfile v3.27.0\n    Checking serde_urlencoded v0.7.1\n    Checking tokio v1.53.1\n    Checking idna_adapter v1.2.2\n    Checking matchers v0.2.0\n    Checking idna v1.1.0\n    Checking tracing-subscriber v0.3.23\n    Checking url v2.5.8\n    Checking ppv-lite86 v0.2.21\n    Checking ahash v0.8.12\n    Checking hashbrown v0.14.5\n    Checking rand_chacha v0.3.1\n    Checking rand v0.8.8\n    Checking hashlink v0.9.1\n    Checking rusqlite v0.31.0\n    Checking tungstenite v0.24.0\n    Checking tokio-rustls v0.26.5\n    Checking hyper v1.11.1\n    Checking tower v0.5.3\n    Checking tokio-util v0.7.19\n    Checking tokio-tungstenite v0.24.0\n    Checking tower-http v0.6.11\n    Checking hyper-util v0.1.20\n    Checking hyper-rustls v0.27.10\n    Checking axum v0.7.9\n    Checking reqwest v0.12.28\n    Checking mirror-gateway v0.1.0 (C:\\Users\\Administrator\\.codex\\worktrees\\0bb0\\MiRebuild\\coordination\\regression\\static-candidate)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 11.66s\n"
+    }
+  ]
+}

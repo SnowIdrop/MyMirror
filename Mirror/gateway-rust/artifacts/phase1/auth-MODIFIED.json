@@ -1,0 +1,201 @@
+{
+  "label": "MODIFIED",
+  "build": {
+    "command": [
+      "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo\\bin\\cargo.exe",
+      "build",
+      "--locked",
+      "--offline",
+      "--manifest-path",
+      "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\Cargo.toml",
+      "--bin",
+      "mirror-gateway"
+    ],
+    "exit_status": 0,
+    "stdout": "",
+    "stderr": "   Compiling mirror-gateway v0.1.0 (E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 6.96s\n"
+  },
+  "build_environment": {
+    "CARGO_HOME": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo",
+    "RUSTUP_HOME": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\rustup",
+    "CARGO_TARGET_DIR": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-probe-targets\\modified"
+  },
+  "binary_sha256": "546ad680467adbbc47ad18bb12b3b76d8b031660ac52403176a4de9aaeb8097d",
+  "command": [
+    "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-probe-targets\\modified\\debug\\mirror-gateway.exe"
+  ],
+  "input": {
+    "path": "/api/auth/session",
+    "method": "GET",
+    "headers": {
+      "X-Mirror-Token": "synthetic-fixed-auth-probe-token"
+    },
+    "profile": "original",
+    "fixture_seed": "successful login followed by deterministic token hash in disposable DB; no source or production DB mutation"
+  },
+  "login": {
+    "status": 200,
+    "body": "{\"chatgpt_username\":\"fixture@example.invalid\",\"login_mode\":\"api\",\"login_url\":\"/api/not-login?user_gateway_token=cf7b9e0d261efb4061fb38937ab90b19f9dcad5b159d0fe6a584af34ec71867c\",\"message\":\"登录成功\"}",
+    "input": {
+      "user_name": "alice",
+      "access_token": "synthetic-access-token",
+      "login_mode": "api",
+      "extra_cookies": [
+        {
+          "name": "fixture_extra",
+          "value": "synthetic"
+        }
+      ]
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "274"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 16:11:28 GMT"
+      ]
+    ],
+    "body": "{\"authProvider\":\"openai\",\"expires\":\"2099-12-31T23:59:59.000Z\",\"loginMode\":\"api\",\"planType\":\"plus\",\"user\":{\"email\":\"fixture@example.invalid\",\"id\":\"cc6d96611cffa9f02c3626f0b9ee897dc171e2d540a5cae349d4ec316104997b\",\"image\":null,\"name\":\"fixture@example.invalid\",\"picture\":null}}"
+  },
+  "upstream": [
+    {
+      "method": "GET",
+      "path": "/backend-api/accounts/check/v4-2023-04-27",
+      "headers": [
+        [
+          "user-agent",
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "origin",
+          "http://127.0.0.1"
+        ],
+        [
+          "referer",
+          "http://127.0.0.1/"
+        ],
+        [
+          "cookie",
+          "fixture_extra=synthetic"
+        ],
+        [
+          "authorization",
+          "Bearer synthetic-access-token"
+        ],
+        [
+          "host",
+          "127.0.0.1:62945"
+        ]
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/backend-api/me",
+      "headers": [
+        [
+          "user-agent",
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "origin",
+          "http://127.0.0.1"
+        ],
+        [
+          "referer",
+          "http://127.0.0.1/"
+        ],
+        [
+          "cookie",
+          "fixture_extra=synthetic"
+        ],
+        [
+          "authorization",
+          "Bearer synthetic-access-token"
+        ],
+        [
+          "host",
+          "127.0.0.1:62945"
+        ]
+      ]
+    }
+  ],
+  "process": {
+    "stdout": "gateway listening on http://127.0.0.1:62946 (development candidate; release gate incomplete)\n",
+    "stderr": "",
+    "exit_status": 1,
+    "termination": "fixture teardown"
+  }
+}

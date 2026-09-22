@@ -985,25 +985,22 @@ async fn auth_session(State(app): State<Shared>, headers: HeaderMap) -> ApiResul
     let Some(s) = session(&app, &token).await? else {
         return Ok(Json(json!({})));
     };
-    let db = app.db.lock().await;
-    let mode: String = db.conn.query_row(
-        "SELECT login_mode FROM gateway_sessions WHERE user_name=?1 AND chatgpt_username=?2",
-        params![s.user, s.account],
-        |r| r.get(0),
-    )?;
-    let plan: Option<String> = db
-        .conn
-        .query_row(
-            "SELECT plan_type FROM chatgpt_accounts WHERE chatgpt_username=?1",
-            [&s.account],
-            |r| r.get(0),
-        )
-        .optional()?;
+    let refreshed = proxy::refresh_auth_session(&app, &s, &token).await.map_err(|cause| {
+        tracing::warn!(error=%cause, "auth session upstream refresh failed");
+        error(StatusCode::BAD_GATEWAY, "上游会话刷新失败")
+    })?;
+    let Some((mode, plan)) = refreshed else {
+        return Ok(Json(json!({})));
+    };
+    // Revocation or re-login while awaiting upstream must invalidate this result.
+    if session(&app, &token).await?.is_none() {
+        return Ok(Json(json!({})));
+    }
     let id = sha256_hex(&s.account)
         .trim_start_matches("sha256:")
         .to_owned();
     Ok(Json(
-        json!({"authProvider":"openai","expires":"2099-12-31T23:59:59.000Z","loginMode":mode,"planType":plan.unwrap_or_else(||"free".into()),"user":{"email":s.account,"id":id,"name":s.account,"image":null,"picture":null}}),
+        json!({"authProvider":"openai","expires":"2099-12-31T23:59:59.000Z","loginMode":mode,"planType":plan,"user":{"email":s.account,"id":id,"name":s.account,"image":null,"picture":null}}),
     ))
 }
 async fn user_blocked(State(app): State<Shared>, headers: HeaderMap) -> ApiResult {

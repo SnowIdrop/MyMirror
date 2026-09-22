@@ -31,6 +31,10 @@ assert static_behaviors[0]["response"]["body"] == static_behaviors[2]["response"
 assert len(static_behaviors[1]["upstream"]) == 1
 assert not {key.lower() for key, value in static_behaviors[1]["upstream"][0]["headers"]} & {"authorization", "cookie", "x-mirror-token", "x-api-key"}
 assert not any(key.lower() == "set-cookie" for key, value in static_behaviors[1]["response"]["headers"])
+auth_behaviors = [read(f"auth-{label}.json") for label in ("BASELINE", "MODIFIED", "ROLLBACK")]
+assert auth_behaviors[0]["input"] == auth_behaviors[1]["input"] == auth_behaviors[2]["input"]
+assert [json.loads(item["response"]["body"])["planType"] for item in auth_behaviors] == ["free", "plus", "free"]
+assert [len(item["upstream"]) for item in auth_behaviors] == [0, 2, 0]
 rust_tests = sum(map(int, re.findall(r"test result: ok\. (\d+) passed", checks[0]["stdout"])))
 manifest = read("baseline-manifest.json")
 assert all(hashlib.sha256((root / name).read_bytes()).hexdigest() == digest for name, digest in manifest.items())
@@ -41,24 +45,30 @@ command = ["E:/T/Git2026_6/bin/bash.exe", "-c", "test -x artifacts/phase1/ROLLBA
 result = subprocess.run(command, cwd=root, capture_output=True)
 assert result.returncode == 0
 summary = {
-    "implementation": "phase1 configuration and restricted public JS/CSS proxy implemented in the same source copy; original source unchanged",
+    "implementation": "configuration, public JS/CSS and auth-session refresh implemented; reviewed independent ACL module and upgraded boundary tests integrated without product ACL wiring; original source unchanged",
     "rust_tests": rust_tests,
     "clippy": "passed --all-targets -- -D warnings",
     "configuration_cases": len(checks) - 3,
     "original_page_observations": 40,
     "static_integration_tests": 5,
+    "auth_refresh_tests": 3,
+    "independent_acl_tests": 28,
+    "integrated_boundary_tests": 8,
     "real_environment_acceptance": "not run",
     "full_replacement_complete": False,
 }
 ledger = {
     "TARGET": str(root),
     "candidate_source": str(here / "source"),
-    "changed_symbols": ["Config::from_env", "Config.cdn_upstream", "service_url", "GATEWAY_UPSTREAM_MODE", "server::static_assets::serve", "server::static_assets::asset_path", "server::proxy::chat_proxy"],
+    "changed_symbols": ["Config::from_env", "Config.cdn_upstream", "service_url", "GATEWAY_UPSTREAM_MODE", "server::static_assets::serve", "server::static_assets::asset_path", "server::proxy::chat_proxy", "server::auth_session", "server::proxy::refresh_auth_session", "resource_acl (unexported independent module)"],
     "roles": roles,
     "summary": summary,
     "same_input_behaviors": behaviors,
     "same_input_static_behaviors": static_behaviors,
-    "history": str(here / "history/config-b837ba2/VERIFICATION.txt"),
+    "same_input_auth_behaviors": auth_behaviors,
+    "integrations": read("integrations/manifest.json"),
+    "auth_test_development": {"before_exit":101,"before_combined_output":str(here / "auth-before.log"),"before_result":"0 passed; 3 failed on static implementation","after_exit":0,"after_combined_output":str(here / "auth-after.log"),"after_result":"3 passed; 0 failed","additional_verifier_failures":["E0560 in old shared target: Config source had cdn_upstream but stale baseline rlib did not; validate.py and all candidate tests moved to phase1-candidate-tests. Original failed output retained in auth-before-target-collision.log.","Auth runtime probe first cleanup failed exit1 WinError32: Python sqlite transaction context left connection open; fixed with contextlib.closing and reran successfully."]},
+    "history": [str(here / "history/config-b837ba2/VERIFICATION.txt"), str(here / "history/static-680aed1/VERIFICATION.txt")],
     "corrected_verifier_failure": {"evidence": str(here / "history/static-shared-target-failure/static-artifact-events.json"), "observed_exit": 1, "cause": "baseline and candidate Cargo packages shared output filenames; final MODIFIED probe ran the previously built rollback executable", "fix": "run_probe.py/static_probe.py use separate CARGO_TARGET_DIR per BASELINE/MODIFIED/ROLLBACK; rerun all same-input probes; product source was unchanged"},
     "commit_before_continuation": "b837ba2556bc3363570d247e61246e6b8f43421c",
     "new_original_observation": {"command": read("page-original-001/command.json"), "summary_path": str(here / "page-original-001/summary.json"), "results_sha256": hashlib.sha256((here / "page-original-001/results.json").read_bytes()).hexdigest(), "kind": "synthetic loopback only, QEMU -nic none; not live account validation"},
@@ -78,13 +88,13 @@ ledger = {
 status = {
     "ACTIVE_OBJECT": str(here / "source"),
     "LAST_CONFIRMED_RESULT": summary,
-    "NEXT_EXECUTABLE_ACTION": "Create and run the missing auth_session refresh-chain regression from page-original-001, then implement it on this same candidate. Review coordinator deliveries before integration; do not open HTML until initialization isolation is proven.",
+    "NEXT_EXECUTABLE_ACTION": "Create and run an HTML/bootstrap resource-leakage fixture against the retained original and current candidate, then design the safe page/same-origin adapter. Keep unproven HTML/media routes closed; trusted identity/new-DB ACL and backup wiring remain a separate next stage.",
     "INPUT_PATHS": [str(here / "source/PHASE1_CONTRACT.md"), str(here / "page-original-001/results.json"), str(here / "source/src/server.rs"), str(here / "COORDINATION.json")],
-    "ACCEPTANCE_EVENT": "Auth-session accounts/check then me refresh regression executed against the current source; tested revocation/failure behavior and no DB lock during network wait. HTML/other stages remain separately gated.",
+    "ACCEPTANCE_EVENT": "HTML/bootstrap data and URL rewrite contract recorded with unauthorized resource leakage denied; no product ACL or complete replacement claim from independent tests.",
     "roles": roles,
     "phase": 1,
     "phase_complete": False,
-    "remaining": ["页面初始化隔离及同源改写，字体/图片/其他静态类型", "auth/session 刷新链", "第二至五阶段权限底座、后台和业务能力；协调工作线产物待评审集成", "第六阶段统一验收与部署交付"],
+    "remaining": ["页面初始化隔离及同源改写，字体/图片/其他静态类型", "初次登录accounts检查、更多真实响应/失败协议", "第二阶段可信身份、账号映射、新库ACL/备份/后台/实时撤权接线；ACL仅独立暂存", "第三至五阶段业务能力及第六阶段统一验收与部署交付"],
     "rollback_scope": "restore a disposable source archive; not databases or already-executed upstream operations",
     "legacy_evidence": str(root / "STATUS.json"),
 }

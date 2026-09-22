@@ -12,7 +12,7 @@ env = os.environ.copy()
 env.update({
     "CARGO_HOME": str(root / ".build/phase1-toolchain/cargo"),
     "RUSTUP_HOME": str(root / ".build/phase1-toolchain/rustup"),
-    "CARGO_TARGET_DIR": str(root / ".build/phase1-target"),
+    "CARGO_TARGET_DIR": str(root / ".build/phase1-candidate-tests"),
 })
 env["PATH"] = str(Path(env["CARGO_HOME"]) / "bin") + os.pathsep + env["PATH"]
 cargo = str(Path(env["CARGO_HOME"]) / "bin/cargo.exe")

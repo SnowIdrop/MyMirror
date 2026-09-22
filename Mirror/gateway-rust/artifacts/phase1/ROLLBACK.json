@@ -7,7 +7,7 @@
     "--offline",
     "--quiet",
     "--manifest-path",
-    "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\static-rollback-oiqrhe4g\\Cargo.toml",
+    "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\static-rollback-afxo_iog\\Cargo.toml",
     "--example",
     "upstream_probe"
   ],

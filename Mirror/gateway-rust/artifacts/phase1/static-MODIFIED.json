@@ -13,14 +13,14 @@
     ],
     "exit_status": 0,
     "stdout": "",
-    "stderr": "   Compiling proc-macro2 v1.0.107\n   Compiling unicode-ident v1.0.26\n   Compiling quote v1.0.47\n   Compiling cfg-if v1.0.5\n   Compiling version_check v0.9.5\n   Compiling smallvec v1.16.1\n   Compiling once_cell v1.21.4\n   Compiling typenum v1.20.1\n   Compiling windows-link v0.2.1\n   Compiling shlex v2.0.1\n   Compiling find-msvc-tools v0.1.13\n   Compiling bytes v1.12.1\n   Compiling pin-project-lite v0.2.17\n   Compiling itoa v1.0.18\n   Compiling stable_deref_trait v1.2.1\n   Compiling parking_lot_core v0.9.12\n   Compiling getrandom v0.2.17\n   Compiling windows-sys v0.61.2\n   Compiling futures-core v0.3.34\n   Compiling scopeguard v1.2.0\n   Compiling log v0.4.34\n   Compiling rand_core v0.6.4\n   Compiling lock_api v0.4.14\n   Compiling zerocopy v0.8.57\n   Compiling zeroize v1.9.0\n   Compiling subtle v2.6.1\n   Compiling tracing-core v0.1.36\n   Compiling futures-sink v0.3.34\n   Compiling generic-array v0.14.7\n   Compiling rustls-pki-types v1.15.1\n   Compiling litemap v0.8.3\n   Compiling writeable v0.6.4\n   Compiling httparse v1.10.1\n   Compiling cpufeatures v0.2.17\n   Compiling cc v1.4.7\n   Compiling slab v0.4.12\n   Compiling http v1.5.0\n   Compiling futures-task v0.3.34\n   Compiling untrusted v0.9.0\n   Compiling parking_lot v0.12.5\n   Compiling serde_core v1.0.229\n   Compiling rustls v0.23.45\n   Compiling utf8_iter v1.0.4\n   Compiling percent-encoding v2.3.2\n   Compiling icu_normalizer_data v2.3.0\n   Compiling icu_properties_data v2.3.0\n   Compiling tower-service v0.3.3\n   Compiling libc v0.2.189\n   Compiling try-lock v0.2.5\n   Compiling want v0.3.1\n   Compiling form_urlencoded v1.2.2\n   Compiling webpki-roots v1.0.9\n   Compiling crypto-common v0.1.7\n   Compiling http-body v1.1.0\n   Compiling block-buffer v0.10.4\n   Compiling syn v3.0.6\n   Compiling syn v2.0.119\n   Compiling ahash v0.8.12\n   Compiling futures-channel v0.3.34\n   Compiling digest v0.10.7\n   Compiling sync_wrapper v1.0.2\n   Compiling serde v1.0.229\n   Compiling thiserror v1.0.69\n   Compiling tower-layer v0.3.3\n   Compiling atomic-waker v1.1.2\n   Compiling httpdate v1.0.3\n   Compiling zmij v1.0.23\n   Compiling inout v0.1.4\n   Compiling pkg-config v0.3.34\n   Compiling ipnet v2.12.2\n   Compiling rustversion v1.0.23\n   Compiling base64 v0.22.1\n   Compiling vcpkg v0.2.15\n   Compiling serde_json v1.0.151\n   Compiling cipher v0.4.4\n   Compiling ring v0.17.14\n   Compiling sha1 v0.10.7\n   Compiling http-body-util v0.1.5\n   Compiling universal-hash v0.5.1\n   Compiling crc32fast v1.5.2\n   Compiling byteorder v1.5.0\n   Compiling bitflags v2.13.2\n   Compiling memchr v2.8.3\n   Compiling utf-8 v0.7.6\n   Compiling opaque-debug v0.3.1\n   Compiling data-encoding v2.11.1\n   Compiling regex-syntax v0.8.11\n   Compiling ryu v1.0.23\n   Compiling socket2 v0.6.5\n   Compiling mio v1.2.3\n   Compiling polyval v0.6.2\n   Compiling libsqlite3-sys v0.28.0\n   Compiling webpki-roots v0.26.11\n   Compiling anyhow v1.0.104\n   Compiling adler2 v2.0.1\n   Compiling lazy_static v1.5.0\n   Compiling mime v0.3.17\n   Compiling simd-adler32 v0.3.10\n   Compiling serde_path_to_error v0.1.20\n   Compiling sharded-slab v0.1.7\n   Compiling miniz_oxide v0.9.1\n   Compiling regex-automata v0.4.18\n   Compiling ghash v0.5.1\n   Compiling nu-ansi-term v0.50.3\n   Compiling aes v0.8.4\n   Compiling ctr v0.9.2\n   Compiling aead v0.5.2\n   Compiling tracing-log v0.2.0\n   Compiling thread_local v1.1.10\n   Compiling fallible-streaming-iterator v0.1.9\n   Compiling fallible-iterator v0.3.0\n   Compiling matchit v0.7.3\n   Compiling flate2 v1.1.10\n   Compiling aes-gcm v0.10.3\n   Compiling sha2 v0.10.9\n   Compiling synstructure v0.14.0\n   Compiling ppv-lite86 v0.2.21\n   Compiling matchers v0.2.0\n   Compiling hashbrown v0.14.5\n   Compiling rand_chacha v0.3.1\n   Compiling zerofrom-derive v0.1.8\n   Compiling yoke-derive v0.8.3\n   Compiling zerovec-derive v0.11.6\n   Compiling displaydoc v0.2.7\n   Compiling tokio-macros v2.7.2\n   Compiling futures-macro v0.3.34\n   Compiling serde_derive v1.0.229\n   Compiling rand v0.8.8\n   Compiling async-trait v0.1.92\n   Compiling hashlink v0.9.1\n   Compiling rusqlite v0.31.0\n   Compiling tracing-attributes v0.1.31\n   Compiling thiserror-impl v1.0.69\n   Compiling axum-macros v0.4.2\n   Compiling tokio v1.53.1\n   Compiling futures-util v0.3.34\n   Compiling zerofrom v0.1.8\n   Compiling yoke v0.8.3\n   Compiling rustls-webpki v0.103.15\n   Compiling zerovec v0.11.8\n   Compiling zerotrie v0.2.5\n   Compiling tinystr v0.8.4\n   Compiling potential_utf v0.1.6\n   Compiling icu_collections v2.3.0\n   Compiling icu_locale_core v2.3.0\n   Compiling serde_urlencoded v0.7.1\n   Compiling tracing v0.1.44\n   Compiling tracing-subscriber v0.3.23\n   Compiling icu_provider v2.3.1\n   Compiling axum-core v0.4.5\n   Compiling icu_properties v2.3.0\n   Compiling icu_normalizer v2.3.0\n   Compiling idna_adapter v1.2.2\n   Compiling idna v1.1.0\n   Compiling hyper v1.11.1\n   Compiling tower v0.5.3\n   Compiling tokio-util v0.7.19\n   Compiling url v2.5.8\n   Compiling hyper-util v0.1.20\n   Compiling tokio-rustls v0.26.5\n   Compiling tungstenite v0.24.0\n   Compiling tower-http v0.6.11\n   Compiling tokio-tungstenite v0.24.0\n   Compiling hyper-rustls v0.27.10\n   Compiling axum v0.7.9\n   Compiling reqwest v0.12.28\n   Compiling mirror-gateway v0.1.0 (E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 42.83s\n"
+    "stderr": "    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.29s\n"
   },
   "build_environment": {
     "CARGO_HOME": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo",
     "RUSTUP_HOME": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\rustup",
     "CARGO_TARGET_DIR": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-probe-targets\\modified"
   },
-  "binary_sha256": "58701debf2a7b8179c6b1842939bd701bb51cea17f77076fc8213363e44571d9",
+  "binary_sha256": "546ad680467adbbc47ad18bb12b3b76d8b031660ac52403176a4de9aaeb8097d",
   "command": [
     "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-probe-targets\\modified\\debug\\mirror-gateway.exe"
   ],
@@ -107,7 +107,7 @@
       ],
       [
         "date",
-        "Tue, 22 Sep 2026 15:54:40 GMT"
+        "Tue, 22 Sep 2026 16:24:29 GMT"
       ]
     ],
     "body": "export const fixture = \"public-static\";"
@@ -131,13 +131,13 @@
         ],
         [
           "host",
-          "127.0.0.1:51300"
+          "127.0.0.1:63730"
         ]
       ]
     }
   ],
   "process": {
-    "stdout": "gateway listening on http://127.0.0.1:51301 (development candidate; release gate incomplete)\n",
+    "stdout": "gateway listening on http://127.0.0.1:63731 (development candidate; release gate incomplete)\n",
     "stderr": "",
     "exit_status": 1,
     "termination": "fixture teardown"

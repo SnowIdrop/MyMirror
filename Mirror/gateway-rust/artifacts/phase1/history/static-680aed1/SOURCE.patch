@@ -1,0 +1,901 @@
+diff --git a/.env.configured.example b/.env.configured.example
+new file mode 100644
+index 0000000..4a9abf2
+--- /dev/null
++++ b/.env.configured.example
+@@ -0,0 +1,15 @@
++# Configuration template only: not an approved production deployment.
++# Keep secrets in the service environment; never ship them to the browser.
++GATEWAY_UPSTREAM_MODE=configured
++GATEWAY_COMPAT_PROFILE=mirror
++HOST=127.0.0.1
++PORT=40002
++DATABASE_PATH=data/gateway-new.db
++GATEWAY_ADMIN_SECRET=SET_A_UNIQUE_SERVICE_SECRET
++CREDENTIAL_ENCRYPTION_KEY=SET_A_UNIQUE_ENCRYPTION_KEY_AT_LEAST_32_BYTES
++DJANGO_UPSTREAM=http://django:8000
++CHATGPT_BASE_URL=https://chat.example.invalid
++CHATGPT_CDN_BASE_URL=https://static.example.invalid
++# CF_BYPASS_URL=http://cfbypass:8000
++COOKIE_SECURE=true
++REQUEST_TIMEOUT_SECS=180
+diff --git a/PHASE1_CONTRACT.md b/PHASE1_CONTRACT.md
+new file mode 100644
+index 0000000..4dfdc76
+--- /dev/null
++++ b/PHASE1_CONTRACT.md
+@@ -0,0 +1,73 @@
++# 新替换计划：第一阶段配置与公共静态批次（未完成整体替换）
++
++## 当前边界
++
++本候选沿用 `gateway-rust`，没有改为官方 API 产品，没有接入闭源回退。
++本候选已实现服务端上游配置拆分及受限公共 JS/CSS 通道，补充离线契约与回归。原始源码、既有二进制证据、
++Django 用户库、旧网关库及线上资源均保留；没有导入旧数据。
++
++`Config::from_env` 新增 `GATEWAY_UPSTREAM_MODE`：
++
++- 缺省或 `offline`：继续仅接受数字 HTTP 回环地址；旧测试无需 CDN 配置。
++- `configured`：Django、聊天、CDN 必须显式配置；可选 CF 服务单独配置。
++  接受 HTTP/HTTPS 服务源（含端口），拒绝 URL 凭据、路径前缀、查询串、片段和其他协议。
++  不回退到默认公网目标，不关闭 TLS 证书校验，不跟随上游重定向。
++- `CHATGPT_CDN_BASE_URL` 存入 `Config.cdn_upstream`，与 `django`、`upstream` 分离。
++  **它现已接入下述受限 JS/CSS 路由；不代表完整静态资源或聊天页面可用。**
++- 请求不能覆盖配置目标。已开放路由仍使用服务端固定源；未知业务路径仍失败。
++  原有模型、配额、MCP/Skills 策略代码、授权版本检查没有删除或放宽。
++- 提供 `.env.configured.example`，仅作候选配置说明；没有改动现有部署 compose。
++
++## 已检查的契约和证据等级
++
++“源码”只表明本地实现；“旧观测”指已有离线模拟上游对原版的观测，不是本次真实环境验收。
++
++| 能力/请求 | 请求、ID、返回/错误 | 证据与结论 |
++|---|---|---|
++| 登录 | 服务间 `POST /api/login`；`user_name`、`authorization`、上游 token 与已有策略字段；返回 `login_url` | `src/server.rs::login`；`tests/mirror_auth.rs` 合成回归。管理员服务密钥不等于操作者身份 |
++| 登录交接 | `GET /api/not-login?user_gateway_token=...`；轮换 `mirror_token` Cookie，跳转 `/` | `src/server.rs::handoff/session_cookies`；原有 `/` 尚未开放，因此聊天闭环未完成 |
++| Django 授权 | `POST /0x/user/gateway-authorization`，服务密钥＋`authorization/subject`；返回 `active/version/expires_at` | `chatgpt-mirror-build/backend/app/accounts/session_authority.py:99-151`。签名内含 user_id，但响应尚无稳定 ID/管理员角色；不能从客户端字段补造 |
++| 角色失效 | 策略摘要含 `is_staff/is_superuser`，签名校验会核对摘要 | 同文件 `policy_digest/authorization_details`；第二阶段仍需可信角色返回、用户标识与权限接线 |
++| 管理代理 | `/0x/*`、`/admin*` 固定 Django 源、保留查询、响应流转发 | `src/server/proxy.rs::django_forward/stream_response`；旧观测 `tools/observe_proxy_v3.py`；不是通往任意主机的代理 |
++| 当前用户 | `GET /backend-api/me`，上游账号 token 替换浏览器凭据；原样状态/正文 | `src/server/proxy.rs::me_passthrough`，旧观测 `p1-me-*`；只有读取接口，不代表普通聊天完成 |
++| 会话列表 | `GET /backend-api/conversations?offset=&limit=`；`items[].id`、`total`；按账号+user_name 过滤 | `src/server/proxy.rs::conversations_response/rebuild_conversations`；旧观测 `p2-*`。这不是完整统一资源授权，未知资源不认领 |
++| 刷新 | `GET /api/auth/session` 当前读取本地账号/plan，返回用户、loginMode、planType | `src/server.rs::auth_session`；`STATUS.json:139-149` 留存 `accounts/check + me` 刷新副作用差异；不能宣称已对齐 |
++| 页面、静态、URL 改写 | 旧模板中存在主机改写/拦截代码；聊天 HTML 路径、静态路径与初始化数据边界尚未验证 | `src/assets/gateway-client.html`、`gateway-client-hosts.json` 和 `server/proxy.rs::inject_client_resource` 仅证明模板存在；不能据主机列表开放任意媒体路径 |
++| 错误 | 未认证读取 401；未知聊天业务路径 503；未知 `/api/*` 404 | `src/server/proxy.rs::chat_proxy`；新增本地回归保留门禁 |
++
++## 尚无足够证据的必选能力（不得按猜测开放）
++
++| 能力 | 仍需收集的实际契约与隔离条件 |
++|---|---|
++| 普通聊天、共享续聊 | 创建/续聊请求、conversation/message ID、SSE 事件、停止、历史、重命名/删除；成功创建才登记；单会话生成互斥；断线不得重发 |
++| 文件、图片 | 上传步骤、引用字段、下载/生成结果 ID；请求引用鉴权与受控媒体访问；不能透出长期直链 |
++| 项目 | 创建/编辑及关联协议；动态继承共享；移动旧私有内容扩大可见性须管理员授权 |
++| Pro、研究、搜索 | 任务 ID/状态、引用、查询/取消与已证实恢复协议；重启不重新创建 |
++| 语音 | 客户端实际信令与音频协议；不预设 WebSocket；资源权限和撤权断连 |
++| 连接器/MCP | 配置、调用、授权各自权限；凭据加密；外部写操作确认；不继承项目共享 |
++| 账号记忆、自动检索 | 能否限制到当前授权资源；未证实时暂停，不能只隐藏列表 |
++
++以上不是路由猜测表。没有把网上通用 ChatGPT API 名称当成本项目的已观测协议。
++
++## 按原顺序继续
++
++1. 第一阶段未完：页面/静态/刷新首轮离线观测已经完成；下一步实现有测试约束的认证刷新链，并审查 HTML/初始化数据隔离后再开放页面与同源改写。字体、图片和其他静态类型仍未开放。
++2. 第二阶段：Django 可信身份响应 → Rust 新库资源/关联/共享/审计 → 所有访问统一判权 → 后台资源页面及版本化完整备份。既有开关不得关闭默认私有。
++3. 第三至五阶段：按用户计划接通普通聊天、文件/图片/项目、研究/搜索/语音/连接器；证据不足或无法隔离时保留未完成门禁。
++4. 第六阶段才执行整体镜像、浏览器、三身份隔离、重启/故障/并发、备份与部署回滚验收。
++
++本批未执行真实账号、外部写操作或生产切换。程序/源码回滚不撤销数据库或上游已执行操作。
++
++## 公共静态批次：新增实际观测与实现
++
++证据：`artifacts/phase1/page-original-001/{command.json,results.json,summary.json,serial.log}`。
++原版通过既有 oracle 在 **QEMU -nic none** 中执行，三个合成回环服务分别模拟聊天、Django、CDN；
++guest_exit=0，共40条记录。不是浏览器真实账号验收。
++
++- 原版匿名 `/assets/fixture.js?v=1` 到 CDN `/assets/fixture.js?v=1`；`/cdn/fixture.css` 到 CDN `/fixture.css`；`/cdn/assets/fixture.js` 到 CDN `/assets/fixture.js`。GET/HEAD、JS/CSS MIME 与路径有观测。
++- 原版带浏览器 Authorization 的静态请求会将该头转发 CDN。**明确不兼容这项泄漏行为**：新 `server/static_assets.rs` 只复制静态协商/缓存/Range请求头，不附带任何浏览器、账号、网关或CF凭据；不转发响应 Set-Cookie。
++- 新候选仅允许 `/assets/` 下或受限 `/cdn/` 映射的安全 ASCII JS/CSS 路径，GET/HEAD；不接受路径穿越、编码路径或任意 URL。缺 CDN/未证实路径503，其他方法405，重定向及HTML/错误MIME502；上游错误状态保留但不泄出错误正文。
++- 静态正文逐块转发，没有数据库锁或完整正文缓冲；首块早于上游完成的合成测试已加入。304、HEAD与ETag有回归，尚未宣称所有浏览器缓存/Range/压缩组合验收。
++- 原版匿名首页302到 `/admin#/`；登录后首页和 `/c/guessed-conversation` 会请求聊天HTML并注入脚本。合成页面并不能证明真实初始化数据隔离，因此候选仍不开放这两条页面路径。
++- 原版登录以及每次 `/api/auth/session`（含重复、`refresh_account=1`）都依次请求 `accounts/check/v4-2023-04-27` 与 `me`。合成 `accounts.default.account.plan_type=plus` 产生 planType=plus；accounts 500时仍请求me并显示free；me 401时返回空对象。**这些是合成输入下的实测解析行为，不是对全部真实响应结构的推定；候选刷新链尚未实现。**
++- 启动CF预热可能与首个案例标签交叠；不把标签下出现的预热记录推断为匿名首页的业务调用。
+diff --git a/README.md b/README.md
+index 48deb3d..aaaa0a8 100644
+--- a/README.md
++++ b/README.md
+@@ -1,7 +1,9 @@
+ # Mirror Rust gateway — offline candidate, NOT a completed replacement
+ 
+ 独立 Rust 工程，当前交付是可编译、可运行、可回滚的开发候选，**不是原版行为等价验收通过的网关**。
+-原版及已有 Mirror 工程未改动。不可部署到真实账号环境；真实上游传输被数字回环地址白名单明确阻止。
++原版及已有 Mirror 工程未改动。本副本推进新替换计划第一阶段，仍不可作为完整替换部署。
++默认只允许离线回环上游；显式 configured 模式支持服务名及 HTTPS，但不代表真实环境验收通过。
++本批契约、实现和下一步见 [PHASE1_CONTRACT.md](PHASE1_CONTRACT.md)。
+ 
+ ## 已实现与边界
+ 
+@@ -34,7 +36,9 @@ Linux x86-64 musl 制品使用本工程 `.build/zig/ziglang` 中的 Zig 0.13.0 
+ ## 配置
+ 
+ `GATEWAY_ADMIN_SECRET` 至少 16 字节；`CREDENTIAL_ENCRYPTION_KEY` 去除两端空白后至少 32 字节。
+-`DJANGO_UPSTREAM`、`CHATGPT_BASE_URL`、可选 `CF_BYPASS_URL` 只接受 `http://127.x.x.x` 或 `http://[::1]`，不接受域名、HTTPS 或外网地址。
++`GATEWAY_UPSTREAM_MODE` 默认 `offline`：`DJANGO_UPSTREAM`、`CHATGPT_BASE_URL`、可选 `CHATGPT_CDN_BASE_URL` / `CF_BYPASS_URL` 只接受数字 HTTP 回环服务源。
++显式设为 `configured` 时接受 HTTP/HTTPS 服务名和端口，Django、聊天、CDN 三个源必须各自配置，CF 源可选。拒绝凭据、路径前缀、查询串和片段；不提供默认公网地址。配置模板见 `.env.configured.example`。
++CDN 已接入受限公共 JS/CSS 的 `/assets/` 与 `/cdn/` 路径；不转发凭据或上游 Cookie，拒绝路径穿越、错误 MIME 与重定向。字体、图片及其他路径仍有门禁，聊天页面尚未开放。TLS 校验保持启用，请求无法改写配置目标。
+ `GATEWAY_COMPAT_PROFILE=mirror` 是默认值，必须传 Django 授权与策略字段；`original` 只用于原版契约观测，不自动降级到该模式。
+ `COOKIE_SECURE` 默认 true。局部合成 HTTP 测试可设 false；这不是公网部署配置。
+ 
+@@ -54,7 +58,7 @@ mirror-gateway migrate SOURCE_COPY NEW_DATABASE
+ `artifacts/ROLLBACK.sh TARGET_COPY` 从同目录 `baseline.gateway` 恢复原版程序。它只回滚程序，不回滚数据库；生产数据回滚必须使用维护窗口前的一致性快照。
+ `artifacts/DIFF_FILE.patch` 是原版 `gateway` 到候选 `gateway` 的 Git binary patch，已在独立副本用 `git apply` 验证重建哈希。
+ 
+-## 下一工作项
++## 旧候选的兼容差异（保留记录）
+ 
+ 旧 45 项响应差异已消除；下一步处理扩展审核协议、管理自增 ID 与上游序列差异、严格输入提取契约，再补齐按用户归属的聊天读写与 SSE/WebSocket、指纹传输及 MCP/Skills 实际请求协议。准确当前结果与证据入口见 STATUS.json、COMPATIBILITY.md；本批仍未完整通过。
+ 每一步都要扩充原版观测再实现；禁止将缺口改为固定成功或移除共享账号保护来提高表面通过率。
+diff --git a/compose.offline.yml b/compose.offline.yml
+index b3fb8cd..46afca4 100644
+--- a/compose.offline.yml
++++ b/compose.offline.yml
+@@ -10,6 +10,7 @@ services:
+       GATEWAY_ADMIN_SECRET: offline-fixture-admin-secret
+       CREDENTIAL_ENCRYPTION_KEY: offline-fixture-credential-key-0000001
+       GATEWAY_COMPAT_PROFILE: mirror
++      GATEWAY_UPSTREAM_MODE: offline
+       DJANGO_UPSTREAM: http://127.0.0.1:18090
+       CHATGPT_BASE_URL: http://127.0.0.1:18090
+     tmpfs:
+diff --git a/examples/check_config.rs b/examples/check_config.rs
+new file mode 100644
+index 0000000..e4930c2
+--- /dev/null
++++ b/examples/check_config.rs
+@@ -0,0 +1,14 @@
++// Validate configured service origins without opening a database or making requests.
++fn main() -> anyhow::Result<()> {
++    let config = mirror_gateway::config::Config::from_env()?;
++    println!(
++        "{}",
++        serde_json::json!({
++            "django": config.django.as_str(),
++            "chat": config.upstream.as_str(),
++            "cdn": config.cdn_upstream.as_ref().map(url::Url::as_str),
++            "cfbypass": config.cfbypass.as_ref().map(url::Url::as_str),
++        })
++    );
++    Ok(())
++}
+diff --git a/src/config.rs b/src/config.rs
+index c0cc1bc..e85dea8 100644
+--- a/src/config.rs
++++ b/src/config.rs
+@@ -1,4 +1,4 @@
+-// Author: MingTea. Unverified Internet transports are intentionally not enabled.
++// Author: MingTea. Upstream origins are selected by server configuration only.
+ use anyhow::{bail, Context, Result};
+ use std::{env, path::PathBuf, time::Duration};
+ use url::Url;
+@@ -12,6 +12,8 @@ pub struct Config {
+     pub key: String,
+     pub django: Url,
+     pub upstream: Url,
++    /// Public static origin; routes remain gated until their contract is verified.
++    pub cdn_upstream: Option<Url>,
+     pub cfbypass: Option<Url>,
+     pub timeout: Duration,
+     pub mirror_profile: bool,
+@@ -32,6 +34,27 @@ pub fn loopback_url(value: &str) -> Result<Url> {
+     Ok(url)
+ }
+ 
++fn service_url(value: &str, offline: bool) -> Result<Url> {
++    let url = if offline {
++        loopback_url(value)?
++    } else {
++        Url::parse(value)?
++    };
++    // Callers replace the path or join absolute API paths. Reject a base path
++    // rather than silently discarding a deployment's prefix or query settings.
++    if !matches!(url.scheme(), "http" | "https")
++        || url.host().is_none()
++        || !url.username().is_empty()
++        || url.password().is_some()
++        || url.path() != "/"
++        || url.query().is_some()
++        || url.fragment().is_some()
++    {
++        bail!("上游必须是 HTTP(S) 服务源地址，不能含凭据、路径前缀、查询串或片段");
++    }
++    Ok(url)
++}
++
+ impl Config {
+     pub fn from_env() -> Result<Self> {
+         let secret = env::var("GATEWAY_ADMIN_SECRET")
+@@ -50,6 +73,31 @@ impl Config {
+         if !matches!(profile.as_str(), "mirror" | "original") {
+             bail!("GATEWAY_COMPAT_PROFILE 必须是 mirror 或 original");
+         }
++        let offline = match env::var("GATEWAY_UPSTREAM_MODE").as_deref() {
++            Ok("offline") | Err(env::VarError::NotPresent) => true,
++            Ok("configured") => false,
++            _ => bail!("GATEWAY_UPSTREAM_MODE 必须是 offline 或 configured"),
++        };
++        let django = service_url(
++            &env::var("DJANGO_UPSTREAM").context("DJANGO_UPSTREAM 未配置")?,
++            offline,
++        )
++        .context("DJANGO_UPSTREAM 无效")?;
++        let upstream = service_url(
++            &env::var("CHATGPT_BASE_URL").context("CHATGPT_BASE_URL 未配置")?,
++            offline,
++        )
++        .context("CHATGPT_BASE_URL 无效")?;
++        let cdn_upstream = match env::var("CHATGPT_CDN_BASE_URL") {
++            Ok(value) => Some(service_url(&value, offline).context("CHATGPT_CDN_BASE_URL 无效")?),
++            Err(env::VarError::NotPresent) if offline => None,
++            Err(error) => return Err(error).context("CHATGPT_CDN_BASE_URL 未配置或无效"),
++        };
++        let cfbypass = match env::var("CF_BYPASS_URL") {
++            Ok(value) => Some(service_url(&value, offline).context("CF_BYPASS_URL 无效")?),
++            Err(env::VarError::NotPresent) => None,
++            Err(error) => return Err(error).context("CF_BYPASS_URL 无效"),
++        };
+         Ok(Self {
+             host: env::var("HOST").unwrap_or_else(|_| "127.0.0.1".into()),
+             port: env::var("PORT")
+@@ -60,14 +108,10 @@ impl Config {
+                 .into(),
+             secret,
+             key,
+-            django: loopback_url(&env::var("DJANGO_UPSTREAM").context("DJANGO_UPSTREAM 未配置")?)?,
+-            upstream: loopback_url(
+-                &env::var("CHATGPT_BASE_URL").context("CHATGPT_BASE_URL 未配置")?,
+-            )?,
+-            cfbypass: env::var("CF_BYPASS_URL")
+-                .ok()
+-                .map(|s| loopback_url(&s))
+-                .transpose()?,
++            django,
++            upstream,
++            cdn_upstream,
++            cfbypass,
+             timeout: Duration::from_secs(
+                 env::var("REQUEST_TIMEOUT_SECS")
+                     .unwrap_or_else(|_| "180".into())
+@@ -80,3 +124,58 @@ impl Config {
+         })
+     }
+ }
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++
++    #[test]
++    fn configured_services_accept_http_and_https_origins() {
++        for value in [
++            "http://django:8000",
++            "https://chat.example.invalid",
++            "https://static.example.invalid:8443/",
++            "http://[::1]:18090",
++            "https://127.0.0.1:18443",
++        ] {
++            assert!(service_url(value, false).is_ok(), "{value}");
++        }
++    }
++
++    #[test]
++    fn offline_services_still_require_numeric_http_loopback() {
++        for value in ["http://127.0.0.1:18090", "http://[::1]:18090"] {
++            assert!(service_url(value, true).is_ok(), "{value}");
++        }
++        for value in [
++            "https://127.0.0.1",
++            "http://localhost:8000",
++            "http://django:8000",
++            "https://chat.example.invalid",
++            "http://192.0.2.1",
++        ] {
++            assert!(service_url(value, true).is_err(), "{value}");
++        }
++    }
++
++    #[test]
++    fn service_origins_reject_ambiguous_or_credential_bearing_bases() {
++        for value in [
++            "file:///tmp/upstream",
++            "ftp://example.invalid",
++            "ws://example.invalid",
++            "//example.invalid",
++            "https://user:password@example.invalid",
++            "https://user@example.invalid",
++            "http://127.0.0.1/prefix/",
++            "http://127.0.0.1/?target=example.invalid",
++            "http://127.0.0.1/#fragment",
++            "http://127.0.0.1/?",
++            "http://127.0.0.1/#",
++            "",
++        ] {
++            assert!(service_url(value, false).is_err(), "{value}");
++            assert!(service_url(value, true).is_err(), "{value}");
++        }
++    }
++}
+diff --git a/src/main.rs b/src/main.rs
+index 4de130e..4dde778 100644
+--- a/src/main.rs
++++ b/src/main.rs
+@@ -33,7 +33,7 @@ async fn run() -> Result<()> {
+     let address = format!("{}:{}", config.host, config.port);
+     let router = server::router(config).await?;
+     let listener = tokio::net::TcpListener::bind(&address).await?;
+-    println!("gateway listening on http://{address} (offline candidate; release gate incomplete)");
++    println!("gateway listening on http://{address} (development candidate; release gate incomplete)");
+     axum::serve(
+         listener,
+         router.into_make_service_with_connect_info::<std::net::SocketAddr>(),
+diff --git a/src/server.rs b/src/server.rs
+index 8f17e68..b46551d 100644
+--- a/src/server.rs
++++ b/src/server.rs
+@@ -2,6 +2,7 @@
+ mod compression;
+ mod management;
+ mod proxy;
++mod static_assets;
+ use crate::{
+     config::Config,
+     crypto::sha256_hex,
+diff --git a/src/server/proxy.rs b/src/server/proxy.rs
+index fefd2e4..bcbc7ef 100644
+--- a/src/server/proxy.rs
++++ b/src/server/proxy.rs
+@@ -121,6 +121,9 @@ pub(super) async fn django_proxy(
+ /// chat 代理入口（父 `fallback` handler 替换点）：仅放行已观测的读取路由，
+ /// 未确证路径继续以 503 门禁失败，不做整体直通。
+ pub(super) async fn chat_proxy(State(app): State<Shared>, request: Request) -> Response {
++    if request.uri().path().starts_with("/assets/") || request.uri().path().starts_with("/cdn/") {
++        return super::static_assets::serve(&app, request).await;
++    }
+     // 缺失能力必须保持失败，不能用旧二进制回退或伪造成功响应。
+     if request.uri().path().starts_with("/api/") {
+         return StatusCode::NOT_FOUND.into_response();
+diff --git a/src/server/static_assets.rs b/src/server/static_assets.rs
+new file mode 100644
+index 0000000..d190026
+--- /dev/null
++++ b/src/server/static_assets.rs
+@@ -0,0 +1,161 @@
++//! Public JS/CSS only. Media and unknown paths remain behind the business gate.
++//! Route mapping observed in phase1/page-original-001; credential stripping is
++//! intentionally stricter than the original gateway's Authorization forwarding.
++use super::*;
++use axum::http::Method;
++use futures_util::TryStreamExt;
++
++fn asset_path(path: &str) -> Option<&str> {
++    let target = if path.starts_with("/assets/") {
++        path
++    } else {
++        let target = path.strip_prefix("/cdn/")?;
++        if !target.starts_with("assets/") && target.contains('/') {
++            return None;
++        }
++        &path[4..]
++    };
++    if !target
++        .bytes()
++        .all(|c| c.is_ascii_alphanumeric() || b"/._-".contains(&c))
++        || target[1..]
++            .split('/')
++            .any(|segment| matches!(segment, "" | "." | ".."))
++        || !(target.ends_with(".js") || target.ends_with(".css"))
++    {
++        return None;
++    }
++    Some(target)
++}
++
++pub(super) async fn serve(app: &App, request: Request) -> Response {
++    if !matches!(*request.method(), Method::GET | Method::HEAD) {
++        let mut response =
++            error(StatusCode::METHOD_NOT_ALLOWED, "静态资源仅支持 GET/HEAD").into_response();
++        response
++            .headers_mut()
++            .insert("allow", HeaderValue::from_static("GET, HEAD"));
++        return response;
++    }
++    let Some(path) = asset_path(request.uri().path()) else {
++        return error(
++            StatusCode::SERVICE_UNAVAILABLE,
++            "静态资源路径尚未通过兼容门禁",
++        )
++        .into_response();
++    };
++    let Some(mut target) = app.config.cdn_upstream.clone() else {
++        return error(
++            StatusCode::SERVICE_UNAVAILABLE,
++            "CHATGPT_CDN_BASE_URL 未配置",
++        )
++        .into_response();
++    };
++    target.set_path(path);
++    target.set_query(request.uri().query());
++    let mut upstream = app
++        .client
++        .request(request.method().clone(), target)
++        .header("user-agent", proxy::DEFAULT_USER_AGENT);
++    // Public CDN requests never receive browser, gateway, account or CF credentials.
++    for name in [
++        "accept",
++        "accept-encoding",
++        "accept-language",
++        "if-none-match",
++        "if-modified-since",
++        "range",
++        "if-range",
++    ] {
++        if let Some(value) = request.headers().get(name) {
++            upstream = upstream.header(name, value);
++        }
++    }
++    let upstream = match upstream.send().await {
++        Ok(value) => value,
++        Err(cause) => {
++            tracing::warn!(error=%cause, "public static upstream failed");
++            return error(StatusCode::BAD_GATEWAY, "静态资源上游不可用").into_response();
++        }
++    };
++    let status = upstream.status();
++    if status != StatusCode::NOT_MODIFIED {
++        if status.is_redirection() {
++            return error(StatusCode::BAD_GATEWAY, "静态资源上游重定向未开放").into_response();
++        }
++        if !status.is_success() {
++            return error(status, "静态资源上游请求失败").into_response();
++        }
++        let content_type = upstream
++            .headers()
++            .get("content-type")
++            .and_then(|value| value.to_str().ok())
++            .unwrap_or("")
++            .split(';')
++            .next()
++            .unwrap_or("")
++            .trim();
++        let expected = if path.ends_with(".css") {
++            content_type.eq_ignore_ascii_case("text/css")
++        } else {
++            content_type.eq_ignore_ascii_case("application/javascript")
++                || content_type.eq_ignore_ascii_case("text/javascript")
++        };
++        if !expected {
++            return error(StatusCode::BAD_GATEWAY, "静态资源上游类型不匹配").into_response();
++        }
++    }
++    let mut headers = HeaderMap::new();
++    for name in [
++        "content-type",
++        "content-encoding",
++        "content-language",
++        "etag",
++        "last-modified",
++        "accept-ranges",
++        "content-range",
++        "vary",
++    ] {
++        for value in upstream.headers().get_all(name) {
++            headers.append(name, value.clone());
++        }
++    }
++    let mut response = Response::new(Body::from_stream(
++        upstream.bytes_stream().map_err(std::io::Error::other),
++    ));
++    *response.status_mut() = status;
++    *response.headers_mut() = headers;
++    response.extensions_mut().insert(ProxiedResponse);
++    response
++}
++
++#[cfg(test)]
++mod tests {
++    use super::asset_path;
++
++    #[test]
++    fn maps_observed_public_routes_only() {
++        assert_eq!(asset_path("/assets/fixture.js"), Some("/assets/fixture.js"));
++        assert_eq!(asset_path("/cdn/fixture.css"), Some("/fixture.css"));
++        assert_eq!(
++            asset_path("/cdn/assets/chunk-1.js"),
++            Some("/assets/chunk-1.js")
++        );
++        for path in [
++            "/cdn",
++            "/cdn/",
++            "/cdn/../secret.js",
++            "/assets/%2e%2e/secret.js",
++            "/assets/a%2fsecret.js",
++            "/assets/a\\secret.js",
++            "/assets//a.js",
++            "/assets/a.json",
++            "/assets/private.png",
++            "/cdn/backend-api/me.js",
++            "/cdn//host/a.js",
++            "/backend-api/me",
++        ] {
++            assert_eq!(asset_path(path), None, "{path}");
++        }
++    }
++}
+diff --git a/tests/mirror_auth.rs b/tests/mirror_auth.rs
+index 4bf9f0a..f292e2c 100644
+--- a/tests/mirror_auth.rs
++++ b/tests/mirror_auth.rs
+@@ -30,6 +30,7 @@ async fn mirror_authority_revocation_and_relogin_are_enforced() {
+         key: "fixture-encryption-key-000000000001".into(),
+         django: loopback_url(&stub_url).unwrap(),
+         upstream: loopback_url(&stub_url).unwrap(),
++        cdn_upstream: None,
+         cfbypass: None,
+         timeout: Duration::from_secs(3),
+         mirror_profile: true,
+@@ -81,6 +82,30 @@ async fn mirror_authority_revocation_and_relogin_are_enforced() {
+         .await
+         .unwrap();
+     assert_eq!(response.status(), 200);
++    // A client-supplied URL stays request data; only the configured chat origin
++    // is contacted. The fixture verifies the account's upstream credential.
++    assert_eq!(
++        client
++            .get(format!("{base}/backend-api/me?url=http://192.0.2.99/&target=https://example.invalid"))
++            .header("x-mirror-token", token)
++            .send()
++            .await
++            .unwrap()
++            .status(),
++        200
++    );
++    for path in ["/backend-api/conversation", "/assets/unverified.js", "/"] {
++        assert_eq!(
++            client
++                .get(format!("{base}{path}"))
++                .header("x-mirror-token", token)
++                .send()
++                .await
++                .unwrap()
++                .status(),
++            503
++        );
++    }
+     let event = json!({"subject":"alice","version":"v1","include_visitors":false,"expires_at":SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs()+3600});
+     let response = client
+         .post(format!("{base}/api/revoke-authorization"))
+diff --git a/tests/static_assets.rs b/tests/static_assets.rs
+new file mode 100644
+index 0000000..b17522a
+--- /dev/null
++++ b/tests/static_assets.rs
+@@ -0,0 +1,322 @@
++use axum::{
++    body::Body,
++    extract::Request,
++    http::{HeaderMap, StatusCode},
++    response::IntoResponse,
++    routing::get,
++    Router,
++};
++use mirror_gateway::{
++    config::{loopback_url, Config},
++    server,
++};
++use std::{
++    sync::{
++        atomic::{AtomicUsize, Ordering},
++        Arc,
++    },
++    time::Duration,
++};
++
++struct Fixture {
++    base: String,
++    client: reqwest::Client,
++    _dir: tempfile::TempDir,
++    tasks: Vec<tokio::task::JoinHandle<()>>,
++}
++
++impl Drop for Fixture {
++    fn drop(&mut self) {
++        for task in &self.tasks {
++            task.abort();
++        }
++    }
++}
++
++async fn fixture(stub: Router, enable_cdn: bool) -> Fixture {
++    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
++    let upstream = loopback_url(&format!("http://{}", listener.local_addr().unwrap())).unwrap();
++    let stub_task = tokio::spawn(async move { axum::serve(listener, stub).await.unwrap() });
++    let dir = tempfile::tempdir().unwrap();
++    let config = Config {
++        host: "127.0.0.1".into(),
++        port: 0,
++        database: dir.path().join("fresh.db"),
++        secret: "fixture-admin-secret-0001".into(),
++        key: "fixture-encryption-key-000000000001".into(),
++        django: upstream.clone(),
++        upstream: upstream.clone(),
++        cdn_upstream: enable_cdn.then_some(upstream),
++        cfbypass: None,
++        timeout: Duration::from_secs(3),
++        mirror_profile: true,
++        cookie_secure: false,
++    };
++    let app = server::router(config).await.unwrap();
++    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
++    let base = format!("http://{}", listener.local_addr().unwrap());
++    let task = tokio::spawn(async move { axum::serve(listener, app).await.unwrap() });
++    Fixture {
++        base,
++        _dir: dir,
++        tasks: vec![task, stub_task],
++        client: reqwest::Client::builder()
++            .no_proxy()
++            .redirect(reqwest::redirect::Policy::none())
++            .build()
++            .unwrap(),
++    }
++}
++
++#[tokio::test]
++async fn routes_public_assets_without_any_credentials_or_response_cookies() {
++    let calls = Arc::new(AtomicUsize::new(0));
++    let count = calls.clone();
++    let stub = Router::new().fallback(move |request: Request| {
++        let count = count.clone();
++        async move {
++            count.fetch_add(1, Ordering::SeqCst);
++            let path = request.uri().path();
++            assert!(matches!(path, "/assets/fixture.js" | "/fixture.css"));
++            for header in [
++                "authorization",
++                "cookie",
++                "x-mirror-token",
++                "x-api-key",
++                "x-forwarded-host",
++                "origin",
++                "referer",
++            ] {
++                assert!(!request.headers().contains_key(header), "{header}");
++            }
++            assert_eq!(request.headers()["if-none-match"], "fixture-etag");
++            assert_eq!(
++                request.uri().query(),
++                Some("v=1&url=https://example.invalid")
++            );
++            (
++                [
++                    (
++                        "content-type",
++                        if path.ends_with(".css") {
++                            "text/css"
++                        } else {
++                            "application/javascript"
++                        },
++                    ),
++                    ("set-cookie", "mirror_token=must-not-escape"),
++                    ("etag", "fixture-etag"),
++                ],
++                "fixture-static",
++            )
++        }
++    });
++    let f = fixture(stub, true).await;
++    for path in [
++        "/assets/fixture.js",
++        "/cdn/assets/fixture.js",
++        "/cdn/fixture.css",
++    ] {
++        let response = f
++            .client
++            .get(format!("{}{path}?v=1&url=https://example.invalid", f.base))
++            .bearer_auth("browser-secret")
++            .header("cookie", "mirror_token=invalid")
++            .header("x-mirror-token", "invalid")
++            .header("x-api-key", "private")
++            .header("x-forwarded-host", "example.invalid")
++            .header("origin", "https://example.invalid")
++            .header("referer", "https://example.invalid/private")
++            .header("if-none-match", "fixture-etag")
++            .send()
++            .await
++            .unwrap();
++        assert_eq!(response.status(), 200);
++        assert!(!response.headers().contains_key("set-cookie"));
++        assert_eq!(response.headers()["etag"], "fixture-etag");
++        assert_eq!(response.text().await.unwrap(), "fixture-static");
++    }
++    assert_eq!(calls.load(Ordering::SeqCst), 3);
++}
++
++#[tokio::test]
++async fn unknown_paths_methods_and_unconfigured_cdn_never_contact_upstream() {
++    let calls = Arc::new(AtomicUsize::new(0));
++    let count = calls.clone();
++    let f = fixture(
++        Router::new().fallback(move || {
++            count.fetch_add(1, Ordering::SeqCst);
++            async { StatusCode::OK }
++        }),
++        true,
++    )
++    .await;
++    for path in [
++        "/assets/private.png",
++        "/assets/a.json",
++        "/cdn/backend-api/me.js",
++        "/cdn//host/a.js",
++        "/assets/%2Fsecret.js",
++    ] {
++        assert_eq!(
++            f.client
++                .get(format!("{}{path}", f.base))
++                .send()
++                .await
++                .unwrap()
++                .status(),
++            503
++        );
++    }
++    let response = f
++        .client
++        .post(format!("{}/assets/a.js", f.base))
++        .body("must-not-be-forwarded")
++        .send()
++        .await
++        .unwrap();
++    assert_eq!(response.status(), 405);
++    assert_eq!(response.headers()["allow"], "GET, HEAD");
++    assert_eq!(calls.load(Ordering::SeqCst), 0);
++    let f = fixture(Router::new(), false).await;
++    assert_eq!(
++        f.client
++            .get(format!("{}/assets/a.js", f.base))
++            .send()
++            .await
++            .unwrap()
++            .status(),
++        503
++    );
++}
++
++#[tokio::test]
++async fn rejects_redirects_html_and_missing_content_type() {
++    let calls = Arc::new(AtomicUsize::new(0));
++    let count = calls.clone();
++    let stub = Router::new()
++        .route(
++            "/assets/redirect.js",
++            get(|| async { (StatusCode::TEMPORARY_REDIRECT, [("location", "/trap")]) }),
++        )
++        .route(
++            "/trap",
++            get(move || {
++                count.fetch_add(1, Ordering::SeqCst);
++                async { "PRIVATE" }
++            }),
++        )
++        .route(
++            "/assets/html.js",
++            get(|| async {
++                (
++                    [("content-type", "text/html"), ("set-cookie", "private=1")],
++                    "PRIVATE",
++                )
++            }),
++        )
++        .route(
++            "/assets/missing.js",
++            get(|| async { axum::response::Response::new(Body::from("PRIVATE")) }),
++        );
++    let f = fixture(stub, true).await;
++    for name in ["redirect", "html", "missing"] {
++        let response = f
++            .client
++            .get(format!("{}/assets/{name}.js", f.base))
++            .send()
++            .await
++            .unwrap();
++        assert_eq!(response.status(), 502);
++        assert!(!response.headers().contains_key("location"));
++        assert!(!response.headers().contains_key("set-cookie"));
++        assert!(!response.text().await.unwrap().contains("PRIVATE"));
++    }
++    assert_eq!(calls.load(Ordering::SeqCst), 0);
++}
++
++#[tokio::test]
++async fn preserves_head_cache_and_error_status_without_exposing_error_body() {
++    let stub = Router::new()
++        .route(
++            "/assets/a.js",
++            get(|headers: HeaderMap| async move {
++                if headers.contains_key("if-none-match") {
++                    (StatusCode::NOT_MODIFIED, [("etag", "fixture")]).into_response()
++                } else {
++                    (
++                        [("content-type", "text/javascript; charset=utf-8")],
++                        "fixture",
++                    )
++                        .into_response()
++                }
++            }),
++        )
++        .route(
++            "/assets/error.js",
++            get(|| async { (StatusCode::FORBIDDEN, "PRIVATE-ERROR") }),
++        );
++    let f = fixture(stub, true).await;
++    let response = f
++        .client
++        .head(format!("{}/assets/a.js", f.base))
++        .send()
++        .await
++        .unwrap();
++    assert_eq!(response.status(), 200);
++    assert!(response.bytes().await.unwrap().is_empty());
++    let response = f
++        .client
++        .get(format!("{}/assets/a.js", f.base))
++        .header("if-none-match", "fixture")
++        .send()
++        .await
++        .unwrap();
++    assert_eq!(response.status(), 304);
++    assert_eq!(response.headers()["etag"], "fixture");
++    let response = f
++        .client
++        .get(format!("{}/assets/error.js", f.base))
++        .send()
++        .await
++        .unwrap();
++    assert_eq!(response.status(), 403);
++    assert!(!response.text().await.unwrap().contains("PRIVATE-ERROR"));
++}
++
++#[tokio::test]
++async fn forwards_first_chunk_before_upstream_completes() {
++    let stub = Router::new().route(
++        "/assets/slow.js",
++        get(|| async {
++            let stream = futures_util::stream::unfold(0, |index| async move {
++                match index {
++                    0 => Some((Ok::<_, std::io::Error>("first"), 1)),
++                    1 => {
++                        tokio::time::sleep(Duration::from_secs(2)).await;
++                        Some((Ok("last"), 2))
++                    }
++                    _ => None,
++                }
++            });
++            (
++                [("content-type", "application/javascript")],
++                Body::from_stream(stream),
++            )
++        }),
++    );
++    let f = fixture(stub, true).await;
++    let mut response = tokio::time::timeout(
++        Duration::from_secs(1),
++        f.client.get(format!("{}/assets/slow.js", f.base)).send(),
++    )
++    .await
++    .unwrap()
++    .unwrap();
++    let chunk = tokio::time::timeout(Duration::from_secs(1), response.chunk())
++        .await
++        .unwrap()
++        .unwrap()
++        .unwrap();
++    assert_eq!(chunk, "first");
++}

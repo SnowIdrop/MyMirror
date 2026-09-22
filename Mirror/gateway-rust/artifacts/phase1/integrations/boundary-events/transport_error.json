@@ -1,0 +1,305 @@
+{
+  "events": [
+    {
+      "cdn-unwired": "http://127.0.0.1:57881",
+      "chat": "http://127.0.0.1:57873",
+      "client-target-decoy": "http://127.0.0.1:57892",
+      "database": "C:\\Users\\Administrator\\AppData\\Local\\Temp\\.tmpvBYMUx\\db.sqlite",
+      "django": "http://127.0.0.1:57868",
+      "evidence_level": "synthetic loopback HTTP; owner auth refresh and closed-page candidate",
+      "gateway": "http://127.0.0.1:57908",
+      "kind": "setup"
+    },
+    {
+      "body": "{\"access_token\":\"coord-synthetic-access-alice\",\"authorization\":\"coord-signature-v1\",\"daily_quota\":20,\"isolated_session\":true,\"limits\":[],\"login_mode\":\"api\",\"mcp_allowed_ids\":[],\"mcp_isolation\":true,\"model_allowed_ids\":[\"fixture-model\"],\"model_isolation\":true,\"model_rate_limits\":{},\"monthly_quota\":100,\"skills_allowed_ids\":[],\"skills_isolation\":true,\"user_name\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "service-login",
+      "method": "POST",
+      "request_id": 1,
+      "url": "http://127.0.0.1:57908/api/login"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57868"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-access-alice"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57873"
+        ]
+      ],
+      "kind": "egress",
+      "method": "GET",
+      "role": "chat",
+      "uri": "/backend-api/me"
+    },
+    {
+      "body": "{\"chatgpt_username\":\"account-a@example.invalid\",\"login_mode\":\"api\",\"login_url\":\"/api/not-login?user_gateway_token=9f32c3cc47ded968b46613f7ec6c581012681817d1bc7506fbd4d6aa0b4eb60b\",\"message\":\"登录成功\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "set-cookie",
+          "mirror_token=9f32c3cc47ded968b46613f7ec6c581012681817d1bc7506fbd4d6aa0b4eb60b; Path=/; SameSite=Lax; Max-Age=604800; HttpOnly"
+        ],
+        [
+          "set-cookie",
+          "access_token=; Path=/; SameSite=Lax; Max-Age=0; HttpOnly"
+        ],
+        [
+          "set-cookie",
+          "session_token=; Path=/; SameSite=Lax; Max-Age=0; HttpOnly"
+        ],
+        [
+          "set-cookie",
+          "next-auth.session-token=; Path=/; SameSite=Lax; Max-Age=0; HttpOnly"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "205"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "service-login",
+      "request_id": 1,
+      "status": 200
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "x-mirror-token",
+          "9f32c3cc47ded968b46613f7ec6c581012681817d1bc7506fbd4d6aa0b4eb60b"
+        ],
+        [
+          "authorization",
+          "Bearer coord-browser-authorization-must-not-leak"
+        ],
+        [
+          "cookie",
+          "coord-browser-cookie-must-not-leak"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "chat-transport-failure",
+      "method": "GET",
+      "request_id": 5,
+      "url": "http://127.0.0.1:57908/backend-api/me?authorization=coord-browser-authorization-must-not-leak&cookie=coord-browser-cookie-must-not-leak"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57868"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"message\":\"上游请求失败\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "32"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:25 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "chat-transport-failure",
+      "request_id": 5,
+      "status": 502
+    }
+  ],
+  "panicking": false,
+  "test": "transport_error"
+}

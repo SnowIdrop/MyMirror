@@ -1,0 +1,11 @@
+   Compiling mirror-gateway v0.1.0 (E:\M\Project\MiRebuild\Mirror\gateway-rust\artifacts\phase1\source)
+error[E0560]: struct `Config` has no field named `cdn_upstream`
+  --> tests\auth_refresh.rs:79:9
+   |
+79 |         cdn_upstream: None,
+   |         ^^^^^^^^^^^^ `Config` does not have this field
+   |
+   = note: all struct fields are already assigned
+
+For more information about this error, try `rustc --explain E0560`.
+error: could not compile `mirror-gateway` (test "auth_refresh") due to 1 previous error

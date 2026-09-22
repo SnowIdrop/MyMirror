@@ -1,0 +1,32 @@
+{
+  "coordinator": "01a0c9c9-4508-75d1-a709-20aa6dbb69f9",
+  "owner": "01a0c9af-fab7-7780-af7f-537dde662636",
+  "files": [
+    {
+      "path": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\src\\resource_acl.rs",
+      "received_sha256": "80ee34100574d8b746905ae71ea42b67d25c13410e247b4408e47db4ea0caa39",
+      "integrated_sha256": "80ee34100574d8b746905ae71ea42b67d25c13410e247b4408e47db4ea0caa39",
+      "owner_changed": false
+    },
+    {
+      "path": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\tests\\coord_acl_contract.rs",
+      "received_sha256": "8b06f74d703632fce6546d0b5463d50c8f830d81547f605ce4e8f180b419dbfa",
+      "integrated_sha256": "8b06f74d703632fce6546d0b5463d50c8f830d81547f605ce4e8f180b419dbfa",
+      "owner_changed": false
+    },
+    {
+      "path": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\tests\\coord_boundary_regression.rs",
+      "received_sha256": "e2f09e37db56ff7f25129304933d0b42332bc1da2aa169a90ad7bd2dd0845ecc",
+      "integrated_sha256": "7fccb8e6ac1cd2176c1814ef979fd0dd671898419c630800a86380f8fb6f0c6f",
+      "owner_changed": true
+    }
+  ],
+  "checks": "Both incoming patches verified by SHA256 and git apply --check before applying; targeted 28 ACL + 8 boundary tests passed on this candidate. Full combined gate is checks.json.",
+  "boundary_upgrade": "Added observed accounts/check response and authenticated account handling; replaced old no-chat-auth-refresh assertion with 9 refreshes/18 ordered requests separated by each account credential. Credential/isolation/closed-route assertions retained; login counts unchanged.",
+  "acl_wiring": "None: no lib export, production DB initialization or route use.",
+  "admin": "Read-only contract/report reviewed; no Django/Vue product code integrated.",
+  "combined_gate": "Full current-candidate cargo test --all-targets, Clippy --all-targets -D warnings, and 30 configuration cases all passed; literal records in ../checks.json.",
+  "owner_upgrade_corrections": [
+    "Clippy constant chunks_exact suggestion: changed to as_chunks::<2>(), then fixed array-reference comparison. Both failed commands retained as clippy-first-failure.json and array-fix-first-failure.json; full gate rerun passed."
+  ]
+}

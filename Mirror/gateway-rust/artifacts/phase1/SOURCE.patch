@@ -21,16 +21,16 @@ index 0000000..4a9abf2
 +REQUEST_TIMEOUT_SECS=180
 diff --git a/PHASE1_CONTRACT.md b/PHASE1_CONTRACT.md
 new file mode 100644
-index 0000000..4dfdc76
+index 0000000..eb7bb32
 --- /dev/null
 +++ b/PHASE1_CONTRACT.md
-@@ -0,0 +1,73 @@
-+# 新替换计划：第一阶段配置与公共静态批次（未完成整体替换）
+@@ -0,0 +1,80 @@
++# 新替换计划：配置、公共静态与认证刷新（未完成整体替换）
 +
 +## 当前边界
 +
 +本候选沿用 `gateway-rust`，没有改为官方 API 产品，没有接入闭源回退。
-+本候选已实现服务端上游配置拆分及受限公共 JS/CSS 通道，补充离线契约与回归。原始源码、既有二进制证据、
++本候选已实现上游配置拆分、受限公共 JS/CSS 通道及认证刷新链，补充离线契约与回归。原始源码、既有二进制证据、
 +Django 用户库、旧网关库及线上资源均保留；没有导入旧数据。
 +
 +`Config::from_env` 新增 `GATEWAY_UPSTREAM_MODE`：
@@ -78,7 +78,7 @@ index 0000000..4dfdc76
 +
 +## 按原顺序继续
 +
-+1. 第一阶段未完：页面/静态/刷新首轮离线观测已经完成；下一步实现有测试约束的认证刷新链，并审查 HTML/初始化数据隔离后再开放页面与同源改写。字体、图片和其他静态类型仍未开放。
++1. 第一阶段未完：认证刷新链已按观测实现；下一步审查 HTML/初始化数据隔离后再开放页面与同源改写。字体、图片和其他静态类型仍未开放，登录初次账号检查仍未完全对齐。
 +2. 第二阶段：Django 可信身份响应 → Rust 新库资源/关联/共享/审计 → 所有访问统一判权 → 后台资源页面及版本化完整备份。既有开关不得关闭默认私有。
 +3. 第三至五阶段：按用户计划接通普通聊天、文件/图片/项目、研究/搜索/语音/连接器；证据不足或无法隔离时保留未完成门禁。
 +4. 第六阶段才执行整体镜像、浏览器、三身份隔离、重启/故障/并发、备份与部署回滚验收。
@@ -96,10 +96,17 @@ index 0000000..4dfdc76
 +- 新候选仅允许 `/assets/` 下或受限 `/cdn/` 映射的安全 ASCII JS/CSS 路径，GET/HEAD；不接受路径穿越、编码路径或任意 URL。缺 CDN/未证实路径503，其他方法405，重定向及HTML/错误MIME502；上游错误状态保留但不泄出错误正文。
 +- 静态正文逐块转发，没有数据库锁或完整正文缓冲；首块早于上游完成的合成测试已加入。304、HEAD与ETag有回归，尚未宣称所有浏览器缓存/Range/压缩组合验收。
 +- 原版匿名首页302到 `/admin#/`；登录后首页和 `/c/guessed-conversation` 会请求聊天HTML并注入脚本。合成页面并不能证明真实初始化数据隔离，因此候选仍不开放这两条页面路径。
-+- 原版登录以及每次 `/api/auth/session`（含重复、`refresh_account=1`）都依次请求 `accounts/check/v4-2023-04-27` 与 `me`。合成 `accounts.default.account.plan_type=plus` 产生 planType=plus；accounts 500时仍请求me并显示free；me 401时返回空对象。**这些是合成输入下的实测解析行为，不是对全部真实响应结构的推定；候选刷新链尚未实现。**
++- 原版登录以及每次 `/api/auth/session`（含重复、`refresh_account=1`）都依次请求 `accounts/check/v4-2023-04-27` 与 `me`。合成 `accounts.default.account.plan_type=plus` 产生 planType=plus；accounts 500时仍请求me并显示free；me 401时返回空对象。**这些是合成输入下的实测解析行为，不是对全部真实响应结构的推定；候选已实现会话刷新，初次登录仍只调用me。**
 +- 启动CF预热可能与首个案例标签交叠；不把标签下出现的预热记录推断为匿名首页的业务调用。
++
++## 认证刷新与独立权限模块暂存
++
++- `auth_session` → `proxy::refresh_auth_session`：按当前 mirror token 精确读取凭据快照，释放 SQLite 锁，再依次查询账号计划与me；读取前后都检查当前会话/Django授权。网络等待期间撤权可以完成，已撤权结果返回空对象。
++- 计划查询HTTP失败仍检查me并展示free，me失败返回空对象；账号email不匹配拒绝重新绑定。传输/JSON错误返回502，不伪造刷新成功。此批没有改变登录上游调用次数，也没有把固定UI expires字符串当成实际授权期限。
++- `tests/auth_refresh.rs` 三项测试先在静态基线上失败，改动后通过：重复请求顺序、失败/账号不匹配、网络等待中撤权及锁释放。
++- 协调工作线交付的 `src/resource_acl.rs` 与 `tests/coord_acl_contract.rs` 只作为独立模块和28项SQLite契约测试暂存；**没有lib导出，没有真实库初始化，没有生产路由调用**。可信身份新字段、账号映射、管理员入口、完整备份及实时撤权仍待集成，不能称为第二阶段权限已接通。
 diff --git a/README.md b/README.md
-index 48deb3d..aaaa0a8 100644
+index 48deb3d..b27b814 100644
 --- a/README.md
 +++ b/README.md
 @@ -1,7 +1,9 @@
@@ -113,7 +120,7 @@ index 48deb3d..aaaa0a8 100644
  
  ## 已实现与边界
  
-@@ -34,7 +36,9 @@ Linux x86-64 musl 制品使用本工程 `.build/zig/ziglang` 中的 Zig 0.13.0 
+@@ -34,7 +36,10 @@ Linux x86-64 musl 制品使用本工程 `.build/zig/ziglang` 中的 Zig 0.13.0 
  ## 配置
  
  `GATEWAY_ADMIN_SECRET` 至少 16 字节；`CREDENTIAL_ENCRYPTION_KEY` 去除两端空白后至少 32 字节。
@@ -121,10 +128,11 @@ index 48deb3d..aaaa0a8 100644
 +`GATEWAY_UPSTREAM_MODE` 默认 `offline`：`DJANGO_UPSTREAM`、`CHATGPT_BASE_URL`、可选 `CHATGPT_CDN_BASE_URL` / `CF_BYPASS_URL` 只接受数字 HTTP 回环服务源。
 +显式设为 `configured` 时接受 HTTP/HTTPS 服务名和端口，Django、聊天、CDN 三个源必须各自配置，CF 源可选。拒绝凭据、路径前缀、查询串和片段；不提供默认公网地址。配置模板见 `.env.configured.example`。
 +CDN 已接入受限公共 JS/CSS 的 `/assets/` 与 `/cdn/` 路径；不转发凭据或上游 Cookie，拒绝路径穿越、错误 MIME 与重定向。字体、图片及其他路径仍有门禁，聊天页面尚未开放。TLS 校验保持启用，请求无法改写配置目标。
++`/api/auth/session` 已接入 accounts/check → me 的逐次刷新，网络等待不持数据库锁，并在返回前重新校验撤权；初次登录的accounts检查仍未对齐。独立ACL模块只暂存和运行契约测试，没有产品权限接线。
  `GATEWAY_COMPAT_PROFILE=mirror` 是默认值，必须传 Django 授权与策略字段；`original` 只用于原版契约观测，不自动降级到该模式。
  `COOKIE_SECURE` 默认 true。局部合成 HTTP 测试可设 false；这不是公网部署配置。
  
-@@ -54,7 +58,7 @@ mirror-gateway migrate SOURCE_COPY NEW_DATABASE
+@@ -54,7 +59,7 @@ mirror-gateway migrate SOURCE_COPY NEW_DATABASE
  `artifacts/ROLLBACK.sh TARGET_COPY` 从同目录 `baseline.gateway` 恢复原版程序。它只回滚程序，不回滚数据库；生产数据回滚必须使用维护窗口前的一致性快照。
  `artifacts/DIFF_FILE.patch` 是原版 `gateway` 到候选 `gateway` 的 Git binary patch，已在独立副本用 `git apply` 验证重建哈希。
  
@@ -335,8 +343,530 @@ index 4de130e..4dde778 100644
      axum::serve(
          listener,
          router.into_make_service_with_connect_info::<std::net::SocketAddr>(),
+diff --git a/src/resource_acl.rs b/src/resource_acl.rs
+new file mode 100644
+index 0000000..7b3a881
+--- /dev/null
++++ b/src/resource_acl.rs
+@@ -0,0 +1,516 @@
++//! Isolated ACL v1. Not wired into the gateway, its login, or its database.
++//! Trust boundary: only a verified Django response and a server-side successful
++//! creation adapter may construct the inputs. This module performs no network I/O.
++
++use std::collections::BTreeSet;
++use std::fmt;
++
++use rusqlite::{params, Connection, OptionalExtension, TransactionBehavior};
++use serde_json::Value;
++
++#[derive(Debug)]
++pub enum AclError {
++    Unauthorized,
++    Forbidden,
++    UnknownResource,
++    InvalidInput,
++    InvalidOperation,
++    CrossAccount,
++    AlreadyRegistered,
++    Sqlite(rusqlite::Error),
++}
++
++impl fmt::Display for AclError {
++    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
++        write!(f, "{self:?}")
++    }
++}
++impl std::error::Error for AclError {}
++impl From<rusqlite::Error> for AclError {
++    fn from(error: rusqlite::Error) -> Self {
++        Self::Sqlite(error)
++    }
++}
++pub type Result<T> = std::result::Result<T, AclError>;
++
++#[derive(Debug, Clone, PartialEq, Eq)]
++pub struct Identity {
++    user_id: String,
++    is_admin: bool,
++    authorization_version: String,
++}
++
++impl Identity {
++    /// `details` MUST come from the fixed trusted Django authority, never JSON
++    /// submitted by the browser or possession of the service management key.
++    pub fn from_authority(details: &Value, expected_subject: &str, now: i64) -> Result<Self> {
++        let user_id = details["user_id"].as_str().ok_or(AclError::Unauthorized)?;
++        let version = details["version"].as_str().ok_or(AclError::Unauthorized)?;
++        let is_admin = details["is_admin"]
++            .as_bool()
++            .ok_or(AclError::Unauthorized)?;
++        if details["active"] != true
++            || details["principal_kind"] != "user"
++            || expected_subject.is_empty()
++            || details["subject"].as_str() != Some(expected_subject)
++            || details["expires_at"]
++                .as_i64()
++                .is_none_or(|expiry| expiry <= now)
++            || !valid_user_id(user_id)
++            || version.trim().is_empty()
++        {
++            return Err(AclError::Unauthorized);
++        }
++        Ok(Self {
++            user_id: user_id.to_owned(),
++            is_admin,
++            authorization_version: version.to_owned(),
++        })
++    }
++
++    pub fn user_id(&self) -> &str {
++        &self.user_id
++    }
++    pub fn is_admin(&self) -> bool {
++        self.is_admin
++    }
++    pub fn authorization_version(&self) -> &str {
++        &self.authorization_version
++    }
++}
++
++/// Fresh verification for one synchronous ACL operation. Never cache across
++/// requests. The caller owns the revocation barrier before upstream side effects.
++pub struct RequestIdentity(Identity);
++
++impl RequestIdentity {
++    pub fn verify(
++        pinned: &Identity,
++        details: &Value,
++        expected_subject: &str,
++        now: i64,
++    ) -> Result<Self> {
++        let current = Identity::from_authority(details, expected_subject, now)?;
++        if &current != pinned {
++            return Err(AclError::Unauthorized);
++        }
++        Ok(Self(current))
++    }
++}
++
++fn valid_user_id(value: &str) -> bool {
++    value
++        .as_bytes()
++        .first()
++        .is_some_and(|c| (b'1'..=b'9').contains(c))
++        && value.bytes().all(|c| c.is_ascii_digit())
++}
++
++#[derive(Debug, Clone, Copy, PartialEq, Eq)]
++pub enum ResourceKind {
++    Conversation,
++    Project,
++    File,
++    Image,
++    Task,
++    Connector,
++}
++
++impl ResourceKind {
++    pub fn as_str(self) -> &'static str {
++        match self {
++            Self::Conversation => "conversation",
++            Self::Project => "project",
++            Self::File => "file",
++            Self::Image => "image",
++            Self::Task => "task",
++            Self::Connector => "connector",
++        }
++    }
++}
++
++#[derive(Debug, Clone, PartialEq, Eq)]
++pub struct ResourceKey {
++    account_id: String,
++    kind: ResourceKind,
++    upstream_id: String,
++}
++
++impl ResourceKey {
++    pub fn new(account_id: &str, kind: ResourceKind, upstream_id: &str) -> Result<Self> {
++        if account_id.trim().is_empty() || upstream_id.trim().is_empty() {
++            return Err(AclError::InvalidInput);
++        }
++        Ok(Self {
++            account_id: account_id.into(),
++            kind,
++            upstream_id: upstream_id.into(),
++        })
++    }
++    pub fn account_id(&self) -> &str {
++        &self.account_id
++    }
++    pub fn kind(&self) -> ResourceKind {
++        self.kind
++    }
++    pub fn upstream_id(&self) -> &str {
++        &self.upstream_id
++    }
++}
++
++/// Construct only inside a trusted upstream CREATE adapter after confirmed
++/// success, not from a client-provided ID or an upstream GET of an old resource.
++/// These fields are deliberately not deserializable from an HTTP body.
++pub struct ConfirmedCreation {
++    pub(crate) creation_id: String,
++    pub(crate) resource: ResourceKey,
++    pub(crate) project: Option<ResourceKey>,
++}
++
++#[derive(Debug, Clone, Copy, PartialEq, Eq)]
++pub enum Action {
++    Read,
++    Modify,
++    Delete,
++    ContinueChat,
++}
++
++#[derive(Debug, PartialEq, Eq)]
++pub enum Access {
++    Registered,
++    UnknownAdministratorRead,
++}
++
++/// Post-commit invalidation intent, NOT a delivered notification or durable outbox.
++#[derive(Debug)]
++pub struct AclChange {
++    pub audit_id: i64,
++    pub scope: ResourceKey,
++    pub include_project_children: bool,
++    pub user_id: Option<String>,
++}
++
++#[derive(Debug)]
++pub struct AuditRecord {
++    pub id: i64,
++    pub occurred_at: i64,
++    pub actor_user_id: String,
++    pub authorization_version: String,
++    pub action: String,
++    pub account_id: String,
++    pub resource_type: String,
++    pub upstream_id: String,
++    pub recipient_user_id: Option<String>,
++    pub project_id: Option<String>,
++}
++
++const SCHEMA: &str = r#"
++CREATE TABLE IF NOT EXISTS acl_resources (
++    account_id TEXT NOT NULL,
++    resource_type TEXT NOT NULL CHECK(resource_type IN ('conversation','project','file','image','task','connector')),
++    upstream_id TEXT NOT NULL,
++    owner_user_id TEXT NOT NULL,
++    creation_id TEXT NOT NULL UNIQUE,
++    PRIMARY KEY(account_id, resource_type, upstream_id)
++);
++CREATE TRIGGER IF NOT EXISTS acl_resource_identity_immutable
++BEFORE UPDATE ON acl_resources
++BEGIN SELECT RAISE(ABORT, 'resource identity and ownership are immutable'); END;
++CREATE TABLE IF NOT EXISTS acl_project_links (
++    account_id TEXT NOT NULL,
++    resource_type TEXT NOT NULL CHECK(resource_type <> 'project'),
++    upstream_id TEXT NOT NULL,
++    project_type TEXT NOT NULL DEFAULT 'project' CHECK(project_type = 'project'),
++    project_id TEXT NOT NULL,
++    PRIMARY KEY(account_id, resource_type, upstream_id),
++    FOREIGN KEY(account_id, resource_type, upstream_id)
++        REFERENCES acl_resources(account_id, resource_type, upstream_id),
++    FOREIGN KEY(account_id, project_type, project_id)
++        REFERENCES acl_resources(account_id, resource_type, upstream_id)
++);
++CREATE TABLE IF NOT EXISTS acl_shares (
++    account_id TEXT NOT NULL,
++    resource_type TEXT NOT NULL,
++    upstream_id TEXT NOT NULL,
++    recipient_user_id TEXT NOT NULL,
++    PRIMARY KEY(account_id, resource_type, upstream_id, recipient_user_id),
++    FOREIGN KEY(account_id, resource_type, upstream_id)
++        REFERENCES acl_resources(account_id, resource_type, upstream_id)
++);
++CREATE TABLE IF NOT EXISTS acl_audit (
++    id INTEGER PRIMARY KEY AUTOINCREMENT,
++    occurred_at INTEGER NOT NULL DEFAULT (unixepoch()),
++    actor_user_id TEXT NOT NULL,
++    authorization_version TEXT NOT NULL,
++    action TEXT NOT NULL,
++    account_id TEXT NOT NULL,
++    resource_type TEXT NOT NULL,
++    upstream_id TEXT NOT NULL,
++    recipient_user_id TEXT,
++    project_id TEXT
++);
++"#;
++
++pub struct ResourceAcl {
++    conn: Connection,
++}
++
++impl ResourceAcl {
++    /// Use an independent, caller-owned SQLite connection. No legacy migration,
++    /// no user database, no implicit connection to production or original storage.
++    pub fn new(mut conn: Connection) -> Result<Self> {
++        conn.execute_batch("PRAGMA foreign_keys=ON;")?;
++        let tx = conn.transaction_with_behavior(TransactionBehavior::Immediate)?;
++        tx.execute_batch(SCHEMA)?;
++        tx.commit()?;
++        Ok(Self { conn })
++    }
++
++    pub fn authorize(
++        &self,
++        actor: &RequestIdentity,
++        resource: &ResourceKey,
++        action: Action,
++    ) -> Result<Access> {
++        authorize(&self.conn, &actor.0, resource, action)
++    }
++
++    /// None means upstream creation failed/was not confirmed: nothing is recorded.
++    pub fn record_created(
++        &mut self,
++        actor: &RequestIdentity,
++        receipt: Option<ConfirmedCreation>,
++    ) -> Result<Option<AclChange>> {
++        let Some(receipt) = receipt else {
++            return Ok(None);
++        };
++        if receipt.creation_id.trim().is_empty() {
++            return Err(AclError::InvalidInput);
++        }
++        let key = &receipt.resource;
++        let tx = self
++            .conn
++            .transaction_with_behavior(TransactionBehavior::Immediate)?;
++        if let Some(project) = &receipt.project {
++            check_project(&tx, &actor.0, key, project)?;
++        }
++        let duplicate: bool = tx.query_row(
++            "SELECT EXISTS(SELECT 1 FROM acl_resources WHERE creation_id=?1 OR (account_id=?2 AND resource_type=?3 AND upstream_id=?4))",
++            params![receipt.creation_id,key.account_id,key.kind.as_str(),key.upstream_id], |r| r.get(0))?;
++        if duplicate {
++            return Err(AclError::AlreadyRegistered);
++        }
++        tx.execute("INSERT INTO acl_resources(account_id,resource_type,upstream_id,owner_user_id,creation_id) VALUES(?1,?2,?3,?4,?5)",
++            params![key.account_id,key.kind.as_str(),key.upstream_id,actor.0.user_id,receipt.creation_id])?;
++        if let Some(project) = &receipt.project {
++            tx.execute("INSERT INTO acl_project_links(account_id,resource_type,upstream_id,project_id) VALUES(?1,?2,?3,?4)",
++                params![key.account_id,key.kind.as_str(),key.upstream_id,project.upstream_id])?;
++        }
++        let id = audit(&tx, &actor.0, "create", key, None, receipt.project.as_ref())?;
++        tx.commit()?;
++        Ok(Some(change(id, key, None)))
++    }
++
++    pub fn grant(
++        &mut self,
++        actor: &RequestIdentity,
++        resource: &ResourceKey,
++        recipient_user_id: &str,
++    ) -> Result<AclChange> {
++        self.set_share(actor, resource, recipient_user_id, true)
++    }
++
++    pub fn revoke(
++        &mut self,
++        actor: &RequestIdentity,
++        resource: &ResourceKey,
++        recipient_user_id: &str,
++    ) -> Result<AclChange> {
++        self.set_share(actor, resource, recipient_user_id, false)
++    }
++
++    fn set_share(
++        &mut self,
++        actor: &RequestIdentity,
++        resource: &ResourceKey,
++        recipient: &str,
++        grant: bool,
++    ) -> Result<AclChange> {
++        if !actor.0.is_admin {
++            return Err(AclError::Forbidden);
++        }
++        if !valid_user_id(recipient) {
++            return Err(AclError::InvalidInput);
++        }
++        let tx = self
++            .conn
++            .transaction_with_behavior(TransactionBehavior::Immediate)?;
++        require_known(&tx, resource)?;
++        if grant {
++            tx.execute("INSERT OR IGNORE INTO acl_shares(account_id,resource_type,upstream_id,recipient_user_id) VALUES(?1,?2,?3,?4)",
++                params![resource.account_id,resource.kind.as_str(),resource.upstream_id,recipient])?;
++        } else {
++            tx.execute("DELETE FROM acl_shares WHERE account_id=?1 AND resource_type=?2 AND upstream_id=?3 AND recipient_user_id=?4",
++                params![resource.account_id,resource.kind.as_str(),resource.upstream_id,recipient])?;
++        }
++        let id = audit(
++            &tx,
++            &actor.0,
++            if grant { "grant" } else { "revoke" },
++            resource,
++            Some(recipient),
++            None,
++        )?;
++        tx.commit()?;
++        Ok(change(id, resource, Some(recipient)))
++    }
++
++    pub fn move_to_project(
++        &mut self,
++        actor: &RequestIdentity,
++        resource: &ResourceKey,
++        project: Option<&ResourceKey>,
++    ) -> Result<AclChange> {
++        if resource.kind == ResourceKind::Project {
++            return Err(AclError::InvalidOperation);
++        }
++        let tx = self
++            .conn
++            .transaction_with_behavior(TransactionBehavior::Immediate)?;
++        authorize(&tx, &actor.0, resource, Action::Modify)?;
++        if let Some(project) = project {
++            check_project(&tx, &actor.0, resource, project)?;
++        }
++        let before = audience(&tx, resource)?;
++        tx.execute("DELETE FROM acl_project_links WHERE account_id=?1 AND resource_type=?2 AND upstream_id=?3",
++            params![resource.account_id,resource.kind.as_str(),resource.upstream_id])?;
++        if let Some(project) = project {
++            tx.execute("INSERT INTO acl_project_links(account_id,resource_type,upstream_id,project_id) VALUES(?1,?2,?3,?4)",
++                params![resource.account_id,resource.kind.as_str(),resource.upstream_id,project.upstream_id])?;
++        }
++        if !actor.0.is_admin && !audience(&tx, resource)?.is_subset(&before) {
++            return Err(AclError::Forbidden); // Dropping transaction restores previous link.
++        }
++        let id = audit(&tx, &actor.0, "move", resource, None, project)?;
++        tx.commit()?;
++        Ok(change(id, resource, None))
++    }
++
++    /// Admin-only paginated audit read; a bounded page is not a backup export.
++    pub fn audit_after(
++        &self,
++        actor: &RequestIdentity,
++        after_id: i64,
++        limit: u32,
++    ) -> Result<Vec<AuditRecord>> {
++        if !actor.0.is_admin {
++            return Err(AclError::Forbidden);
++        }
++        if after_id < 0 || limit == 0 || limit > 1000 {
++            return Err(AclError::InvalidInput);
++        }
++        let mut statement = self.conn.prepare("SELECT id,actor_user_id,authorization_version,action,account_id,resource_type,upstream_id,recipient_user_id,project_id,occurred_at FROM acl_audit WHERE id>?1 ORDER BY id LIMIT ?2")?;
++        let rows = statement.query_map(params![after_id, limit], |r| {
++            Ok(AuditRecord {
++                id: r.get(0)?,
++                occurred_at: r.get(9)?,
++                actor_user_id: r.get(1)?,
++                authorization_version: r.get(2)?,
++                action: r.get(3)?,
++                account_id: r.get(4)?,
++                resource_type: r.get(5)?,
++                upstream_id: r.get(6)?,
++                recipient_user_id: r.get(7)?,
++                project_id: r.get(8)?,
++            })
++        })?;
++        Ok(rows.collect::<rusqlite::Result<Vec<_>>>()?)
++    }
++}
++
++fn require_known(conn: &Connection, key: &ResourceKey) -> Result<String> {
++    conn.query_row("SELECT owner_user_id FROM acl_resources WHERE account_id=?1 AND resource_type=?2 AND upstream_id=?3",
++        params![key.account_id,key.kind.as_str(),key.upstream_id], |r| r.get(0)).optional()?
++        .ok_or(AclError::UnknownResource)
++}
++
++fn authorize(
++    conn: &Connection,
++    actor: &Identity,
++    key: &ResourceKey,
++    action: Action,
++) -> Result<Access> {
++    if action == Action::ContinueChat && key.kind != ResourceKind::Conversation {
++        return Err(AclError::InvalidOperation);
++    }
++    let owner = match require_known(conn, key) {
++        Ok(owner) => owner,
++        Err(AclError::UnknownResource) if actor.is_admin && action == Action::Read => {
++            return Ok(Access::UnknownAdministratorRead)
++        }
++        Err(error) => return Err(error),
++    };
++    if actor.is_admin || owner == actor.user_id || audience(conn, key)?.contains(&actor.user_id) {
++        Ok(Access::Registered)
++    } else {
++        Err(AclError::Forbidden)
++    }
++}
++
++fn check_project(
++    conn: &Connection,
++    actor: &Identity,
++    resource: &ResourceKey,
++    project: &ResourceKey,
++) -> Result<()> {
++    if resource.kind == ResourceKind::Project || project.kind != ResourceKind::Project {
++        return Err(AclError::InvalidOperation);
++    }
++    if resource.account_id != project.account_id {
++        return Err(AclError::CrossAccount);
++    }
++    authorize(conn, actor, project, Action::Modify)?;
++    Ok(())
++}
++
++/// Compute, never persist, the effective non-admin audience. Connectors omit
++/// project inheritance even when linked for metadata purposes.
++fn audience(conn: &Connection, key: &ResourceKey) -> Result<BTreeSet<String>> {
++    let mut statement = conn.prepare(r#"
++        SELECT owner_user_id FROM acl_resources WHERE account_id=?1 AND resource_type=?2 AND upstream_id=?3
++        UNION SELECT recipient_user_id FROM acl_shares WHERE account_id=?1 AND resource_type=?2 AND upstream_id=?3
++        UNION SELECT p.owner_user_id FROM acl_project_links l JOIN acl_resources p
++          ON p.account_id=l.account_id AND p.resource_type='project' AND p.upstream_id=l.project_id
++          WHERE l.account_id=?1 AND l.resource_type=?2 AND l.upstream_id=?3 AND ?2<>'connector'
++        UNION SELECT s.recipient_user_id FROM acl_project_links l JOIN acl_shares s
++          ON s.account_id=l.account_id AND s.resource_type='project' AND s.upstream_id=l.project_id
++          WHERE l.account_id=?1 AND l.resource_type=?2 AND l.upstream_id=?3 AND ?2<>'connector'
++    "#)?;
++    let rows = statement.query_map(
++        params![key.account_id, key.kind.as_str(), key.upstream_id],
++        |r| r.get(0),
++    )?;
++    Ok(rows.collect::<rusqlite::Result<BTreeSet<_>>>()?)
++}
++
++fn audit(
++    conn: &Connection,
++    actor: &Identity,
++    action: &str,
++    resource: &ResourceKey,
++    recipient: Option<&str>,
++    project: Option<&ResourceKey>,
++) -> Result<i64> {
++    conn.execute("INSERT INTO acl_audit(actor_user_id,authorization_version,action,account_id,resource_type,upstream_id,recipient_user_id,project_id) VALUES(?1,?2,?3,?4,?5,?6,?7,?8)",
++        params![actor.user_id,actor.authorization_version,action,resource.account_id,resource.kind.as_str(),resource.upstream_id,recipient,project.map(|p|p.upstream_id.as_str())])?;
++    Ok(conn.last_insert_rowid())
++}
++
++fn change(id: i64, key: &ResourceKey, user: Option<&str>) -> AclChange {
++    AclChange {
++        audit_id: id,
++        scope: key.clone(),
++        include_project_children: key.kind == ResourceKind::Project,
++        user_id: user.map(str::to_owned),
++    }
++}
 diff --git a/src/server.rs b/src/server.rs
-index 8f17e68..b46551d 100644
+index 8f17e68..4994f5c 100644
 --- a/src/server.rs
 +++ b/src/server.rs
 @@ -2,6 +2,7 @@
@@ -347,8 +877,46 @@ index 8f17e68..b46551d 100644
  use crate::{
      config::Config,
      crypto::sha256_hex,
+@@ -984,25 +985,22 @@ async fn auth_session(State(app): State<Shared>, headers: HeaderMap) -> ApiResul
+     let Some(s) = session(&app, &token).await? else {
+         return Ok(Json(json!({})));
+     };
+-    let db = app.db.lock().await;
+-    let mode: String = db.conn.query_row(
+-        "SELECT login_mode FROM gateway_sessions WHERE user_name=?1 AND chatgpt_username=?2",
+-        params![s.user, s.account],
+-        |r| r.get(0),
+-    )?;
+-    let plan: Option<String> = db
+-        .conn
+-        .query_row(
+-            "SELECT plan_type FROM chatgpt_accounts WHERE chatgpt_username=?1",
+-            [&s.account],
+-            |r| r.get(0),
+-        )
+-        .optional()?;
++    let refreshed = proxy::refresh_auth_session(&app, &s, &token).await.map_err(|cause| {
++        tracing::warn!(error=%cause, "auth session upstream refresh failed");
++        error(StatusCode::BAD_GATEWAY, "上游会话刷新失败")
++    })?;
++    let Some((mode, plan)) = refreshed else {
++        return Ok(Json(json!({})));
++    };
++    // Revocation or re-login while awaiting upstream must invalidate this result.
++    if session(&app, &token).await?.is_none() {
++        return Ok(Json(json!({})));
++    }
+     let id = sha256_hex(&s.account)
+         .trim_start_matches("sha256:")
+         .to_owned();
+     Ok(Json(
+-        json!({"authProvider":"openai","expires":"2099-12-31T23:59:59.000Z","loginMode":mode,"planType":plan.unwrap_or_else(||"free".into()),"user":{"email":s.account,"id":id,"name":s.account,"image":null,"picture":null}}),
++        json!({"authProvider":"openai","expires":"2099-12-31T23:59:59.000Z","loginMode":mode,"planType":plan,"user":{"email":s.account,"id":id,"name":s.account,"image":null,"picture":null}}),
+     ))
+ }
+ async fn user_blocked(State(app): State<Shared>, headers: HeaderMap) -> ApiResult {
 diff --git a/src/server/proxy.rs b/src/server/proxy.rs
-index fefd2e4..bcbc7ef 100644
+index fefd2e4..010f68e 100644
 --- a/src/server/proxy.rs
 +++ b/src/server/proxy.rs
 @@ -121,6 +121,9 @@ pub(super) async fn django_proxy(
@@ -361,6 +929,65 @@ index fefd2e4..bcbc7ef 100644
      // 缺失能力必须保持失败，不能用旧二进制回退或伪造成功响应。
      if request.uri().path().starts_with("/api/") {
          return StatusCode::NOT_FOUND.into_response();
+@@ -255,6 +258,58 @@ struct SessionCredentials {
+     cookies: Vec<(String, String)>,
+ }
+ 
++/// Observed auth/session refresh: accounts/check followed by me on every call.
++/// Snapshot only this token's credentials; never hold SQLite across upstream IO.
++pub(super) async fn refresh_auth_session(
++    app: &App,
++    session: &Session,
++    token: &str,
++) -> Result<Option<(String, String)>> {
++    let (credentials, mode) = {
++        let db = app.db.lock().await;
++        let row: Option<(String, String, String)> = db.conn.query_row(
++            "SELECT access_token,extra_cookies,login_mode FROM gateway_sessions WHERE user_name=?1 AND chatgpt_username=?2 AND mirror_token=?3",
++            params![session.user, session.account, sha256_hex(token)],
++            |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)),
++        ).optional()?;
++        let Some((access, cookies, mode)) = row else {
++            return Ok(None);
++        };
++        (SessionCredentials {
++            access_token: db.decrypt(&access)?,
++            cookies: parse_extra_cookies(&db.decrypt(&cookies)?),
++        }, mode)
++    };
++    let accounts = send_upstream(
++        app, Method::GET, HeaderMap::new(),
++        app.config.upstream.join("/backend-api/accounts/check/v4-2023-04-27")?,
++        Bytes::new(), &credentials,
++    ).await?;
++    // A failed plan lookup still refreshes me and displays free (observed fixture).
++    let plan = if accounts.status().is_success() {
++        let raw = to_bytes(upstream_parts(accounts).2, MAX_BODY).await?;
++        let value: Value = serde_json::from_slice(&raw)?;
++        value["accounts"]["default"]["account"]["plan_type"]
++            .as_str().filter(|plan| !plan.is_empty()).unwrap_or("free").to_owned()
++    } else {
++        "free".to_owned()
++    };
++    let user = send_upstream(
++        app, Method::GET, HeaderMap::new(), app.config.upstream.join(ME_PATH)?,
++        Bytes::new(), &credentials,
++    ).await?;
++    if !user.status().is_success() {
++        return Ok(None);
++    }
++    let raw = to_bytes(upstream_parts(user).2, MAX_BODY).await?;
++    let user: Value = serde_json::from_slice(&raw)?;
++    // A refresh cannot rebind an existing resource/session to another account.
++    if user["email"].as_str() != Some(session.account.as_str()) {
++        return Ok(None);
++    }
++    Ok(Some((mode, plan)))
++}
++
+ async fn load_credentials(app: &App, session: &Session) -> Result<SessionCredentials> {
+     let db = app.db.lock().await;
+     let (access_token, extra_cookies): (String, String) = db.conn.query_row(
 diff --git a/src/server/static_assets.rs b/src/server/static_assets.rs
 new file mode 100644
 index 0000000..d190026
@@ -527,6 +1154,1525 @@ index 0000000..d190026
 +            assert_eq!(asset_path(path), None, "{path}");
 +        }
 +    }
++}
+diff --git a/tests/auth_refresh.rs b/tests/auth_refresh.rs
+new file mode 100644
+index 0000000..ea11011
+--- /dev/null
++++ b/tests/auth_refresh.rs
+@@ -0,0 +1,196 @@
++use axum::{
++    extract::State,
++    http::StatusCode,
++    response::IntoResponse,
++    routing::{get, post},
++    Json, Router,
++};
++use mirror_gateway::{
++    config::{loopback_url, Config},
++    server,
++};
++use serde_json::{json, Value};
++use std::{
++    sync::{
++        atomic::{AtomicBool, AtomicU16, Ordering},
++        Arc,
++    },
++    time::{Duration, SystemTime, UNIX_EPOCH},
++};
++use tokio::sync::{Mutex, Notify};
++
++#[derive(Default)]
++struct Upstream {
++    paths: Mutex<Vec<String>>,
++    accounts_failure: AtomicBool,
++    me_status: AtomicU16,
++    wrong_account: AtomicBool,
++    block_accounts: AtomicBool,
++    entered: Notify,
++    release: Notify,
++}
++
++struct Fixture {
++    base: String,
++    token: String,
++    client: reqwest::Client,
++    state: Arc<Upstream>,
++    _dir: tempfile::TempDir,
++    tasks: Vec<tokio::task::JoinHandle<()>>,
++}
++impl Drop for Fixture {
++    fn drop(&mut self) {
++        for task in &self.tasks {
++            task.abort();
++        }
++    }
++}
++
++async fn fixture() -> Fixture {
++    let state = Arc::new(Upstream::default());
++    state.me_status.store(200, Ordering::SeqCst);
++    let stub = Router::new()
++        .route("/0x/user/gateway-authorization", post(|| async { Json(json!({"active":true,"version":"v1","expires_at":SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs()+3600})) }))
++        .route("/backend-api/accounts/check/v4-2023-04-27", get(|State(s): State<Arc<Upstream>>, headers: axum::http::HeaderMap| async move {
++            s.paths.lock().await.push("accounts".into());
++            assert_eq!(headers["authorization"], "Bearer synthetic-access-token");
++            assert_eq!(headers["cookie"], "fixture_extra=synthetic");
++            if s.block_accounts.load(Ordering::SeqCst) { s.entered.notify_one(); s.release.notified().await; }
++            if s.accounts_failure.load(Ordering::SeqCst) { return StatusCode::INTERNAL_SERVER_ERROR.into_response(); }
++            Json(json!({"accounts":{"default":{"account":{"plan_type":"plus"}}}})).into_response()
++        }))
++        .route("/backend-api/me", get(|State(s): State<Arc<Upstream>>| async move {
++            s.paths.lock().await.push("me".into());
++            let email = if s.wrong_account.load(Ordering::SeqCst) { "other@example.invalid" } else { "fixture@example.invalid" };
++            (StatusCode::from_u16(s.me_status.load(Ordering::SeqCst)).unwrap(), Json(json!({"email":email,"id":"fixture","name":"Fixture"})))
++        })).with_state(state.clone());
++    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
++    let upstream = loopback_url(&format!("http://{}", listener.local_addr().unwrap())).unwrap();
++    let stub_task = tokio::spawn(async move { axum::serve(listener, stub).await.unwrap() });
++    let dir = tempfile::tempdir().unwrap();
++    let app = server::router(Config {
++        host: "127.0.0.1".into(),
++        port: 0,
++        database: dir.path().join("fresh.db"),
++        secret: "fixture-admin-secret-0001".into(),
++        key: "fixture-encryption-key-000000000001".into(),
++        django: upstream.clone(),
++        upstream,
++        cdn_upstream: None,
++        cfbypass: None,
++        timeout: Duration::from_secs(3),
++        mirror_profile: true,
++        cookie_secure: false,
++    })
++    .await
++    .unwrap();
++    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
++    let base = format!("http://{}", listener.local_addr().unwrap());
++    let task = tokio::spawn(async move { axum::serve(listener, app).await.unwrap() });
++    let client = reqwest::Client::builder()
++        .no_proxy()
++        .redirect(reqwest::redirect::Policy::none())
++        .build()
++        .unwrap();
++    let result: Value = client.post(format!("{base}/api/login")).bearer_auth("fixture-admin-secret-0001")
++        .json(&json!({"user_name":"alice","authorization":"signature-v1","access_token":"synthetic-access-token","login_mode":"api","isolated_session":true,"mcp_isolation":true,"skills_isolation":true,"model_isolation":true,"daily_quota":20,"monthly_quota":100,"model_allowed_ids":["fixture-model"],"model_rate_limits":{},"limits":[],"mcp_allowed_ids":[],"skills_allowed_ids":[],"extra_cookies":[{"name":"fixture_extra","value":"synthetic"}]}))
++        .send().await.unwrap().error_for_status().unwrap().json().await.unwrap();
++    let token = result["login_url"]
++        .as_str()
++        .unwrap()
++        .split('=')
++        .nth(1)
++        .unwrap()
++        .to_owned();
++    state.paths.lock().await.clear();
++    Fixture {
++        base,
++        token,
++        client,
++        state,
++        _dir: dir,
++        tasks: vec![task, stub_task],
++    }
++}
++
++#[tokio::test]
++async fn refreshes_account_then_me_on_every_request() {
++    let f = fixture().await;
++    for query in ["", "", "?refresh_account=1"] {
++        let response: Value = f
++            .client
++            .get(format!("{}/api/auth/session{query}", f.base))
++            .header("x-mirror-token", &f.token)
++            .send()
++            .await
++            .unwrap()
++            .error_for_status()
++            .unwrap()
++            .json()
++            .await
++            .unwrap();
++        assert_eq!(response["planType"], "plus");
++        assert_eq!(response["user"]["email"], "fixture@example.invalid");
++    }
++    assert_eq!(
++        *f.state.paths.lock().await,
++        ["accounts", "me", "accounts", "me", "accounts", "me"]
++    );
++}
++
++#[tokio::test]
++async fn preserves_observed_failure_shapes_without_rebinding_accounts() {
++    let f = fixture().await;
++    f.state.accounts_failure.store(true, Ordering::SeqCst);
++    let request = || {
++        f.client
++            .get(format!("{}/api/auth/session", f.base))
++            .header("x-mirror-token", &f.token)
++    };
++    let value: Value = request().send().await.unwrap().json().await.unwrap();
++    assert_eq!(value["planType"], "free");
++    assert_eq!(*f.state.paths.lock().await, ["accounts", "me"]);
++    f.state.accounts_failure.store(false, Ordering::SeqCst);
++    f.state.me_status.store(401, Ordering::SeqCst);
++    assert_eq!(
++        request()
++            .send()
++            .await
++            .unwrap()
++            .json::<Value>()
++            .await
++            .unwrap(),
++        json!({})
++    );
++    f.state.me_status.store(200, Ordering::SeqCst);
++    f.state.wrong_account.store(true, Ordering::SeqCst);
++    assert_eq!(
++        request()
++            .send()
++            .await
++            .unwrap()
++            .json::<Value>()
++            .await
++            .unwrap(),
++        json!({})
++    );
++}
++
++#[tokio::test]
++async fn revocation_completes_during_network_wait_and_invalidates_refresh_result() {
++    let f = fixture().await;
++    f.state.block_accounts.store(true, Ordering::SeqCst);
++    let request = f
++        .client
++        .get(format!("{}/api/auth/session", f.base))
++        .header("x-mirror-token", &f.token);
++    let task =
++        tokio::spawn(async move { request.send().await.unwrap().json::<Value>().await.unwrap() });
++    tokio::time::timeout(Duration::from_secs(1), f.state.entered.notified())
++        .await
++        .unwrap();
++    let response = tokio::time::timeout(Duration::from_secs(1), f.client.post(format!("{}/api/revoke-authorization", f.base)).bearer_auth("fixture-admin-secret-0001").json(&json!({"subject":"alice","version":"v1","include_visitors":false,"expires_at":SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs()+3600})).send()).await.unwrap().unwrap();
++    assert_eq!(response.status(), 200);
++    f.state.release.notify_one();
++    assert_eq!(task.await.unwrap(), json!({}));
++}
+diff --git a/tests/coord_acl_contract.rs b/tests/coord_acl_contract.rs
+new file mode 100644
+index 0000000..0815cd7
+--- /dev/null
++++ b/tests/coord_acl_contract.rs
+@@ -0,0 +1,718 @@
++#[path = "../src/resource_acl.rs"]
++mod resource_acl;
++
++use resource_acl::*;
++use rusqlite::Connection;
++use serde_json::{json, Value};
++
++const NOW: i64 = 1000;
++
++fn details(id: &str, admin: bool) -> Value {
++    json!({"active":true,"user_id":id,"is_admin":admin,"version":"opaque-v1",
++        "expires_at":2000,"subject":"fixture-subject","principal_kind":"user"})
++}
++fn actor(id: &str, admin: bool) -> RequestIdentity {
++    let response = details(id, admin);
++    let pinned = Identity::from_authority(&response, "fixture-subject", NOW).unwrap();
++    RequestIdentity::verify(&pinned, &response, "fixture-subject", NOW).unwrap()
++}
++fn key(id: &str, kind: ResourceKind) -> ResourceKey {
++    ResourceKey::new("account-a", kind, id).unwrap()
++}
++fn database() -> ResourceAcl {
++    ResourceAcl::new(Connection::open_in_memory().unwrap()).unwrap()
++}
++fn receipt(resource: &ResourceKey, project: Option<&ResourceKey>) -> ConfirmedCreation {
++    ConfirmedCreation {
++        creation_id: format!(
++            "{}:{}:{}",
++            resource.account_id(),
++            resource.kind().as_str(),
++            resource.upstream_id()
++        ),
++        resource: resource.clone(),
++        project: project.cloned(),
++    }
++}
++fn create(
++    db: &mut ResourceAcl,
++    who: &RequestIdentity,
++    resource: &ResourceKey,
++    project: Option<&ResourceKey>,
++) {
++    db.record_created(who, Some(receipt(resource, project)))
++        .unwrap()
++        .unwrap();
++}
++
++#[test]
++fn trusted_identity_is_strict_and_wire_version_stays_opaque() {
++    let response = details("123", false);
++    let identity = Identity::from_authority(&response, "fixture-subject", NOW).unwrap();
++    assert_eq!(identity.user_id(), "123");
++    assert!(!identity.is_admin());
++    assert_eq!(identity.authorization_version(), "opaque-v1");
++    for field in [
++        "active",
++        "user_id",
++        "is_admin",
++        "version",
++        "expires_at",
++        "subject",
++        "principal_kind",
++    ] {
++        let mut missing = response.clone();
++        missing.as_object_mut().unwrap().remove(field);
++        assert!(
++            matches!(
++                Identity::from_authority(&missing, "fixture-subject", NOW),
++                Err(AclError::Unauthorized)
++            ),
++            "missing {field}"
++        );
++    }
++    for (field, value) in [
++        ("active", json!(false)),
++        ("is_admin", json!("true")),
++        ("user_id", json!(123)),
++        ("expires_at", json!("2000")),
++        ("version", json!(" ")),
++        ("principal_kind", json!("visitor")),
++        ("subject", json!("other")),
++    ] {
++        let mut invalid = response.clone();
++        invalid[field] = value;
++        assert!(
++            matches!(
++                Identity::from_authority(&invalid, "fixture-subject", NOW),
++                Err(AclError::Unauthorized)
++            ),
++            "invalid {field}"
++        );
++    }
++}
++
++#[test]
++fn visitor_missing_identity_and_service_key_do_not_supply_an_actor() {
++    for response in [
++        json!({"active":true,"version":"v1","expires_at":2000}),
++        json!({"service_key":"synthetic-only","is_admin":true}),
++        {
++            let mut v = details("1", true);
++            v["principal_kind"] = json!("visitor");
++            v
++        },
++    ] {
++        assert!(matches!(
++            Identity::from_authority(&response, "fixture-subject", NOW),
++            Err(AclError::Unauthorized)
++        ));
++    }
++}
++
++#[test]
++fn user_ids_must_be_canonical_positive_decimal_strings() {
++    for id in ["", "0", "01", "-1", " 1", "1 ", "1.0", "alice", "１２"] {
++        assert!(matches!(
++            Identity::from_authority(&details(id, false), "fixture-subject", NOW),
++            Err(AclError::Unauthorized)
++        ));
++    }
++}
++
++#[test]
++fn fresh_version_role_user_subject_and_expiry_are_rechecked() {
++    let response = details("1", false);
++    let pinned = Identity::from_authority(&response, "fixture-subject", NOW).unwrap();
++    for (field, value) in [
++        ("version", json!("v2")),
++        ("is_admin", json!(true)),
++        ("user_id", json!("2")),
++        ("subject", json!("other")),
++        ("expires_at", json!(NOW)),
++        ("active", json!(false)),
++    ] {
++        let mut changed = response.clone();
++        changed[field] = value;
++        assert!(
++            matches!(
++                RequestIdentity::verify(&pinned, &changed, "fixture-subject", NOW),
++                Err(AclError::Unauthorized)
++            ),
++            "changed {field}"
++        );
++    }
++    assert!(matches!(
++        Identity::from_authority(&response, "", NOW),
++        Err(AclError::Unauthorized)
++    ));
++}
++
++#[test]
++fn failed_create_records_nothing_and_unknown_is_admin_read_only() {
++    let mut db = database();
++    let owner = actor("1", false);
++    let admin = actor("3", true);
++    let resource = key("missing", ResourceKind::Conversation);
++    assert!(db.record_created(&owner, None).unwrap().is_none());
++    assert!(db.audit_after(&admin, 0, 100).unwrap().is_empty());
++    assert!(matches!(
++        db.authorize(&owner, &resource, Action::Read),
++        Err(AclError::UnknownResource)
++    ));
++    assert_eq!(
++        db.authorize(&admin, &resource, Action::Read).unwrap(),
++        Access::UnknownAdministratorRead
++    );
++    for action in [Action::Modify, Action::Delete, Action::ContinueChat] {
++        assert!(matches!(
++            db.authorize(&admin, &resource, action),
++            Err(AclError::UnknownResource)
++        ));
++    }
++    assert!(matches!(
++        db.grant(&admin, &resource, "2"),
++        Err(AclError::UnknownResource)
++    ));
++}
++
++#[test]
++fn successful_create_is_private_and_owner_can_read_modify_delete_continue() {
++    let mut db = database();
++    let owner = actor("1", false);
++    let stranger = actor("2", false);
++    let resource = key("chat", ResourceKind::Conversation);
++    create(&mut db, &owner, &resource, None);
++    for action in [
++        Action::Read,
++        Action::Modify,
++        Action::Delete,
++        Action::ContinueChat,
++    ] {
++        assert_eq!(
++            db.authorize(&owner, &resource, action).unwrap(),
++            Access::Registered
++        );
++        assert!(matches!(
++            db.authorize(&stranger, &resource, action),
++            Err(AclError::Forbidden)
++        ));
++    }
++}
++
++#[test]
++fn only_administrator_can_grant_and_revoke_even_owner_cannot_reshare() {
++    let mut db = database();
++    let owner = actor("1", false);
++    let recipient = actor("2", false);
++    let admin = actor("3", true);
++    let resource = key("chat", ResourceKind::Conversation);
++    create(&mut db, &owner, &resource, None);
++    assert!(matches!(
++        db.grant(&owner, &resource, "2"),
++        Err(AclError::Forbidden)
++    ));
++    db.grant(&admin, &resource, "2").unwrap();
++    for action in [
++        Action::Read,
++        Action::Modify,
++        Action::Delete,
++        Action::ContinueChat,
++    ] {
++        assert_eq!(
++            db.authorize(&recipient, &resource, action).unwrap(),
++            Access::Registered
++        );
++    }
++    assert!(matches!(
++        db.grant(&recipient, &resource, "4"),
++        Err(AclError::Forbidden)
++    ));
++    assert!(matches!(
++        db.revoke(&recipient, &resource, "2"),
++        Err(AclError::Forbidden)
++    ));
++    assert!(matches!(
++        db.revoke(&owner, &resource, "2"),
++        Err(AclError::Forbidden)
++    ));
++}
++
++#[test]
++fn revoke_rejects_next_check_and_returns_invalidation_intent() {
++    let mut db = database();
++    let owner = actor("1", false);
++    let recipient = actor("2", false);
++    let admin = actor("3", true);
++    let resource = key("chat", ResourceKind::Conversation);
++    create(&mut db, &owner, &resource, None);
++    db.grant(&admin, &resource, "2").unwrap();
++    let event = db.revoke(&admin, &resource, "2").unwrap();
++    assert_eq!(event.scope, resource);
++    assert_eq!(event.user_id.as_deref(), Some("2"));
++    assert_eq!(event.audit_id, 3);
++    assert!(!event.include_project_children);
++    assert!(matches!(
++        db.authorize(&recipient, &resource, Action::Read),
++        Err(AclError::Forbidden)
++    ));
++    assert!(db.authorize(&owner, &resource, Action::Read).is_ok());
++}
++
++#[test]
++fn projects_dynamically_share_existing_and_future_content() {
++    let mut db = database();
++    let owner = actor("1", false);
++    let recipient = actor("2", false);
++    let admin = actor("3", true);
++    let project = key("project", ResourceKind::Project);
++    let old = key("old", ResourceKind::Conversation);
++    let new = key("new", ResourceKind::File);
++    create(&mut db, &owner, &project, None);
++    create(&mut db, &owner, &old, Some(&project));
++    assert!(db.authorize(&recipient, &old, Action::Read).is_err());
++    let event = db.grant(&admin, &project, "2").unwrap();
++    assert!(event.include_project_children);
++    create(&mut db, &owner, &new, Some(&project));
++    assert!(db.authorize(&recipient, &old, Action::ContinueChat).is_ok());
++    assert!(db.authorize(&recipient, &new, Action::Delete).is_ok());
++    db.revoke(&admin, &project, "2").unwrap();
++    assert!(matches!(
++        db.authorize(&recipient, &old, Action::Read),
++        Err(AclError::Forbidden)
++    ));
++    assert!(matches!(
++        db.authorize(&recipient, &new, Action::Read),
++        Err(AclError::Forbidden)
++    ));
++}
++
++#[test]
++fn project_owner_inherits_new_content_created_by_a_recipient() {
++    let mut db = database();
++    let owner = actor("1", false);
++    let recipient = actor("2", false);
++    let admin = actor("3", true);
++    let project = key("project", ResourceKind::Project);
++    let child = key("new-by-recipient", ResourceKind::Conversation);
++    create(&mut db, &owner, &project, None);
++    db.grant(&admin, &project, "2").unwrap();
++    create(&mut db, &recipient, &child, Some(&project));
++    assert!(db.authorize(&owner, &child, Action::Read).is_ok());
++    db.revoke(&admin, &project, "2").unwrap();
++    assert!(db.authorize(&recipient, &child, Action::Read).is_ok()); // Immutable owner.
++}
++
++#[test]
++fn connector_permissions_never_inherit_from_project() {
++    let mut db = database();
++    let owner = actor("1", false);
++    let recipient = actor("2", false);
++    let admin = actor("3", true);
++    let project = key("project", ResourceKind::Project);
++    let connector = key("connector", ResourceKind::Connector);
++    create(&mut db, &owner, &project, None);
++    db.grant(&admin, &project, "2").unwrap();
++    create(&mut db, &owner, &connector, Some(&project));
++    assert!(matches!(
++        db.authorize(&recipient, &connector, Action::Read),
++        Err(AclError::Forbidden)
++    ));
++    db.grant(&admin, &connector, "2").unwrap();
++    db.revoke(&admin, &project, "2").unwrap();
++    assert!(db.authorize(&recipient, &connector, Action::Modify).is_ok());
++}
++
++#[test]
++fn attaching_old_private_resource_with_new_viewers_requires_admin() {
++    let mut db = database();
++    let owner = actor("1", false);
++    let recipient = actor("2", false);
++    let admin = actor("3", true);
++    let project = key("project", ResourceKind::Project);
++    let old = key("old", ResourceKind::Conversation);
++    create(&mut db, &owner, &project, None);
++    create(&mut db, &owner, &old, None);
++    db.grant(&admin, &project, "2").unwrap();
++    assert!(matches!(
++        db.move_to_project(&owner, &old, Some(&project)),
++        Err(AclError::Forbidden)
++    ));
++    assert!(db.authorize(&recipient, &old, Action::Read).is_err());
++    assert_eq!(db.audit_after(&admin, 0, 100).unwrap().len(), 3);
++    db.move_to_project(&admin, &old, Some(&project)).unwrap();
++    assert!(db.authorize(&recipient, &old, Action::Read).is_ok());
++}
++
++#[test]
++fn nonexpanding_move_and_detach_are_allowed_without_admin() {
++    let mut db = database();
++    let owner = actor("1", false);
++    let recipient = actor("2", false);
++    let admin = actor("3", true);
++    let project = key("project", ResourceKind::Project);
++    let old = key("old", ResourceKind::Conversation);
++    create(&mut db, &owner, &project, None);
++    create(&mut db, &owner, &old, None);
++    db.move_to_project(&owner, &old, Some(&project)).unwrap();
++    db.grant(&admin, &project, "2").unwrap();
++    let event = db.move_to_project(&owner, &old, None).unwrap();
++    assert!(event.user_id.is_none());
++    assert!(matches!(
++        db.authorize(&recipient, &old, Action::Read),
++        Err(AclError::Forbidden)
++    ));
++}
++
++#[test]
++fn moving_between_projects_compares_entire_audience_and_rolls_back() {
++    let mut db = database();
++    let owner = actor("1", false);
++    let recipient = actor("2", false);
++    let other = actor("4", false);
++    let admin = actor("3", true);
++    let a = key("a", ResourceKind::Project);
++    let b = key("b", ResourceKind::Project);
++    let child = key("chat", ResourceKind::Conversation);
++    create(&mut db, &owner, &a, None);
++    create(&mut db, &owner, &b, None);
++    create(&mut db, &owner, &child, Some(&a));
++    db.grant(&admin, &a, "2").unwrap();
++    db.grant(&admin, &b, "4").unwrap();
++    assert!(matches!(
++        db.move_to_project(&owner, &child, Some(&b)),
++        Err(AclError::Forbidden)
++    ));
++    assert!(db.authorize(&recipient, &child, Action::Read).is_ok());
++    assert!(db.authorize(&other, &child, Action::Read).is_err());
++}
++
++#[test]
++fn direct_share_survives_project_revocation_and_does_not_allow_reshare() {
++    let mut db = database();
++    let owner = actor("1", false);
++    let recipient = actor("2", false);
++    let admin = actor("3", true);
++    let project = key("p", ResourceKind::Project);
++    let child = key("chat", ResourceKind::Conversation);
++    create(&mut db, &owner, &project, None);
++    create(&mut db, &owner, &child, Some(&project));
++    db.grant(&admin, &project, "2").unwrap();
++    db.grant(&admin, &child, "2").unwrap();
++    db.revoke(&admin, &project, "2").unwrap();
++    assert!(db.authorize(&recipient, &child, Action::Read).is_ok());
++    assert!(matches!(
++        db.grant(&recipient, &child, "4"),
++        Err(AclError::Forbidden)
++    ));
++}
++
++#[test]
++fn account_namespace_cannot_be_changed_and_cross_account_links_fail() {
++    let mut db = database();
++    let owner = actor("1", false);
++    let stranger = actor("2", false);
++    let admin = actor("3", true);
++    let a = key("same", ResourceKind::Conversation);
++    let b = ResourceKey::new("account-b", ResourceKind::Conversation, "same").unwrap();
++    let project = ResourceKey::new("account-b", ResourceKind::Project, "p").unwrap();
++    create(&mut db, &owner, &a, None);
++    create(&mut db, &stranger, &b, None);
++    create(&mut db, &owner, &project, None);
++    assert!(matches!(
++        db.authorize(&owner, &b, Action::Read),
++        Err(AclError::Forbidden)
++    ));
++    assert!(matches!(
++        db.move_to_project(&admin, &a, Some(&project)),
++        Err(AclError::CrossAccount)
++    ));
++    assert!(matches!(
++        db.record_created(
++            &admin,
++            Some(receipt(&key("new", ResourceKind::File), Some(&project)))
++        ),
++        Err(AclError::CrossAccount)
++    ));
++}
++
++#[test]
++fn duplicate_resource_or_creation_receipt_never_reassigns_owner() {
++    let mut db = database();
++    let owner = actor("1", false);
++    let stranger = actor("2", false);
++    let resource = key("chat", ResourceKind::Conversation);
++    create(&mut db, &owner, &resource, None);
++    assert!(matches!(
++        db.record_created(&stranger, Some(receipt(&resource, None))),
++        Err(AclError::AlreadyRegistered)
++    ));
++    let mut duplicate = receipt(&resource, None);
++    duplicate.resource = key("other", ResourceKind::Conversation);
++    assert!(matches!(
++        db.record_created(&stranger, Some(duplicate)),
++        Err(AclError::AlreadyRegistered)
++    ));
++    assert!(db.authorize(&stranger, &resource, Action::Read).is_err());
++}
++
++#[test]
++fn sqlite_trigger_prevents_rebinding_even_with_direct_update() {
++    let tmp = tempfile::tempdir().unwrap();
++    let path = tmp.path().join("acl.sqlite");
++    let mut db = ResourceAcl::new(Connection::open(&path).unwrap()).unwrap();
++    let owner = actor("1", false);
++    create(
++        &mut db,
++        &owner,
++        &key("chat", ResourceKind::Conversation),
++        None,
++    );
++    let raw = Connection::open(&path).unwrap();
++    for field in [
++        "account_id",
++        "resource_type",
++        "upstream_id",
++        "owner_user_id",
++        "creation_id",
++    ] {
++        assert!(raw
++            .execute(&format!("UPDATE acl_resources SET {field}='changed'"), [])
++            .is_err());
++    }
++}
++
++#[test]
++fn audit_contains_real_actor_and_is_admin_only() {
++    let mut db = database();
++    let owner = actor("1", false);
++    let admin = actor("3", true);
++    let resource = key("chat", ResourceKind::Conversation);
++    create(&mut db, &owner, &resource, None);
++    db.grant(&admin, &resource, "2").unwrap();
++    assert!(matches!(
++        db.audit_after(&owner, 0, 100),
++        Err(AclError::Forbidden)
++    ));
++    let records = db.audit_after(&admin, 0, 1).unwrap();
++    assert_eq!(records.len(), 1);
++    let first = &records[0];
++    assert!(first.occurred_at > 0);
++    assert_eq!(first.actor_user_id, "1");
++    assert_eq!(first.authorization_version, "opaque-v1");
++    assert_eq!(first.action, "create");
++    assert_eq!(first.account_id, "account-a");
++    assert_eq!(first.resource_type, "conversation");
++    assert_eq!(first.upstream_id, "chat");
++    assert!(first.project_id.is_none());
++    let records = db.audit_after(&admin, first.id, 100).unwrap();
++    assert_eq!(records[0].actor_user_id, "3");
++    assert_eq!(records[0].recipient_user_id.as_deref(), Some("2"));
++    assert!(matches!(
++        db.audit_after(&admin, 0, 1001),
++        Err(AclError::InvalidInput)
++    ));
++}
++
++#[test]
++fn audit_failure_rolls_back_acl_mutation_instead_of_granting() {
++    let tmp = tempfile::tempdir().unwrap();
++    let path = tmp.path().join("acl.sqlite");
++    let mut db = ResourceAcl::new(Connection::open(&path).unwrap()).unwrap();
++    let owner = actor("1", false);
++    let admin = actor("3", true);
++    let resource = key("chat", ResourceKind::Conversation);
++    create(&mut db, &owner, &resource, None);
++    let raw = Connection::open(&path).unwrap();
++    raw.execute_batch("CREATE TRIGGER reject_audit BEFORE INSERT ON acl_audit BEGIN SELECT RAISE(ABORT,'fixture audit failure'); END;").unwrap();
++    match db.grant(&admin, &resource, "2") {
++        Err(AclError::Sqlite(error)) => {
++            assert!(error.to_string().contains("fixture audit failure"))
++        }
++        _ => panic!("expected sqlite audit failure"),
++    }
++    assert!(matches!(
++        db.authorize(&actor("2", false), &resource, Action::Read),
++        Err(AclError::Forbidden)
++    ));
++    assert_eq!(db.audit_after(&admin, 0, 100).unwrap().len(), 1);
++}
++
++#[test]
++fn acl_survives_reopen_without_importing_legacy_state() {
++    let tmp = tempfile::tempdir().unwrap();
++    let path = tmp.path().join("acl.sqlite");
++    let owner = actor("1", false);
++    let admin = actor("3", true);
++    let resource = key("chat", ResourceKind::Conversation);
++    {
++        let mut db = ResourceAcl::new(Connection::open(&path).unwrap()).unwrap();
++        create(&mut db, &owner, &resource, None);
++        db.grant(&admin, &resource, "2").unwrap();
++    }
++    let db = ResourceAcl::new(Connection::open(&path).unwrap()).unwrap();
++    assert!(db
++        .authorize(&actor("2", false), &resource, Action::Read)
++        .is_ok());
++    assert_eq!(db.audit_after(&admin, 0, 100).unwrap().len(), 2);
++}
++
++#[test]
++fn invalid_associations_and_inputs_fail_before_commit() {
++    let mut db = database();
++    let owner = actor("1", false);
++    let admin = actor("3", true);
++    let project = key("p", ResourceKind::Project);
++    let child = key("chat", ResourceKind::Conversation);
++    create(&mut db, &owner, &project, None);
++    create(&mut db, &owner, &child, None);
++    assert!(matches!(
++        ResourceKey::new("", ResourceKind::File, "f"),
++        Err(AclError::InvalidInput)
++    ));
++    assert!(matches!(
++        ResourceKey::new("a", ResourceKind::File, " "),
++        Err(AclError::InvalidInput)
++    ));
++    assert!(matches!(
++        db.move_to_project(&admin, &project, Some(&project)),
++        Err(AclError::InvalidOperation)
++    ));
++    assert!(matches!(
++        db.move_to_project(&admin, &child, Some(&child)),
++        Err(AclError::InvalidOperation)
++    ));
++    assert!(matches!(
++        db.grant(&admin, &child, "0"),
++        Err(AclError::InvalidInput)
++    ));
++    let mut invalid = receipt(&key("new", ResourceKind::File), None);
++    invalid.creation_id.clear();
++    assert!(matches!(
++        db.record_created(&owner, Some(invalid)),
++        Err(AclError::InvalidInput)
++    ));
++    assert_eq!(db.audit_after(&admin, 0, 100).unwrap().len(), 2);
++}
++
++#[test]
++fn every_resource_kind_is_private_and_only_conversations_can_continue() {
++    let mut db = database();
++    let owner = actor("1", false);
++    let stranger = actor("2", false);
++    for kind in [
++        ResourceKind::File,
++        ResourceKind::Image,
++        ResourceKind::Task,
++        ResourceKind::Connector,
++        ResourceKind::Project,
++    ] {
++        let resource = key("same", kind);
++        create(&mut db, &owner, &resource, None);
++        assert!(db.authorize(&owner, &resource, Action::Read).is_ok());
++        assert!(db.authorize(&stranger, &resource, Action::Read).is_err());
++        assert!(matches!(
++            db.authorize(&owner, &resource, Action::ContinueChat),
++            Err(AclError::InvalidOperation)
++        ));
++    }
++}
++
++#[test]
++fn separate_connections_observe_revoke_on_the_next_authorization() {
++    let tmp = tempfile::tempdir().unwrap();
++    let path = tmp.path().join("acl.sqlite");
++    let mut writer = ResourceAcl::new(Connection::open(&path).unwrap()).unwrap();
++    let reader = ResourceAcl::new(Connection::open(&path).unwrap()).unwrap();
++    let resource = key("chat", ResourceKind::Conversation);
++    let recipient = actor("2", false);
++    let admin = actor("3", true);
++    create(&mut writer, &actor("1", false), &resource, None);
++    writer.grant(&admin, &resource, "2").unwrap();
++    assert!(reader
++        .authorize(&recipient, &resource, Action::Read)
++        .is_ok());
++    writer.revoke(&admin, &resource, "2").unwrap();
++    assert!(matches!(
++        reader.authorize(&recipient, &resource, Action::Read),
++        Err(AclError::Forbidden)
++    ));
++}
++
++#[test]
++fn administrative_demotion_and_version_change_reject_pinned_admin() {
++    let response = details("3", true);
++    let pinned = Identity::from_authority(&response, "fixture-subject", NOW).unwrap();
++    for (field, value) in [
++        ("is_admin", json!(false)),
++        ("version", json!("changed-role-digest")),
++    ] {
++        let mut fresh = response.clone();
++        fresh[field] = value;
++        assert!(matches!(
++            RequestIdentity::verify(&pinned, &fresh, "fixture-subject", NOW),
++            Err(AclError::Unauthorized)
++        ));
++    }
++}
++
++#[test]
++fn attaching_old_content_to_a_different_project_owner_expands_visibility() {
++    let mut db = database();
++    let owner = actor("1", false);
++    let other_owner = actor("4", false);
++    let admin = actor("3", true);
++    let project = key("p", ResourceKind::Project);
++    let child = key("c", ResourceKind::File);
++    create(&mut db, &other_owner, &project, None);
++    db.grant(&admin, &project, "1").unwrap();
++    create(&mut db, &owner, &child, None);
++    assert!(matches!(
++        db.move_to_project(&owner, &child, Some(&project)),
++        Err(AclError::Forbidden)
++    ));
++    assert!(db.authorize(&other_owner, &child, Action::Read).is_err());
++}
++
++#[test]
++fn connector_metadata_link_does_not_expand_visibility() {
++    let mut db = database();
++    let owner = actor("1", false);
++    let recipient = actor("2", false);
++    let admin = actor("3", true);
++    let project = key("p", ResourceKind::Project);
++    let connector = key("c", ResourceKind::Connector);
++    create(&mut db, &owner, &project, None);
++    create(&mut db, &owner, &connector, None);
++    db.grant(&admin, &project, "2").unwrap();
++    db.move_to_project(&owner, &connector, Some(&project))
++        .unwrap();
++    assert!(matches!(
++        db.authorize(&recipient, &connector, Action::Read),
++        Err(AclError::Forbidden)
++    ));
++}
++
++#[test]
++fn unknown_parent_or_unprivileged_parent_cannot_register_a_child() {
++    let mut db = database();
++    let owner = actor("1", false);
++    let stranger = actor("2", false);
++    let admin = actor("3", true);
++    let project = key("p", ResourceKind::Project);
++    let child = key("c", ResourceKind::File);
++    assert!(matches!(
++        db.record_created(&owner, Some(receipt(&child, Some(&project)))),
++        Err(AclError::UnknownResource)
++    ));
++    create(&mut db, &owner, &project, None);
++    assert!(matches!(
++        db.record_created(&stranger, Some(receipt(&child, Some(&project)))),
++        Err(AclError::Forbidden)
++    ));
++    assert_eq!(
++        db.authorize(&admin, &child, Action::Read).unwrap(),
++        Access::UnknownAdministratorRead
++    );
++    assert_eq!(db.audit_after(&admin, 0, 100).unwrap().len(), 1);
++}
+diff --git a/tests/coord_boundary_regression.rs b/tests/coord_boundary_regression.rs
+new file mode 100644
+index 0000000..c9895a0
+--- /dev/null
++++ b/tests/coord_boundary_regression.rs
+@@ -0,0 +1,587 @@
++//! Owner-integrated boundary tests, upgraded from b837 to observed auth refresh.
++//! No real-upstream/page initialization or product resource-ACL validation is implied.
++use axum::{body::to_bytes, extract::Request, http::StatusCode, response::IntoResponse, Router};
++use mirror_gateway::{
++    config::{loopback_url, Config},
++    server,
++};
++use serde_json::{json, Value};
++use std::{
++    sync::{
++        atomic::{AtomicBool, Ordering},
++        Arc, Mutex,
++    },
++    time::{Duration, SystemTime, UNIX_EPOCH},
++};
++
++const ADMIN: &str = "coord-synthetic-admin-secret-0001";
++const ACCESS_A: &str = "coord-synthetic-access-alice";
++const ACCESS_B: &str = "coord-synthetic-access-bob";
++const BROWSER_AUTH: &str = "coord-browser-authorization-must-not-leak";
++const BROWSER_COOKIE: &str = "coord-browser-cookie-must-not-leak";
++type Events = Arc<Mutex<Vec<Value>>>;
++
++fn headers_json(headers: &axum::http::HeaderMap) -> Value {
++    json!(headers
++        .iter()
++        .map(|(k, v)| (k.as_str().to_owned(), v.to_str().unwrap().to_owned()))
++        .collect::<Vec<_>>())
++}
++
++async fn spawn_fixture(
++    role: &'static str,
++    events: Events,
++    active: Arc<AtomicBool>,
++) -> (String, tokio::task::JoinHandle<()>) {
++    let app = Router::new().fallback(move |request: Request| {
++        let events = events.clone();
++        let active = active.clone();
++        async move {
++            let (parts, body) = request.into_parts();
++            let body = to_bytes(body, 1024 * 1024).await.unwrap();
++            events.lock().unwrap().push(json!({"kind":"egress", "role":role, "method":parts.method.as_str(),
++                "uri":parts.uri.to_string(), "headers":headers_json(&parts.headers), "body":String::from_utf8_lossy(&body)}));
++            if role == "django" && parts.uri.path() == "/0x/user/gateway-authorization" {
++                let input: Value = serde_json::from_slice(&body).unwrap();
++                let known = ["alice", "bob"].contains(&input["subject"].as_str().unwrap_or(""));
++                return axum::Json(json!({"active":active.load(Ordering::SeqCst) && known && input["authorization"] == "coord-signature-v1",
++                    "version":"v1", "expires_at":SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs()+3600})).into_response();
++            }
++            if role == "chat" && parts.uri.path() == "/backend-api/accounts/check/v4-2023-04-27" {
++                if !matches!(parts.headers.get("authorization").and_then(|v| v.to_str().ok()),
++                    Some("Bearer coord-synthetic-access-alice" | "Bearer coord-synthetic-access-bob")) {
++                    return StatusCode::UNAUTHORIZED.into_response();
++                }
++                return axum::Json(json!({"accounts":{"default":{"account":{"plan_type":"plus"}}}})).into_response();
++            }
++            if role == "chat" && parts.uri.path() == "/backend-api/me" {
++                if parts.uri.query().unwrap_or("").contains("fixture_status=503") {
++                    return (StatusCode::SERVICE_UNAVAILABLE, axum::Json(json!({"message":"synthetic upstream unavailable"}))).into_response();
++                }
++                let email = match parts.headers.get("authorization").and_then(|v| v.to_str().ok()) {
++                    Some("Bearer coord-synthetic-access-alice") => "account-a@example.invalid",
++                    Some("Bearer coord-synthetic-access-bob") => "account-b@example.invalid",
++                    _ => return StatusCode::UNAUTHORIZED.into_response(),
++                };
++                return axum::Json(json!({"email":email,"id":email,"name":"Synthetic account"})).into_response();
++            }
++            (StatusCode::IM_A_TEAPOT, "unexpected fixture route").into_response()
++        }
++    });
++    // Closing each fixture connection makes aborting its listener a real transport
++    // failure; an existing Axum keep-alive connection otherwise survives that abort.
++    let app = app.layer(axum::middleware::from_fn(
++        |request: Request, next: axum::middleware::Next| async move {
++            let mut response = next.run(request).await;
++            response
++                .headers_mut()
++                .insert("connection", axum::http::HeaderValue::from_static("close"));
++            response
++        },
++    ));
++    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
++    let url = format!("http://{}", listener.local_addr().unwrap());
++    let task = tokio::spawn(async move { axum::serve(listener, app).await.unwrap() });
++    (url, task)
++}
++
++struct Harness {
++    name: &'static str,
++    _dir: tempfile::TempDir,
++    events: Events,
++    tasks: Vec<tokio::task::JoinHandle<()>>,
++    active: Arc<AtomicBool>,
++    client: reqwest::Client,
++    base: String,
++    decoy: String,
++}
++
++struct Observed {
++    status: u16,
++    headers: axum::http::HeaderMap,
++    body: String,
++}
++
++impl Harness {
++    async fn new(name: &'static str) -> Self {
++        let events = Arc::new(Mutex::new(Vec::new()));
++        let active = Arc::new(AtomicBool::new(true));
++        let (django, django_task) = spawn_fixture("django", events.clone(), active.clone()).await;
++        let (chat, chat_task) = spawn_fixture("chat", events.clone(), active.clone()).await;
++        let (cdn, cdn_task) = spawn_fixture("cdn-unwired", events.clone(), active.clone()).await;
++        let (decoy, decoy_task) =
++            spawn_fixture("client-target-decoy", events.clone(), active.clone()).await;
++        let dir = tempfile::tempdir().unwrap();
++        let app = server::router(Config {
++            host: "127.0.0.1".into(),
++            port: 0,
++            database: dir.path().join("db.sqlite"),
++            secret: ADMIN.into(),
++            key: "coord-fixture-encryption-key-00000001".into(),
++            django: loopback_url(&django).unwrap(),
++            upstream: loopback_url(&chat).unwrap(),
++            cdn_upstream: Some(loopback_url(&cdn).unwrap()),
++            cfbypass: None,
++            timeout: Duration::from_secs(2),
++            mirror_profile: true,
++            cookie_secure: false,
++        })
++        .await
++        .unwrap();
++        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
++        let base = format!("http://{}", listener.local_addr().unwrap());
++        let gateway_task = tokio::spawn(async move { axum::serve(listener, app).await.unwrap() });
++        events.lock().unwrap().push(json!({"kind":"setup","gateway":base,"django":django,"chat":chat,"cdn-unwired":cdn,"client-target-decoy":decoy,
++            "database":dir.path().join("db.sqlite"),"evidence_level":"synthetic loopback HTTP; owner auth refresh and closed-page candidate"}));
++        Self {
++            name,
++            _dir: dir,
++            events,
++            tasks: vec![django_task, chat_task, cdn_task, decoy_task, gateway_task],
++            active,
++            client: reqwest::Client::builder()
++                .no_proxy()
++                .redirect(reqwest::redirect::Policy::none())
++                .timeout(Duration::from_secs(5))
++                .build()
++                .unwrap(),
++            base,
++            decoy,
++        }
++    }
++
++    async fn request(&self, label: &str, builder: reqwest::RequestBuilder) -> Observed {
++        let request = builder.build().unwrap();
++        let request_id = {
++            let mut events = self.events.lock().unwrap();
++            let id = events.len();
++            events.push(json!({"kind":"client_request","request_id":id,"label":label,"method":request.method().as_str(),"url":request.url().as_str(),
++                "headers":headers_json(request.headers()),"body":request.body().and_then(|b|b.as_bytes()).map(|b|String::from_utf8_lossy(b).to_string())}));
++            id
++        };
++        let response = self.client.execute(request).await.unwrap();
++        let status = response.status().as_u16();
++        let headers = response.headers().clone();
++        let body = response.text().await.unwrap();
++        self.events.lock().unwrap().push(json!({"kind":"client_response","request_id":request_id,"label":label,"status":status,"headers":headers_json(&headers),"body":body}));
++        Observed {
++            status,
++            headers,
++            body,
++        }
++    }
++
++    async fn login(&self, user: &str, access: &str, mode: &str) -> String {
++        // Same authorization shape as tests/mirror_auth.rs; page routes stay closed.
++        let response = self.request("service-login", self.client.post(format!("{}/api/login", self.base)).bearer_auth(ADMIN).json(&json!({
++            "user_name":user,"authorization":"coord-signature-v1","access_token":access,"login_mode":mode,
++            "isolated_session":true,"mcp_isolation":true,"skills_isolation":true,"model_isolation":true,
++            "daily_quota":20,"monthly_quota":100,"model_allowed_ids":["fixture-model"],"model_rate_limits":{},
++            "limits":[],"mcp_allowed_ids":[],"skills_allowed_ids":[]}))).await;
++        assert_eq!(response.status, 200, "{}", response.body);
++        let value: Value = serde_json::from_str(&response.body).unwrap();
++        value["login_url"]
++            .as_str()
++            .unwrap()
++            .split_once('=')
++            .unwrap()
++            .1
++            .to_owned()
++    }
++
++    fn egress(&self, role: &str) -> Vec<Value> {
++        self.events
++            .lock()
++            .unwrap()
++            .iter()
++            .filter(|v| v["kind"] == "egress" && v["role"] == role)
++            .cloned()
++            .collect()
++    }
++
++    async fn local_session(&self, token: &str) -> Observed {
++        self.request(
++            "local-session",
++            self.client
++                .get(format!("{}/api/auth/session", self.base))
++                .header("cookie", format!("mirror_token={token}")),
++        )
++        .await
++    }
++}
++
++impl Drop for Harness {
++    fn drop(&mut self) {
++        for task in &self.tasks {
++            task.abort();
++        }
++        let events = self.events.lock().unwrap();
++        let result =
++            json!({"test":self.name,"panicking":std::thread::panicking(),"events":*events});
++        if let Ok(path) = std::env::var("COORD_EVIDENCE_DIR") {
++            std::fs::create_dir_all(&path).unwrap();
++            std::fs::write(
++                std::path::Path::new(&path).join(format!("{}.json", self.name)),
++                serde_json::to_vec_pretty(&result).unwrap(),
++            )
++            .unwrap();
++        }
++        println!(
++            "COORD_EVIDENCE test={} events={} panicking={}",
++            self.name,
++            events.len(),
++            std::thread::panicking()
++        );
++    }
++}
++
++fn no_credential_echo(response: &Observed, secrets: &[&str]) {
++    let all = format!("{} {}", headers_json(&response.headers), response.body);
++    for secret in secrets {
++        assert!(
++            !all.contains(secret),
++            "credential appeared in response: {secret}; {all}"
++        );
++    }
++}
++
++#[tokio::test]
++async fn coord_unknown_route_matrix_stays_closed() {
++    let h = Harness::new("unknown_route_matrix").await;
++    let token = h.login("alice", ACCESS_A, "api").await;
++    let chat_before = h.egress("chat").len();
++    // Guessed HTML/bootstrap/resource paths are gate probes, not proposed routes.
++    // Static assets are deliberately left to the owner's static_assets.rs.
++    for path in [
++        "/external",
++        "/external/unknown.js",
++        "/external/http://127.0.0.1/unknown",
++        "/internal-upstream",
++        "/internal-upstream/backend-api/me",
++        "/",
++        "/c/coord-guessed-resource",
++        "/_next/data/coord-guessed-build/index.json",
++        "/backend-api/conversation/coord-guessed-resource",
++        "/backend-api/coord-unknown",
++        "/api/coord-unknown",
++    ] {
++        for method in [reqwest::Method::GET, reqwest::Method::POST] {
++            for authenticated in [false, true] {
++                let mut request = h
++                    .client
++                    .request(method.clone(), format!("{}{path}", h.base))
++                    .query(&[("url", h.decoy.as_str()), ("target", h.decoy.as_str())]);
++                if authenticated {
++                    request = request.header("x-mirror-token", &token);
++                }
++                let response = h
++                    .request(
++                        &format!("{method} {path} authenticated={authenticated}"),
++                        request,
++                    )
++                    .await;
++                assert_eq!(
++                    response.status,
++                    if path.starts_with("/api/") {
++                        404
++                    } else if authenticated {
++                        503
++                    } else {
++                        401
++                    }
++                );
++                no_credential_echo(&response, &[&token, ADMIN, ACCESS_A]);
++            }
++        }
++    }
++    assert_eq!(h.egress("chat").len(), chat_before);
++    assert!(h.egress("cdn-unwired").is_empty());
++    assert!(h.egress("client-target-decoy").is_empty());
++}
++
++#[tokio::test]
++async fn coord_client_target_overrides_cannot_select_egress() {
++    let h = Harness::new("target_overrides").await;
++    let token = h.login("alice", ACCESS_A, "api").await;
++    for key in [
++        "url",
++        "target",
++        "upstream",
++        "base_url",
++        "CHATGPT_BASE_URL",
++        "CHATGPT_CDN_BASE_URL",
++    ] {
++        let response = h
++            .request(
++                key,
++                h.client
++                    .get(format!("{}/backend-api/me", h.base))
++                    .query(&[(key, h.decoy.as_str())])
++                    .header("host", h.decoy.strip_prefix("http://").unwrap())
++                    .header("x-upstream-url", &h.decoy)
++                    .header("x-target-url", &h.decoy)
++                    .header("x-forwarded-host", h.decoy.strip_prefix("http://").unwrap())
++                    .header("x-mirror-token", &token),
++            )
++            .await;
++        assert_eq!(response.status, 200);
++        assert_eq!(
++            serde_json::from_str::<Value>(&response.body).unwrap()["email"],
++            "account-a@example.invalid"
++        );
++    }
++    let response = h
++        .request(
++            "body-target-override",
++            h.client
++                .get(format!("{}/backend-api/me", h.base))
++                .header("x-mirror-token", &token)
++                .json(&json!({"url":h.decoy,"target":h.decoy,"upstream":h.decoy})),
++        )
++        .await;
++    assert_eq!(response.status, 200);
++    assert_eq!(h.egress("chat").len(), 8); // one login + seven probes
++    assert!(h.egress("client-target-decoy").is_empty());
++    assert!(h.egress("cdn-unwired").is_empty());
++}
++
++#[tokio::test]
++async fn coord_browser_credentials_absent_from_chat_and_responses() {
++    let h = Harness::new("browser_credentials").await;
++    let token = h.login("alice", ACCESS_A, "api").await;
++    for suffix in ["", "?fixture_status=503"] {
++        let response = h.request("browser-credentials",h.client.get(format!("{}/backend-api/me{suffix}",h.base))
++            .header("x-mirror-token",&token).bearer_auth(BROWSER_AUTH).header("proxy-authorization",BROWSER_AUTH)
++            .header("cookie",format!("access_token={BROWSER_COOKIE}; session_token={BROWSER_COOKIE}; next-auth.session-token={BROWSER_COOKIE}; mirror_token={token}"))).await;
++        assert_eq!(response.status, if suffix.is_empty() { 200 } else { 503 });
++        no_credential_echo(
++            &response,
++            &[&token, BROWSER_AUTH, BROWSER_COOKIE, ADMIN, ACCESS_A],
++        );
++        assert!(response.headers["cache-control"]
++            .to_str()
++            .unwrap()
++            .contains("no-store"));
++    }
++    for request in h.egress("chat").iter().skip(1) {
++        let headers = request["headers"].to_string();
++        assert!(headers.contains(&format!("Bearer {ACCESS_A}")));
++        for secret in [&token, BROWSER_AUTH, BROWSER_COOKIE, ADMIN] {
++            assert!(!headers.contains(secret));
++        }
++        for name in ["cookie", "x-mirror-token", "proxy-authorization"] {
++            assert!(!request["headers"]
++                .as_array()
++                .unwrap()
++                .iter()
++                .any(|pair| pair[0] == name));
++        }
++    }
++}
++
++#[tokio::test]
++async fn coord_transport_error_does_not_echo_credentials() {
++    let mut h = Harness::new("transport_error").await;
++    let token = h.login("alice", ACCESS_A, "api").await;
++    let chat = h.tasks.remove(1);
++    chat.abort();
++    assert!(chat.await.unwrap_err().is_cancelled());
++    let response = h
++        .request(
++            "chat-transport-failure",
++            h.client
++                .get(format!("{}/backend-api/me", h.base))
++                .query(&[("authorization", BROWSER_AUTH), ("cookie", BROWSER_COOKIE)])
++                .header("x-mirror-token", &token)
++                .bearer_auth(BROWSER_AUTH)
++                .header("cookie", BROWSER_COOKIE),
++        )
++        .await;
++    assert_eq!(response.status, 502);
++    no_credential_echo(
++        &response,
++        &[&token, BROWSER_AUTH, BROWSER_COOKIE, ADMIN, ACCESS_A],
++    );
++    assert_eq!(h.egress("chat").len(), 1);
++}
++
++#[tokio::test]
++async fn coord_local_sessions_distinct_accounts_and_logout_are_isolated() {
++    let h = Harness::new("distinct_accounts").await;
++    let alice = h.login("alice", ACCESS_A, "api").await;
++    let bob = h.login("bob", ACCESS_B, "web").await;
++    let chat_before = h.egress("chat").len();
++    for _ in 0..4 {
++        let (a, b) = tokio::join!(h.local_session(&alice), h.local_session(&bob));
++        for (response, email, mode) in [
++            (a, "account-a@example.invalid", "api"),
++            (b, "account-b@example.invalid", "web"),
++        ] {
++            assert_eq!(response.status, 200);
++            let value: Value = serde_json::from_str(&response.body).unwrap();
++            assert_eq!(value["user"]["email"], email);
++            assert_eq!(value["loginMode"], mode);
++            no_credential_echo(&response, &[&alice, &bob, ACCESS_A, ACCESS_B, ADMIN]);
++        }
++    }
++    let logout = h
++        .request(
++            "logout-alice",
++            h.client
++                .post(format!("{}/api/logout", h.base))
++                .bearer_auth(ADMIN)
++                .json(&json!({"user_name":"alice"})),
++        )
++        .await;
++    assert_eq!(logout.status, 200);
++    assert_eq!(h.local_session(&alice).await.body, "{}");
++    assert_eq!(
++        serde_json::from_str::<Value>(&h.local_session(&bob).await.body).unwrap()["user"]["email"],
++        "account-b@example.invalid"
++    );
++    let chat = h.egress("chat");
++    assert_eq!(chat.len(), chat_before + 18); // Eight concurrent refreshes + Bob after logout.
++    for (credential, refreshes) in [
++        (format!("Bearer {ACCESS_A}"), 4),
++        (format!("Bearer {ACCESS_B}"), 5),
++    ] {
++        let paths: Vec<&str> = chat[chat_before..]
++            .iter()
++            .filter(|event| {
++                event["headers"]
++                    .as_array()
++                    .unwrap()
++                    .iter()
++                    .any(|header| header[0] == "authorization" && header[1] == credential)
++            })
++            .map(|event| event["uri"].as_str().unwrap())
++            .collect();
++        assert_eq!(paths.len(), refreshes * 2);
++        for pair in paths.as_chunks::<2>().0 {
++            assert_eq!(
++                *pair,
++                [
++                    "/backend-api/accounts/check/v4-2023-04-27",
++                    "/backend-api/me"
++                ]
++            );
++        }
++    }
++}
++
++#[tokio::test]
++async fn coord_shared_account_token_rotation_preserves_other_user() {
++    let h = Harness::new("shared_account").await;
++    let alice = h.login("alice", ACCESS_A, "api").await;
++    let bob = h.login("bob", ACCESS_A, "web").await;
++    let replacement = h.login("alice", ACCESS_A, "api").await;
++    assert_ne!(alice, replacement);
++    assert_eq!(h.local_session(&alice).await.body, "{}");
++    let handoff = h
++        .request(
++            "alice-handoff",
++            h.client
++                .get(format!("{}/api/not-login", h.base))
++                .query(&[("user_gateway_token", replacement.as_str())]),
++        )
++        .await;
++    assert_eq!(handoff.status, 302);
++    let cookie = handoff
++        .headers
++        .get_all("set-cookie")
++        .iter()
++        .find_map(|v| v.to_str().unwrap().strip_prefix("mirror_token="))
++        .unwrap();
++    let rotated = cookie.split(';').next().unwrap();
++    assert_ne!(rotated, replacement);
++    assert_eq!(h.local_session(&replacement).await.body, "{}");
++    for (token, mode) in [(rotated, "api"), (bob.as_str(), "web")] {
++        let response = h.local_session(token).await;
++        let value: Value = serde_json::from_str(&response.body).unwrap();
++        assert_eq!(value["user"]["email"], "account-a@example.invalid");
++        assert_eq!(value["loginMode"], mode);
++        no_credential_echo(&response, &[rotated, &bob, ADMIN, ACCESS_A]);
++    }
++    let logout = h
++        .request(
++            "logout-alice",
++            h.client
++                .post(format!("{}/api/logout", h.base))
++                .bearer_auth(ADMIN)
++                .json(&json!({"user_name":"alice"})),
++        )
++        .await;
++    assert_eq!(logout.status, 200);
++    assert_eq!(h.local_session(rotated).await.body, "{}");
++    assert_eq!(
++        serde_json::from_str::<Value>(&h.local_session(&bob).await.body).unwrap()["loginMode"],
++        "web"
++    );
++}
++
++#[tokio::test]
++async fn coord_invalid_credentials_fail_without_egress_or_echo() {
++    let h = Harness::new("invalid_credentials").await;
++    for path in [
++        "/backend-api/me",
++        "/internal-upstream/unknown",
++        "/external/unknown",
++    ] {
++        let response = h
++            .request(
++                "invalid-mirror-token",
++                h.client
++                    .get(format!("{}{path}", h.base))
++                    .header("x-mirror-token", BROWSER_AUTH)
++                    .header("cookie", BROWSER_COOKIE),
++            )
++            .await;
++        assert_eq!(response.status, 401);
++        no_credential_echo(&response, &[BROWSER_AUTH, BROWSER_COOKIE, ADMIN]);
++    }
++    let invalid_login = h
++        .request(
++            "invalid-admin-key",
++            h.client
++                .post(format!("{}/api/login", h.base))
++                .bearer_auth(BROWSER_AUTH)
++                .json(&json!({"user_name":"alice","access_token":BROWSER_COOKIE})),
++        )
++        .await;
++    assert_eq!(invalid_login.status, 401);
++    no_credential_echo(&invalid_login, &[BROWSER_AUTH, BROWSER_COOKIE, ADMIN]);
++    let handoff = h
++        .request(
++            "invalid-handoff",
++            h.client
++                .get(format!("{}/api/not-login", h.base))
++                .query(&[("user_gateway_token", BROWSER_AUTH)]),
++        )
++        .await;
++    assert_eq!(handoff.status, 401);
++    no_credential_echo(&handoff, &[BROWSER_AUTH, BROWSER_COOKIE, ADMIN]);
++    for role in ["chat", "django", "cdn-unwired", "client-target-decoy"] {
++        assert!(h.egress(role).is_empty());
++    }
++}
++
++#[tokio::test]
++async fn coord_inactive_authority_blocks_chat_without_cross_user_fallback() {
++    let h = Harness::new("inactive_authority").await;
++    let token = h.login("alice", ACCESS_A, "api").await;
++    let chat_before = h.egress("chat").len();
++    h.active.store(false, Ordering::SeqCst);
++    let response = h
++        .request(
++            "inactive-authority",
++            h.client
++                .get(format!("{}/backend-api/me", h.base))
++                .header("x-mirror-token", &token),
++        )
++        .await;
++    assert_eq!(response.status, 401);
++    no_credential_echo(&response, &[&token, ADMIN, ACCESS_A]);
++    assert_eq!(h.local_session(&token).await.body, "{}");
++    assert_eq!(h.egress("chat").len(), chat_before);
++    assert!(h.egress("client-target-decoy").is_empty());
 +}
 diff --git a/tests/mirror_auth.rs b/tests/mirror_auth.rs
 index 4bf9f0a..f292e2c 100644

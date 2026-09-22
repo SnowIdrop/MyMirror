@@ -27,7 +27,7 @@
     "finalize.py",
     "validate.py"
   ],
-  "live_result": "Static batch finalized: 70 Rust tests, Clippy, 30 config cases; same-input HTTP 401/200/401 and config exits1/0/1. Product source original unchanged. Shared Cargo target collision in verifier was observed, recorded and fixed by per-variant outputs; all probes rerun. No running processes.",
+  "live_result": "Combined current candidate passed 109 Rust tests + Clippy -D warnings + 30 config cases, after integrating all 3 reviewed files and upgrading auth boundary fixture. Config1/0/1; static401/200/401; auth free/plus/free and egress0/2/0; rollback hash matched. No processes running.",
   "new_evidence": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\page-original-001\\summary.json",
   "current_implementation": "Public JS/CSS routes /assets/* and /cdn/* from fixed CDN; no credentials forwarded, response Set-Cookie removed; MIME and redirect gate. Chat HTML, guessed /c IDs, media and auth refresh not opened/modified yet.",
   "interfaces": "Config unchanged from snapshot (cdn_upstream Option<Url>). static_assets private sibling module only. Resource identity/API contracts remain unintegrated.",
@@ -66,6 +66,50 @@
     "binary": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-probe-targets\\modified\\debug\\mirror-gateway.exe",
     "binary_note": "Prefer immutable source snapshot; binary is current modified-only target output, may be rebuilt in later turns."
   },
-  "next_owner_work": "auth_session accounts/check -> me regression and implementation; HTML initialization isolation. Other independent deliveries reviewed before integration; no ownership transfer.",
-  "reviewed_identity_proposal": "user_id canonical decimal string; is_admin staff|superuser; wire version opaque authorization_version; principal_kind separates FREE_ACCOUNT visitor. New ACL visitors fail closed; existing login unchanged. Not yet product-wired."
+  "next_owner_work": "HTML/bootstrap isolation and same-origin adapter; login accounts-check gap; then trusted identity/ACL/new DB/backup wiring. Keep unproven paths closed.",
+  "reviewed_identity_proposal": "user_id canonical decimal string; is_admin staff|superuser; wire version opaque authorization_version; principal_kind separates FREE_ACCOUNT visitor. New ACL visitors fail closed; existing login unchanged. Not yet product-wired.",
+  "auth_contract_delta": "auth_session now snapshots credentials for exact mirror token, drops DB lock, sends accounts/check then me each request, revalidates session after network; account-lookup HTTP failure=>free with me still checked, me auth failure/account mismatch=>empty object. Login request chain unchanged (one me); malformed/transport refresh=>502.",
+  "regression_handoff_ack": "Acknowledged old boundary-regression auth local-snapshot assumption (line435). On formal handoff/hash, integrator will add accounts stub and update expected request sequence, preserving credential/isolation assertions; not skip tests. Login single-me assumptions remain current for this auth-session-only batch.",
+  "pending_integration": "This reviewed batch integrated. ACL remains unexported and unused by product routes/DB. Admin is contract-only. No handoff.",
+  "integration_complete": {
+    "snapshot": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\coordination\\integrated-f95fc1eeb7d2.zip",
+    "sha256": "f95fc1eeb7d239dfc5b5e6e999b7c2443dc082a63bc9f6f6f7007e6bc3c53c6e",
+    "summary": {
+      "implementation": "configuration, public JS/CSS and auth-session refresh implemented; reviewed independent ACL module and upgraded boundary tests integrated without product ACL wiring; original source unchanged",
+      "rust_tests": 109,
+      "clippy": "passed --all-targets -- -D warnings",
+      "configuration_cases": 30,
+      "original_page_observations": 40,
+      "static_integration_tests": 5,
+      "auth_refresh_tests": 3,
+      "independent_acl_tests": 28,
+      "integrated_boundary_tests": 8,
+      "real_environment_acceptance": "not run",
+      "full_replacement_complete": false
+    },
+    "files": [
+      {
+        "path": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\src\\resource_acl.rs",
+        "received_sha256": "80ee34100574d8b746905ae71ea42b67d25c13410e247b4408e47db4ea0caa39",
+        "integrated_sha256": "80ee34100574d8b746905ae71ea42b67d25c13410e247b4408e47db4ea0caa39",
+        "owner_changed": false
+      },
+      {
+        "path": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\tests\\coord_acl_contract.rs",
+        "received_sha256": "8b06f74d703632fce6546d0b5463d50c8f830d81547f605ce4e8f180b419dbfa",
+        "integrated_sha256": "8b06f74d703632fce6546d0b5463d50c8f830d81547f605ce4e8f180b419dbfa",
+        "owner_changed": false
+      },
+      {
+        "path": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\tests\\coord_boundary_regression.rs",
+        "received_sha256": "e2f09e37db56ff7f25129304933d0b42332bc1da2aa169a90ad7bd2dd0845ecc",
+        "integrated_sha256": "7fccb8e6ac1cd2176c1814ef979fd0dd671898419c630800a86380f8fb6f0c6f",
+        "owner_changed": true
+      }
+    ],
+    "verification": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\VERIFICATION.txt",
+    "roles_unchanged": true,
+    "processes": "all fixture/build/probe processes completed",
+    "base_commit": "680aed1"
+  }
 }

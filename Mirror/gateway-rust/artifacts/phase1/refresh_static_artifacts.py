@@ -33,6 +33,7 @@ with zipfile.ZipFile(here / "rollback-copy.zip") as archive:
     archive.extractall(restored)
 run([sys.executable, str(here / "run_probe.py"), str(restored), "ROLLBACK"], expected=1)
 run([sys.executable, str(here / "static_probe.py"), str(restored), "ROLLBACK"])
+run([sys.executable, str(here / "static_probe.py"), str(restored), "ROLLBACK", "auth"])
 
 work = here / "patch-work"
 shutil.copyfile(here / "rollback-copy.zip", work / "source.zip")

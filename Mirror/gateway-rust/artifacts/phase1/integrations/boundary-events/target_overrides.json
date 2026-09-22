@@ -1,0 +1,1456 @@
+{
+  "events": [
+    {
+      "cdn-unwired": "http://127.0.0.1:57885",
+      "chat": "http://127.0.0.1:57876",
+      "client-target-decoy": "http://127.0.0.1:57894",
+      "database": "C:\\Users\\Administrator\\AppData\\Local\\Temp\\.tmp1okxLC\\db.sqlite",
+      "django": "http://127.0.0.1:57864",
+      "evidence_level": "synthetic loopback HTTP; owner auth refresh and closed-page candidate",
+      "gateway": "http://127.0.0.1:57916",
+      "kind": "setup"
+    },
+    {
+      "body": "{\"access_token\":\"coord-synthetic-access-alice\",\"authorization\":\"coord-signature-v1\",\"daily_quota\":20,\"isolated_session\":true,\"limits\":[],\"login_mode\":\"api\",\"mcp_allowed_ids\":[],\"mcp_isolation\":true,\"model_allowed_ids\":[\"fixture-model\"],\"model_isolation\":true,\"model_rate_limits\":{},\"monthly_quota\":100,\"skills_allowed_ids\":[],\"skills_isolation\":true,\"user_name\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "service-login",
+      "method": "POST",
+      "request_id": 1,
+      "url": "http://127.0.0.1:57916/api/login"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57864"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-access-alice"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57876"
+        ]
+      ],
+      "kind": "egress",
+      "method": "GET",
+      "role": "chat",
+      "uri": "/backend-api/me"
+    },
+    {
+      "body": "{\"chatgpt_username\":\"account-a@example.invalid\",\"login_mode\":\"api\",\"login_url\":\"/api/not-login?user_gateway_token=b870a9b0217c4d4386977f40780067f933c3e248d87d740bd3841de42a13ead9\",\"message\":\"登录成功\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "set-cookie",
+          "mirror_token=b870a9b0217c4d4386977f40780067f933c3e248d87d740bd3841de42a13ead9; Path=/; SameSite=Lax; Max-Age=604800; HttpOnly"
+        ],
+        [
+          "set-cookie",
+          "access_token=; Path=/; SameSite=Lax; Max-Age=0; HttpOnly"
+        ],
+        [
+          "set-cookie",
+          "session_token=; Path=/; SameSite=Lax; Max-Age=0; HttpOnly"
+        ],
+        [
+          "set-cookie",
+          "next-auth.session-token=; Path=/; SameSite=Lax; Max-Age=0; HttpOnly"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "205"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "service-login",
+      "request_id": 1,
+      "status": 200
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "host",
+          "127.0.0.1:57894"
+        ],
+        [
+          "x-upstream-url",
+          "http://127.0.0.1:57894"
+        ],
+        [
+          "x-target-url",
+          "http://127.0.0.1:57894"
+        ],
+        [
+          "x-forwarded-host",
+          "127.0.0.1:57894"
+        ],
+        [
+          "x-mirror-token",
+          "b870a9b0217c4d4386977f40780067f933c3e248d87d740bd3841de42a13ead9"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "url",
+      "method": "GET",
+      "request_id": 5,
+      "url": "http://127.0.0.1:57916/backend-api/me?url=http%3A%2F%2F127.0.0.1%3A57894"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57864"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "x-upstream-url",
+          "http://127.0.0.1:57894"
+        ],
+        [
+          "x-target-url",
+          "http://127.0.0.1:57894"
+        ],
+        [
+          "x-forwarded-host",
+          "127.0.0.1:57894"
+        ],
+        [
+          "user-agent",
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+        ],
+        [
+          "origin",
+          "http://127.0.0.1"
+        ],
+        [
+          "referer",
+          "http://127.0.0.1/"
+        ],
+        [
+          "authorization",
+          "Bearer coord-synthetic-access-alice"
+        ],
+        [
+          "host",
+          "127.0.0.1:57876"
+        ]
+      ],
+      "kind": "egress",
+      "method": "GET",
+      "role": "chat",
+      "uri": "/backend-api/me?url=http%3A%2F%2F127.0.0.1%3A57894"
+    },
+    {
+      "body": "{\"email\":\"account-a@example.invalid\",\"id\":\"account-a@example.invalid\",\"name\":\"Synthetic account\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "content-security-policy",
+          "default-src 'self'; connect-src 'self' ws: wss: blob: https://static.cloudflareinsights.com https://chatgpt.com https://ab.chatgpt.com https://cdn.oaistatic.com https://cdn.openai.com https://images.openai.com https://*.oaiusercontent.com https://files.openai.com https://persistent.oaistatic.com https://www.google.com https://t0.gstatic.com https://t1.gstatic.com https://t2.gstatic.com https://t3.gstatic.com https://lh3.googleusercontent.com https://cdn.auth0.com; img-src 'self' data: blob: https://static.cloudflareinsights.com https://*.oaiusercontent.com https://files.openai.com https://persistent.oaistatic.com https://www.google.com https://t0.gstatic.com https://t1.gstatic.com https://t2.gstatic.com https://t3.gstatic.com https://lh3.googleusercontent.com https://cdn.auth0.com; font-src 'self' data: https://cdn.openai.com https://*.oaiusercontent.com https://persistent.oaistatic.com; style-src 'self' 'unsafe-inline' https://*.oaiusercontent.com https://persistent.oaistatic.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://chatgpt.com https://static.cloudflareinsights.com https://*.oaiusercontent.com; worker-src 'self' blob:; frame-src 'self' https://*.oaiusercontent.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "97"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "url",
+      "request_id": 5,
+      "status": 200
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "host",
+          "127.0.0.1:57894"
+        ],
+        [
+          "x-upstream-url",
+          "http://127.0.0.1:57894"
+        ],
+        [
+          "x-target-url",
+          "http://127.0.0.1:57894"
+        ],
+        [
+          "x-forwarded-host",
+          "127.0.0.1:57894"
+        ],
+        [
+          "x-mirror-token",
+          "b870a9b0217c4d4386977f40780067f933c3e248d87d740bd3841de42a13ead9"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "target",
+      "method": "GET",
+      "request_id": 9,
+      "url": "http://127.0.0.1:57916/backend-api/me?target=http%3A%2F%2F127.0.0.1%3A57894"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57864"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "x-upstream-url",
+          "http://127.0.0.1:57894"
+        ],
+        [
+          "x-target-url",
+          "http://127.0.0.1:57894"
+        ],
+        [
+          "x-forwarded-host",
+          "127.0.0.1:57894"
+        ],
+        [
+          "user-agent",
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+        ],
+        [
+          "origin",
+          "http://127.0.0.1"
+        ],
+        [
+          "referer",
+          "http://127.0.0.1/"
+        ],
+        [
+          "authorization",
+          "Bearer coord-synthetic-access-alice"
+        ],
+        [
+          "host",
+          "127.0.0.1:57876"
+        ]
+      ],
+      "kind": "egress",
+      "method": "GET",
+      "role": "chat",
+      "uri": "/backend-api/me?target=http%3A%2F%2F127.0.0.1%3A57894"
+    },
+    {
+      "body": "{\"email\":\"account-a@example.invalid\",\"id\":\"account-a@example.invalid\",\"name\":\"Synthetic account\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "content-security-policy",
+          "default-src 'self'; connect-src 'self' ws: wss: blob: https://static.cloudflareinsights.com https://chatgpt.com https://ab.chatgpt.com https://cdn.oaistatic.com https://cdn.openai.com https://images.openai.com https://*.oaiusercontent.com https://files.openai.com https://persistent.oaistatic.com https://www.google.com https://t0.gstatic.com https://t1.gstatic.com https://t2.gstatic.com https://t3.gstatic.com https://lh3.googleusercontent.com https://cdn.auth0.com; img-src 'self' data: blob: https://static.cloudflareinsights.com https://*.oaiusercontent.com https://files.openai.com https://persistent.oaistatic.com https://www.google.com https://t0.gstatic.com https://t1.gstatic.com https://t2.gstatic.com https://t3.gstatic.com https://lh3.googleusercontent.com https://cdn.auth0.com; font-src 'self' data: https://cdn.openai.com https://*.oaiusercontent.com https://persistent.oaistatic.com; style-src 'self' 'unsafe-inline' https://*.oaiusercontent.com https://persistent.oaistatic.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://chatgpt.com https://static.cloudflareinsights.com https://*.oaiusercontent.com; worker-src 'self' blob:; frame-src 'self' https://*.oaiusercontent.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "97"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "target",
+      "request_id": 9,
+      "status": 200
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "host",
+          "127.0.0.1:57894"
+        ],
+        [
+          "x-upstream-url",
+          "http://127.0.0.1:57894"
+        ],
+        [
+          "x-target-url",
+          "http://127.0.0.1:57894"
+        ],
+        [
+          "x-forwarded-host",
+          "127.0.0.1:57894"
+        ],
+        [
+          "x-mirror-token",
+          "b870a9b0217c4d4386977f40780067f933c3e248d87d740bd3841de42a13ead9"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "upstream",
+      "method": "GET",
+      "request_id": 13,
+      "url": "http://127.0.0.1:57916/backend-api/me?upstream=http%3A%2F%2F127.0.0.1%3A57894"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57864"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "x-upstream-url",
+          "http://127.0.0.1:57894"
+        ],
+        [
+          "x-target-url",
+          "http://127.0.0.1:57894"
+        ],
+        [
+          "x-forwarded-host",
+          "127.0.0.1:57894"
+        ],
+        [
+          "user-agent",
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+        ],
+        [
+          "origin",
+          "http://127.0.0.1"
+        ],
+        [
+          "referer",
+          "http://127.0.0.1/"
+        ],
+        [
+          "authorization",
+          "Bearer coord-synthetic-access-alice"
+        ],
+        [
+          "host",
+          "127.0.0.1:57876"
+        ]
+      ],
+      "kind": "egress",
+      "method": "GET",
+      "role": "chat",
+      "uri": "/backend-api/me?upstream=http%3A%2F%2F127.0.0.1%3A57894"
+    },
+    {
+      "body": "{\"email\":\"account-a@example.invalid\",\"id\":\"account-a@example.invalid\",\"name\":\"Synthetic account\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "content-security-policy",
+          "default-src 'self'; connect-src 'self' ws: wss: blob: https://static.cloudflareinsights.com https://chatgpt.com https://ab.chatgpt.com https://cdn.oaistatic.com https://cdn.openai.com https://images.openai.com https://*.oaiusercontent.com https://files.openai.com https://persistent.oaistatic.com https://www.google.com https://t0.gstatic.com https://t1.gstatic.com https://t2.gstatic.com https://t3.gstatic.com https://lh3.googleusercontent.com https://cdn.auth0.com; img-src 'self' data: blob: https://static.cloudflareinsights.com https://*.oaiusercontent.com https://files.openai.com https://persistent.oaistatic.com https://www.google.com https://t0.gstatic.com https://t1.gstatic.com https://t2.gstatic.com https://t3.gstatic.com https://lh3.googleusercontent.com https://cdn.auth0.com; font-src 'self' data: https://cdn.openai.com https://*.oaiusercontent.com https://persistent.oaistatic.com; style-src 'self' 'unsafe-inline' https://*.oaiusercontent.com https://persistent.oaistatic.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://chatgpt.com https://static.cloudflareinsights.com https://*.oaiusercontent.com; worker-src 'self' blob:; frame-src 'self' https://*.oaiusercontent.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "97"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "upstream",
+      "request_id": 13,
+      "status": 200
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "host",
+          "127.0.0.1:57894"
+        ],
+        [
+          "x-upstream-url",
+          "http://127.0.0.1:57894"
+        ],
+        [
+          "x-target-url",
+          "http://127.0.0.1:57894"
+        ],
+        [
+          "x-forwarded-host",
+          "127.0.0.1:57894"
+        ],
+        [
+          "x-mirror-token",
+          "b870a9b0217c4d4386977f40780067f933c3e248d87d740bd3841de42a13ead9"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "base_url",
+      "method": "GET",
+      "request_id": 17,
+      "url": "http://127.0.0.1:57916/backend-api/me?base_url=http%3A%2F%2F127.0.0.1%3A57894"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57864"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "x-upstream-url",
+          "http://127.0.0.1:57894"
+        ],
+        [
+          "x-target-url",
+          "http://127.0.0.1:57894"
+        ],
+        [
+          "x-forwarded-host",
+          "127.0.0.1:57894"
+        ],
+        [
+          "user-agent",
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+        ],
+        [
+          "origin",
+          "http://127.0.0.1"
+        ],
+        [
+          "referer",
+          "http://127.0.0.1/"
+        ],
+        [
+          "authorization",
+          "Bearer coord-synthetic-access-alice"
+        ],
+        [
+          "host",
+          "127.0.0.1:57876"
+        ]
+      ],
+      "kind": "egress",
+      "method": "GET",
+      "role": "chat",
+      "uri": "/backend-api/me?base_url=http%3A%2F%2F127.0.0.1%3A57894"
+    },
+    {
+      "body": "{\"email\":\"account-a@example.invalid\",\"id\":\"account-a@example.invalid\",\"name\":\"Synthetic account\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "content-security-policy",
+          "default-src 'self'; connect-src 'self' ws: wss: blob: https://static.cloudflareinsights.com https://chatgpt.com https://ab.chatgpt.com https://cdn.oaistatic.com https://cdn.openai.com https://images.openai.com https://*.oaiusercontent.com https://files.openai.com https://persistent.oaistatic.com https://www.google.com https://t0.gstatic.com https://t1.gstatic.com https://t2.gstatic.com https://t3.gstatic.com https://lh3.googleusercontent.com https://cdn.auth0.com; img-src 'self' data: blob: https://static.cloudflareinsights.com https://*.oaiusercontent.com https://files.openai.com https://persistent.oaistatic.com https://www.google.com https://t0.gstatic.com https://t1.gstatic.com https://t2.gstatic.com https://t3.gstatic.com https://lh3.googleusercontent.com https://cdn.auth0.com; font-src 'self' data: https://cdn.openai.com https://*.oaiusercontent.com https://persistent.oaistatic.com; style-src 'self' 'unsafe-inline' https://*.oaiusercontent.com https://persistent.oaistatic.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://chatgpt.com https://static.cloudflareinsights.com https://*.oaiusercontent.com; worker-src 'self' blob:; frame-src 'self' https://*.oaiusercontent.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "97"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "base_url",
+      "request_id": 17,
+      "status": 200
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "host",
+          "127.0.0.1:57894"
+        ],
+        [
+          "x-upstream-url",
+          "http://127.0.0.1:57894"
+        ],
+        [
+          "x-target-url",
+          "http://127.0.0.1:57894"
+        ],
+        [
+          "x-forwarded-host",
+          "127.0.0.1:57894"
+        ],
+        [
+          "x-mirror-token",
+          "b870a9b0217c4d4386977f40780067f933c3e248d87d740bd3841de42a13ead9"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "CHATGPT_BASE_URL",
+      "method": "GET",
+      "request_id": 21,
+      "url": "http://127.0.0.1:57916/backend-api/me?CHATGPT_BASE_URL=http%3A%2F%2F127.0.0.1%3A57894"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57864"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "x-upstream-url",
+          "http://127.0.0.1:57894"
+        ],
+        [
+          "x-target-url",
+          "http://127.0.0.1:57894"
+        ],
+        [
+          "x-forwarded-host",
+          "127.0.0.1:57894"
+        ],
+        [
+          "user-agent",
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+        ],
+        [
+          "origin",
+          "http://127.0.0.1"
+        ],
+        [
+          "referer",
+          "http://127.0.0.1/"
+        ],
+        [
+          "authorization",
+          "Bearer coord-synthetic-access-alice"
+        ],
+        [
+          "host",
+          "127.0.0.1:57876"
+        ]
+      ],
+      "kind": "egress",
+      "method": "GET",
+      "role": "chat",
+      "uri": "/backend-api/me?CHATGPT_BASE_URL=http%3A%2F%2F127.0.0.1%3A57894"
+    },
+    {
+      "body": "{\"email\":\"account-a@example.invalid\",\"id\":\"account-a@example.invalid\",\"name\":\"Synthetic account\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "content-security-policy",
+          "default-src 'self'; connect-src 'self' ws: wss: blob: https://static.cloudflareinsights.com https://chatgpt.com https://ab.chatgpt.com https://cdn.oaistatic.com https://cdn.openai.com https://images.openai.com https://*.oaiusercontent.com https://files.openai.com https://persistent.oaistatic.com https://www.google.com https://t0.gstatic.com https://t1.gstatic.com https://t2.gstatic.com https://t3.gstatic.com https://lh3.googleusercontent.com https://cdn.auth0.com; img-src 'self' data: blob: https://static.cloudflareinsights.com https://*.oaiusercontent.com https://files.openai.com https://persistent.oaistatic.com https://www.google.com https://t0.gstatic.com https://t1.gstatic.com https://t2.gstatic.com https://t3.gstatic.com https://lh3.googleusercontent.com https://cdn.auth0.com; font-src 'self' data: https://cdn.openai.com https://*.oaiusercontent.com https://persistent.oaistatic.com; style-src 'self' 'unsafe-inline' https://*.oaiusercontent.com https://persistent.oaistatic.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://chatgpt.com https://static.cloudflareinsights.com https://*.oaiusercontent.com; worker-src 'self' blob:; frame-src 'self' https://*.oaiusercontent.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "97"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "CHATGPT_BASE_URL",
+      "request_id": 21,
+      "status": 200
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "host",
+          "127.0.0.1:57894"
+        ],
+        [
+          "x-upstream-url",
+          "http://127.0.0.1:57894"
+        ],
+        [
+          "x-target-url",
+          "http://127.0.0.1:57894"
+        ],
+        [
+          "x-forwarded-host",
+          "127.0.0.1:57894"
+        ],
+        [
+          "x-mirror-token",
+          "b870a9b0217c4d4386977f40780067f933c3e248d87d740bd3841de42a13ead9"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "CHATGPT_CDN_BASE_URL",
+      "method": "GET",
+      "request_id": 25,
+      "url": "http://127.0.0.1:57916/backend-api/me?CHATGPT_CDN_BASE_URL=http%3A%2F%2F127.0.0.1%3A57894"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57864"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "x-upstream-url",
+          "http://127.0.0.1:57894"
+        ],
+        [
+          "x-target-url",
+          "http://127.0.0.1:57894"
+        ],
+        [
+          "x-forwarded-host",
+          "127.0.0.1:57894"
+        ],
+        [
+          "user-agent",
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+        ],
+        [
+          "origin",
+          "http://127.0.0.1"
+        ],
+        [
+          "referer",
+          "http://127.0.0.1/"
+        ],
+        [
+          "authorization",
+          "Bearer coord-synthetic-access-alice"
+        ],
+        [
+          "host",
+          "127.0.0.1:57876"
+        ]
+      ],
+      "kind": "egress",
+      "method": "GET",
+      "role": "chat",
+      "uri": "/backend-api/me?CHATGPT_CDN_BASE_URL=http%3A%2F%2F127.0.0.1%3A57894"
+    },
+    {
+      "body": "{\"email\":\"account-a@example.invalid\",\"id\":\"account-a@example.invalid\",\"name\":\"Synthetic account\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "content-security-policy",
+          "default-src 'self'; connect-src 'self' ws: wss: blob: https://static.cloudflareinsights.com https://chatgpt.com https://ab.chatgpt.com https://cdn.oaistatic.com https://cdn.openai.com https://images.openai.com https://*.oaiusercontent.com https://files.openai.com https://persistent.oaistatic.com https://www.google.com https://t0.gstatic.com https://t1.gstatic.com https://t2.gstatic.com https://t3.gstatic.com https://lh3.googleusercontent.com https://cdn.auth0.com; img-src 'self' data: blob: https://static.cloudflareinsights.com https://*.oaiusercontent.com https://files.openai.com https://persistent.oaistatic.com https://www.google.com https://t0.gstatic.com https://t1.gstatic.com https://t2.gstatic.com https://t3.gstatic.com https://lh3.googleusercontent.com https://cdn.auth0.com; font-src 'self' data: https://cdn.openai.com https://*.oaiusercontent.com https://persistent.oaistatic.com; style-src 'self' 'unsafe-inline' https://*.oaiusercontent.com https://persistent.oaistatic.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://chatgpt.com https://static.cloudflareinsights.com https://*.oaiusercontent.com; worker-src 'self' blob:; frame-src 'self' https://*.oaiusercontent.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "97"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "CHATGPT_CDN_BASE_URL",
+      "request_id": 25,
+      "status": 200
+    },
+    {
+      "body": "{\"target\":\"http://127.0.0.1:57894\",\"upstream\":\"http://127.0.0.1:57894\",\"url\":\"http://127.0.0.1:57894\"}",
+      "headers": [
+        [
+          "x-mirror-token",
+          "b870a9b0217c4d4386977f40780067f933c3e248d87d740bd3841de42a13ead9"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "body-target-override",
+      "method": "GET",
+      "request_id": 29,
+      "url": "http://127.0.0.1:57916/backend-api/me"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57864"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"target\":\"http://127.0.0.1:57894\",\"upstream\":\"http://127.0.0.1:57894\",\"url\":\"http://127.0.0.1:57894\"}",
+      "headers": [
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "user-agent",
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+        ],
+        [
+          "origin",
+          "http://127.0.0.1"
+        ],
+        [
+          "referer",
+          "http://127.0.0.1/"
+        ],
+        [
+          "authorization",
+          "Bearer coord-synthetic-access-alice"
+        ],
+        [
+          "host",
+          "127.0.0.1:57876"
+        ],
+        [
+          "content-length",
+          "102"
+        ]
+      ],
+      "kind": "egress",
+      "method": "GET",
+      "role": "chat",
+      "uri": "/backend-api/me"
+    },
+    {
+      "body": "{\"email\":\"account-a@example.invalid\",\"id\":\"account-a@example.invalid\",\"name\":\"Synthetic account\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "content-security-policy",
+          "default-src 'self'; connect-src 'self' ws: wss: blob: https://static.cloudflareinsights.com https://chatgpt.com https://ab.chatgpt.com https://cdn.oaistatic.com https://cdn.openai.com https://images.openai.com https://*.oaiusercontent.com https://files.openai.com https://persistent.oaistatic.com https://www.google.com https://t0.gstatic.com https://t1.gstatic.com https://t2.gstatic.com https://t3.gstatic.com https://lh3.googleusercontent.com https://cdn.auth0.com; img-src 'self' data: blob: https://static.cloudflareinsights.com https://*.oaiusercontent.com https://files.openai.com https://persistent.oaistatic.com https://www.google.com https://t0.gstatic.com https://t1.gstatic.com https://t2.gstatic.com https://t3.gstatic.com https://lh3.googleusercontent.com https://cdn.auth0.com; font-src 'self' data: https://cdn.openai.com https://*.oaiusercontent.com https://persistent.oaistatic.com; style-src 'self' 'unsafe-inline' https://*.oaiusercontent.com https://persistent.oaistatic.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://chatgpt.com https://static.cloudflareinsights.com https://*.oaiusercontent.com; worker-src 'self' blob:; frame-src 'self' https://*.oaiusercontent.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "97"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "body-target-override",
+      "request_id": 29,
+      "status": 200
+    }
+  ],
+  "panicking": false,
+  "test": "target_overrides"
+}

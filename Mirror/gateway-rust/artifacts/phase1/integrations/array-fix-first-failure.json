@@ -1,0 +1,19 @@
+[
+  {
+    "label": "rust-tests",
+    "command": [
+      "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo\\bin\\cargo.exe",
+      "test",
+      "--all-targets",
+      "--locked",
+      "--offline",
+      "--manifest-path",
+      "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\Cargo.toml"
+    ],
+    "stdout": "",
+    "stderr": "   Compiling mirror-gateway v0.1.0 (E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source)\nerror[E0277]: can't compare `&[&str; 2]` with `[&str; 2]`\n   --> tests\\coord_boundary_regression.rs:461:13\n    |\n461 | /             assert_eq!(\n462 | |                 pair,\n463 | |                 [\n464 | |                     \"/backend-api/accounts/check/v4-2023-04-27\",\n...   |\n467 | |             );\n    | |_____________^ no implementation for `&[&str; 2] == [&str; 2]`\n    |\n    = help: the trait `PartialEq<[&str; 2]>` is not implemented for `&[&str; 2]`\n    = help: the following other types implement trait `PartialEq<Rhs>`:\n              `&[T]` implements `PartialEq<Vec<U, A>>`\n              `&[T]` implements `PartialEq<[U; N]>`\n              `&[u8; N]` implements `PartialEq<ByteStr>`\n              `&[u8; N]` implements `PartialEq<ByteString>`\n              `&[u8]` implements `PartialEq<ByteStr>`\n              `&[u8]` implements `PartialEq<ByteString>`\n              `&[u8]` implements `PartialEq<axum::body::Bytes>`\n              `&[u8]` implements `PartialEq<bytes::bytes_mut::BytesMut>`\n            and 28 others\n\nFor more information about this error, try `rustc --explain E0277`.\nerror: could not compile `mirror-gateway` (test \"coord_boundary_regression\") due to 1 previous error\n",
+    "exit_status": 101,
+    "expected_exit": 0,
+    "passed": false
+  }
+]

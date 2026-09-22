@@ -1,0 +1,2491 @@
+{
+  "events": [
+    {
+      "cdn-unwired": "http://127.0.0.1:57883",
+      "chat": "http://127.0.0.1:57874",
+      "client-target-decoy": "http://127.0.0.1:57890",
+      "database": "C:\\Users\\Administrator\\AppData\\Local\\Temp\\.tmp4nWs8P\\db.sqlite",
+      "django": "http://127.0.0.1:57870",
+      "evidence_level": "synthetic loopback HTTP; owner auth refresh and closed-page candidate",
+      "gateway": "http://127.0.0.1:57904",
+      "kind": "setup"
+    },
+    {
+      "body": "{\"access_token\":\"coord-synthetic-access-alice\",\"authorization\":\"coord-signature-v1\",\"daily_quota\":20,\"isolated_session\":true,\"limits\":[],\"login_mode\":\"api\",\"mcp_allowed_ids\":[],\"mcp_isolation\":true,\"model_allowed_ids\":[\"fixture-model\"],\"model_isolation\":true,\"model_rate_limits\":{},\"monthly_quota\":100,\"skills_allowed_ids\":[],\"skills_isolation\":true,\"user_name\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "service-login",
+      "method": "POST",
+      "request_id": 1,
+      "url": "http://127.0.0.1:57904/api/login"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57870"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-access-alice"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57874"
+        ]
+      ],
+      "kind": "egress",
+      "method": "GET",
+      "role": "chat",
+      "uri": "/backend-api/me"
+    },
+    {
+      "body": "{\"chatgpt_username\":\"account-a@example.invalid\",\"login_mode\":\"api\",\"login_url\":\"/api/not-login?user_gateway_token=f29284a7450f45c9650454f9ba708a03121451974e9577c3fd7e0d60876fec4d\",\"message\":\"登录成功\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "set-cookie",
+          "mirror_token=f29284a7450f45c9650454f9ba708a03121451974e9577c3fd7e0d60876fec4d; Path=/; SameSite=Lax; Max-Age=604800; HttpOnly"
+        ],
+        [
+          "set-cookie",
+          "access_token=; Path=/; SameSite=Lax; Max-Age=0; HttpOnly"
+        ],
+        [
+          "set-cookie",
+          "session_token=; Path=/; SameSite=Lax; Max-Age=0; HttpOnly"
+        ],
+        [
+          "set-cookie",
+          "next-auth.session-token=; Path=/; SameSite=Lax; Max-Age=0; HttpOnly"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "205"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "service-login",
+      "request_id": 1,
+      "status": 200
+    },
+    {
+      "body": "{\"access_token\":\"coord-synthetic-access-bob\",\"authorization\":\"coord-signature-v1\",\"daily_quota\":20,\"isolated_session\":true,\"limits\":[],\"login_mode\":\"web\",\"mcp_allowed_ids\":[],\"mcp_isolation\":true,\"model_allowed_ids\":[\"fixture-model\"],\"model_isolation\":true,\"model_rate_limits\":{},\"monthly_quota\":100,\"skills_allowed_ids\":[],\"skills_isolation\":true,\"user_name\":\"bob\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "service-login",
+      "method": "POST",
+      "request_id": 5,
+      "url": "http://127.0.0.1:57904/api/login"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"bob\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57870"
+        ],
+        [
+          "content-length",
+          "54"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-access-bob"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57874"
+        ]
+      ],
+      "kind": "egress",
+      "method": "GET",
+      "role": "chat",
+      "uri": "/backend-api/me"
+    },
+    {
+      "body": "{\"chatgpt_username\":\"account-b@example.invalid\",\"login_mode\":\"web\",\"login_url\":\"/api/not-login?user_gateway_token=d34cdaac83e3ccaa8b2039a678930f1bf5cf24e0636f19d2da7cec90fd2dbdfc\",\"message\":\"登录成功\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "set-cookie",
+          "mirror_token=d34cdaac83e3ccaa8b2039a678930f1bf5cf24e0636f19d2da7cec90fd2dbdfc; Path=/; SameSite=Lax; Max-Age=604800; HttpOnly"
+        ],
+        [
+          "set-cookie",
+          "access_token=; Path=/; SameSite=Lax; Max-Age=0; HttpOnly"
+        ],
+        [
+          "set-cookie",
+          "session_token=; Path=/; SameSite=Lax; Max-Age=0; HttpOnly"
+        ],
+        [
+          "set-cookie",
+          "next-auth.session-token=; Path=/; SameSite=Lax; Max-Age=0; HttpOnly"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "205"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "service-login",
+      "request_id": 5,
+      "status": 200
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "cookie",
+          "mirror_token=f29284a7450f45c9650454f9ba708a03121451974e9577c3fd7e0d60876fec4d"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "local-session",
+      "method": "GET",
+      "request_id": 9,
+      "url": "http://127.0.0.1:57904/api/auth/session"
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "cookie",
+          "mirror_token=d34cdaac83e3ccaa8b2039a678930f1bf5cf24e0636f19d2da7cec90fd2dbdfc"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "local-session",
+      "method": "GET",
+      "request_id": 10,
+      "url": "http://127.0.0.1:57904/api/auth/session"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57870"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"bob\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57870"
+        ],
+        [
+          "content-length",
+          "54"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "user-agent",
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "origin",
+          "http://127.0.0.1"
+        ],
+        [
+          "referer",
+          "http://127.0.0.1/"
+        ],
+        [
+          "authorization",
+          "Bearer coord-synthetic-access-alice"
+        ],
+        [
+          "host",
+          "127.0.0.1:57874"
+        ]
+      ],
+      "kind": "egress",
+      "method": "GET",
+      "role": "chat",
+      "uri": "/backend-api/accounts/check/v4-2023-04-27"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "user-agent",
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "origin",
+          "http://127.0.0.1"
+        ],
+        [
+          "referer",
+          "http://127.0.0.1/"
+        ],
+        [
+          "authorization",
+          "Bearer coord-synthetic-access-bob"
+        ],
+        [
+          "host",
+          "127.0.0.1:57874"
+        ]
+      ],
+      "kind": "egress",
+      "method": "GET",
+      "role": "chat",
+      "uri": "/backend-api/accounts/check/v4-2023-04-27"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "user-agent",
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "origin",
+          "http://127.0.0.1"
+        ],
+        [
+          "referer",
+          "http://127.0.0.1/"
+        ],
+        [
+          "authorization",
+          "Bearer coord-synthetic-access-alice"
+        ],
+        [
+          "host",
+          "127.0.0.1:57874"
+        ]
+      ],
+      "kind": "egress",
+      "method": "GET",
+      "role": "chat",
+      "uri": "/backend-api/me"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "user-agent",
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "origin",
+          "http://127.0.0.1"
+        ],
+        [
+          "referer",
+          "http://127.0.0.1/"
+        ],
+        [
+          "authorization",
+          "Bearer coord-synthetic-access-bob"
+        ],
+        [
+          "host",
+          "127.0.0.1:57874"
+        ]
+      ],
+      "kind": "egress",
+      "method": "GET",
+      "role": "chat",
+      "uri": "/backend-api/me"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57870"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"bob\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57870"
+        ],
+        [
+          "content-length",
+          "54"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"authProvider\":\"openai\",\"expires\":\"2099-12-31T23:59:59.000Z\",\"loginMode\":\"api\",\"planType\":\"plus\",\"user\":{\"email\":\"account-a@example.invalid\",\"id\":\"333dd92cf8dcb84741aa83487a9871ee8bceaf6f1767d924c9e73cca3f9fcfa2\",\"image\":null,\"name\":\"account-a@example.invalid\",\"picture\":null}}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "278"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "local-session",
+      "request_id": 9,
+      "status": 200
+    },
+    {
+      "body": "{\"authProvider\":\"openai\",\"expires\":\"2099-12-31T23:59:59.000Z\",\"loginMode\":\"web\",\"planType\":\"plus\",\"user\":{\"email\":\"account-b@example.invalid\",\"id\":\"43fbae49403722569ed3497dd7f9f460c28b88402a91a99aef0ada4962d9caef\",\"image\":null,\"name\":\"account-b@example.invalid\",\"picture\":null}}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "278"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "local-session",
+      "request_id": 10,
+      "status": 200
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "cookie",
+          "mirror_token=f29284a7450f45c9650454f9ba708a03121451974e9577c3fd7e0d60876fec4d"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "local-session",
+      "method": "GET",
+      "request_id": 21,
+      "url": "http://127.0.0.1:57904/api/auth/session"
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "cookie",
+          "mirror_token=d34cdaac83e3ccaa8b2039a678930f1bf5cf24e0636f19d2da7cec90fd2dbdfc"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "local-session",
+      "method": "GET",
+      "request_id": 22,
+      "url": "http://127.0.0.1:57904/api/auth/session"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57870"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"bob\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57870"
+        ],
+        [
+          "content-length",
+          "54"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "user-agent",
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "origin",
+          "http://127.0.0.1"
+        ],
+        [
+          "referer",
+          "http://127.0.0.1/"
+        ],
+        [
+          "authorization",
+          "Bearer coord-synthetic-access-alice"
+        ],
+        [
+          "host",
+          "127.0.0.1:57874"
+        ]
+      ],
+      "kind": "egress",
+      "method": "GET",
+      "role": "chat",
+      "uri": "/backend-api/accounts/check/v4-2023-04-27"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "user-agent",
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "origin",
+          "http://127.0.0.1"
+        ],
+        [
+          "referer",
+          "http://127.0.0.1/"
+        ],
+        [
+          "authorization",
+          "Bearer coord-synthetic-access-bob"
+        ],
+        [
+          "host",
+          "127.0.0.1:57874"
+        ]
+      ],
+      "kind": "egress",
+      "method": "GET",
+      "role": "chat",
+      "uri": "/backend-api/accounts/check/v4-2023-04-27"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "user-agent",
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "origin",
+          "http://127.0.0.1"
+        ],
+        [
+          "referer",
+          "http://127.0.0.1/"
+        ],
+        [
+          "authorization",
+          "Bearer coord-synthetic-access-alice"
+        ],
+        [
+          "host",
+          "127.0.0.1:57874"
+        ]
+      ],
+      "kind": "egress",
+      "method": "GET",
+      "role": "chat",
+      "uri": "/backend-api/me"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "user-agent",
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "origin",
+          "http://127.0.0.1"
+        ],
+        [
+          "referer",
+          "http://127.0.0.1/"
+        ],
+        [
+          "authorization",
+          "Bearer coord-synthetic-access-bob"
+        ],
+        [
+          "host",
+          "127.0.0.1:57874"
+        ]
+      ],
+      "kind": "egress",
+      "method": "GET",
+      "role": "chat",
+      "uri": "/backend-api/me"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57870"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"bob\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57870"
+        ],
+        [
+          "content-length",
+          "54"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"authProvider\":\"openai\",\"expires\":\"2099-12-31T23:59:59.000Z\",\"loginMode\":\"web\",\"planType\":\"plus\",\"user\":{\"email\":\"account-b@example.invalid\",\"id\":\"43fbae49403722569ed3497dd7f9f460c28b88402a91a99aef0ada4962d9caef\",\"image\":null,\"name\":\"account-b@example.invalid\",\"picture\":null}}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "278"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "local-session",
+      "request_id": 22,
+      "status": 200
+    },
+    {
+      "body": "{\"authProvider\":\"openai\",\"expires\":\"2099-12-31T23:59:59.000Z\",\"loginMode\":\"api\",\"planType\":\"plus\",\"user\":{\"email\":\"account-a@example.invalid\",\"id\":\"333dd92cf8dcb84741aa83487a9871ee8bceaf6f1767d924c9e73cca3f9fcfa2\",\"image\":null,\"name\":\"account-a@example.invalid\",\"picture\":null}}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "278"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "local-session",
+      "request_id": 21,
+      "status": 200
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "cookie",
+          "mirror_token=f29284a7450f45c9650454f9ba708a03121451974e9577c3fd7e0d60876fec4d"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "local-session",
+      "method": "GET",
+      "request_id": 33,
+      "url": "http://127.0.0.1:57904/api/auth/session"
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "cookie",
+          "mirror_token=d34cdaac83e3ccaa8b2039a678930f1bf5cf24e0636f19d2da7cec90fd2dbdfc"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "local-session",
+      "method": "GET",
+      "request_id": 34,
+      "url": "http://127.0.0.1:57904/api/auth/session"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"bob\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57870"
+        ],
+        [
+          "content-length",
+          "54"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57870"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "user-agent",
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "origin",
+          "http://127.0.0.1"
+        ],
+        [
+          "referer",
+          "http://127.0.0.1/"
+        ],
+        [
+          "authorization",
+          "Bearer coord-synthetic-access-bob"
+        ],
+        [
+          "host",
+          "127.0.0.1:57874"
+        ]
+      ],
+      "kind": "egress",
+      "method": "GET",
+      "role": "chat",
+      "uri": "/backend-api/accounts/check/v4-2023-04-27"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "user-agent",
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "origin",
+          "http://127.0.0.1"
+        ],
+        [
+          "referer",
+          "http://127.0.0.1/"
+        ],
+        [
+          "authorization",
+          "Bearer coord-synthetic-access-alice"
+        ],
+        [
+          "host",
+          "127.0.0.1:57874"
+        ]
+      ],
+      "kind": "egress",
+      "method": "GET",
+      "role": "chat",
+      "uri": "/backend-api/accounts/check/v4-2023-04-27"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "user-agent",
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "origin",
+          "http://127.0.0.1"
+        ],
+        [
+          "referer",
+          "http://127.0.0.1/"
+        ],
+        [
+          "authorization",
+          "Bearer coord-synthetic-access-bob"
+        ],
+        [
+          "host",
+          "127.0.0.1:57874"
+        ]
+      ],
+      "kind": "egress",
+      "method": "GET",
+      "role": "chat",
+      "uri": "/backend-api/me"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "user-agent",
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "origin",
+          "http://127.0.0.1"
+        ],
+        [
+          "referer",
+          "http://127.0.0.1/"
+        ],
+        [
+          "authorization",
+          "Bearer coord-synthetic-access-alice"
+        ],
+        [
+          "host",
+          "127.0.0.1:57874"
+        ]
+      ],
+      "kind": "egress",
+      "method": "GET",
+      "role": "chat",
+      "uri": "/backend-api/me"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"bob\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57870"
+        ],
+        [
+          "content-length",
+          "54"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57870"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"authProvider\":\"openai\",\"expires\":\"2099-12-31T23:59:59.000Z\",\"loginMode\":\"web\",\"planType\":\"plus\",\"user\":{\"email\":\"account-b@example.invalid\",\"id\":\"43fbae49403722569ed3497dd7f9f460c28b88402a91a99aef0ada4962d9caef\",\"image\":null,\"name\":\"account-b@example.invalid\",\"picture\":null}}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "278"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "local-session",
+      "request_id": 34,
+      "status": 200
+    },
+    {
+      "body": "{\"authProvider\":\"openai\",\"expires\":\"2099-12-31T23:59:59.000Z\",\"loginMode\":\"api\",\"planType\":\"plus\",\"user\":{\"email\":\"account-a@example.invalid\",\"id\":\"333dd92cf8dcb84741aa83487a9871ee8bceaf6f1767d924c9e73cca3f9fcfa2\",\"image\":null,\"name\":\"account-a@example.invalid\",\"picture\":null}}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "278"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "local-session",
+      "request_id": 33,
+      "status": 200
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "cookie",
+          "mirror_token=f29284a7450f45c9650454f9ba708a03121451974e9577c3fd7e0d60876fec4d"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "local-session",
+      "method": "GET",
+      "request_id": 45,
+      "url": "http://127.0.0.1:57904/api/auth/session"
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "cookie",
+          "mirror_token=d34cdaac83e3ccaa8b2039a678930f1bf5cf24e0636f19d2da7cec90fd2dbdfc"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "local-session",
+      "method": "GET",
+      "request_id": 46,
+      "url": "http://127.0.0.1:57904/api/auth/session"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"bob\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57870"
+        ],
+        [
+          "content-length",
+          "54"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57870"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "user-agent",
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "origin",
+          "http://127.0.0.1"
+        ],
+        [
+          "referer",
+          "http://127.0.0.1/"
+        ],
+        [
+          "authorization",
+          "Bearer coord-synthetic-access-bob"
+        ],
+        [
+          "host",
+          "127.0.0.1:57874"
+        ]
+      ],
+      "kind": "egress",
+      "method": "GET",
+      "role": "chat",
+      "uri": "/backend-api/accounts/check/v4-2023-04-27"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "user-agent",
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "origin",
+          "http://127.0.0.1"
+        ],
+        [
+          "referer",
+          "http://127.0.0.1/"
+        ],
+        [
+          "authorization",
+          "Bearer coord-synthetic-access-alice"
+        ],
+        [
+          "host",
+          "127.0.0.1:57874"
+        ]
+      ],
+      "kind": "egress",
+      "method": "GET",
+      "role": "chat",
+      "uri": "/backend-api/accounts/check/v4-2023-04-27"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "user-agent",
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "origin",
+          "http://127.0.0.1"
+        ],
+        [
+          "referer",
+          "http://127.0.0.1/"
+        ],
+        [
+          "authorization",
+          "Bearer coord-synthetic-access-bob"
+        ],
+        [
+          "host",
+          "127.0.0.1:57874"
+        ]
+      ],
+      "kind": "egress",
+      "method": "GET",
+      "role": "chat",
+      "uri": "/backend-api/me"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "user-agent",
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "origin",
+          "http://127.0.0.1"
+        ],
+        [
+          "referer",
+          "http://127.0.0.1/"
+        ],
+        [
+          "authorization",
+          "Bearer coord-synthetic-access-alice"
+        ],
+        [
+          "host",
+          "127.0.0.1:57874"
+        ]
+      ],
+      "kind": "egress",
+      "method": "GET",
+      "role": "chat",
+      "uri": "/backend-api/me"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"bob\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57870"
+        ],
+        [
+          "content-length",
+          "54"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57870"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"authProvider\":\"openai\",\"expires\":\"2099-12-31T23:59:59.000Z\",\"loginMode\":\"web\",\"planType\":\"plus\",\"user\":{\"email\":\"account-b@example.invalid\",\"id\":\"43fbae49403722569ed3497dd7f9f460c28b88402a91a99aef0ada4962d9caef\",\"image\":null,\"name\":\"account-b@example.invalid\",\"picture\":null}}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "278"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "local-session",
+      "request_id": 46,
+      "status": 200
+    },
+    {
+      "body": "{\"authProvider\":\"openai\",\"expires\":\"2099-12-31T23:59:59.000Z\",\"loginMode\":\"api\",\"planType\":\"plus\",\"user\":{\"email\":\"account-a@example.invalid\",\"id\":\"333dd92cf8dcb84741aa83487a9871ee8bceaf6f1767d924c9e73cca3f9fcfa2\",\"image\":null,\"name\":\"account-a@example.invalid\",\"picture\":null}}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "278"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "local-session",
+      "request_id": 45,
+      "status": 200
+    },
+    {
+      "body": "{\"user_name\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "logout-alice",
+      "method": "POST",
+      "request_id": 57,
+      "url": "http://127.0.0.1:57904/api/logout"
+    },
+    {
+      "body": "{\"message\":\"退出成功\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "set-cookie",
+          "access_token=; Path=/; SameSite=Lax; Max-Age=0; HttpOnly"
+        ],
+        [
+          "set-cookie",
+          "session_token=; Path=/; SameSite=Lax; Max-Age=0; HttpOnly"
+        ],
+        [
+          "set-cookie",
+          "next-auth.session-token=; Path=/; SameSite=Lax; Max-Age=0; HttpOnly"
+        ],
+        [
+          "set-cookie",
+          "__Secure-next-auth.session-token=; Path=/; SameSite=Lax; Max-Age=0; HttpOnly"
+        ],
+        [
+          "set-cookie",
+          "chatgpt_username=; Path=/; SameSite=Lax; Max-Age=0"
+        ],
+        [
+          "set-cookie",
+          "gateway_user_name=; Path=/; SameSite=Lax; Max-Age=0"
+        ],
+        [
+          "set-cookie",
+          "login_mode=; Path=/; SameSite=Lax; Max-Age=0"
+        ],
+        [
+          "set-cookie",
+          "mirror_token=; Path=/; SameSite=Lax; Max-Age=0; HttpOnly"
+        ],
+        [
+          "set-cookie",
+          "isolated_session=; Path=/; SameSite=Lax; Max-Age=0"
+        ],
+        [
+          "set-cookie",
+          "model_limits=; Path=/; SameSite=Lax; Max-Age=0"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "26"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "logout-alice",
+      "request_id": 57,
+      "status": 200
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "cookie",
+          "mirror_token=f29284a7450f45c9650454f9ba708a03121451974e9577c3fd7e0d60876fec4d"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "local-session",
+      "method": "GET",
+      "request_id": 59,
+      "url": "http://127.0.0.1:57904/api/auth/session"
+    },
+    {
+      "body": "{}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "2"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "local-session",
+      "request_id": 59,
+      "status": 200
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "cookie",
+          "mirror_token=d34cdaac83e3ccaa8b2039a678930f1bf5cf24e0636f19d2da7cec90fd2dbdfc"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "local-session",
+      "method": "GET",
+      "request_id": 61,
+      "url": "http://127.0.0.1:57904/api/auth/session"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"bob\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57870"
+        ],
+        [
+          "content-length",
+          "54"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "user-agent",
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "origin",
+          "http://127.0.0.1"
+        ],
+        [
+          "referer",
+          "http://127.0.0.1/"
+        ],
+        [
+          "authorization",
+          "Bearer coord-synthetic-access-bob"
+        ],
+        [
+          "host",
+          "127.0.0.1:57874"
+        ]
+      ],
+      "kind": "egress",
+      "method": "GET",
+      "role": "chat",
+      "uri": "/backend-api/accounts/check/v4-2023-04-27"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "user-agent",
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "origin",
+          "http://127.0.0.1"
+        ],
+        [
+          "referer",
+          "http://127.0.0.1/"
+        ],
+        [
+          "authorization",
+          "Bearer coord-synthetic-access-bob"
+        ],
+        [
+          "host",
+          "127.0.0.1:57874"
+        ]
+      ],
+      "kind": "egress",
+      "method": "GET",
+      "role": "chat",
+      "uri": "/backend-api/me"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"bob\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57870"
+        ],
+        [
+          "content-length",
+          "54"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"authProvider\":\"openai\",\"expires\":\"2099-12-31T23:59:59.000Z\",\"loginMode\":\"web\",\"planType\":\"plus\",\"user\":{\"email\":\"account-b@example.invalid\",\"id\":\"43fbae49403722569ed3497dd7f9f460c28b88402a91a99aef0ada4962d9caef\",\"image\":null,\"name\":\"account-b@example.invalid\",\"picture\":null}}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "278"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "local-session",
+      "request_id": 61,
+      "status": 200
+    }
+  ],
+  "panicking": false,
+  "test": "distinct_accounts"
+}

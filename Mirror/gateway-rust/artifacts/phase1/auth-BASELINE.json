@@ -1,0 +1,132 @@
+{
+  "label": "BASELINE",
+  "build": {
+    "command": [
+      "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo\\bin\\cargo.exe",
+      "build",
+      "--locked",
+      "--offline",
+      "--manifest-path",
+      "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\baseline-source\\Cargo.toml",
+      "--bin",
+      "mirror-gateway"
+    ],
+    "exit_status": 0,
+    "stdout": "",
+    "stderr": "    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.31s\n"
+  },
+  "build_environment": {
+    "CARGO_HOME": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo",
+    "RUSTUP_HOME": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\rustup",
+    "CARGO_TARGET_DIR": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-probe-targets\\baseline"
+  },
+  "binary_sha256": "bdce4cca38bfa655a5d235560c1d62a0f1953f46b46cac355e88a24c8f6f3c2d",
+  "command": [
+    "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-probe-targets\\baseline\\debug\\mirror-gateway.exe"
+  ],
+  "input": {
+    "path": "/api/auth/session",
+    "method": "GET",
+    "headers": {
+      "X-Mirror-Token": "synthetic-fixed-auth-probe-token"
+    },
+    "profile": "original",
+    "fixture_seed": "successful login followed by deterministic token hash in disposable DB; no source or production DB mutation"
+  },
+  "login": {
+    "status": 200,
+    "body": "{\"chatgpt_username\":\"fixture@example.invalid\",\"login_mode\":\"api\",\"login_url\":\"/api/not-login?user_gateway_token=3c001ab4a20c5136a06eb856e9e42a4dcd76d56da39422a3956af10516764eaa\",\"message\":\"登录成功\"}",
+    "input": {
+      "user_name": "alice",
+      "access_token": "synthetic-access-token",
+      "login_mode": "api",
+      "extra_cookies": [
+        {
+          "name": "fixture_extra",
+          "value": "synthetic"
+        }
+      ]
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "274"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 16:11:19 GMT"
+      ]
+    ],
+    "body": "{\"authProvider\":\"openai\",\"expires\":\"2099-12-31T23:59:59.000Z\",\"loginMode\":\"api\",\"planType\":\"free\",\"user\":{\"email\":\"fixture@example.invalid\",\"id\":\"cc6d96611cffa9f02c3626f0b9ee897dc171e2d540a5cae349d4ec316104997b\",\"image\":null,\"name\":\"fixture@example.invalid\",\"picture\":null}}"
+  },
+  "upstream": [],
+  "process": {
+    "stdout": "gateway listening on http://127.0.0.1:51371 (offline candidate; release gate incomplete)\n",
+    "stderr": "",
+    "exit_status": 1,
+    "termination": "fixture teardown"
+  }
+}

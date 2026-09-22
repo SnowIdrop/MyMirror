@@ -258,6 +258,58 @@ struct SessionCredentials {
     cookies: Vec<(String, String)>,
 }
 
+/// Observed auth/session refresh: accounts/check followed by me on every call.
+/// Snapshot only this token's credentials; never hold SQLite across upstream IO.
+pub(super) async fn refresh_auth_session(
+    app: &App,
+    session: &Session,
+    token: &str,
+) -> Result<Option<(String, String)>> {
+    let (credentials, mode) = {
+        let db = app.db.lock().await;
+        let row: Option<(String, String, String)> = db.conn.query_row(
+            "SELECT access_token,extra_cookies,login_mode FROM gateway_sessions WHERE user_name=?1 AND chatgpt_username=?2 AND mirror_token=?3",
+            params![session.user, session.account, sha256_hex(token)],
+            |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)),
+        ).optional()?;
+        let Some((access, cookies, mode)) = row else {
+            return Ok(None);
+        };
+        (SessionCredentials {
+            access_token: db.decrypt(&access)?,
+            cookies: parse_extra_cookies(&db.decrypt(&cookies)?),
+        }, mode)
+    };
+    let accounts = send_upstream(
+        app, Method::GET, HeaderMap::new(),
+        app.config.upstream.join("/backend-api/accounts/check/v4-2023-04-27")?,
+        Bytes::new(), &credentials,
+    ).await?;
+    // A failed plan lookup still refreshes me and displays free (observed fixture).
+    let plan = if accounts.status().is_success() {
+        let raw = to_bytes(upstream_parts(accounts).2, MAX_BODY).await?;
+        let value: Value = serde_json::from_slice(&raw)?;
+        value["accounts"]["default"]["account"]["plan_type"]
+            .as_str().filter(|plan| !plan.is_empty()).unwrap_or("free").to_owned()
+    } else {
+        "free".to_owned()
+    };
+    let user = send_upstream(
+        app, Method::GET, HeaderMap::new(), app.config.upstream.join(ME_PATH)?,
+        Bytes::new(), &credentials,
+    ).await?;
+    if !user.status().is_success() {
+        return Ok(None);
+    }
+    let raw = to_bytes(upstream_parts(user).2, MAX_BODY).await?;
+    let user: Value = serde_json::from_slice(&raw)?;
+    // A refresh cannot rebind an existing resource/session to another account.
+    if user["email"].as_str() != Some(session.account.as_str()) {
+        return Ok(None);
+    }
+    Ok(Some((mode, plan)))
+}
+
 async fn load_credentials(app: &App, session: &Session) -> Result<SessionCredentials> {
     let db = app.db.lock().await;
     let (access_token, extra_cookies): (String, String) = db.conn.query_row(

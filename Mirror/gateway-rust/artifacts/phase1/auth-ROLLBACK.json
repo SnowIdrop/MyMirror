@@ -1,0 +1,132 @@
+{
+  "label": "ROLLBACK",
+  "build": {
+    "command": [
+      "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo\\bin\\cargo.exe",
+      "build",
+      "--locked",
+      "--offline",
+      "--manifest-path",
+      "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\static-rollback-afxo_iog\\Cargo.toml",
+      "--bin",
+      "mirror-gateway"
+    ],
+    "exit_status": 0,
+    "stdout": "",
+    "stderr": "    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.29s\n"
+  },
+  "build_environment": {
+    "CARGO_HOME": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo",
+    "RUSTUP_HOME": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\rustup",
+    "CARGO_TARGET_DIR": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-probe-targets\\rollback"
+  },
+  "binary_sha256": "7f5b9cb7b6757878e7bcd5e46d4d59f59976e3c768831133f0f857a5a538f87e",
+  "command": [
+    "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-probe-targets\\rollback\\debug\\mirror-gateway.exe"
+  ],
+  "input": {
+    "path": "/api/auth/session",
+    "method": "GET",
+    "headers": {
+      "X-Mirror-Token": "synthetic-fixed-auth-probe-token"
+    },
+    "profile": "original",
+    "fixture_seed": "successful login followed by deterministic token hash in disposable DB; no source or production DB mutation"
+  },
+  "login": {
+    "status": 200,
+    "body": "{\"chatgpt_username\":\"fixture@example.invalid\",\"login_mode\":\"api\",\"login_url\":\"/api/not-login?user_gateway_token=290efa87927adb46bde7671af04e2e3c5faac2056678c704425a2667960ce721\",\"message\":\"登录成功\"}",
+    "input": {
+      "user_name": "alice",
+      "access_token": "synthetic-access-token",
+      "login_mode": "api",
+      "extra_cookies": [
+        {
+          "name": "fixture_extra",
+          "value": "synthetic"
+        }
+      ]
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "274"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 16:24:44 GMT"
+      ]
+    ],
+    "body": "{\"authProvider\":\"openai\",\"expires\":\"2099-12-31T23:59:59.000Z\",\"loginMode\":\"api\",\"planType\":\"free\",\"user\":{\"email\":\"fixture@example.invalid\",\"id\":\"cc6d96611cffa9f02c3626f0b9ee897dc171e2d540a5cae349d4ec316104997b\",\"image\":null,\"name\":\"fixture@example.invalid\",\"picture\":null}}"
+  },
+  "upstream": [],
+  "process": {
+    "stdout": "gateway listening on http://127.0.0.1:61269 (offline candidate; release gate incomplete)\n",
+    "stderr": "",
+    "exit_status": 1,
+    "termination": "fixture teardown"
+  }
+}

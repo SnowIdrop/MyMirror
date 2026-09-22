@@ -1,0 +1,11 @@
+   Compiling mirror-gateway v0.1.0 (E:\M\Project\MiRebuild\Mirror\gateway-rust\artifacts\phase1\source)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 6.47s
+     Running tests\auth_refresh.rs (.build\phase1-candidate-tests\debug\deps\auth_refresh-b9a0befcc8e8089f.exe)
+
+running 3 tests
+test refreshes_account_then_me_on_every_request ... ok
+test preserves_observed_failure_shapes_without_rebinding_accounts ... ok
+test revocation_completes_during_network_wait_and_invalidates_refresh_result ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+

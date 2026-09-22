@@ -4,3 +4,10 @@
 # Literal execution evidence: preserve bytes, including whitespace and CRLF.
 evidence/** -text -whitespace
 artifacts/VERIFICATION.txt -text -whitespace
+artifacts/phase1/*.json -text -whitespace
+artifacts/phase1/*.patch -text -whitespace
+artifacts/phase1/*.log -text -whitespace
+artifacts/phase1/VERIFICATION.txt -text -whitespace
+artifacts/phase1/page-*/** -text -whitespace
+artifacts/phase1/history/** -text -whitespace
+artifacts/phase1/integrations/** -text -whitespace

@@ -1,0 +1,4475 @@
+{
+  "events": [
+    {
+      "cdn-unwired": "http://127.0.0.1:57889",
+      "chat": "http://127.0.0.1:57878",
+      "client-target-decoy": "http://127.0.0.1:57896",
+      "database": "C:\\Users\\Administrator\\AppData\\Local\\Temp\\.tmpcg5NWc\\db.sqlite",
+      "django": "http://127.0.0.1:57871",
+      "evidence_level": "synthetic loopback HTTP; owner auth refresh and closed-page candidate",
+      "gateway": "http://127.0.0.1:57921",
+      "kind": "setup"
+    },
+    {
+      "body": "{\"access_token\":\"coord-synthetic-access-alice\",\"authorization\":\"coord-signature-v1\",\"daily_quota\":20,\"isolated_session\":true,\"limits\":[],\"login_mode\":\"api\",\"mcp_allowed_ids\":[],\"mcp_isolation\":true,\"model_allowed_ids\":[\"fixture-model\"],\"model_isolation\":true,\"model_rate_limits\":{},\"monthly_quota\":100,\"skills_allowed_ids\":[],\"skills_isolation\":true,\"user_name\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "service-login",
+      "method": "POST",
+      "request_id": 1,
+      "url": "http://127.0.0.1:57921/api/login"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57871"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-access-alice"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57878"
+        ]
+      ],
+      "kind": "egress",
+      "method": "GET",
+      "role": "chat",
+      "uri": "/backend-api/me"
+    },
+    {
+      "body": "{\"chatgpt_username\":\"account-a@example.invalid\",\"login_mode\":\"api\",\"login_url\":\"/api/not-login?user_gateway_token=c894d486852112fba6848ca322f2aeeecea6c5dedfeea3f766727a760d6affb7\",\"message\":\"登录成功\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "set-cookie",
+          "mirror_token=c894d486852112fba6848ca322f2aeeecea6c5dedfeea3f766727a760d6affb7; Path=/; SameSite=Lax; Max-Age=604800; HttpOnly"
+        ],
+        [
+          "set-cookie",
+          "access_token=; Path=/; SameSite=Lax; Max-Age=0; HttpOnly"
+        ],
+        [
+          "set-cookie",
+          "session_token=; Path=/; SameSite=Lax; Max-Age=0; HttpOnly"
+        ],
+        [
+          "set-cookie",
+          "next-auth.session-token=; Path=/; SameSite=Lax; Max-Age=0; HttpOnly"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "205"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "service-login",
+      "request_id": 1,
+      "status": 200
+    },
+    {
+      "body": null,
+      "headers": [],
+      "kind": "client_request",
+      "label": "GET /external authenticated=false",
+      "method": "GET",
+      "request_id": 5,
+      "url": "http://127.0.0.1:57921/external?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"message\":\"未登录\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "23"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "GET /external authenticated=false",
+      "request_id": 5,
+      "status": 401
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "x-mirror-token",
+          "c894d486852112fba6848ca322f2aeeecea6c5dedfeea3f766727a760d6affb7"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "GET /external authenticated=true",
+      "method": "GET",
+      "request_id": 7,
+      "url": "http://127.0.0.1:57921/external?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57871"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"message\":\"聊天代理兼容门禁尚未通过，候选制品未启用此路径\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "83"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "GET /external authenticated=true",
+      "request_id": 7,
+      "status": 503
+    },
+    {
+      "body": null,
+      "headers": [],
+      "kind": "client_request",
+      "label": "POST /external authenticated=false",
+      "method": "POST",
+      "request_id": 10,
+      "url": "http://127.0.0.1:57921/external?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"message\":\"未登录\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "23"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "POST /external authenticated=false",
+      "request_id": 10,
+      "status": 401
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "x-mirror-token",
+          "c894d486852112fba6848ca322f2aeeecea6c5dedfeea3f766727a760d6affb7"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "POST /external authenticated=true",
+      "method": "POST",
+      "request_id": 12,
+      "url": "http://127.0.0.1:57921/external?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57871"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"message\":\"聊天代理兼容门禁尚未通过，候选制品未启用此路径\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "83"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "POST /external authenticated=true",
+      "request_id": 12,
+      "status": 503
+    },
+    {
+      "body": null,
+      "headers": [],
+      "kind": "client_request",
+      "label": "GET /external/unknown.js authenticated=false",
+      "method": "GET",
+      "request_id": 15,
+      "url": "http://127.0.0.1:57921/external/unknown.js?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"message\":\"未登录\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "23"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "GET /external/unknown.js authenticated=false",
+      "request_id": 15,
+      "status": 401
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "x-mirror-token",
+          "c894d486852112fba6848ca322f2aeeecea6c5dedfeea3f766727a760d6affb7"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "GET /external/unknown.js authenticated=true",
+      "method": "GET",
+      "request_id": 17,
+      "url": "http://127.0.0.1:57921/external/unknown.js?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57871"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"message\":\"聊天代理兼容门禁尚未通过，候选制品未启用此路径\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "83"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "GET /external/unknown.js authenticated=true",
+      "request_id": 17,
+      "status": 503
+    },
+    {
+      "body": null,
+      "headers": [],
+      "kind": "client_request",
+      "label": "POST /external/unknown.js authenticated=false",
+      "method": "POST",
+      "request_id": 20,
+      "url": "http://127.0.0.1:57921/external/unknown.js?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"message\":\"未登录\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "23"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "POST /external/unknown.js authenticated=false",
+      "request_id": 20,
+      "status": 401
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "x-mirror-token",
+          "c894d486852112fba6848ca322f2aeeecea6c5dedfeea3f766727a760d6affb7"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "POST /external/unknown.js authenticated=true",
+      "method": "POST",
+      "request_id": 22,
+      "url": "http://127.0.0.1:57921/external/unknown.js?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57871"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"message\":\"聊天代理兼容门禁尚未通过，候选制品未启用此路径\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "83"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "POST /external/unknown.js authenticated=true",
+      "request_id": 22,
+      "status": 503
+    },
+    {
+      "body": null,
+      "headers": [],
+      "kind": "client_request",
+      "label": "GET /external/http://127.0.0.1/unknown authenticated=false",
+      "method": "GET",
+      "request_id": 25,
+      "url": "http://127.0.0.1:57921/external/http://127.0.0.1/unknown?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"message\":\"未登录\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "23"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "GET /external/http://127.0.0.1/unknown authenticated=false",
+      "request_id": 25,
+      "status": 401
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "x-mirror-token",
+          "c894d486852112fba6848ca322f2aeeecea6c5dedfeea3f766727a760d6affb7"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "GET /external/http://127.0.0.1/unknown authenticated=true",
+      "method": "GET",
+      "request_id": 27,
+      "url": "http://127.0.0.1:57921/external/http://127.0.0.1/unknown?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57871"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"message\":\"聊天代理兼容门禁尚未通过，候选制品未启用此路径\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "83"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "GET /external/http://127.0.0.1/unknown authenticated=true",
+      "request_id": 27,
+      "status": 503
+    },
+    {
+      "body": null,
+      "headers": [],
+      "kind": "client_request",
+      "label": "POST /external/http://127.0.0.1/unknown authenticated=false",
+      "method": "POST",
+      "request_id": 30,
+      "url": "http://127.0.0.1:57921/external/http://127.0.0.1/unknown?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"message\":\"未登录\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "23"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "POST /external/http://127.0.0.1/unknown authenticated=false",
+      "request_id": 30,
+      "status": 401
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "x-mirror-token",
+          "c894d486852112fba6848ca322f2aeeecea6c5dedfeea3f766727a760d6affb7"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "POST /external/http://127.0.0.1/unknown authenticated=true",
+      "method": "POST",
+      "request_id": 32,
+      "url": "http://127.0.0.1:57921/external/http://127.0.0.1/unknown?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57871"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"message\":\"聊天代理兼容门禁尚未通过，候选制品未启用此路径\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "83"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "POST /external/http://127.0.0.1/unknown authenticated=true",
+      "request_id": 32,
+      "status": 503
+    },
+    {
+      "body": null,
+      "headers": [],
+      "kind": "client_request",
+      "label": "GET /internal-upstream authenticated=false",
+      "method": "GET",
+      "request_id": 35,
+      "url": "http://127.0.0.1:57921/internal-upstream?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"message\":\"未登录\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "23"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "GET /internal-upstream authenticated=false",
+      "request_id": 35,
+      "status": 401
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "x-mirror-token",
+          "c894d486852112fba6848ca322f2aeeecea6c5dedfeea3f766727a760d6affb7"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "GET /internal-upstream authenticated=true",
+      "method": "GET",
+      "request_id": 37,
+      "url": "http://127.0.0.1:57921/internal-upstream?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57871"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"message\":\"聊天代理兼容门禁尚未通过，候选制品未启用此路径\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "83"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "GET /internal-upstream authenticated=true",
+      "request_id": 37,
+      "status": 503
+    },
+    {
+      "body": null,
+      "headers": [],
+      "kind": "client_request",
+      "label": "POST /internal-upstream authenticated=false",
+      "method": "POST",
+      "request_id": 40,
+      "url": "http://127.0.0.1:57921/internal-upstream?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"message\":\"未登录\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "23"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "POST /internal-upstream authenticated=false",
+      "request_id": 40,
+      "status": 401
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "x-mirror-token",
+          "c894d486852112fba6848ca322f2aeeecea6c5dedfeea3f766727a760d6affb7"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "POST /internal-upstream authenticated=true",
+      "method": "POST",
+      "request_id": 42,
+      "url": "http://127.0.0.1:57921/internal-upstream?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57871"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"message\":\"聊天代理兼容门禁尚未通过，候选制品未启用此路径\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "83"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "POST /internal-upstream authenticated=true",
+      "request_id": 42,
+      "status": 503
+    },
+    {
+      "body": null,
+      "headers": [],
+      "kind": "client_request",
+      "label": "GET /internal-upstream/backend-api/me authenticated=false",
+      "method": "GET",
+      "request_id": 45,
+      "url": "http://127.0.0.1:57921/internal-upstream/backend-api/me?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"message\":\"未登录\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "23"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "GET /internal-upstream/backend-api/me authenticated=false",
+      "request_id": 45,
+      "status": 401
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "x-mirror-token",
+          "c894d486852112fba6848ca322f2aeeecea6c5dedfeea3f766727a760d6affb7"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "GET /internal-upstream/backend-api/me authenticated=true",
+      "method": "GET",
+      "request_id": 47,
+      "url": "http://127.0.0.1:57921/internal-upstream/backend-api/me?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57871"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"message\":\"聊天代理兼容门禁尚未通过，候选制品未启用此路径\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "83"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "GET /internal-upstream/backend-api/me authenticated=true",
+      "request_id": 47,
+      "status": 503
+    },
+    {
+      "body": null,
+      "headers": [],
+      "kind": "client_request",
+      "label": "POST /internal-upstream/backend-api/me authenticated=false",
+      "method": "POST",
+      "request_id": 50,
+      "url": "http://127.0.0.1:57921/internal-upstream/backend-api/me?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"message\":\"未登录\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "23"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "POST /internal-upstream/backend-api/me authenticated=false",
+      "request_id": 50,
+      "status": 401
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "x-mirror-token",
+          "c894d486852112fba6848ca322f2aeeecea6c5dedfeea3f766727a760d6affb7"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "POST /internal-upstream/backend-api/me authenticated=true",
+      "method": "POST",
+      "request_id": 52,
+      "url": "http://127.0.0.1:57921/internal-upstream/backend-api/me?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57871"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"message\":\"聊天代理兼容门禁尚未通过，候选制品未启用此路径\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "83"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "POST /internal-upstream/backend-api/me authenticated=true",
+      "request_id": 52,
+      "status": 503
+    },
+    {
+      "body": null,
+      "headers": [],
+      "kind": "client_request",
+      "label": "GET / authenticated=false",
+      "method": "GET",
+      "request_id": 55,
+      "url": "http://127.0.0.1:57921/?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"message\":\"未登录\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "23"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "GET / authenticated=false",
+      "request_id": 55,
+      "status": 401
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "x-mirror-token",
+          "c894d486852112fba6848ca322f2aeeecea6c5dedfeea3f766727a760d6affb7"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "GET / authenticated=true",
+      "method": "GET",
+      "request_id": 57,
+      "url": "http://127.0.0.1:57921/?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57871"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"message\":\"聊天代理兼容门禁尚未通过，候选制品未启用此路径\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "83"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "GET / authenticated=true",
+      "request_id": 57,
+      "status": 503
+    },
+    {
+      "body": null,
+      "headers": [],
+      "kind": "client_request",
+      "label": "POST / authenticated=false",
+      "method": "POST",
+      "request_id": 60,
+      "url": "http://127.0.0.1:57921/?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"message\":\"未登录\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "23"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "POST / authenticated=false",
+      "request_id": 60,
+      "status": 401
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "x-mirror-token",
+          "c894d486852112fba6848ca322f2aeeecea6c5dedfeea3f766727a760d6affb7"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "POST / authenticated=true",
+      "method": "POST",
+      "request_id": 62,
+      "url": "http://127.0.0.1:57921/?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57871"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"message\":\"聊天代理兼容门禁尚未通过，候选制品未启用此路径\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "83"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "POST / authenticated=true",
+      "request_id": 62,
+      "status": 503
+    },
+    {
+      "body": null,
+      "headers": [],
+      "kind": "client_request",
+      "label": "GET /c/coord-guessed-resource authenticated=false",
+      "method": "GET",
+      "request_id": 65,
+      "url": "http://127.0.0.1:57921/c/coord-guessed-resource?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"message\":\"未登录\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "23"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "GET /c/coord-guessed-resource authenticated=false",
+      "request_id": 65,
+      "status": 401
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "x-mirror-token",
+          "c894d486852112fba6848ca322f2aeeecea6c5dedfeea3f766727a760d6affb7"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "GET /c/coord-guessed-resource authenticated=true",
+      "method": "GET",
+      "request_id": 67,
+      "url": "http://127.0.0.1:57921/c/coord-guessed-resource?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57871"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"message\":\"聊天代理兼容门禁尚未通过，候选制品未启用此路径\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "83"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "GET /c/coord-guessed-resource authenticated=true",
+      "request_id": 67,
+      "status": 503
+    },
+    {
+      "body": null,
+      "headers": [],
+      "kind": "client_request",
+      "label": "POST /c/coord-guessed-resource authenticated=false",
+      "method": "POST",
+      "request_id": 70,
+      "url": "http://127.0.0.1:57921/c/coord-guessed-resource?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"message\":\"未登录\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "23"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "POST /c/coord-guessed-resource authenticated=false",
+      "request_id": 70,
+      "status": 401
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "x-mirror-token",
+          "c894d486852112fba6848ca322f2aeeecea6c5dedfeea3f766727a760d6affb7"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "POST /c/coord-guessed-resource authenticated=true",
+      "method": "POST",
+      "request_id": 72,
+      "url": "http://127.0.0.1:57921/c/coord-guessed-resource?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57871"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"message\":\"聊天代理兼容门禁尚未通过，候选制品未启用此路径\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "83"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "POST /c/coord-guessed-resource authenticated=true",
+      "request_id": 72,
+      "status": 503
+    },
+    {
+      "body": null,
+      "headers": [],
+      "kind": "client_request",
+      "label": "GET /_next/data/coord-guessed-build/index.json authenticated=false",
+      "method": "GET",
+      "request_id": 75,
+      "url": "http://127.0.0.1:57921/_next/data/coord-guessed-build/index.json?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"message\":\"未登录\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "23"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "GET /_next/data/coord-guessed-build/index.json authenticated=false",
+      "request_id": 75,
+      "status": 401
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "x-mirror-token",
+          "c894d486852112fba6848ca322f2aeeecea6c5dedfeea3f766727a760d6affb7"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "GET /_next/data/coord-guessed-build/index.json authenticated=true",
+      "method": "GET",
+      "request_id": 77,
+      "url": "http://127.0.0.1:57921/_next/data/coord-guessed-build/index.json?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57871"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"message\":\"聊天代理兼容门禁尚未通过，候选制品未启用此路径\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "83"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "GET /_next/data/coord-guessed-build/index.json authenticated=true",
+      "request_id": 77,
+      "status": 503
+    },
+    {
+      "body": null,
+      "headers": [],
+      "kind": "client_request",
+      "label": "POST /_next/data/coord-guessed-build/index.json authenticated=false",
+      "method": "POST",
+      "request_id": 80,
+      "url": "http://127.0.0.1:57921/_next/data/coord-guessed-build/index.json?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"message\":\"未登录\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "23"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "POST /_next/data/coord-guessed-build/index.json authenticated=false",
+      "request_id": 80,
+      "status": 401
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "x-mirror-token",
+          "c894d486852112fba6848ca322f2aeeecea6c5dedfeea3f766727a760d6affb7"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "POST /_next/data/coord-guessed-build/index.json authenticated=true",
+      "method": "POST",
+      "request_id": 82,
+      "url": "http://127.0.0.1:57921/_next/data/coord-guessed-build/index.json?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57871"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"message\":\"聊天代理兼容门禁尚未通过，候选制品未启用此路径\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "83"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "POST /_next/data/coord-guessed-build/index.json authenticated=true",
+      "request_id": 82,
+      "status": 503
+    },
+    {
+      "body": null,
+      "headers": [],
+      "kind": "client_request",
+      "label": "GET /backend-api/conversation/coord-guessed-resource authenticated=false",
+      "method": "GET",
+      "request_id": 85,
+      "url": "http://127.0.0.1:57921/backend-api/conversation/coord-guessed-resource?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"message\":\"未登录\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "23"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "GET /backend-api/conversation/coord-guessed-resource authenticated=false",
+      "request_id": 85,
+      "status": 401
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "x-mirror-token",
+          "c894d486852112fba6848ca322f2aeeecea6c5dedfeea3f766727a760d6affb7"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "GET /backend-api/conversation/coord-guessed-resource authenticated=true",
+      "method": "GET",
+      "request_id": 87,
+      "url": "http://127.0.0.1:57921/backend-api/conversation/coord-guessed-resource?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57871"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"message\":\"聊天代理兼容门禁尚未通过，候选制品未启用此路径\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "83"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "GET /backend-api/conversation/coord-guessed-resource authenticated=true",
+      "request_id": 87,
+      "status": 503
+    },
+    {
+      "body": null,
+      "headers": [],
+      "kind": "client_request",
+      "label": "POST /backend-api/conversation/coord-guessed-resource authenticated=false",
+      "method": "POST",
+      "request_id": 90,
+      "url": "http://127.0.0.1:57921/backend-api/conversation/coord-guessed-resource?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"message\":\"未登录\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "23"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "POST /backend-api/conversation/coord-guessed-resource authenticated=false",
+      "request_id": 90,
+      "status": 401
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "x-mirror-token",
+          "c894d486852112fba6848ca322f2aeeecea6c5dedfeea3f766727a760d6affb7"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "POST /backend-api/conversation/coord-guessed-resource authenticated=true",
+      "method": "POST",
+      "request_id": 92,
+      "url": "http://127.0.0.1:57921/backend-api/conversation/coord-guessed-resource?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57871"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"message\":\"聊天代理兼容门禁尚未通过，候选制品未启用此路径\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "83"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "POST /backend-api/conversation/coord-guessed-resource authenticated=true",
+      "request_id": 92,
+      "status": 503
+    },
+    {
+      "body": null,
+      "headers": [],
+      "kind": "client_request",
+      "label": "GET /backend-api/coord-unknown authenticated=false",
+      "method": "GET",
+      "request_id": 95,
+      "url": "http://127.0.0.1:57921/backend-api/coord-unknown?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"message\":\"未登录\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "23"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "GET /backend-api/coord-unknown authenticated=false",
+      "request_id": 95,
+      "status": 401
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "x-mirror-token",
+          "c894d486852112fba6848ca322f2aeeecea6c5dedfeea3f766727a760d6affb7"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "GET /backend-api/coord-unknown authenticated=true",
+      "method": "GET",
+      "request_id": 97,
+      "url": "http://127.0.0.1:57921/backend-api/coord-unknown?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57871"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"message\":\"聊天代理兼容门禁尚未通过，候选制品未启用此路径\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "83"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "GET /backend-api/coord-unknown authenticated=true",
+      "request_id": 97,
+      "status": 503
+    },
+    {
+      "body": null,
+      "headers": [],
+      "kind": "client_request",
+      "label": "POST /backend-api/coord-unknown authenticated=false",
+      "method": "POST",
+      "request_id": 100,
+      "url": "http://127.0.0.1:57921/backend-api/coord-unknown?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"message\":\"未登录\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "23"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "POST /backend-api/coord-unknown authenticated=false",
+      "request_id": 100,
+      "status": 401
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "x-mirror-token",
+          "c894d486852112fba6848ca322f2aeeecea6c5dedfeea3f766727a760d6affb7"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "POST /backend-api/coord-unknown authenticated=true",
+      "method": "POST",
+      "request_id": 102,
+      "url": "http://127.0.0.1:57921/backend-api/coord-unknown?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "{\"authorization\":\"coord-signature-v1\",\"subject\":\"alice\"}",
+      "headers": [
+        [
+          "authorization",
+          "Bearer coord-synthetic-admin-secret-0001"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "accept",
+          "*/*"
+        ],
+        [
+          "host",
+          "127.0.0.1:57871"
+        ],
+        [
+          "content-length",
+          "56"
+        ]
+      ],
+      "kind": "egress",
+      "method": "POST",
+      "role": "django",
+      "uri": "/0x/user/gateway-authorization"
+    },
+    {
+      "body": "{\"message\":\"聊天代理兼容门禁尚未通过，候选制品未启用此路径\"}",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "83"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "POST /backend-api/coord-unknown authenticated=true",
+      "request_id": 102,
+      "status": 503
+    },
+    {
+      "body": null,
+      "headers": [],
+      "kind": "client_request",
+      "label": "GET /api/coord-unknown authenticated=false",
+      "method": "GET",
+      "request_id": 105,
+      "url": "http://127.0.0.1:57921/api/coord-unknown?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "cache-control",
+          "no-cache"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "0"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "GET /api/coord-unknown authenticated=false",
+      "request_id": 105,
+      "status": 404
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "x-mirror-token",
+          "c894d486852112fba6848ca322f2aeeecea6c5dedfeea3f766727a760d6affb7"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "GET /api/coord-unknown authenticated=true",
+      "method": "GET",
+      "request_id": 107,
+      "url": "http://127.0.0.1:57921/api/coord-unknown?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "cache-control",
+          "no-cache"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "0"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "GET /api/coord-unknown authenticated=true",
+      "request_id": 107,
+      "status": 404
+    },
+    {
+      "body": null,
+      "headers": [],
+      "kind": "client_request",
+      "label": "POST /api/coord-unknown authenticated=false",
+      "method": "POST",
+      "request_id": 109,
+      "url": "http://127.0.0.1:57921/api/coord-unknown?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "cache-control",
+          "no-cache"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "0"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "POST /api/coord-unknown authenticated=false",
+      "request_id": 109,
+      "status": 404
+    },
+    {
+      "body": null,
+      "headers": [
+        [
+          "x-mirror-token",
+          "c894d486852112fba6848ca322f2aeeecea6c5dedfeea3f766727a760d6affb7"
+        ]
+      ],
+      "kind": "client_request",
+      "label": "POST /api/coord-unknown authenticated=true",
+      "method": "POST",
+      "request_id": 111,
+      "url": "http://127.0.0.1:57921/api/coord-unknown?url=http%3A%2F%2F127.0.0.1%3A57896&target=http%3A%2F%2F127.0.0.1%3A57896"
+    },
+    {
+      "body": "",
+      "headers": [
+        [
+          "cache-control",
+          "no-cache"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "0"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 16:23:23 GMT"
+        ]
+      ],
+      "kind": "client_response",
+      "label": "POST /api/coord-unknown authenticated=true",
+      "request_id": 111,
+      "status": 404
+    }
+  ],
+  "panicking": false,
+  "test": "unknown_route_matrix"
+}

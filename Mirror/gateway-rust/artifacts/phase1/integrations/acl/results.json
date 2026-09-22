@@ -1,0 +1,241 @@
+{
+  "status": "isolated_implementation_verified_not_integrated",
+  "commit": "b837ba2556bc3363570d247e61246e6b8f43421c",
+  "source": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coord-input\\Mirror\\gateway-rust\\artifacts\\phase1\\source",
+  "roles": {
+    "MODIFIED_FILE": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\MODIFIED_FILE.zip",
+    "DIFF_FILE": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\DIFF_FILE.patch",
+    "VERIFICATION": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\VERIFICATION.txt",
+    "ROLLBACK": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\ROLLBACK.sh"
+  },
+  "hashes": {
+    "BASELINE.zip": "6364509a6f79f7739e63cc24ec7c9e1e0cf33953c30c9546149f1100674d6585",
+    "MODIFIED_FILE.zip": "3d5b43797e945f26cc69723ba3ef526483179e4448bacd039b657f499ed4e695",
+    "ROLLBACK_COPY.zip": "6364509a6f79f7739e63cc24ec7c9e1e0cf33953c30c9546149f1100674d6585",
+    "DIFF_FILE.patch": "5c678238cda0235aeac30fb0d84ddf3a800ab0bacf6502f3d4ceb5f03b7c5ce1",
+    "ROLLBACK.sh": "a364b4bfca90ad45c86d228461decae56ae474fc1669559644cd6c5f70b8f359",
+    "src/resource_acl.rs": "80ee34100574d8b746905ae71ea42b67d25c13410e247b4408e47db4ea0caa39",
+    "tests/coord_acl_contract.rs": "8b06f74d703632fce6546d0b5463d50c8f830d81547f605ce4e8f180b419dbfa"
+  },
+  "original_files_unchanged": 28,
+  "additions": [
+    "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coord-input\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\src\\resource_acl.rs",
+    "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coord-input\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\tests\\coord_acl_contract.rs"
+  ],
+  "tests": 28,
+  "evidence_level": "local synthetic SQLite and offline compiler; no real upstream acceptance",
+  "implemented": [
+    "strict trusted identity boundary",
+    "creation-only registration boundary",
+    "immutable account and ownership",
+    "private and unknown-resource policy",
+    "admin-only sharing",
+    "recipient action checks",
+    "dynamic project inheritance",
+    "connector noninheritance",
+    "old-resource expansion guard",
+    "transactional success audit"
+  ],
+  "not_implemented": [
+    "Django identity fields",
+    "public login/routes/ACL wiring",
+    "resource queries and management filters",
+    "trusted upstream create adapter",
+    "realtime disconnect/reliable outbox",
+    "generation mutex",
+    "new database boot/backup integration",
+    "real-user/upstream acceptance"
+  ],
+  "commands": [
+    {
+      "label": "DIFF_ISOLATED_REPOSITORY",
+      "command": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\verification-verified-final\\patched-source",
+      "stdout": "",
+      "stderr": "",
+      "exit_status": 0,
+      "expected_exit": 0,
+      "passed": true
+    },
+    {
+      "label": "DIFF_CHECK",
+      "command": [
+        "git",
+        "-c",
+        "core.autocrlf=false",
+        "apply",
+        "--check",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\DIFF_FILE.patch"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\verification-verified-final\\patched-source",
+      "stdout": "",
+      "stderr": "",
+      "exit_status": 0,
+      "expected_exit": 0,
+      "passed": true
+    },
+    {
+      "label": "DIFF_REAPPLY",
+      "command": [
+        "git",
+        "-c",
+        "core.autocrlf=false",
+        "apply",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\DIFF_FILE.patch"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\verification-verified-final\\patched-source",
+      "stdout": "",
+      "stderr": "",
+      "exit_status": 0,
+      "expected_exit": 0,
+      "passed": true
+    },
+    {
+      "label": "BASELINE",
+      "command": [
+        "C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\run_gate.py",
+        "--source",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\verification-verified-final\\baseline-source"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild",
+      "stdout": "ACL_CONTRACT_V1_UNAVAILABLE: resource_acl module absent\r\n",
+      "stderr": "",
+      "exit_status": 3,
+      "expected_exit": 3,
+      "passed": true
+    },
+    {
+      "label": "MODIFIED",
+      "command": [
+        "C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\run_gate.py",
+        "--source",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coord-input\\Mirror\\gateway-rust\\artifacts\\phase1\\source"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild",
+      "stdout": "COMMAND=['E:\\\\M\\\\Project\\\\MiRebuild\\\\Mirror\\\\gateway-rust\\\\.build\\\\phase1-toolchain\\\\cargo\\\\bin\\\\cargo.exe', 'test', '--locked', '--offline', '--manifest-path', 'C:\\\\Users\\\\Administrator\\\\.codex\\\\worktrees\\\\24c5\\\\MiRebuild\\\\coord-input\\\\Mirror\\\\gateway-rust\\\\artifacts\\\\phase1\\\\source\\\\Cargo.toml', '--test', 'coord_acl_contract', '--', '--test-threads=1']\r\n\nrunning 28 tests\ntest account_namespace_cannot_be_changed_and_cross_account_links_fail ... ok\ntest acl_survives_reopen_without_importing_legacy_state ... ok\ntest administrative_demotion_and_version_change_reject_pinned_admin ... ok\ntest attaching_old_content_to_a_different_project_owner_expands_visibility ... ok\ntest attaching_old_private_resource_with_new_viewers_requires_admin ... ok\ntest audit_contains_real_actor_and_is_admin_only ... ok\ntest audit_failure_rolls_back_acl_mutation_instead_of_granting ... ok\ntest connector_metadata_link_does_not_expand_visibility ... ok\ntest connector_permissions_never_inherit_from_project ... ok\ntest direct_share_survives_project_revocation_and_does_not_allow_reshare ... ok\ntest duplicate_resource_or_creation_receipt_never_reassigns_owner ... ok\ntest every_resource_kind_is_private_and_only_conversations_can_continue ... ok\ntest failed_create_records_nothing_and_unknown_is_admin_read_only ... ok\ntest fresh_version_role_user_subject_and_expiry_are_rechecked ... ok\ntest invalid_associations_and_inputs_fail_before_commit ... ok\ntest moving_between_projects_compares_entire_audience_and_rolls_back ... ok\ntest nonexpanding_move_and_detach_are_allowed_without_admin ... ok\ntest only_administrator_can_grant_and_revoke_even_owner_cannot_reshare ... ok\ntest project_owner_inherits_new_content_created_by_a_recipient ... ok\ntest projects_dynamically_share_existing_and_future_content ... ok\ntest revoke_rejects_next_check_and_returns_invalidation_intent ... ok\ntest separate_connections_observe_revoke_on_the_next_authorization ... ok\ntest sqlite_trigger_prevents_rebinding_even_with_direct_update ... ok\ntest successful_create_is_private_and_owner_can_read_modify_delete_continue ... ok\ntest trusted_identity_is_strict_and_wire_version_stays_opaque ... ok\ntest unknown_parent_or_unprivileged_parent_cannot_register_a_child ... ok\ntest user_ids_must_be_canonical_positive_decimal_strings ... ok\ntest visitor_missing_identity_and_service_key_do_not_supply_an_actor ... ok\n\ntest result: ok. 28 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s\n\n",
+      "stderr": "   Compiling mirror-gateway v0.1.0 (C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coord-input\\Mirror\\gateway-rust\\artifacts\\phase1\\source)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.90s\n     Running tests\\coord_acl_contract.rs (coordination\\acl\\build\\debug\\deps\\coord_acl_contract-35260a1c549e44ca.exe)\n",
+      "exit_status": 0,
+      "expected_exit": 0,
+      "passed": true
+    },
+    {
+      "label": "CLIPPY",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo\\bin\\cargo.exe",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coord-input\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\Cargo.toml",
+        "--test",
+        "coord_acl_contract",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild",
+      "stdout": "",
+      "stderr": "    Checking mirror-gateway v0.1.0 (C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coord-input\\Mirror\\gateway-rust\\artifacts\\phase1\\source)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.42s\n",
+      "exit_status": 0,
+      "expected_exit": 0,
+      "passed": true
+    },
+    {
+      "label": "RUSTFMT_CHECK",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo\\bin\\rustfmt.exe",
+        "--edition",
+        "2021",
+        "--check",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coord-input\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\src\\resource_acl.rs",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coord-input\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\tests\\coord_acl_contract.rs"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild",
+      "stdout": "",
+      "stderr": "",
+      "exit_status": 0,
+      "expected_exit": 0,
+      "passed": true
+    },
+    {
+      "label": "ROLLBACK_EXECUTABLE",
+      "command": [
+        "E:\\T\\Git2026_6\\bin\\sh.exe",
+        "-c",
+        "chmod +x \"$1\" && test -x \"$1\"",
+        "sh",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\ROLLBACK.sh"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild",
+      "stdout": "",
+      "stderr": "",
+      "exit_status": 0,
+      "expected_exit": 0,
+      "passed": true
+    },
+    {
+      "label": "ROLLBACK_SCRIPT",
+      "command": [
+        "E:\\T\\Git2026_6\\bin\\sh.exe",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\ROLLBACK.sh",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\verification-verified-final\\ROLLBACK_COPY.zip"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild",
+      "stdout": "ROLLBACK_RESTORED_PRISTINE_ARCHIVE\n",
+      "stderr": "",
+      "exit_status": 0,
+      "expected_exit": 0,
+      "passed": true
+    },
+    {
+      "label": "ROLLBACK",
+      "command": [
+        "C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\run_gate.py",
+        "--source",
+        "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\verification-verified-final\\rollback-source"
+      ],
+      "cwd": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild",
+      "stdout": "ACL_CONTRACT_V1_UNAVAILABLE: resource_acl module absent\r\n",
+      "stderr": "",
+      "exit_status": 3,
+      "expected_exit": 3,
+      "passed": true
+    }
+  ],
+  "reopened_roles": [
+    "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\MODIFIED_FILE.zip",
+    "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\DIFF_FILE.patch",
+    "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\VERIFICATION.txt",
+    "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\ROLLBACK.sh"
+  ],
+  "rollback_matches_original": true,
+  "diff_rebuild_matches_modified": true,
+  "preparation_records": [
+    "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\baseline.json",
+    "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\modified-attempt1.json",
+    "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\preparation-errors.json",
+    "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\validation-attempt1.error.txt",
+    "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\validation-attempt2.json"
+  ],
+  "report": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\REPORT.md",
+  "contract": "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\CONTRACT_V1.md",
+  "defensive_review": "removed two redundant known-resource reads; reran 28 tests, clippy, rustfmt, diff reconstruction and rollback",
+  "integration_owner": "01a0c9af-fab7-7780-af7f-537dde662636",
+  "controller_command": {
+    "command": [
+      "C:/Users/Administrator/AppData/Local/Programs/Python/Python314/python.exe",
+      "C:\\Users\\Administrator\\.codex\\worktrees\\24c5\\MiRebuild\\coordination\\acl\\validate_delivery.py",
+      "--run-id",
+      "verified-final"
+    ],
+    "gate": "isolated_acl_contract_v1",
+    "status": "completed"
+  }
+}

@@ -1,11 +1,13 @@
 """Same-input static proxy observation against a supplied source copy; loopback only."""
 import hashlib
+from contextlib import closing
 import http.client
 import http.server
 import json
 import os
 from pathlib import Path
 import socket
+import sqlite3
 import subprocess
 import sys
 import tempfile
@@ -16,6 +18,7 @@ here = Path(__file__).resolve().parent
 root = here.parent.parent
 source = Path(sys.argv[1]).resolve()
 label = sys.argv[2]
+kind = sys.argv[3] if len(sys.argv) > 3 else "static"
 env = os.environ.copy()
 env.update({"CARGO_HOME": str(root / ".build/phase1-toolchain/cargo"),
             "RUSTUP_HOME": str(root / ".build/phase1-toolchain/rustup"),
@@ -26,7 +29,7 @@ build = subprocess.run(command, env=env, capture_output=True)
 record = {"label": label, "build": {"command": command, "exit_status": build.returncode, "stdout": build.stdout.decode(), "stderr": build.stderr.decode()}}
 record["build_environment"] = {key: env[key] for key in ("CARGO_HOME", "RUSTUP_HOME", "CARGO_TARGET_DIR")}
 if build.returncode:
-    (here / f"static-{label}.json").write_text(json.dumps(record, indent=2), encoding="utf-8")
+    (here / f"{kind}-{label}.json").write_text(json.dumps(record, indent=2), encoding="utf-8")
     sys.exit(build.returncode)
 calls = []
 
@@ -37,8 +40,15 @@ class Stub(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
         calls.append({"method": self.command, "path": self.path, "headers": list(self.headers.items())})
         body = b'export const fixture = "public-static";'
+        content_type = "application/javascript"
+        if self.path == "/backend-api/me":
+            body = json.dumps({"email":"fixture@example.invalid","id":"fixture","name":"Fixture"}).encode()
+            content_type = "application/json"
+        elif self.path.startswith("/backend-api/accounts/check/"):
+            body = json.dumps({"accounts":{"default":{"account":{"plan_type":"plus"}}}}).encode()
+            content_type = "application/json"
         self.send_response(200)
-        self.send_header("Content-Type", "application/javascript")
+        self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Set-Cookie", "must_not_escape=1")
         self.end_headers()
@@ -56,6 +66,8 @@ with tempfile.TemporaryDirectory(prefix="mirror-static-") as temp:
                 "GATEWAY_COMPAT_PROFILE": "mirror", "GATEWAY_UPSTREAM_MODE": "offline", "COOKIE_SECURE": "false",
                 "DJANGO_UPSTREAM": stub_url, "CHATGPT_BASE_URL": stub_url, "CHATGPT_CDN_BASE_URL": stub_url})
     env.pop("CF_BYPASS_URL", None)
+    if kind == "auth":
+        env["GATEWAY_COMPAT_PROFILE"] = "original"
     binary = Path(env["CARGO_TARGET_DIR"]) / "debug/mirror-gateway.exe"
     record["binary_sha256"] = hashlib.sha256(binary.read_bytes()).hexdigest()
     record["command"] = [str(binary)]
@@ -71,6 +83,24 @@ with tempfile.TemporaryDirectory(prefix="mirror-static-") as temp:
                     raise RuntimeError("gateway exited during startup")
                 time.sleep(.05)
         connection = http.client.HTTPConnection("127.0.0.1", port, timeout=5)
+        if kind == "auth":
+            payload = {"user_name":"alice","access_token":"synthetic-access-token","login_mode":"api","extra_cookies":[{"name":"fixture_extra","value":"synthetic"}]}
+            connection.request("POST", "/api/login", json.dumps(payload), {"Content-Type":"application/json","Authorization":"Bearer fixture-admin-secret-0001"})
+            login = connection.getresponse()
+            record["login"] = {"status":login.status,"body":login.read().decode(),"input":payload}
+            assert login.status == 200, record["login"]
+            connection.close()
+            # Only the fresh synthetic fixture DB is seeded with a fixed token,
+            # so all three auth probes use identical HTTP headers and input.
+            token = "synthetic-fixed-auth-probe-token"
+            with closing(sqlite3.connect(env["DATABASE_PATH"])) as db:
+                token_hash = "sha256:" + hashlib.sha256(token.encode()).hexdigest()
+                db.execute("UPDATE gateway_sessions SET mirror_token=?", [token_hash])
+                db.execute("UPDATE rust_authorizations SET token_hash=?", [token_hash])
+                db.commit()
+            calls.clear()
+            record["input"] = {"path":"/api/auth/session","method":"GET","headers":{"X-Mirror-Token":token},"profile":"original","fixture_seed":"successful login followed by deterministic token hash in disposable DB; no source or production DB mutation"}
+            connection = http.client.HTTPConnection("127.0.0.1", port, timeout=5)
         connection.request(record["input"]["method"], record["input"]["path"], headers=record["input"]["headers"])
         response = connection.getresponse()
         record["response"] = {"status": response.status, "headers": response.getheaders(), "body": response.read().decode()}
@@ -82,5 +112,5 @@ with tempfile.TemporaryDirectory(prefix="mirror-static-") as temp:
         record["process"] = {"stdout": stdout.decode(), "stderr": stderr.decode(), "exit_status": process.returncode, "termination": "fixture teardown"}
         stub.shutdown()
         stub.server_close()
-(here / f"static-{label}.json").write_text(json.dumps(record, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+(here / f"{kind}-{label}.json").write_text(json.dumps(record, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 print(json.dumps({"label": label, "response": record["response"], "upstream": calls}, ensure_ascii=False))
