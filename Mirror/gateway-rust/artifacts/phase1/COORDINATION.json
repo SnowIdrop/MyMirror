@@ -1,0 +1,71 @@
+{
+  "owner_thread": "01a0c9af-fab7-7780-af7f-537dde662636",
+  "coordinator_thread": "01a0c9c9-4508-75d1-a709-20aa6dbb69f9",
+  "handoff": false,
+  "commit": "b837ba2",
+  "branch": "codex/mirror-gateway-phase1",
+  "stable_snapshot": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\coordination\\config-b837ba2.zip",
+  "sha256": "a7f812bb44750d5686f58cdc7ad7bb4c1b5934c247f7a247057b0ef7be8d6c2e",
+  "current_archive_safe_to_read": "Yes; use stable_snapshot for independent work. Live MODIFIED_FILE.zip will be repackaged by owner only.",
+  "owned_live_files": [
+    "source/src/server.rs",
+    "source/src/server/proxy.rs",
+    "source/src/server/static_assets.rs",
+    "source/tests/static_assets.rs",
+    "source/src/config.rs",
+    "source/src/storage.rs",
+    "source/src/schema.sql",
+    "source/Cargo.toml",
+    "source/Cargo.lock",
+    "STATUS.json",
+    "../../STATUS.json",
+    "existing four-role artifacts",
+    "observe_pages.py",
+    "run_page_oracle.py",
+    "static_probe.py",
+    "package.py",
+    "finalize.py",
+    "validate.py"
+  ],
+  "live_result": "Static batch finalized: 70 Rust tests, Clippy, 30 config cases; same-input HTTP 401/200/401 and config exits1/0/1. Product source original unchanged. Shared Cargo target collision in verifier was observed, recorded and fixed by per-variant outputs; all probes rerun. No running processes.",
+  "new_evidence": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\page-original-001\\summary.json",
+  "current_implementation": "Public JS/CSS routes /assets/* and /cdn/* from fixed CDN; no credentials forwarded, response Set-Cookie removed; MIME and redirect gate. Chat HTML, guessed /c IDs, media and auth refresh not opened/modified yet.",
+  "interfaces": "Config unchanged from snapshot (cdn_upstream Option<Url>). static_assets private sibling module only. Resource identity/API contracts remain unintegrated.",
+  "delegable": [
+    {
+      "line": 2,
+      "scope": "Independent resource ACL module design + tests in own worktree based on b837ba2; propose TrustedIdentity and account-bound resource/share/project inheritance/audit APIs; may implement only independent resource_acl.rs and tests/resource_acl.rs after coordinator review; do not change lib.rs, schema/init, Cargo or routes. Only integrator adds module and production wiring."
+    },
+    {
+      "line": 3,
+      "scope": "Independent HTML/bootstrap data leakage and unknown/guessed route threat fixtures/tests on current closed gates, e.g. tests/page_isolation_contract.rs; do not duplicate static_assets.rs tests or new original QEMU observations. Do not assert speculative success protocols; provide cases and expected deny behavior for integration."
+    },
+    {
+      "line": 4,
+      "scope": "Django/Vue read-only request/identity/admin-entry mapping and tests/interface proposal. No Rust ACL truth duplicated. Backend resource endpoints await trusted actor/Rust interface review."
+    }
+  ],
+  "coordination_channel": "send_message_to_thread is not exposed among this thread tools; reply deposited here and announced visibly. Coordinator may relay reviewed deliveries; no ownership transfer.",
+  "static_snapshot": {
+    "path": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\coordination\\static-60ab65054a9a.zip",
+    "sha256": "60ab65054a9aadec73aa222a21ff363295c5fda4e896fcbd7e5453fa3b2eb783",
+    "rust_tests": 70,
+    "clippy": "passed -D warnings",
+    "configuration_cases": 30,
+    "same_input_static_http": [
+      401,
+      200,
+      401
+    ],
+    "same_input_config_exit": [
+      1,
+      0,
+      1
+    ],
+    "rollback_source_sha256": "bc0b14a57a4e1106ebf0fb5500831f8e659879cd3a6f8a2db466a7f28c8cb6c2",
+    "binary": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-probe-targets\\modified\\debug\\mirror-gateway.exe",
+    "binary_note": "Prefer immutable source snapshot; binary is current modified-only target output, may be rebuilt in later turns."
+  },
+  "next_owner_work": "auth_session accounts/check -> me regression and implementation; HTML initialization isolation. Other independent deliveries reviewed before integration; no ownership transfer.",
+  "reviewed_identity_proposal": "user_id canonical decimal string; is_admin staff|superuser; wire version opaque authorization_version; principal_kind separates FREE_ACCOUNT visitor. New ACL visitors fail closed; existing login unchanged. Not yet product-wired."
+}

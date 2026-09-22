@@ -1,0 +1,1 @@
+E:\M\Project\MiRebuild\MirrorNiXiang\reverse\tools\qemu-installer\qemu-system-x86_64.exe: -serial tcp:127.0.0.1:45621,server=on,wait=on: info: QEMU waiting for connection on: disconnected:tcp:127.0.0.1:45621,server=on

@@ -24,22 +24,22 @@
       "command": [
         "C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
         "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\run_probe.py",
-        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\static-rollback-oiqrhe4g",
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\static-rollback-br2p1rat",
         "ROLLBACK"
       ],
       "exit_status": 1,
-      "stdout": "{\"label\": \"ROLLBACK\", \"command\": [\"E:\\\\M\\\\Project\\\\MiRebuild\\\\Mirror\\\\gateway-rust\\\\.build\\\\phase1-toolchain\\\\cargo\\\\bin\\\\cargo.exe\", \"run\", \"--locked\", \"--offline\", \"--quiet\", \"--manifest-path\", \"E:\\\\M\\\\Project\\\\MiRebuild\\\\Mirror\\\\gateway-rust\\\\.build\\\\static-rollback-oiqrhe4g\\\\Cargo.toml\", \"--example\", \"upstream_probe\"], \"input\": {\"GATEWAY_ADMIN_SECRET\": \"fixture-admin-secret-0001\", \"CREDENTIAL_ENCRYPTION_KEY\": \"fixture-encryption-key-000000000001\", \"GATEWAY_COMPAT_PROFILE\": \"mirror\", \"GATEWAY_UPSTREAM_MODE\": \"configured\", \"DJANGO_UPSTREAM\": \"http://django:8000\", \"CHATGPT_BASE_URL\": \"https://chat.example.invalid\", \"CHATGPT_CDN_BASE_URL\": \"https://static.example.invalid\"}, \"stdout\": \"\", \"stderr\": \"当前候选制品只允许 http 数字回环上游；真实传输兼容门禁尚未通过\\n\", \"exit_status\": 1, \"build_environment\": {\"CARGO_HOME\": \"E:\\\\M\\\\Project\\\\MiRebuild\\\\Mirror\\\\gateway-rust\\\\.build\\\\phase1-toolchain\\\\cargo\", \"RUSTUP_HOME\": \"E:\\\\M\\\\Project\\\\MiRebuild\\\\Mirror\\\\gateway-rust\\\\.build\\\\phase1-toolchain\\\\rustup\", \"CARGO_TARGET_DIR\": \"E:\\\\M\\\\Project\\\\MiRebuild\\\\Mirror\\\\gateway-rust\\\\.build\\\\phase1-probe-targets\\\\rollback\"}}\r\n",
+      "stdout": "{\"label\": \"ROLLBACK\", \"command\": [\"E:\\\\M\\\\Project\\\\MiRebuild\\\\Mirror\\\\gateway-rust\\\\.build\\\\phase1-toolchain\\\\cargo\\\\bin\\\\cargo.exe\", \"run\", \"--locked\", \"--offline\", \"--quiet\", \"--manifest-path\", \"E:\\\\M\\\\Project\\\\MiRebuild\\\\Mirror\\\\gateway-rust\\\\.build\\\\static-rollback-br2p1rat\\\\Cargo.toml\", \"--example\", \"upstream_probe\"], \"input\": {\"GATEWAY_ADMIN_SECRET\": \"fixture-admin-secret-0001\", \"CREDENTIAL_ENCRYPTION_KEY\": \"fixture-encryption-key-000000000001\", \"GATEWAY_COMPAT_PROFILE\": \"mirror\", \"GATEWAY_UPSTREAM_MODE\": \"configured\", \"DJANGO_UPSTREAM\": \"http://django:8000\", \"CHATGPT_BASE_URL\": \"https://chat.example.invalid\", \"CHATGPT_CDN_BASE_URL\": \"https://static.example.invalid\"}, \"stdout\": \"\", \"stderr\": \"当前候选制品只允许 http 数字回环上游；真实传输兼容门禁尚未通过\\n\", \"exit_status\": 1}\r\n",
       "stderr": ""
     },
     {
       "command": [
         "C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
         "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\static_probe.py",
-        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\static-rollback-oiqrhe4g",
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\static-rollback-br2p1rat",
         "ROLLBACK"
       ],
       "exit_status": 0,
-      "stdout": "{\"label\": \"ROLLBACK\", \"response\": {\"status\": 401, \"headers\": [[\"content-type\", \"application/json\"], [\"cache-control\", \"private, no-store, no-cache, must-revalidate, max-age=0\"], [\"cdn-cache-control\", \"private, no-store, no-cache, must-revalidate, max-age=0\"], [\"cloudflare-cdn-cache-control\", \"private, no-store, no-cache, must-revalidate, max-age=0\"], [\"pragma\", \"no-cache\"], [\"expires\", \"0\"], [\"vary\", \"Cookie, Authorization\"], [\"x-content-type-options\", \"nosniff\"], [\"referrer-policy\", \"same-origin\"], [\"x-frame-options\", \"SAMEORIGIN\"], [\"cross-origin-opener-policy\", \"same-origin\"], [\"permissions-policy\", \"camera=(), microphone=(), geolocation=()\"], [\"accept-ch\", \"Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version\"], [\"strict-transport-security\", \"max-age=31536000; includeSubDomains; preload\"], [\"content-length\", \"23\"], [\"date\", \"Tue, 22 Sep 2026 15:55:10 GMT\"]], \"body\": \"{\\\"message\\\":\\\"未登录\\\"}\"}, \"upstream\": []}\r\n",
+      "stdout": "{\"label\": \"ROLLBACK\", \"response\": {\"status\": 401, \"headers\": [[\"content-type\", \"application/json\"], [\"cache-control\", \"private, no-store, no-cache, must-revalidate, max-age=0\"], [\"cdn-cache-control\", \"private, no-store, no-cache, must-revalidate, max-age=0\"], [\"cloudflare-cdn-cache-control\", \"private, no-store, no-cache, must-revalidate, max-age=0\"], [\"pragma\", \"no-cache\"], [\"expires\", \"0\"], [\"vary\", \"Cookie, Authorization\"], [\"x-content-type-options\", \"nosniff\"], [\"referrer-policy\", \"same-origin\"], [\"x-frame-options\", \"SAMEORIGIN\"], [\"cross-origin-opener-policy\", \"same-origin\"], [\"permissions-policy\", \"camera=(), microphone=(), geolocation=()\"], [\"accept-ch\", \"Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version\"], [\"strict-transport-security\", \"max-age=31536000; includeSubDomains; preload\"], [\"content-length\", \"23\"], [\"date\", \"Tue, 22 Sep 2026 15:51:54 GMT\"]], \"body\": \"{\\\"message\\\":\\\"未登录\\\"}\"}, \"upstream\": []}\r\n",
       "stderr": ""
     },
     {
@@ -58,7 +58,7 @@
       "command": [
         "git",
         "-C",
-        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\static-source-diff-f6zchg5p",
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\static-source-diff-ju7ev1yr",
         "init",
         "--quiet"
       ],
@@ -70,7 +70,7 @@
       "command": [
         "git",
         "-C",
-        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\static-source-diff-f6zchg5p",
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\static-source-diff-ju7ev1yr",
         "-c",
         "core.autocrlf=false",
         "add",
@@ -84,7 +84,7 @@
       "command": [
         "git",
         "-C",
-        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\static-source-diff-f6zchg5p",
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\static-source-diff-ju7ev1yr",
         "add",
         "-N",
         "."
@@ -97,7 +97,7 @@
       "command": [
         "git",
         "-C",
-        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\static-source-diff-f6zchg5p",
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\static-source-diff-ju7ev1yr",
         "-c",
         "core.autocrlf=false",
         "diff",
@@ -112,7 +112,7 @@
       "command": [
         "git",
         "-C",
-        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\static-source-diff-f6zchg5p",
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\static-source-diff-ju7ev1yr",
         "apply",
         "--reverse",
         "--check",
@@ -126,7 +126,7 @@
       "command": [
         "git",
         "-C",
-        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\static-source-diff-f6zchg5p",
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\static-source-diff-ju7ev1yr",
         "-c",
         "core.autocrlf=false",
         "diff",

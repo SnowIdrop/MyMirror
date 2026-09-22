@@ -1,20 +1,23 @@
 {
   "ACTIVE_OBJECT": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source",
   "LAST_CONFIRMED_RESULT": {
-    "implementation": "phase1 configuration batch implemented in a source copy; original source unchanged",
-    "rust_tests": 64,
+    "implementation": "phase1 configuration and restricted public JS/CSS proxy implemented in the same source copy; original source unchanged",
+    "rust_tests": 70,
     "clippy": "passed --all-targets -- -D warnings",
     "configuration_cases": 30,
+    "original_page_observations": 40,
+    "static_integration_tests": 5,
     "real_environment_acceptance": "not run",
     "full_replacement_complete": false
   },
-  "NEXT_EXECUTABLE_ACTION": "Extend the offline page/static/auth-session contract fixture on this same candidate, then run it; do not open unverified routes or use real accounts.",
+  "NEXT_EXECUTABLE_ACTION": "Create and run the missing auth_session refresh-chain regression from page-original-001, then implement it on this same candidate. Review coordinator deliveries before integration; do not open HTML until initialization isolation is proven.",
   "INPUT_PATHS": [
     "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\PHASE1_CONTRACT.md",
-    "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\tools\\observe_proxy_v3.py",
-    "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\src\\assets\\gateway-client.html"
+    "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\page-original-001\\results.json",
+    "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\src\\server.rs",
+    "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\COORDINATION.json"
   ],
-  "ACCEPTANCE_EVENT": "Recorded fixture requests, resource IDs and response/stream/error behavior for page/static/auth refresh, followed by candidate regression; no full-release claim.",
+  "ACCEPTANCE_EVENT": "Auth-session accounts/check then me refresh regression executed against the current source; tested revocation/failure behavior and no DB lock during network wait. HTML/other stages remain separately gated.",
   "roles": {
     "MODIFIED_FILE": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\MODIFIED_FILE.zip",
     "DIFF_FILE": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\DIFF_FILE.patch",
@@ -24,9 +27,9 @@
   "phase": 1,
   "phase_complete": false,
   "remaining": [
-    "页面、静态路由及同源改写",
+    "页面初始化隔离及同源改写，字体/图片/其他静态类型",
     "auth/session 刷新链",
-    "第二至五阶段权限底座、后台和业务能力",
+    "第二至五阶段权限底座、后台和业务能力；协调工作线产物待评审集成",
     "第六阶段统一验收与部署交付"
   ],
   "rollback_scope": "restore a disposable source archive; not databases or already-executed upstream operations",

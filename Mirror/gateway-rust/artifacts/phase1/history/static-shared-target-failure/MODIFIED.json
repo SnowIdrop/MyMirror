@@ -20,12 +20,7 @@
     "CHATGPT_BASE_URL": "https://chat.example.invalid",
     "CHATGPT_CDN_BASE_URL": "https://static.example.invalid"
   },
-  "stdout": "accepted django=http://django:8000/ chat=https://chat.example.invalid/\n",
-  "stderr": "",
-  "exit_status": 0,
-  "build_environment": {
-    "CARGO_HOME": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo",
-    "RUSTUP_HOME": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\rustup",
-    "CARGO_TARGET_DIR": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-probe-targets\\modified"
-  }
+  "stdout": "",
+  "stderr": "当前候选制品只允许 http 数字回环上游；真实传输兼容门禁尚未通过\n",
+  "exit_status": 1
 }

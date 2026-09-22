@@ -38,7 +38,7 @@ Linux x86-64 musl 制品使用本工程 `.build/zig/ziglang` 中的 Zig 0.13.0 �
 `GATEWAY_ADMIN_SECRET` 至少 16 字节；`CREDENTIAL_ENCRYPTION_KEY` 去除两端空白后至少 32 字节。
 `GATEWAY_UPSTREAM_MODE` 默认 `offline`：`DJANGO_UPSTREAM`、`CHATGPT_BASE_URL`、可选 `CHATGPT_CDN_BASE_URL` / `CF_BYPASS_URL` 只接受数字 HTTP 回环服务源。
 显式设为 `configured` 时接受 HTTP/HTTPS 服务名和端口，Django、聊天、CDN 三个源必须各自配置，CF 源可选。拒绝凭据、路径前缀、查询串和片段；不提供默认公网地址。配置模板见 `.env.configured.example`。
-CDN 字段已独立解析，但静态路由仍未开放。TLS 校验保持启用，上游重定向不自动跟随，请求无法改写配置目标。
+CDN 已接入受限公共 JS/CSS 的 `/assets/` 与 `/cdn/` 路径；不转发凭据或上游 Cookie，拒绝路径穿越、错误 MIME 与重定向。字体、图片及其他路径仍有门禁，聊天页面尚未开放。TLS 校验保持启用，请求无法改写配置目标。
 `GATEWAY_COMPAT_PROFILE=mirror` 是默认值，必须传 Django 授权与策略字段；`original` 只用于原版契约观测，不自动降级到该模式。
 `COOKIE_SECURE` 默认 true。局部合成 HTTP 测试可设 false；这不是公网部署配置。
 

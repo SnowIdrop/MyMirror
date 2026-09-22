@@ -2,6 +2,7 @@
 mod compression;
 mod management;
 mod proxy;
+mod static_assets;
 use crate::{
     config::Config,
     crypto::sha256_hex,

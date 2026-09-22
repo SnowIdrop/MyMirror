@@ -7,7 +7,7 @@
     "--offline",
     "--quiet",
     "--manifest-path",
-    "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\Cargo.toml",
+    "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\baseline-source\\Cargo.toml",
     "--example",
     "upstream_probe"
   ],
@@ -22,5 +22,10 @@
   },
   "stdout": "",
   "stderr": "当前候选制品只允许 http 数字回环上游；真实传输兼容门禁尚未通过\n",
-  "exit_status": 1
+  "exit_status": 1,
+  "build_environment": {
+    "CARGO_HOME": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo",
+    "RUSTUP_HOME": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\rustup",
+    "CARGO_TARGET_DIR": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-probe-targets\\baseline"
+  }
 }

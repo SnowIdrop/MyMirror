@@ -121,6 +121,9 @@ pub(super) async fn django_proxy(
 /// chat 代理入口（父 `fallback` handler 替换点）：仅放行已观测的读取路由，
 /// 未确证路径继续以 503 门禁失败，不做整体直通。
 pub(super) async fn chat_proxy(State(app): State<Shared>, request: Request) -> Response {
+    if request.uri().path().starts_with("/assets/") || request.uri().path().starts_with("/cdn/") {
+        return super::static_assets::serve(&app, request).await;
+    }
     // 缺失能力必须保持失败，不能用旧二进制回退或伪造成功响应。
     if request.uri().path().starts_with("/api/") {
         return StatusCode::NOT_FOUND.into_response();

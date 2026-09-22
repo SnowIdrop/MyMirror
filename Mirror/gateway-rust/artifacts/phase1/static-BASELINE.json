@@ -1,0 +1,114 @@
+{
+  "label": "BASELINE",
+  "build": {
+    "command": [
+      "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo\\bin\\cargo.exe",
+      "build",
+      "--locked",
+      "--offline",
+      "--manifest-path",
+      "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\baseline-source\\Cargo.toml",
+      "--bin",
+      "mirror-gateway"
+    ],
+    "exit_status": 0,
+    "stdout": "",
+    "stderr": "   Compiling mirror-gateway v0.1.0 (E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\baseline-source)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.86s\n"
+  },
+  "build_environment": {
+    "CARGO_HOME": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo",
+    "RUSTUP_HOME": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\rustup",
+    "CARGO_TARGET_DIR": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-probe-targets\\baseline"
+  },
+  "binary_sha256": "bdce4cca38bfa655a5d235560c1d62a0f1953f46b46cac355e88a24c8f6f3c2d",
+  "command": [
+    "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-probe-targets\\baseline\\debug\\mirror-gateway.exe"
+  ],
+  "input": {
+    "path": "/assets/fixture.js?v=1",
+    "method": "GET",
+    "headers": {
+      "Authorization": "Bearer browser-secret",
+      "Cookie": "mirror_token=browser-secret",
+      "X-Mirror-Token": "browser-secret"
+    },
+    "upstream_policy": "all configured origins point to the same fresh loopback fixture; ephemeral ports and database path are run identities"
+  },
+  "response": {
+    "status": 401,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "23"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 15:53:56 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"未登录\"}"
+  },
+  "upstream": [],
+  "process": {
+    "stdout": "gateway listening on http://127.0.0.1:50134 (offline candidate; release gate incomplete)\n",
+    "stderr": "",
+    "exit_status": 1,
+    "termination": "fixture teardown"
+  }
+}

@@ -22,10 +22,5 @@
   },
   "stdout": "accepted django=http://django:8000/ chat=https://chat.example.invalid/\n",
   "stderr": "",
-  "exit_status": 0,
-  "build_environment": {
-    "CARGO_HOME": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo",
-    "RUSTUP_HOME": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\rustup",
-    "CARGO_TARGET_DIR": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-probe-targets\\modified"
-  }
+  "exit_status": 0
 }

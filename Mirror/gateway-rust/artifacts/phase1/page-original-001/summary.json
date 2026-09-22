@@ -1,0 +1,304 @@
+[
+  {
+    "case": "anonymous-root",
+    "status": 302,
+    "location": "/admin#/",
+    "content_type": null,
+    "body_prefix": "",
+    "upstream": [
+      {
+        "service": "chat",
+        "method": "POST",
+        "path": "/cloudflare5s/bypass-v1",
+        "authorization": "Bearer contract-admin-secret-0001",
+        "cookie": null
+      }
+    ]
+  },
+  {
+    "case": "anonymous-asset",
+    "status": 200,
+    "location": null,
+    "content_type": "application/javascript",
+    "body_prefix": "export const fixture = \"public-static\";",
+    "upstream": [
+      {
+        "service": "cdn",
+        "method": "GET",
+        "path": "/assets/fixture.js?v=1",
+        "authorization": null,
+        "cookie": null
+      }
+    ]
+  },
+  {
+    "case": "anonymous-cdn",
+    "status": 200,
+    "location": null,
+    "content_type": "text/css",
+    "body_prefix": "body{background:#fff}",
+    "upstream": [
+      {
+        "service": "cdn",
+        "method": "GET",
+        "path": "/fixture.css",
+        "authorization": null,
+        "cookie": null
+      }
+    ]
+  },
+  {
+    "case": "anonymous-session",
+    "status": 200,
+    "location": null,
+    "content_type": "application/json",
+    "body_prefix": "{}",
+    "upstream": []
+  },
+  {
+    "case": "login",
+    "status": 200,
+    "location": null,
+    "content_type": "application/json",
+    "body_prefix": "{\"chatgpt_username\":\"fixture@example.invalid\",\"login_mode\":\"api\",\"login_url\":\"/api/not-login?user_gateway_token=e951c32126700def559a074d3da8cf22ab6fb752495229c2fadb7efa6868e61b\",\"message\":\"登录成功\"}",
+    "upstream": [
+      {
+        "service": "chat",
+        "method": "GET",
+        "path": "/backend-api/accounts/check/v4-2023-04-27",
+        "authorization": "Bearer synthetic-access-token",
+        "cookie": "cf_clearance=SYNTHETIC"
+      },
+      {
+        "service": "chat",
+        "method": "GET",
+        "path": "/backend-api/me",
+        "authorization": "Bearer synthetic-access-token",
+        "cookie": "cf_clearance=SYNTHETIC"
+      }
+    ]
+  },
+  {
+    "case": "handoff",
+    "status": 302,
+    "location": "/",
+    "content_type": null,
+    "body_prefix": "",
+    "upstream": []
+  },
+  {
+    "case": "authenticated-root",
+    "status": 200,
+    "location": null,
+    "content_type": "text/html",
+    "body_prefix": "<html><head><script src=\"https://cdn.oaistatic.com/assets/fixture.js\"></script><script id=\"gateway-user-logout-button\">(function() {\n  if (window.__gatewayUserLogoutMounted) return;\n  window.__gatewayUserLogoutMounted = true;\n  var enableUserControls = true;\n  var forceChatMode = true;\n  var _gwBlockedPaths = [\"/#settings/Personalization\",\"/#settings/Security\",\"/#settings/Billing\",\"/#settings/Acco",
+    "upstream": [
+      {
+        "service": "chat",
+        "method": "GET",
+        "path": "/",
+        "authorization": "Bearer synthetic-access-token",
+        "cookie": "cf_clearance=SYNTHETIC"
+      }
+    ]
+  },
+  {
+    "case": "chat-shell",
+    "status": 200,
+    "location": null,
+    "content_type": "text/html",
+    "body_prefix": "<html><head><script src=\"https://cdn.oaistatic.com/assets/fixture.js\"></script><script id=\"gateway-user-logout-button\">(function() {\n  if (window.__gatewayUserLogoutMounted) return;\n  window.__gatewayUserLogoutMounted = true;\n  var enableUserControls = true;\n  var forceChatMode = true;\n  var _gwBlockedPaths = [\"/#settings/Personalization\",\"/#settings/Security\",\"/#settings/Billing\",\"/#settings/Acco",
+    "upstream": [
+      {
+        "service": "chat",
+        "method": "GET",
+        "path": "/c/guessed-conversation",
+        "authorization": "Bearer synthetic-access-token",
+        "cookie": "cf_clearance=SYNTHETIC"
+      }
+    ]
+  },
+  {
+    "case": "asset",
+    "status": 200,
+    "location": null,
+    "content_type": "application/javascript",
+    "body_prefix": "export const fixture = \"public-static\";",
+    "upstream": [
+      {
+        "service": "cdn",
+        "method": "GET",
+        "path": "/assets/fixture.js?v=2",
+        "authorization": "Bearer browser-must-not-be-upstream",
+        "cookie": null
+      }
+    ]
+  },
+  {
+    "case": "cdn-prefix",
+    "status": 200,
+    "location": null,
+    "content_type": "text/css",
+    "body_prefix": "body{background:#fff}",
+    "upstream": [
+      {
+        "service": "cdn",
+        "method": "GET",
+        "path": "/fixture.css",
+        "authorization": "Bearer browser-must-not-be-upstream",
+        "cookie": null
+      }
+    ]
+  },
+  {
+    "case": "cdn-assets",
+    "status": 200,
+    "location": null,
+    "content_type": "application/javascript",
+    "body_prefix": "export const fixture = \"public-static\";",
+    "upstream": [
+      {
+        "service": "cdn",
+        "method": "GET",
+        "path": "/assets/fixture.js",
+        "authorization": "Bearer browser-must-not-be-upstream",
+        "cookie": null
+      }
+    ]
+  },
+  {
+    "case": "session-first",
+    "status": 200,
+    "location": null,
+    "content_type": "application/json",
+    "body_prefix": "{\"authProvider\":\"openai\",\"expires\":\"2099-12-31T23:59:59.000Z\",\"loginMode\":\"api\",\"planType\":\"plus\",\"user\":{\"email\":\"fixture@example.invalid\",\"id\":\"cc6d96611cffa9f02c3626f0b9ee897dc171e2d540a5cae349d4ec316104997b\",\"image\":null,\"name\":\"fixture@example.invalid\",\"picture\":null}}",
+    "upstream": [
+      {
+        "service": "chat",
+        "method": "GET",
+        "path": "/backend-api/accounts/check/v4-2023-04-27",
+        "authorization": "Bearer synthetic-access-token",
+        "cookie": "cf_clearance=SYNTHETIC"
+      },
+      {
+        "service": "chat",
+        "method": "GET",
+        "path": "/backend-api/me",
+        "authorization": "Bearer synthetic-access-token",
+        "cookie": "cf_clearance=SYNTHETIC"
+      }
+    ]
+  },
+  {
+    "case": "session-repeat",
+    "status": 200,
+    "location": null,
+    "content_type": "application/json",
+    "body_prefix": "{\"authProvider\":\"openai\",\"expires\":\"2099-12-31T23:59:59.000Z\",\"loginMode\":\"api\",\"planType\":\"plus\",\"user\":{\"email\":\"fixture@example.invalid\",\"id\":\"cc6d96611cffa9f02c3626f0b9ee897dc171e2d540a5cae349d4ec316104997b\",\"image\":null,\"name\":\"fixture@example.invalid\",\"picture\":null}}",
+    "upstream": [
+      {
+        "service": "chat",
+        "method": "GET",
+        "path": "/backend-api/accounts/check/v4-2023-04-27",
+        "authorization": "Bearer synthetic-access-token",
+        "cookie": "cf_clearance=SYNTHETIC"
+      },
+      {
+        "service": "chat",
+        "method": "GET",
+        "path": "/backend-api/me",
+        "authorization": "Bearer synthetic-access-token",
+        "cookie": "cf_clearance=SYNTHETIC"
+      }
+    ]
+  },
+  {
+    "case": "session-refresh",
+    "status": 200,
+    "location": null,
+    "content_type": "application/json",
+    "body_prefix": "{\"authProvider\":\"openai\",\"expires\":\"2099-12-31T23:59:59.000Z\",\"loginMode\":\"api\",\"planType\":\"plus\",\"user\":{\"email\":\"fixture@example.invalid\",\"id\":\"cc6d96611cffa9f02c3626f0b9ee897dc171e2d540a5cae349d4ec316104997b\",\"image\":null,\"name\":\"fixture@example.invalid\",\"picture\":null}}",
+    "upstream": [
+      {
+        "service": "chat",
+        "method": "GET",
+        "path": "/backend-api/accounts/check/v4-2023-04-27",
+        "authorization": "Bearer synthetic-access-token",
+        "cookie": "cf_clearance=SYNTHETIC"
+      },
+      {
+        "service": "chat",
+        "method": "GET",
+        "path": "/backend-api/me",
+        "authorization": "Bearer synthetic-access-token",
+        "cookie": "cf_clearance=SYNTHETIC"
+      }
+    ]
+  },
+  {
+    "case": "asset-head",
+    "status": 200,
+    "location": null,
+    "content_type": "application/javascript",
+    "body_prefix": "",
+    "upstream": [
+      {
+        "service": "cdn",
+        "method": "HEAD",
+        "path": "/assets/fixture.js",
+        "authorization": null,
+        "cookie": null
+      }
+    ]
+  },
+  {
+    "case": "session-accounts-failure",
+    "status": 200,
+    "location": null,
+    "content_type": "application/json",
+    "body_prefix": "{\"authProvider\":\"openai\",\"expires\":\"2099-12-31T23:59:59.000Z\",\"loginMode\":\"api\",\"planType\":\"free\",\"user\":{\"email\":\"fixture@example.invalid\",\"id\":\"cc6d96611cffa9f02c3626f0b9ee897dc171e2d540a5cae349d4ec316104997b\",\"image\":null,\"name\":\"fixture@example.invalid\",\"picture\":null}}",
+    "upstream": [
+      {
+        "service": "chat",
+        "method": "GET",
+        "path": "/backend-api/accounts/check/v4-2023-04-27",
+        "authorization": "Bearer synthetic-access-token",
+        "cookie": "cf_clearance=SYNTHETIC"
+      },
+      {
+        "service": "chat",
+        "method": "GET",
+        "path": "/backend-api/me",
+        "authorization": "Bearer synthetic-access-token",
+        "cookie": "cf_clearance=SYNTHETIC"
+      }
+    ]
+  },
+  {
+    "case": "session-me-failure",
+    "status": 200,
+    "location": null,
+    "content_type": "application/json",
+    "body_prefix": "{}",
+    "upstream": [
+      {
+        "service": "chat",
+        "method": "GET",
+        "path": "/backend-api/accounts/check/v4-2023-04-27",
+        "authorization": "Bearer synthetic-access-token",
+        "cookie": "cf_clearance=SYNTHETIC"
+      },
+      {
+        "service": "chat",
+        "method": "GET",
+        "path": "/backend-api/me",
+        "authorization": "Bearer synthetic-access-token",
+        "cookie": "cf_clearance=SYNTHETIC"
+      }
+    ]
+  },
+  {
+    "kind": "database",
+    "accounts": []
+  }
+]
