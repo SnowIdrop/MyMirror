@@ -1,0 +1,308 @@
+{
+  "status": "coordinator_verified_integrated_snapshot",
+  "root_object": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source",
+  "snapshot": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\coordination\\integrated-f95fc1eeb7d2.zip",
+  "snapshot_sha256": "f95fc1eeb7d239dfc5b5e6e999b7c2443dc082a63bc9f6f6f7007e6bc3c53c6e",
+  "checks_all_passed": true,
+  "rust_test_count": 109,
+  "check_commands": 33,
+  "summary": {
+    "implementation": "configuration, public JS/CSS and auth-session refresh implemented; reviewed independent ACL module and upgraded boundary tests integrated without product ACL wiring; original source unchanged",
+    "rust_tests": 109,
+    "clippy": "passed --all-targets -- -D warnings",
+    "configuration_cases": 30,
+    "original_page_observations": 40,
+    "static_integration_tests": 5,
+    "auth_refresh_tests": 3,
+    "independent_acl_tests": 28,
+    "integrated_boundary_tests": 8,
+    "real_environment_acceptance": "not run",
+    "full_replacement_complete": false
+  },
+  "roles_reopened": [
+    {
+      "name": "MODIFIED_FILE.zip",
+      "path": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\MODIFIED_FILE.zip",
+      "sha256": "f95fc1eeb7d239dfc5b5e6e999b7c2443dc082a63bc9f6f6f7007e6bc3c53c6e",
+      "bytes": 141642
+    },
+    {
+      "name": "DIFF_FILE.patch",
+      "path": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\DIFF_FILE.patch",
+      "sha256": "06e832389505a6ec8f486a43974bfdfed634461f77bcdf25877b85bddfe7b90c",
+      "bytes": 113433
+    },
+    {
+      "name": "VERIFICATION.txt",
+      "path": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\VERIFICATION.txt",
+      "sha256": "fe4598923d9f528b402748ba0c93b62e20b56ac611e90d63689b41eeb12e9170",
+      "bytes": 340173
+    },
+    {
+      "name": "ROLLBACK.sh",
+      "path": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\ROLLBACK.sh",
+      "sha256": "6eea2a464f4cad6ed20986deed97fa7b68f403693556458a00a9535625f66309",
+      "bytes": 451
+    }
+  ],
+  "integrated_source_matches_archive": [
+    {
+      "path": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\src\\resource_acl.rs",
+      "sha256": "80ee34100574d8b746905ae71ea42b67d25c13410e247b4408e47db4ea0caa39",
+      "archive_member": "src/resource_acl.rs",
+      "owner_changed": false
+    },
+    {
+      "path": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\tests\\coord_acl_contract.rs",
+      "sha256": "8b06f74d703632fce6546d0b5463d50c8f830d81547f605ce4e8f180b419dbfa",
+      "archive_member": "tests/coord_acl_contract.rs",
+      "owner_changed": false
+    },
+    {
+      "path": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\tests\\coord_boundary_regression.rs",
+      "sha256": "7fccb8e6ac1cd2176c1814ef979fd0dd671898419c630800a86380f8fb6f0c6f",
+      "archive_member": "tests/coord_boundary_regression.rs",
+      "owner_changed": true
+    }
+  ],
+  "archive_member_count": 33,
+  "archive_crc_error": null,
+  "same_input_behavior_summary": [
+    {
+      "kind": "configuration",
+      "label": "BASELINE",
+      "exit_status": 1,
+      "http_status": null,
+      "stdout": "",
+      "stderr": "当前候选制品只允许 http 数字回环上游；真实传输兼容门禁尚未通过\n",
+      "body": null
+    },
+    {
+      "kind": "configuration",
+      "label": "MODIFIED",
+      "exit_status": 0,
+      "http_status": null,
+      "stdout": "accepted django=http://django:8000/ chat=https://chat.example.invalid/\n",
+      "stderr": "",
+      "body": null
+    },
+    {
+      "kind": "configuration",
+      "label": "ROLLBACK",
+      "exit_status": 1,
+      "http_status": null,
+      "stdout": "",
+      "stderr": "当前候选制品只允许 http 数字回环上游；真实传输兼容门禁尚未通过\n",
+      "body": null
+    },
+    {
+      "kind": "same_input_static_behaviors",
+      "label": "BASELINE",
+      "exit_status": null,
+      "http_status": 401,
+      "stdout": null,
+      "stderr": null,
+      "body": "{\"message\":\"未登录\"}",
+      "upstream": [],
+      "process": {
+        "stdout": "gateway listening on http://127.0.0.1:50134 (offline candidate; release gate incomplete)\n",
+        "stderr": "",
+        "exit_status": 1,
+        "termination": "fixture teardown"
+      },
+      "build_exit_status": 0
+    },
+    {
+      "kind": "same_input_static_behaviors",
+      "label": "MODIFIED",
+      "exit_status": null,
+      "http_status": 200,
+      "stdout": null,
+      "stderr": null,
+      "body": "export const fixture = \"public-static\";",
+      "upstream": [
+        {
+          "method": "GET",
+          "path": "/assets/fixture.js?v=1",
+          "headers": [
+            [
+              "user-agent",
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            [
+              "accept-encoding",
+              "identity"
+            ],
+            [
+              "accept",
+              "*/*"
+            ],
+            [
+              "host",
+              "127.0.0.1:63730"
+            ]
+          ]
+        }
+      ],
+      "process": {
+        "stdout": "gateway listening on http://127.0.0.1:63731 (development candidate; release gate incomplete)\n",
+        "stderr": "",
+        "exit_status": 1,
+        "termination": "fixture teardown"
+      },
+      "build_exit_status": 0
+    },
+    {
+      "kind": "same_input_static_behaviors",
+      "label": "ROLLBACK",
+      "exit_status": null,
+      "http_status": 401,
+      "stdout": null,
+      "stderr": null,
+      "body": "{\"message\":\"未登录\"}",
+      "upstream": [],
+      "process": {
+        "stdout": "gateway listening on http://127.0.0.1:58829 (offline candidate; release gate incomplete)\n",
+        "stderr": "",
+        "exit_status": 1,
+        "termination": "fixture teardown"
+      },
+      "build_exit_status": 0
+    },
+    {
+      "kind": "same_input_auth_behaviors",
+      "label": "BASELINE",
+      "exit_status": null,
+      "http_status": 200,
+      "stdout": null,
+      "stderr": null,
+      "body": "{\"authProvider\":\"openai\",\"expires\":\"2099-12-31T23:59:59.000Z\",\"loginMode\":\"api\",\"planType\":\"free\",\"user\":{\"email\":\"fixture@example.invalid\",\"id\":\"cc6d96611cffa9f02c3626f0b9ee897dc171e2d540a5cae349d4ec316104997b\",\"image\":null,\"name\":\"fixture@example.invalid\",\"picture\":null}}",
+      "upstream": [],
+      "process": {
+        "stdout": "gateway listening on http://127.0.0.1:51371 (offline candidate; release gate incomplete)\n",
+        "stderr": "",
+        "exit_status": 1,
+        "termination": "fixture teardown"
+      },
+      "build_exit_status": 0
+    },
+    {
+      "kind": "same_input_auth_behaviors",
+      "label": "MODIFIED",
+      "exit_status": null,
+      "http_status": 200,
+      "stdout": null,
+      "stderr": null,
+      "body": "{\"authProvider\":\"openai\",\"expires\":\"2099-12-31T23:59:59.000Z\",\"loginMode\":\"api\",\"planType\":\"plus\",\"user\":{\"email\":\"fixture@example.invalid\",\"id\":\"cc6d96611cffa9f02c3626f0b9ee897dc171e2d540a5cae349d4ec316104997b\",\"image\":null,\"name\":\"fixture@example.invalid\",\"picture\":null}}",
+      "upstream": [
+        {
+          "method": "GET",
+          "path": "/backend-api/accounts/check/v4-2023-04-27",
+          "headers": [
+            [
+              "user-agent",
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            [
+              "accept",
+              "*/*"
+            ],
+            [
+              "origin",
+              "http://127.0.0.1"
+            ],
+            [
+              "referer",
+              "http://127.0.0.1/"
+            ],
+            [
+              "cookie",
+              "fixture_extra=synthetic"
+            ],
+            [
+              "authorization",
+              "Bearer synthetic-access-token"
+            ],
+            [
+              "host",
+              "127.0.0.1:62945"
+            ]
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/me",
+          "headers": [
+            [
+              "user-agent",
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            [
+              "accept",
+              "*/*"
+            ],
+            [
+              "origin",
+              "http://127.0.0.1"
+            ],
+            [
+              "referer",
+              "http://127.0.0.1/"
+            ],
+            [
+              "cookie",
+              "fixture_extra=synthetic"
+            ],
+            [
+              "authorization",
+              "Bearer synthetic-access-token"
+            ],
+            [
+              "host",
+              "127.0.0.1:62945"
+            ]
+          ]
+        }
+      ],
+      "process": {
+        "stdout": "gateway listening on http://127.0.0.1:62946 (development candidate; release gate incomplete)\n",
+        "stderr": "",
+        "exit_status": 1,
+        "termination": "fixture teardown"
+      },
+      "build_exit_status": 0
+    },
+    {
+      "kind": "same_input_auth_behaviors",
+      "label": "ROLLBACK",
+      "exit_status": null,
+      "http_status": 200,
+      "stdout": null,
+      "stderr": null,
+      "body": "{\"authProvider\":\"openai\",\"expires\":\"2099-12-31T23:59:59.000Z\",\"loginMode\":\"api\",\"planType\":\"free\",\"user\":{\"email\":\"fixture@example.invalid\",\"id\":\"cc6d96611cffa9f02c3626f0b9ee897dc171e2d540a5cae349d4ec316104997b\",\"image\":null,\"name\":\"fixture@example.invalid\",\"picture\":null}}",
+      "upstream": [],
+      "process": {
+        "stdout": "gateway listening on http://127.0.0.1:61269 (offline candidate; release gate incomplete)\n",
+        "stderr": "",
+        "exit_status": 1,
+        "termination": "fixture teardown"
+      },
+      "build_exit_status": 0
+    }
+  ],
+  "rollback_execution": {
+    "command": [
+      "E:/T/Git2026_6/bin/bash.exe",
+      "-c",
+      "artifacts/phase1/ROLLBACK.sh artifacts/phase1/rollback-copy.zip"
+    ],
+    "exit_status": 0,
+    "stdout": "Restored pristine source archive; databases and upstream resources were not modified.\n",
+    "stderr": "",
+    "restored_sha256": "bc0b14a57a4e1106ebf0fb5500831f8e659879cd3a6f8a2db466a7f28c8cb6c2"
+  },
+  "owner_process_statement": "all fixture/build/probe processes completed",
+  "claim_scope": "read-only consistency/hash/CRC and evidence-ledger verification; test execution belongs to sole integrator; no real-environment acceptance",
+  "original_source_files_unchanged": 24,
+  "console_encoding_note": "Initial console rendering of Chinese evidence was garbled; UTF-8 JSON artifact was reopened with FastCtx and original literal Chinese verified. No process failure."
+}

@@ -1,0 +1,54 @@
+{
+  "status": "section12_input_and_existing_roles_verified",
+  "scope": "new audit only, no product change",
+  "snapshot": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\coordination\\integrated-f95fc1eeb7d2.zip",
+  "sha256": "f95fc1eeb7d239dfc5b5e6e999b7c2443dc082a63bc9f6f6f7007e6bc3c53c6e",
+  "roles_reopened": [
+    {
+      "name": "MODIFIED_FILE.zip",
+      "path": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\MODIFIED_FILE.zip",
+      "sha256": "f95fc1eeb7d239dfc5b5e6e999b7c2443dc082a63bc9f6f6f7007e6bc3c53c6e",
+      "bytes": 141642,
+      "unchanged_from_integrated109": true
+    },
+    {
+      "name": "DIFF_FILE.patch",
+      "path": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\DIFF_FILE.patch",
+      "sha256": "06e832389505a6ec8f486a43974bfdfed634461f77bcdf25877b85bddfe7b90c",
+      "bytes": 113433,
+      "unchanged_from_integrated109": true
+    },
+    {
+      "name": "VERIFICATION.txt",
+      "path": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\VERIFICATION.txt",
+      "sha256": "fe4598923d9f528b402748ba0c93b62e20b56ac611e90d63689b41eeb12e9170",
+      "bytes": 340173,
+      "unchanged_from_integrated109": true
+    },
+    {
+      "name": "ROLLBACK.sh",
+      "path": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\ROLLBACK.sh",
+      "sha256": "6eea2a464f4cad6ed20986deed97fa7b68f403693556458a00a9535625f66309",
+      "bytes": 451,
+      "unchanged_from_integrated109": true
+    }
+  ],
+  "historical_behavior_source": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\VERIFICATION.txt",
+  "behavior_scope": "historical verified observations retained; not rerun or relabeled as new fingerprint acceptance",
+  "configuration_exits": [
+    1,
+    0,
+    1
+  ],
+  "static_http": [
+    401,
+    200,
+    401
+  ],
+  "auth_plan": [
+    "free",
+    "plus",
+    "free"
+  ],
+  "rollback_sha256": "bc0b14a57a4e1106ebf0fb5500831f8e659879cd3a6f8a2db466a7f28c8cb6c2"
+}

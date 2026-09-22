@@ -1,0 +1,122 @@
+{
+  "role_reopen": [
+    {
+      "role": "MODIFIED_FILE.zip",
+      "path": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\MODIFIED_FILE.zip",
+      "sha256": "a7f812bb44750d5686f58cdc7ad7bb4c1b5934c247f7a247057b0ef7be8d6c2e",
+      "size": 116671
+    },
+    {
+      "role": "DIFF_FILE.patch",
+      "path": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\DIFF_FILE.patch",
+      "sha256": "d79bbeae991d0eae1640485956877da40596edb93941953aea6e4248afa5035a",
+      "size": 27399
+    },
+    {
+      "role": "VERIFICATION.txt",
+      "path": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\VERIFICATION.txt",
+      "sha256": "ad8fd5ce3fc561bb17bb9c25b2e0f842198fb816cc165cf3f142efcce8b3956e",
+      "size": 103907
+    },
+    {
+      "role": "ROLLBACK.sh",
+      "path": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\ROLLBACK.sh",
+      "sha256": "6eea2a464f4cad6ed20986deed97fa7b68f403693556458a00a9535625f66309",
+      "size": 451
+    }
+  ],
+  "archive_members": 27,
+  "archive_crc_error": null,
+  "configuration_history": [
+    {
+      "label": "BASELINE",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo\\bin\\cargo.exe",
+        "run",
+        "--locked",
+        "--offline",
+        "--quiet",
+        "--manifest-path",
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\Cargo.toml",
+        "--example",
+        "upstream_probe"
+      ],
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "configured",
+        "DJANGO_UPSTREAM": "http://django:8000",
+        "CHATGPT_BASE_URL": "https://chat.example.invalid",
+        "CHATGPT_CDN_BASE_URL": "https://static.example.invalid"
+      },
+      "stdout": "",
+      "stderr": "当前候选制品只允许 http 数字回环上游；真实传输兼容门禁尚未通过\n",
+      "exit_status": 1
+    },
+    {
+      "label": "MODIFIED",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo\\bin\\cargo.exe",
+        "run",
+        "--locked",
+        "--offline",
+        "--quiet",
+        "--manifest-path",
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\Cargo.toml",
+        "--example",
+        "upstream_probe"
+      ],
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "configured",
+        "DJANGO_UPSTREAM": "http://django:8000",
+        "CHATGPT_BASE_URL": "https://chat.example.invalid",
+        "CHATGPT_CDN_BASE_URL": "https://static.example.invalid"
+      },
+      "stdout": "accepted django=http://django:8000/ chat=https://chat.example.invalid/\n",
+      "stderr": "",
+      "exit_status": 0
+    },
+    {
+      "label": "ROLLBACK",
+      "command": [
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo\\bin\\cargo.exe",
+        "run",
+        "--locked",
+        "--offline",
+        "--quiet",
+        "--manifest-path",
+        "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\rollback-source\\Cargo.toml",
+        "--example",
+        "upstream_probe"
+      ],
+      "input": {
+        "GATEWAY_ADMIN_SECRET": "fixture-admin-secret-0001",
+        "CREDENTIAL_ENCRYPTION_KEY": "fixture-encryption-key-000000000001",
+        "GATEWAY_COMPAT_PROFILE": "mirror",
+        "GATEWAY_UPSTREAM_MODE": "configured",
+        "DJANGO_UPSTREAM": "http://django:8000",
+        "CHATGPT_BASE_URL": "https://chat.example.invalid",
+        "CHATGPT_CDN_BASE_URL": "https://static.example.invalid"
+      },
+      "stdout": "",
+      "stderr": "当前候选制品只允许 http 数字回环上游；真实传输兼容门禁尚未通过\n",
+      "exit_status": 1
+    }
+  ],
+  "rollback": {
+    "command": [
+      "E:/T/Git2026_6/bin/bash.exe",
+      "-c",
+      "artifacts/phase1/ROLLBACK.sh artifacts/phase1/rollback-copy.zip"
+    ],
+    "exit_status": 0,
+    "stdout": "Restored pristine source archive; databases and upstream resources were not modified.\n",
+    "stderr": "",
+    "restored_sha256": "bc0b14a57a4e1106ebf0fb5500831f8e659879cd3a6f8a2db466a7f28c8cb6c2"
+  },
+  "claim_scope": "read-only revalidation of existing evidence; no candidate or production modification"
+}

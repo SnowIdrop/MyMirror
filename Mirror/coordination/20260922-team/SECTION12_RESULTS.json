@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "section": 12,
+  "route": "read_only_audit_and_offline_checks",
+  "target": "E:/M/Project/MiRebuild/Mirror/gateway-rust/artifacts/phase1/source",
+  "source_snapshot": "E:/M/Project/MiRebuild/Mirror/gateway-rust/artifacts/phase1/coordination/integrated-f95fc1eeb7d2.zip",
+  "snapshot_sha256": "f95fc1eeb7d239dfc5b5e6e999b7c2443dc082a63bc9f6f6f7007e6bc3c53c6e",
+  "source_commit_reference": "1e1e30e8d0dd500e38f9d45d416bb911c4778c3a",
+  "git_comparison": "32 byte-identical; COMPATIBILITY.md differs only CRLF vs LF; snapshot hash is authoritative test input",
+  "product_modifications": [],
+  "real_account_requests": false,
+  "architecture_changed": false,
+  "end_to_end_identity_acceptance": "尚未验证",
+  "sole_integrator": "01a0c9af-fab7-7780-af7f-537dde662636",
+  "handoff": false,
+  "verified_consistent": [
+    {
+      "scope": "合成HTTP固定源、环境代理不介入、两个故障用例无出口fallback、单次503只一次请求",
+      "evidence": "regression/section12 17-case loopback probe; not TLS/browser/WS acceptance"
+    },
+    {
+      "scope": "同账号Alice/Bob凭据及Cookie不合并，精确token刷新与后续登出/撤权，受控同DB/key重启保留绑定",
+      "evidence": "acl/section12 7 targeted existing tests plus lifecycle probe; not complete resource ACL"
+    }
+  ],
+  "explained_differences": [
+    {
+      "id": "S12-D1",
+      "finding": "保存mirror_proxy/proxy_node_id没有约束普通业务出口",
+      "status": "requires correction before egress-binding acceptance",
+      "evidence": "server.rs:76-80; lifecycle proxy-trap0; regression business direct vs diagnostic explicit proxy"
+    },
+    {
+      "id": "S12-D2",
+      "finding": "普通me旧在途请求在同用户同账号重登录后选中新凭据代次",
+      "status": "requires per-token/generation binding; not cross-user leakage",
+      "evidence": "server.rs:888-942; proxy.rs:313-325; deterministic local trace"
+    },
+    {
+      "id": "S12-D3",
+      "finding": "登录/诊断与代理/刷新/静态头策略不同，固定UA不绑定CH或真实浏览器JS环境",
+      "status": "profile policy absent; not full fingerprint coherence",
+      "evidence": "server.rs:421-446,748-758; proxy.rs:393-415"
+    },
+    {
+      "id": "S12-D4",
+      "finding": "模板主动外链导航、非匹配WS、srcset/worker/import等无完整覆盖，CSP允许外部源，末尾注入不能保证先于原HTML加载",
+      "status": "conditional source/helper behavior; no observed browser leak",
+      "evidence": "gateway-client.html:870-901,1314-1352; proxy.rs:540-576; server.rs:156"
+    },
+    {
+      "id": "S12-D5",
+      "finding": "诊断client跟随302而主client不跟随；受限协议重试不是明确的生成不重放策略",
+      "status": "redirect difference observed; ProtocolNacks behavior untested and generation not open",
+      "evidence": "server.rs:76-80,743-761; 17-case probe; local reqwest sources"
+    },
+    {
+      "id": "S12-D6",
+      "finding": "当前Permissions-Policy禁microphone，语音启用还需浏览器能力和实际媒体路径验收",
+      "status": "source and synthetic response header observed; no actual voice session tested",
+      "evidence": "server.rs:246; regression/section12/probe-cases.json"
+    }
+  ],
+  "not_verified": [
+    "真实TLS/ALPN/HTTP2特征和公网IP/DNS/NAT出口",
+    "真实浏览器UA/Client Hints/平台/语言/时区/能力与完整请求瀑布",
+    "文件/私有媒体、成功WebSocket、实际语音协议及其出口",
+    "上游device/session/cookie续期与全局CF缓存的作用域/profile绑定",
+    "重连/故障/重启全部组合，协议NACK重试与未来生成不自动重放",
+    "完整资源ACL路由/实时撤权仍未接线"
+  ],
+  "worklines": [
+    {
+      "thread_id": "01a0c9cb-a484-7fe1-ac81-3e902d8bc3e2",
+      "report": "C:/Users/Administrator/.codex/worktrees/24c5/MiRebuild/coordination/acl/section12/REPORT_SECTION12.md",
+      "results": "C:/Users/Administrator/.codex/worktrees/24c5/MiRebuild/coordination/acl/section12/results-section12.json",
+      "checks": "7 targeted existing Rust tests + lifecycle probe, exit0; controlled gateway termination exit1"
+    },
+    {
+      "thread_id": "01a0c9cb-a484-7fe1-ac81-3e83e9eef7ef",
+      "report": "C:/Users/Administrator/.codex/worktrees/0bb0/MiRebuild/coordination/regression/section12/REPORT_SECTION12.md",
+      "results": "C:/Users/Administrator/.codex/worktrees/0bb0/MiRebuild/coordination/regression/section12/results-section12.json",
+      "checks": "build/features/17-case probe exit0; gateway controlled termination exit1"
+    },
+    {
+      "thread_id": "01a0c9cb-a4db-7422-8c45-60c730af54d2",
+      "report": "C:/Users/Administrator/.codex/worktrees/42ea/MiRebuild/coordination/admin/section12/REPORT_SECTION12.md",
+      "results": "C:/Users/Administrator/.codex/worktrees/42ea/MiRebuild/coordination/admin/section12/results-section12.json",
+      "checks": "15 Node VM pure-helper checks exit0; no actual browser/network"
+    }
+  ],
+  "coordinator_checks": [
+    {
+      "event": "604d61",
+      "exit_status": 0,
+      "check": "initial snapshot/four-role hash integrity"
+    },
+    {
+      "event": "bf925c",
+      "exit_status": 1,
+      "check": "strict Git-vs-ZIP equality identified COMPATIBILITY.md byte difference"
+    },
+    {
+      "event": "21cb3c",
+      "exit_status": 0,
+      "check": "classified sole line-ending difference; no substantive difference; six delivered report/result files reopened"
+    }
+  ],
+  "execution_context_proposal": [
+    "trusted principal and authorization version (ACL identity stays separate)",
+    "local session reference plus binding generation",
+    "server-resolved upstream account and authenticated upstream session reference when actually known",
+    "encrypted credential/cookie bundle reference and generation",
+    "approved egress policy/profile reference and version",
+    "actual transport/client feature profile reference and version; browser observations separate",
+    "optional proven upstream device/session identifiers; unknown stays unknown",
+    "validity/revocation state; explicit generation transition; no silent switch or automatic generation replay"
+  ],
+  "acceptance_action": "Keep pages/media/realtime gates closed. Under existing development scope sole owner can next create focused regressions and local fixes for credential generation and actual egress binding; architecture changes and real accounts still need separate user confirmation.",
+  "architecture_decision": "No change selected. Ordinary reverse proxy can bound server request context but does not control whole browser JS/network/transport identity; any managed remote-browser design must separately evaluate UI, audio, file bridge, performance and per-user isolation before confirmation."
+}

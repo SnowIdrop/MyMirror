@@ -1,0 +1,170 @@
+{
+  "schema_version": 1,
+  "record_type": "coordination_supplement_not_project_checkpoint",
+  "coordinator": "01a0c9c9-4508-75d1-a709-20aa6dbb69f9",
+  "project_root": "E:/M/Project/MiRebuild",
+  "integration_owner": "01a0c9af-fab7-7780-af7f-537dde662636",
+  "handoff": false,
+  "snapshot": {
+    "commit": "b837ba2556bc3363570d247e61246e6b8f43421c",
+    "candidate_path": "Mirror/gateway-rust/artifacts/phase1/source",
+    "default_worktree_commit": "4c7b3fa6d8448b0d7410820c0679365083172b67",
+    "package_sha256": "a7f812bb44750d5686f58cdc7ad7bb4c1b5934c247f7a247057b0ef7be8d6c2e",
+    "notes": "Active candidate differs from commit; never use its changing directory as team input. Backend is untracked."
+  },
+  "boundaries": {
+    "max_execution_lines": 4,
+    "coordinator_writes": [
+      "Mirror/coordination/20260922-team/**"
+    ],
+    "owner_only": [
+      "Mirror/gateway-rust/artifacts/phase1/source shared entrypoints/config/schema/dependencies",
+      "Mirror/gateway-rust/artifacts/phase1/STATUS.json",
+      "Mirror/gateway-rust/artifacts/phase1/MODIFIED_FILE.zip",
+      "Mirror/gateway-rust/artifacts/phase1/DIFF_FILE.patch",
+      "Mirror/gateway-rust/artifacts/phase1/VERIFICATION.txt",
+      "Mirror/gateway-rust/artifacts/phase1/ROLLBACK.sh"
+    ],
+    "prohibited": [
+      "real account requests",
+      "external writes",
+      "production cutover",
+      "old upstream resource deletion",
+      "Django user reset",
+      "reset/overwrite active owner directory"
+    ]
+  },
+  "lines": [
+    {
+      "task": "Existing page/static/auth refresh and integration",
+      "phase": 1,
+      "thread_id": "01a0c9af-fab7-7780-af7f-537dde662636",
+      "workspace": "E:/M/Project/MiRebuild",
+      "state": "active; owner confirmed boundaries in phase1/COORDINATION.json; no handoff",
+      "boundary_evidence": "E:/M/Project/MiRebuild/Mirror/gateway-rust/artifacts/phase1/COORDINATION.json",
+      "current_work": "Current integration batch finalized: configuration + static JS/CSS + auth-session refresh + staged independent ACL + adapted boundary tests; next HTML/bootstrap isolation",
+      "stable_static_snapshot": "E:/M/Project/MiRebuild/Mirror/gateway-rust/artifacts/phase1/coordination/static-60ab65054a9a.zip",
+      "stable_static_sha256": "60ab65054a9aadec73aa222a21ff363295c5fda4e896fcbd7e5453fa3b2eb783",
+      "observed_dirty_files": [
+        "Mirror/gateway-rust/artifacts/phase1/source/src/server.rs",
+        "Mirror/gateway-rust/artifacts/phase1/source/src/server/proxy.rs",
+        "Mirror/gateway-rust/artifacts/phase1/source/src/server/static_assets.rs"
+      ],
+      "validation": "109 Rust tests, all-target Clippy, 30 config cases passed on one integrated candidate; original 24 source files retained; source rollback verified; real environment not run",
+      "pending_integration": []
+    },
+    {
+      "task": "Mirror 权限底座契约与独立模块",
+      "phase": 2,
+      "client_thread_id": "client-new-thread:684710bb-eb88-4d3e-ab66-6c266e0f6931",
+      "thread_id": "01a0c9cb-a484-7fe1-ac81-3e902d8bc3e2",
+      "workspace": "C:/Users/Administrator/.codex/worktrees/24c5/MiRebuild",
+      "state": "integrated unchanged as unexported module plus tests; no runtime ACL wiring",
+      "report": "C:/Users/Administrator/.codex/worktrees/24c5/MiRebuild/coordination/acl/REPORT.md",
+      "results": "C:/Users/Administrator/.codex/worktrees/24c5/MiRebuild/coordination/acl/results.json",
+      "observed_checks": "28 isolated SQLite tests; test-target Clippy; rustfmt; patch reconstruction; rollback; no product wiring",
+      "ownership": [
+        "own worktree coordination/acl/**",
+        "own stable candidate copy src/resource_acl.rs",
+        "own stable candidate copy tests/coord_acl_contract.rs"
+      ],
+      "dependency": "identity v1 agreement; owner integrates shared files",
+      "validation": "28 isolated tests plus all 28 rerun in combined 109-test candidate; module/test hashes match delivery",
+      "pending_integration": [
+        "trusted identity, account mapping, new DB/backup, public authorization and reliable revocation wiring remain future work"
+      ]
+    },
+    {
+      "task": "Mirror 离线安全回归独立测试",
+      "phase": 1,
+      "client_thread_id": "client-new-thread:f313cfd2-8751-4147-b278-f78359ad4097",
+      "thread_id": "01a0c9cb-a484-7fe1-ac81-3e83e9eef7ef",
+      "workspace": "C:/Users/Administrator/.codex/worktrees/0bb0/MiRebuild",
+      "state": "integrated by sole owner; refresh fixture upgraded with safety assertions retained; combined regression passed",
+      "report": "C:/Users/Administrator/.codex/worktrees/0bb0/MiRebuild/coordination/regression/REPORT.md",
+      "results": "C:/Users/Administrator/.codex/worktrees/0bb0/MiRebuild/coordination/regression/results.json",
+      "observed_checks": "b837 64 baseline /72 modified /64 rollback; static60ab 78/78; both targeted Clippy; no product modifications",
+      "ownership": [
+        "own worktree coordination/regression/**",
+        "own stable candidate copy tests/coord_boundary_regression.rs"
+      ],
+      "dependency": "b837 baseline then owner immutable static-60ab65054a9a.zip; identical eight new tests on both inputs",
+      "validation": "8 new tests passed in b83772/static78 and integrated109; adapted final file hash 7fccb8e6ac1cd2176c1814ef979fd0dd671898419c630800a86380f8fb6f0c6f",
+      "pending_integration": []
+    },
+    {
+      "task": "Mirror 后台资源入口契约准备",
+      "phase": 2,
+      "client_thread_id": "client-new-thread:cbc0f375-4a80-4fb7-9027-e1b614004320",
+      "thread_id": "01a0c9cb-a4db-7422-8c45-60c730af54d2",
+      "workspace": "C:/Users/Administrator/.codex/worktrees/42ea/MiRebuild",
+      "state": "delivered; accepted as proposal only; final ACL source binding corrected and historical reference retained",
+      "report": "C:/Users/Administrator/.codex/worktrees/42ea/MiRebuild/coordination/admin/REPORT.md",
+      "results": "C:/Users/Administrator/.codex/worktrees/42ea/MiRebuild/coordination/admin/results.json",
+      "observed_checks": "30 standard-library proposal tests; 23 backend source hashes stable; no Django/Vue product implementation or runtime acceptance",
+      "ownership": [
+        "own worktree coordination/admin/**"
+      ],
+      "dependency": "ACL Identity/API v1; exact backend source hashes",
+      "validation": "30 proposal tests passed; source/key/error/DTO distinctions reviewed; final ACL source binding 80ee341... confirmed",
+      "pending_integration": [
+        "reviewable interface proposal; no backend product change"
+      ]
+    }
+  ],
+  "evidence_levels": {
+    "historical": "Configuration transaction in existing VERIFICATION.txt; retained, not rerun by coordinator",
+    "current": "Owner integrated three new files with refresh-compatible test adaptation; coordinator verified stable ZIP f95fc1..., role hashes, CRC, source members and matching 109-test/checkpoint ledgers",
+    "not_accepted": [
+      "phase1 closed loop",
+      "phase2 integrated ACL",
+      "phase3-5 business functionality",
+      "real environment acceptance",
+      "complete replacement"
+    ]
+  },
+  "historical_transaction": {
+    "changed_symbols": [
+      "Config::from_env",
+      "Config.cdn_upstream",
+      "service_url",
+      "GATEWAY_UPSTREAM_MODE"
+    ],
+    "baseline": {
+      "exit_status": 1,
+      "stdout": "",
+      "stderr": "当前候选制品只允许 http 数字回环上游；真实传输兼容门禁尚未通过\n"
+    },
+    "modified": {
+      "exit_status": 0,
+      "stdout": "accepted django=http://django:8000/ chat=https://chat.example.invalid/\n",
+      "stderr": ""
+    },
+    "rollback": {
+      "exit_status": 1,
+      "stdout": "",
+      "stderr": "当前候选制品只允许 http 数字回环上游；真实传输兼容门禁尚未通过\n",
+      "restored_sha256": "bc0b14a57a4e1106ebf0fb5500831f8e659879cd3a6f8a2db466a7f28c8cb6c2"
+    }
+  },
+  "coordination_errors": [{"tool":"apply_patch","error":"invalid patch: multiple operations target ledger.json","exit_status":null,"corrected_by":"single Update File patch","product_effect":"none"},{"tool":"read-only security subagent","error":"agent_task_body_unavailable; route could not decrypt task body","exit_status":null,"corrected_by":"primary agent directly reviewed module and test anchors; no independent review success claim","product_effect":"none"}],
+  "identity_v1_decision": {"user_id":"canonical decimal Django ID string","is_admin":"trusted staff OR superuser","authorization_version":"opaque string mapped from wire version","principal_kind":"user/visitor; new ACL rejects visitor because FREE_ACCOUNT shares user_id","scope":"peers aligned and owner reviewed; not yet product-wired; no legacy login change"},
+  "integration_request": "E:/M/Project/MiRebuild/Mirror/coordination/20260922-team/INTEGRATION.json",
+  "integration_result": {"status":"this batch integrated and coordinator verified; overall replacement incomplete","snapshot":"E:/M/Project/MiRebuild/Mirror/gateway-rust/artifacts/phase1/coordination/integrated-f95fc1eeb7d2.zip","sha256":"f95fc1eeb7d239dfc5b5e6e999b7c2443dc082a63bc9f6f6f7007e6bc3c53c6e","receipt":"E:/M/Project/MiRebuild/Mirror/coordination/20260922-team/COLLECTED_RESULTS.json","verification_event":"b15950 exit0","rust_tests":109,"all_check_commands_passed":33},
+  "section12": {
+    "state": "three reused worklines completed; sole owner accepted and archived audit, updated STATUS/COORDINATION and appended existing VERIFICATION; page gate remains not cleared",
+    "owner_intake": "E:/M/Project/MiRebuild/Mirror/gateway-rust/artifacts/phase1/section12-intake.json",
+    "coordinator_final_receipt": "E:/M/Project/MiRebuild/Mirror/coordination/20260922-team/section12-final-receipt.json",
+    "report": "E:/M/Project/MiRebuild/Mirror/coordination/20260922-team/SECTION12_REPORT.md",
+    "results": "E:/M/Project/MiRebuild/Mirror/coordination/20260922-team/SECTION12_RESULTS.json",
+    "input_sha256": "f95fc1eeb7d239dfc5b5e6e999b7c2443dc082a63bc9f6f6f7007e6bc3c53c6e",
+    "new_execution": "7 targeted existing Rust tests + lifecycle probe; 17 request egress probe; 15 pure-JS helper checks; all respective runners exit0, no full109 rerun",
+    "principal_findings": ["saved proxy does not bind business egress", "old in-flight me may select same-user replacement credentials", "HTTP header/client and browser runtime profiles differ", "conditional browser direct paths and transport coverage remain", "diagnostic redirect policy differs"],
+    "end_to_end_consistency": "尚未验证",
+    "product_changed": false,
+    "architecture_changed": false,
+    "real_accounts_used": false,
+    "provenance_check": "32 archive files byte-identical to referenced commit; COMPATIBILITY.md only CRLF/LF difference; strict initial equality error bf925c exit1 retained, classified rerun21cb3c exit0"
+  },
+  "next": "Owner incorporates section12 acceptance gate; next narrow batch addresses ordinary-request credential generation and actual egress binding before page opening, alongside isolated HTML/browser boundary verification. Existing developer authorization covers local fixes; architecture changes and real accounts still require separate confirmation."
+}

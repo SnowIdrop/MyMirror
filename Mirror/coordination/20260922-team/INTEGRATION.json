@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "kind": "reviewed_integration_request",
+  "coordinator": "01a0c9c9-4508-75d1-a709-20aa6dbb69f9",
+  "sole_executor": "01a0c9af-fab7-7780-af7f-537dde662636",
+  "handoff": false,
+  "target": "E:/M/Project/MiRebuild/Mirror/gateway-rust/artifacts/phase1/source",
+  "input_baseline": "b837ba2556bc3363570d247e61246e6b8f43421c",
+  "allow_product_activation": false,
+  "deliveries": [
+    {
+      "name": "isolated_acl",
+      "thread_id": "01a0c9cb-a484-7fe1-ac81-3e902d8bc3e2",
+      "patch": "C:/Users/Administrator/.codex/worktrees/24c5/MiRebuild/coordination/acl/DIFF_FILE.patch",
+      "patch_sha256": "5c678238cda0235aeac30fb0d84ddf3a800ab0bacf6502f3d4ceb5f03b7c5ce1",
+      "files": {
+        "src/resource_acl.rs": "80ee34100574d8b746905ae71ea42b67d25c13410e247b4408e47db4ea0caa39",
+        "tests/coord_acl_contract.rs": "8b06f74d703632fce6546d0b5463d50c8f830d81547f605ce4e8f180b419dbfa"
+      },
+      "results": "C:/Users/Administrator/.codex/worktrees/24c5/MiRebuild/coordination/acl/results.json",
+      "tests": 28,
+      "validation_scope": "isolated module, not runtime ACL",
+      "coordinator_hash_and_patch_check": {
+        "exit_status": 0,
+        "event": "93d11c"
+      }
+    },
+    {
+      "name": "boundary_regression",
+      "thread_id": "01a0c9cb-a484-7fe1-ac81-3e83e9eef7ef",
+      "patch": "C:/Users/Administrator/.codex/worktrees/0bb0/MiRebuild/coordination/regression/INTEGRATION.patch",
+      "patch_sha256": "08a1d1deea217769f08d81aa1a2b8ee0178bb220046c477d49dabc1196001b05",
+      "files": {
+        "tests/coord_boundary_regression.rs": "e2f09e37db56ff7f25129304933d0b42332bc1da2aa169a90ad7bd2dd0845ecc"
+      },
+      "results": "C:/Users/Administrator/.codex/worktrees/0bb0/MiRebuild/coordination/regression/results.json",
+      "tests": 8,
+      "cross_batch": {
+        "static_input_sha256": "60ab65054a9aadec73aa222a21ff363295c5fda4e896fcbd7e5453fa3b2eb783",
+        "total_tests": 78,
+        "exit_status": 0
+      },
+      "coordinator_hash_and_patch_check": {
+        "exit_status": 0,
+        "event": "b26392"
+      },
+      "auth_adaptation": "Owner may update accounts fixture and auth-session egress assumptions for newly observed refresh contract; record before/after hash; preserve all security assertions; no skipped test"
+    },
+    {
+      "name": "admin_proposal",
+      "thread_id": "01a0c9cb-a4db-7422-8c45-60c730af54d2",
+      "contract": "C:/Users/Administrator/.codex/worktrees/42ea/MiRebuild/coordination/admin/admin-v1.contract.json",
+      "results": "C:/Users/Administrator/.codex/worktrees/42ea/MiRebuild/coordination/admin/results.json",
+      "tests": 30,
+      "scope": "proposal only; no Django/Vue/Rust runtime changes",
+      "review_binding": "Final ACL module 80ee341...; older f6a613... explicitly historical; module Unauthorized has no HTTP classification; resource created_at DTO unimplemented"
+    }
+  ],
+  "steps": [
+    "Recheck hashes and patch applicability in owner's current candidate; never replace source directory from supplemental zips",
+    "Apply only three added files at safe boundary; do not add ACL lib export/schema/init/routing",
+    "Adapt boundary test fixture to auth-session-only contract if needed; preserve observed static/no arbitrary target/no credential leak/isolation gates",
+    "Run all-targets Rust, Clippy -D warnings, 30 config cases on the same integrated candidate; keep command arrays/literal outputs/exit statuses",
+    "Update existing project STATUS and four roles only as owner; preserve old baseline/static evidence and add auth/integration evidence",
+    "Write stable integrated source snapshot/hash, test results, modified field/symbols, remaining work and process state to COORDINATION.json"
+  ],
+  "acceptance": "Observed combined candidate test/build and repackaging events; not product permission or real-account acceptance"
+}
