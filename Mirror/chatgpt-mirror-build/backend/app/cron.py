@@ -40,6 +40,10 @@ def _update_token(chatgpt_username, chatgpt_token, client_id=None):
 
     if res.status_code != 200:
         logger.info("token 更新失败: account=%s status=%s", chatgpt_username, res.status_code)
+        if isinstance(res_json, dict) and res_json.get("code") == "upstream_blocked":
+            # 上游被 Cloudflare 拦截是瞬时故障：凭据状态未知，不能据此清空 token。
+            logger.warning("上游被拦截，保留 token: account=%s status=%s", chatgpt_username, res.status_code)
+            return None
         message = res_json.get("message", "") if isinstance(res_json, dict) else str(res_json)
         if (
             "token 失效" in message

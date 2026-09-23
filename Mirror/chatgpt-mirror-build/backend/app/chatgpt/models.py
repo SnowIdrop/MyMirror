@@ -78,8 +78,18 @@ class ChatgptAccount(models.Model):
         result = req_gateway("post", "/api/diagnose-chatgpt-auth", json={
             "access_token": self.access_token,
             "session_token": self.session_token,
+            "extra_cookies": self.extra_cookies,
             "proxy_node_id": self.proxy_node_id,
         })
+        # 上游被 Cloudflare 拦截时凭据只是“无法验证”，不是失效：
+        # 只记录诊断信息，不改凭据有效性、账号、套餐与 updated_time
+        # （updated_time 是并发编辑的版本标记，不能被一次拦截改写）。
+        if result.get("upstream_blocked"):
+            self.last_check_at = result.get("last_check_at") or now
+            self.last_error = result.get("last_error") or "上游被 Cloudflare 拦截，凭据状态未知"
+            self.save(update_fields=["last_check_at", "last_error"])
+            return
+
         self.access_token_valid = bool(result.get("access_token_valid"))
         self.session_token_valid = bool(result.get("session_token_valid"))
         self.last_check_at = result.get("last_check_at") or now

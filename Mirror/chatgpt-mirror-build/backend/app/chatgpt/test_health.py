@@ -197,6 +197,82 @@ class HealthMonitorTests(TestCase):
         self.assertIsNone(AccountHealthState.objects.get().first_failure_at)
         self.send.assert_not_called()
 
+    def test_cloudflare_block_keeps_credentials_and_never_notifies(self):
+        # 已有真实结论：拦截期间不得被改写成失效。
+        ChatgptAccount.objects.filter(pk=self.account.pk).update(
+            access_token_valid=True, session_token_valid=True,
+        )
+        self.gateway.return_value = {
+            "access_token_valid": False,
+            "session_token_valid": False,
+            "upstream_blocked": True,
+            "last_error": "session_token 校验失败: api/auth/session 返回状态 403; Cloudflare 拦截",
+        }
+        self.tick()
+        self.send.assert_not_called()
+        state = AccountHealthState.objects.get()
+        self.assertIsNone(state.first_failure_at)
+        self.assertEqual(state.next_check_at, self.now + timedelta(seconds=CONFIRM_SECONDS))
+        self.assertIn("403", state.detail)
+        # 上游持续拦截也不进入“连续失败”告警路径，并且探测请求带上额外 cookies。
+        self.tick(18)
+        self.tick(36)
+        self.send.assert_not_called()
+        self.assertIsNone(AccountHealthState.objects.get().first_failure_at)
+        self.assertEqual(self.gateway.call_args.kwargs["json"]["extra_cookies"], [])
+        self.account.refresh_from_db()
+        self.assertTrue(self.account.auth_status)
+        self.assertTrue(self.account.access_token_valid)
+        self.assertTrue(self.account.session_token_valid)
+        self.assertEqual(self.account.access_token, "private-access-token")
+
+
+class RefreshAuthDiagnosticsTests(TestCase):
+    """管理页面按需诊断：上游被 Cloudflare 拦截时不得改凭据结论与账号信息。"""
+
+    def setUp(self):
+        self.account = ChatgptAccount.objects.create(
+            chatgpt_username="upstream@example.com", plan_type="pro",
+            access_token="private-access-token", session_token="private-session-token",
+            extra_cookies=[{"name": "cf_clearance", "value": "clearance"}],
+            created_time=1, updated_time=1,
+        )
+
+    def test_upstream_block_keeps_credentials_and_account(self):
+        with patch("app.utils.req_gateway", return_value={
+            "access_token_valid": False,
+            "session_token_valid": False,
+            "upstream_blocked": True,
+            "last_check_at": 1_700_000_000,
+            "last_error": "session_token 校验失败: api/auth/session 返回状态 403; Cloudflare 拦截",
+            "user_info": {"email": "other@example.com", "plan_type": "free"},
+        }) as gateway:
+            self.account.refresh_auth_diagnostics(force=True)
+        self.assertEqual(gateway.call_args.kwargs["json"]["extra_cookies"], [{"name": "cf_clearance", "value": "clearance"}])
+        self.account.refresh_from_db()
+        self.assertEqual(self.account.chatgpt_username, "upstream@example.com")
+        self.assertEqual(self.account.plan_type, "pro")
+        self.assertFalse(self.account.access_token_valid)
+        self.assertFalse(self.account.session_token_valid)
+        self.assertEqual(self.account.last_check_at, 1_700_000_000)
+        self.assertIn("403", self.account.last_error)
+        self.assertEqual(self.account.updated_time, 1)
+
+    def test_verified_result_still_updates_account_and_tokens(self):
+        with patch("app.utils.req_gateway", return_value={
+            "access_token_valid": True,
+            "session_token_valid": False,
+            "last_check_at": 1_700_000_001,
+            "last_error": "",
+            "user_info": {"email": "renamed@example.com", "plan_type": "plus"},
+        }):
+            self.account.refresh_auth_diagnostics(force=True)
+        self.account.refresh_from_db()
+        self.assertTrue(self.account.access_token_valid)
+        self.assertFalse(self.account.session_token_valid)
+        self.assertEqual(self.account.chatgpt_username, "renamed@example.com")
+        self.assertEqual(self.account.plan_type, "plus")
+
 
 class MailTransportTests(TestCase):
     def setUp(self):

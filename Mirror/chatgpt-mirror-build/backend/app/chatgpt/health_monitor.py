@@ -37,14 +37,20 @@ def due_checks(limit=4):
 
 
 def probe(account):
+    """返回 (status, detail)：healthy/unhealthy 表示凭据已验证，
+    blocked 表示上游被 Cloudflare 拦截、凭据状态未知。
+    """
     try:
         result = req_gateway("post", "/api/diagnose-chatgpt-auth", timeout=(5, 75), json={
             "access_token": account.access_token,
             "session_token": account.session_token,
+            "extra_cookies": account.extra_cookies,
             "proxy_node_id": account.proxy_node_id,
         })
         if not isinstance(result, dict) or not all(isinstance(result.get(key), bool) for key in ("access_token_valid", "session_token_valid")):
-            return False, "账号诊断返回格式异常"
+            return "unhealthy", "账号诊断返回格式异常"
+        if result.get("upstream_blocked"):
+            return "blocked", result.get("last_error") or "上游被 Cloudflare 拦截，凭据状态未知"
         healthy = result["access_token_valid"] or result["session_token_valid"]
         detail = "至少一种登录凭据可用" if healthy else "AccessToken 与 SessionToken 均不可用"
         # Do not overwrite credentials, plan, auth_status, or a concurrent edit.
@@ -52,10 +58,10 @@ def probe(account):
             access_token_valid=result["access_token_valid"], session_token_valid=result["session_token_valid"],
             last_check_at=int(time.time()), last_error="" if healthy else detail,
         )
-        return healthy, detail
+        return ("healthy" if healthy else "unhealthy"), detail
     except Exception:
         # Never include an upstream response, token or mail credential in alerts.
-        return False, "账号健康检测请求失败（网关、网络或上游异常）"
+        return "unhealthy", "账号健康检测请求失败（网关、网络或上游异常）"
 
 
 def run_check(pk, token, revision, reserve_confirmation=False):
@@ -66,7 +72,7 @@ def run_check(pk, token, revision, reserve_confirmation=False):
         config = AccountHealthSettings.objects.filter(pk=1, enabled=True, revision=revision).first()
         if not state or not config:
             return
-        healthy, detail = probe(state.account)
+        status, detail = probe(state.account)
         now = timezone.now()
         # A deleted/edited account or changed configuration invalidates the old result.
         if not owned.exists() or not AccountHealthSettings.objects.filter(pk=1, enabled=True, revision=revision).exists():
@@ -76,7 +82,12 @@ def run_check(pk, token, revision, reserve_confirmation=False):
             return
         updates = {"last_checked_at": now, "detail": detail,
                    "next_check_at": now + timedelta(minutes=config.interval_minutes)}
-        if healthy:
+        if status == "blocked":
+            # 上游被拦截时凭据状态未知：不记失败、不发告警、保持原有效性，短间隔重试。
+            updates["next_check_at"] = now + timedelta(seconds=CONFIRM_SECONDS)
+            owned.update(**updates)
+            return None
+        if status == "healthy":
             updates.update(first_failure_at=None, notified=False)
         elif not state.first_failure_at:
             updates.update(first_failure_at=now, next_check_at=now + timedelta(seconds=CONFIRM_SECONDS))
