@@ -132,10 +132,13 @@ pub(super) fn refusal() -> Response {
 #[derive(Default)]
 pub(super) struct CreationScanner {
     tail: Vec<u8>,
+    /// 本响应已登记过的 id：SSE 后续增量会重复携带同一个 id，
+    /// 去重后不必为每个增量都尝试一次注定冲突的写入。
+    claimed: std::collections::HashSet<String>,
 }
 
 impl CreationScanner {
-    /// 扫描一个正文块，返回本块内识别到的会话 id（同块内去重）。
+    /// 扫描一个正文块，返回本块内新识别到的会话 id（跨块与同块都去重）。
     pub(super) fn push(&mut self, chunk: &[u8]) -> Vec<String> {
         let mut window = std::mem::take(&mut self.tail);
         window.extend_from_slice(chunk);
@@ -148,7 +151,7 @@ impl CreationScanner {
                 break;
             };
             if let Ok(id) = std::str::from_utf8(id) {
-                if is_conversation_id(id) && !found.iter().any(|seen| seen == id) {
+                if is_conversation_id(id) && self.claimed.insert(id.to_owned()) {
                     found.push(id.to_owned());
                 }
             }
@@ -314,11 +317,15 @@ mod tests {
             scanner.push(b"83ea-be1f-a87b536c1c6c\",\"kind\":\"topic\"}"),
             vec![CONVERSATION.to_owned()]
         );
-        // 同一 id 在后续块重复出现：重新识别一次，落库由“不覆盖”语义去重。
-        assert_eq!(
-            scanner.push(format!("data: {{\"conversation_id\":\"{CONVERSATION}\"}}").as_bytes()),
-            vec![CONVERSATION.to_owned()]
+        // 同一 id 在后续块重复出现（SSE 每个增量都会带）：不再重复登记。
+        assert!(scanner
+            .push(format!("data: {{\"conversation_id\":\"{CONVERSATION}\"}}").as_bytes())
+            .is_empty());
+        // 同块内出现两次也只登记一次。
+        let twice = format!(
+            "{{\"conversation_id\":\"{CONVERSATION}\"}}{{\"conversation_id\":\"{CONVERSATION}\"}}"
         );
+        assert!(scanner.push(twice.as_bytes()).is_empty());
         let mut scanner = CreationScanner::default();
         assert!(scanner.push(b"{\"detail\":\"no conversation here\"}").is_empty());
     }

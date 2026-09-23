@@ -200,21 +200,17 @@ fn table_base(config: &Config, host: &str) -> url::Url {
     })
 }
 
-/// 按策略表处置请求：拒绝返回固定文案，代理复用公共资源转发（不复制凭据）。
-pub(super) async fn answer(app: &App, request: Request, route: Route) -> Response {
-    match route {
-        Route::Refused(message) => error(StatusCode::SERVICE_UNAVAILABLE, message).into_response(),
-        Route::Proxy(target) => {
-            if !matches!(*request.method(), Method::GET | Method::HEAD) {
-                return proxy::method_not_allowed("GET, HEAD");
-            }
-            // 同源公共资源：一律不带账号/CF 凭据，正文不得是可执行页面。
-            static_assets::forward_public(app, request, target, |content_type| {
-                !content_type.eq_ignore_ascii_case("text/html")
-            })
-            .await
-        }
+/// 反代一个已解析的策略表目标：只允许 GET/HEAD，复用公共资源转发（不复制凭据，
+/// 拒绝重定向与 `text/html` 正文）。有意不代理的条目由调用方直接返回文案。
+pub(super) async fn answer(app: &App, request: Request, target: url::Url) -> Response {
+    if !matches!(*request.method(), Method::GET | Method::HEAD) {
+        return proxy::method_not_allowed("GET, HEAD");
     }
+    // 同源公共资源：一律不带账号/CF 凭据，正文不得是可执行页面。
+    static_assets::forward_public(app, request, target, |content_type| {
+        !content_type.eq_ignore_ascii_case("text/html")
+    })
+    .await
 }
 
 /// 最长前缀匹配：`/mapbox/styles/v1/oai-data/` 优先于 `/mapbox/`，

@@ -162,14 +162,13 @@ pub(super) async fn chat_proxy(State(app): State<Shared>, request: Request) -> R
     }
     // 注入脚本改写出去的公共静态/媒体前缀：与 `/assets/`、`/cdn/` 同属同源公共
     // 资源，不需要镜像会话，也一律不带账号凭据。
-    let route = public_prefixes::resolve(&app.config, &path, request.uri().query());
-    if let Some(route @ public_prefixes::Route::Proxy(_)) = route {
-        return public_prefixes::answer(&app, request, route).await;
-    }
     // 有意不代理的前缀保留既有门禁顺序：未登录仍先 401，已登录才给 503 文案。
-    let refusal = match route {
+    let refusal = match public_prefixes::resolve(&app.config, &path, request.uri().query()) {
+        Some(public_prefixes::Route::Proxy(target)) => {
+            return public_prefixes::answer(&app, request, target).await
+        }
         Some(public_prefixes::Route::Refused(message)) => Some(message),
-        _ => None,
+        None => None,
     };
     // 缺失能力必须保持失败，不能用旧二进制回退或伪造成功响应。
     if path.starts_with("/api/") {
