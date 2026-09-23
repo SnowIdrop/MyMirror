@@ -1,0 +1,22 @@
+{
+  "source": "MirrorNiXiang/image.tar",
+  "image_config_digest": "sha256:c89121441e8f63217a95d2950c3da1d2820480c0d299aaf6e36be2202747ab9b",
+  "tags": [
+    "lisa666520/chatgpt-mirror-django:all-in-one"
+  ],
+  "architecture": "amd64",
+  "os": "linux",
+  "created": "2026-09-02T12:29:02.457518504Z",
+  "runtime": {
+    "Entrypoint": [
+      "/usr/local/bin/chatgpt-mirror-all-in-one"
+    ],
+    "Cmd": null,
+    "WorkingDir": "/app",
+    "ExposedPorts": {
+      "40002/tcp": {}
+    }
+  },
+  "original_entrypoint_sha256": "3f7177e3e082b3f31262cf4fce0b5aa66157e5c24965c6f43c04dc0f2d745d0f",
+  "inspection": "Read manifest/config and named entrypoint only; image not executed; no environment values exported."
+}

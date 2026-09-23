@@ -1,0 +1,182 @@
+# ChatGPT Mirror
+
+### 仅适合个人学习和个人研究用图
+
+
+项目重点关注多用户使用、共享账号隔离、移动端兼容、弱网体验和日常运维，**仅适合个人学习、内部研究及其他获得合法授权的非商业场景。**
+
+## 技术栈
+
+- 管理后台：Vue 3、TypeScript、Vite、Pinia、TDesign Vue Next
+- 管理服务：Python、Django 5.1、Django REST Framework
+- 数据存储：SQLite
+- 部署方式：Docker Compose
+
+## 功能概览
+
+- **用户与权限**：管理用户状态、访问权限、可用模型和使用限制。
+- **账号管理**：集中维护 ChatGPT 账号，支持 Cookie 和 Refresh Token 两种录入方式。
+- **号池分配**：通过账号池组织可用账号，并按用户分配访问范围。
+- **共享账号隔离**：不同镜像用户共用上游账号时，尽可能隔离普通对话、归档、搜索、标题和删除操作 & MCP & skills。支持：**模型隔离**，**模型频率限制**
+- **使用记录**：查看访问记录、使用次数和运行状态，便于日常管理与排查。
+- **站点配置**：管理代理、连通性测试、自定义脚本和禁止访问路径。
+- **多端兼容**：持续适配桌面浏览器、iPhone Safari 和 iPhone Chrome 等访问环境。
+- **部署运维**：提供本地及 VPS 的 Docker Compose 编排，便于启动、更新和查看日志。支持通过邮件`SMTP`为定时检测到的已经失效的账号进行邮件推送服务
+```
+
+> 非开源组件未在项目结构中展开。
+
+## 快速开始
+
+### 环境要求
+
+- Docker Engine
+- Docker Compose v2
+- 可用的 HTTPS 域名（生产环境推荐）
+
+### 配置与启动
+
+先在项目根目录复制示例配置：
+
+```bash
+cp .env.example .env
+```
+
+
+然后编辑 `.env`，至少替换以下示例值：
+
+```env
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=请替换为管理员强密码
+
+GATEWAY_ADMIN_SECRET=请替换为独立随机密钥
+DJANGO_SECRET_KEY=请替换为独立随机密钥
+CREDENTIAL_ENCRYPTION_KEY=请替换为至少32位的独立随机密钥
+
+DJANGO_ALLOW_ALL_ORIGINS=disable
+DJANGO_ALLOWED_HOSTS=example.com,django,localhost,127.0.0.1
+DJANGO_CSRF_TRUSTED_ORIGINS=https://example.com
+LOCAL_NETWORK_ACCESS=disable
+
+CLOUDFLARE_TURNSTILE=disable
+CLOUDFLARE_TURNSTILE_SITE_KEY=
+CLOUDFLARE_TURNSTILE_SECRET_KEY=
+```
+
+需要直接通过 `http://localhost:端口` 或 `http://局域网IP:端口` 访问时，可设置：
+
+```env
+LOCAL_NETWORK_ACCESS=enable
+```
+
+该开关会让 Gateway 允许任意 Django Host/Origin/Referer，并强制关闭
+`DJANGO_SESSION_COOKIE_SECURE`、`DJANGO_CSRF_COOKIE_SECURE` 和 `COOKIE_SECURE`，因此不需要再分别设置这三个变量。
+CSRF token 和登录鉴权仍然保留。此模式允许 Cookie 经明文 HTTP 传输，理论只应在可信本地或局域网使用；公网 HTTPS 部署须保持 `disable`。
+除 `enable`、`disable` 外的值会导致服务拒绝启动。
+
+
+请勿将真实密码、Cookie、Token 或 `.env` 文件提交到版本库。
+
+
+
+常用命令
+
+```bash
+docker compose ps
+docker compose logs -f
+docker compose down
+```
+
+### 使用 NGINX/Cloudflare 时记得开启 websocket 支持。并且 NGINX 要求填入以下内容，实现最大化的减少错误
+### 错误出现
+##### (400 Request Header Or Cookie Too Large、414 Request-URI Too Large)&(upstream sent too big header while reading response header from upstream)
+
+### 解决方案：
+
+``` 
+proxy_buffer_size 128k;
+proxy_buffers 8 128k;
+proxy_busy_buffers_size 256k;
+large_client_header_buffers 8 64k;
+client_header_buffer_size 64k;
+```
+
+
+## 管理后台
+
+登录后可以使用以下管理功能：
+
+| 功能 | 说明 |
+| --- | --- |
+| 用户管理 | 维护用户状态、访问权限、使用限制 |
+| ChatGPT 账号 | 添加、更新和检查账号状态，并在需要时手动刷新凭据 |
+| 号池管理 | 对账号进行分组，并配置账号池与镜像用户的关联关系 |
+| 访问日志 | 查看用户访问记录和运行情况，辅助定位异常问题 |
+| 代理管理 | 维护代理配置并执行连通性测试 |
+| 脚本管理 | 维护站点所需的自定义脚本配置 |
+| 访问限制 | 配置不允许镜像用户访问的页面或功能范围 |
+
+
+## 安全与使用边界
+
+- 仅在你拥有授权的账号、网络和部署环境中使用本项目。
+- 使用者应自行遵守 OpenAI 服务条款及所在地法律法规。
+- 不要共享账号凭据、访问令牌、Cookie 或其他敏感信息。
+- 生产环境应使用独立强密钥和 HTTPS，并限制管理端的网络暴露范围。
+- 共享账号隔离只作用于镜像站可控制的范围，不能替代上游账号本身的安全隔离。
+- 上游页面和接口可能变化；本地测试通过不代表部署后的浏览器流程一定可用。
+- 管理员进行任何用户操作（包括但不限于权限，密码）都可能导致正在使用的用户掉线！
+
+## 使用许可
+
+本项目仅允许用于个人学习、研究及其他非商业用途。如需商业使用，须事先取得作者的书面许可。
+
+## 更新日志
+
+### 2026-09
+
+- 增加大量安全性功能
+- 复测
+- 修复错误
+- 修复错误 x 2
+- MCP & skills 隔离
+- 添加：**模型隔离**，**模型频率限制**
+- 添加防止恶意用户通过`//`路径绕过获取 Session Token & Access Token
+- 支持通过邮件`SMTP`为定时检测到的**已经失效的账号进行邮件推送服务**
+
+### 2026-08
+
+- 针对 iPhone Safari 和 iPhone Chrome 偶发请求失败、页面资源解析警告等现象进行兼容性调整。
+- 保持桌面端原有访问行为不变.
+- 增加敏感词（主要用于政治内容）机制检测和验证
+- 增加新的方案，位于代理界面（reqwest/wreq）
+- 优化 bypass 请求
+- 优化代理分流
+- 添加公告功能
+- 细节优化
+- 公告支持 markdown
+- 增加可信域名直接配置列表（脚本）
+- 增加新的实验性最终方案（curl-impersonate）
+- 优化降智检测和必要的应对方案
+- 大幅度减少 Pro 模型的降智几率
+- 添加项目隔离功能
+
+### 2026-07
+
+- 完成一轮安全加固，重点收紧凭据输出、管理权限、跳转边界、敏感日志和生产环境安全配置。
+- 增加共享上游账号时的镜像用户隔离，覆盖普通对话、归档、搜索、标题和删除等常用操作，并限制共享记忆功能带来的交叉影响。
+- 优化页面静态资源和图表内容的加载表现，减少资源缺失、重复加载和卡片显示异常。
+- 修复容器构建过程中偶发的依赖缓存与产物缺失问题，提高重复构建的稳定性。
+
+### 2026-06
+
+- 增加凭据定时更新、并发保护、立即刷新和剩余有效时间展示，降低凭据过期造成的中断。
+- 持续修复移动端对话加载和实时连接兼容问题
+
+### 2026-05 及以前
+- 开发
+
+
+## Star History
+
+![Star History](./imageandvideo/star-history-2026911.png)

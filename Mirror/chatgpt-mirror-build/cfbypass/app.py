@@ -1,0 +1,438 @@
+"""cfbypass 兼容服务（FastAPI + Playwright）。
+
+用途：按网关请求打开白名单内的目标页面，等待页面 Cookie（例如 cf_clearance）
+连续多个轮询保持稳定后，返回 Cookie 与会话 User-Agent，供网关使用同一浏览器
+指纹继续访问上游。
+
+边界与约定：
+- 导航目标必须命中 CF_BYPASS_ALLOWED_HOSTS 白名单，服务不会被当作任意代理使用；
+- 导航接口需要 Authorization: Bearer <CF_BYPASS_SECRET>，与仓库既有服务间
+  认证约定一致；
+- 本实现不包含任何真实 ChatGPT 凭据；仓库内验证只使用 127.0.0.1 本地目标，
+  不对生产 Cloudflare 做验证；
+- 与根目录 docker-compose.yml 中的 cfbypass 服务对齐：容器内监听 8000，
+  通过 uvicorn app:app --host 0.0.0.0 --port 8000 启动，
+  宿主机诊断口映射为 127.0.0.1:18001。
+"""
+
+import asyncio
+import logging
+import os
+import time
+from dataclasses import dataclass
+from hmac import compare_digest
+from urllib.parse import unquote, urlparse
+
+from fastapi import Depends, FastAPI, Header, HTTPException
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from playwright.async_api import Error as PlaywrightError
+from playwright.async_api import TimeoutError as PlaywrightTimeoutError
+from playwright.async_api import async_playwright
+from pydantic import BaseModel, Field
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
+LOGGER = logging.getLogger("cfbypass")
+
+DEFAULT_USER_AGENT = (
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+)
+
+# 单进程内同时运行的浏览器实例上限，避免并发请求耗尽容器内存与 /dev/shm。
+BROWSER_SLOTS = asyncio.Semaphore(2)
+
+# 挑战页探测选择器，仅用于日志诊断。
+CHALLENGE_SELECTORS = "#challenge-form, .cf-challenge, iframe[src*='challenges.cloudflare.com']"
+
+
+def _env_text(name: str, default: str) -> str:
+    raw = os.getenv(name)
+    if raw is None or not raw.strip():
+        return default
+    return raw.strip()
+
+
+def _env_bool(name: str, default: bool) -> bool:
+    raw = os.getenv(name)
+    if raw is None or not raw.strip():
+        return default
+    value = raw.strip().lower()
+    if value in ("1", "true", "yes", "on"):
+        return True
+    if value in ("0", "false", "no", "off"):
+        return False
+    raise ValueError(f"{name} 需要布尔值（true/false），当前为 {raw!r}")
+
+
+def _env_float(name: str, default: float) -> float:
+    raw = os.getenv(name)
+    if raw is None or not raw.strip():
+        return default
+    try:
+        return float(raw.strip())
+    except ValueError:
+        raise ValueError(f"{name} 需要数字，当前为 {raw!r}") from None
+
+
+def _env_int(name: str, default: int) -> int:
+    raw = os.getenv(name)
+    if raw is None or not raw.strip():
+        return default
+    try:
+        return int(raw.strip())
+    except ValueError:
+        raise ValueError(f"{name} 需要整数，当前为 {raw!r}") from None
+
+
+def _env_display_size() -> tuple[int, int]:
+    raw = _env_text("CF_BYPASS_DISPLAY_SIZE", "1920x1080")
+    width, _, height = raw.partition("x")
+    try:
+        return int(width), int(height)
+    except ValueError:
+        raise ValueError(f"CF_BYPASS_DISPLAY_SIZE 需要 宽x高 格式，当前为 {raw!r}") from None
+
+
+def _env_allowed_hosts() -> tuple[str, ...]:
+    raw = _env_text("CF_BYPASS_ALLOWED_HOSTS", "127.0.0.1,localhost")
+    return tuple(part.strip().lower() for part in raw.split(",") if part.strip())
+
+
+def _parse_proxy(raw: str) -> dict | None:
+    """把代理地址解析成 Playwright launch(proxy=...) 参数。
+
+    支持 http://、https://、socks5://、socks5h://（映射为 socks5），
+    用户名与密码需 URL 编码，与 .env.example 的说明保持一致。
+    """
+    raw = raw.strip()
+    if not raw:
+        return None
+    parsed = urlparse(raw)
+    scheme = parsed.scheme.lower()
+    if not parsed.hostname or scheme not in ("http", "https", "socks5", "socks5h"):
+        raise ValueError(f"无法解析代理地址 {raw!r}（支持 http/https/socks5/socks5h）")
+    server = f"{'socks5' if scheme == 'socks5h' else scheme}://{parsed.hostname}"
+    if parsed.port:
+        server += f":{parsed.port}"
+    proxy = {"server": server}
+    if parsed.username:
+        proxy["username"] = unquote(parsed.username)
+    if parsed.password:
+        proxy["password"] = unquote(parsed.password)
+    return proxy
+
+
+@dataclass(frozen=True)
+class Settings:
+    secret: str
+    allowed_hosts: tuple[str, ...]
+    user_agent: str
+    accept_language: str
+    headless: bool
+    max_wait_seconds: float
+    page_load_timeout_seconds: float
+    first_cookie_wait_seconds: float
+    poll_interval_seconds: float
+    cookie_stable_polls: int
+    navigation_retries: int
+    element_lookup_timeout_seconds: float
+    viewport_width: int
+    viewport_height: int
+    proxy_server: str
+
+
+def _load_settings() -> Settings:
+    viewport_width, viewport_height = _env_display_size()
+    proxy_server = _env_text("CF_BYPASS_PROXY_SERVER", "")
+    _parse_proxy(proxy_server)  # 启动时校验一次，配置错误立即暴露
+    return Settings(
+        secret=os.getenv("CF_BYPASS_SECRET", "").strip(),
+        allowed_hosts=_env_allowed_hosts(),
+        user_agent=_env_text("CF_BYPASS_USER_AGENT", DEFAULT_USER_AGENT),
+        accept_language=_env_text("CF_BYPASS_ACCEPT_LANGUAGE", "zh-CN,zh"),
+        headless=_env_bool("CF_BYPASS_HEADLESS", True),
+        max_wait_seconds=_env_float("CF_BYPASS_MAX_WAIT_SECONDS", 20.0),
+        page_load_timeout_seconds=_env_float("CF_BYPASS_PAGE_LOAD_TIMEOUT_SECONDS", 15.0),
+        first_cookie_wait_seconds=_env_float("CF_BYPASS_FIRST_COOKIE_WAIT_SECONDS", 6.0),
+        poll_interval_seconds=_env_float("CF_BYPASS_POLL_INTERVAL_SECONDS", 0.5),
+        cookie_stable_polls=_env_int("CF_BYPASS_COOKIE_STABLE_POLLS", 2),
+        navigation_retries=_env_int("CF_BYPASS_NAVIGATION_RETRIES", 1),
+        element_lookup_timeout_seconds=_env_float("CF_BYPASS_ELEMENT_LOOKUP_TIMEOUT_SECONDS", 0.2),
+        viewport_width=viewport_width,
+        viewport_height=viewport_height,
+        proxy_server=proxy_server,
+    )
+
+
+SETTINGS = _load_settings()
+
+if not SETTINGS.secret:
+    LOGGER.warning("CF_BYPASS_SECRET 未配置，/bypass 将拒绝所有请求")
+if not SETTINGS.allowed_hosts:
+    LOGGER.warning("CF_BYPASS_ALLOWED_HOSTS 为空，/bypass 将拒绝所有目标")
+LOGGER.info(
+    "cfbypass 配置: allowed_hosts=%s headless=%s max_wait=%.1fs page_load_timeout=%.1fs stable_polls=%d retries=%d proxy=%s",
+    SETTINGS.allowed_hosts,
+    SETTINGS.headless,
+    SETTINGS.max_wait_seconds,
+    SETTINGS.page_load_timeout_seconds,
+    SETTINGS.cookie_stable_polls,
+    SETTINGS.navigation_retries,
+    "已配置" if SETTINGS.proxy_server else "未配置",
+)
+
+
+class BypassRequest(BaseModel):
+    url: str = Field(description="目标页面地址，主机必须在 CF_BYPASS_ALLOWED_HOSTS 内")
+    proxy_server: str = Field(default="", description="可选，覆盖本次请求的代理")
+
+
+class CookieInfo(BaseModel):
+    name: str
+    value: str
+    domain: str
+    path: str
+    expires: float
+    http_only: bool
+    secure: bool
+    same_site: str
+
+
+class BypassResponse(BaseModel):
+    ok: bool = True
+    url: str
+    user_agent: str
+    cookies: list[CookieInfo]
+    elapsed_seconds: float
+
+
+class CookieWaitTimeout(RuntimeError):
+    def __init__(self, cookie_count: int, waited_seconds: float) -> None:
+        super().__init__(f"等待 Cookie 稳定超时（已获得 {cookie_count} 个，等待 {waited_seconds:.1f}s）")
+        self.cookie_count = cookie_count
+        self.waited_seconds = waited_seconds
+
+
+class RedirectNotAllowed(RuntimeError):
+    def __init__(self, final_url: str) -> None:
+        super().__init__(f"导航最终地址主机不在白名单内: {final_url}")
+        self.final_url = final_url
+
+
+def _to_cookie_info(cookie: dict) -> CookieInfo:
+    return CookieInfo(
+        name=cookie["name"],
+        value=cookie["value"],
+        domain=cookie["domain"],
+        path=cookie["path"],
+        expires=float(cookie.get("expires", -1.0)),
+        http_only=bool(cookie.get("httpOnly")),
+        secure=bool(cookie.get("secure")),
+        same_site=str(cookie.get("sameSite", "")),
+    )
+
+
+def _host_allowed(host: str) -> bool:
+    host = host.strip().lower().rstrip(".")
+    for pattern in SETTINGS.allowed_hosts:
+        if pattern.startswith("."):
+            if host == pattern[1:] or host.endswith(pattern):
+                return True
+        elif host == pattern:
+            return True
+    return False
+
+
+def _validated_target(raw_url: str) -> str:
+    target = raw_url.strip()
+    parsed = urlparse(target)
+    if parsed.scheme not in ("http", "https") or not parsed.hostname:
+        raise HTTPException(
+            status_code=400,
+            detail={"code": "invalid_url", "message": "仅支持带主机的 http/https 地址"},
+        )
+    if not _host_allowed(parsed.hostname):
+        raise HTTPException(
+            status_code=400,
+            detail={"code": "host_not_allowed", "message": f"主机 {parsed.hostname!r} 不在白名单内"},
+        )
+    return target
+
+
+def require_secret(authorization: str = Header(default="")) -> None:
+    if not SETTINGS.secret:
+        raise HTTPException(
+            status_code=503,
+            detail={"code": "server_misconfigured", "message": "服务未配置 CF_BYPASS_SECRET"},
+        )
+    expected = f"Bearer {SETTINGS.secret}"
+    if not compare_digest(authorization.encode("utf-8"), expected.encode("utf-8")):
+        raise HTTPException(
+            status_code=401,
+            detail={"code": "unauthorized", "message": "缺少或错误的 Bearer 密钥"},
+        )
+
+
+async def _challenge_present(page) -> bool:
+    try:
+        await page.wait_for_selector(
+            CHALLENGE_SELECTORS,
+            state="attached",
+            timeout=SETTINGS.element_lookup_timeout_seconds * 1000,
+        )
+        return True
+    except PlaywrightTimeoutError:
+        return False
+
+
+async def _wait_for_stable_cookies(page, context) -> list[CookieInfo]:
+    """等待目标站点的 Cookie 连续稳定。
+
+    与 .env.example 的约定一致：CF_BYPASS_FIRST_COOKIE_WAIT_SECONDS 只用于首次
+    仍无 Cookie 时输出日志提示，不会提前结束；总截止时间为
+    CF_BYPASS_MAX_WAIT_SECONDS。截止时仍未稳定则抛出 CookieWaitTimeout。
+    """
+    started = time.monotonic()
+    deadline = started + SETTINGS.max_wait_seconds
+    previous_snapshot: tuple = ()
+    stable_polls = 0
+    hint_logged = False
+    cookie_count = 0
+    while True:
+        cookies = await context.cookies()
+        snapshot = tuple(
+            sorted((cookie["name"], cookie["domain"], cookie["path"], cookie["value"]) for cookie in cookies)
+        )
+        cookie_count = len(cookies)
+        if snapshot and snapshot == previous_snapshot:
+            stable_polls += 1
+        else:
+            stable_polls = 0
+        previous_snapshot = snapshot
+        if snapshot and stable_polls >= SETTINGS.cookie_stable_polls:
+            LOGGER.info("Cookie 已稳定: %d 个，用时 %.2fs", cookie_count, time.monotonic() - started)
+            return [_to_cookie_info(cookie) for cookie in cookies]
+        elapsed = time.monotonic() - started
+        if not hint_logged and not snapshot and elapsed >= SETTINGS.first_cookie_wait_seconds:
+            hint_logged = True
+            LOGGER.info(
+                "已等待 %.1fs 仍无 Cookie，继续等待至 %.0fs（挑战页仍在: %s）",
+                elapsed,
+                SETTINGS.max_wait_seconds,
+                await _challenge_present(page),
+            )
+        if time.monotonic() >= deadline:
+            raise CookieWaitTimeout(cookie_count, time.monotonic() - started)
+        await asyncio.sleep(SETTINGS.poll_interval_seconds)
+
+
+async def _goto_with_retries(page, target: str) -> None:
+    attempts = SETTINGS.navigation_retries + 1
+    for attempt in range(1, attempts + 1):
+        try:
+            await page.goto(
+                target,
+                timeout=SETTINGS.page_load_timeout_seconds * 1000,
+                wait_until="domcontentloaded",
+            )
+            return
+        except PlaywrightError as error:
+            if attempt >= attempts:
+                raise
+            LOGGER.warning("导航失败（第 %d/%d 次），准备重试: %s（%s）", attempt, attempts, target, error)
+
+
+async def _navigate(target: str, proxy: dict | None) -> tuple[list[CookieInfo], str]:
+    async with async_playwright() as playwright:
+        browser = await playwright.chromium.launch(headless=SETTINGS.headless, proxy=proxy)
+        try:
+            context = await browser.new_context(
+                user_agent=SETTINGS.user_agent,
+                locale=SETTINGS.accept_language.split(",")[0],
+                viewport={"width": SETTINGS.viewport_width, "height": SETTINGS.viewport_height},
+                extra_http_headers={"Accept-Language": SETTINGS.accept_language},
+            )
+            page = await context.new_page()
+            await _goto_with_retries(page, target)
+            final_url = page.url
+            if not _host_allowed(urlparse(final_url).hostname or ""):
+                raise RedirectNotAllowed(final_url)
+            cookies = await _wait_for_stable_cookies(page, context)
+            return cookies, final_url
+        finally:
+            await browser.close()
+
+
+app = FastAPI(
+    title="cfbypass",
+    version="0.1.0",
+    description="ChatGPT Mirror 的 Cloudflare 放行服务（Playwright）",
+)
+
+
+@app.exception_handler(RequestValidationError)
+async def on_request_validation_error(_request, _error: RequestValidationError) -> JSONResponse:
+    return JSONResponse(
+        status_code=400,
+        content={"detail": {"code": "invalid_request", "message": "请求体不是合法的 JSON 或缺少必需字段"}},
+    )
+
+
+@app.get("/health")
+async def health() -> dict[str, str]:
+    return {"status": "ok", "service": "cfbypass"}
+
+
+@app.post("/bypass", response_model=BypassResponse)
+async def bypass(payload: BypassRequest, _: None = Depends(require_secret)) -> BypassResponse:
+    target = _validated_target(payload.url)
+    try:
+        proxy = _parse_proxy(payload.proxy_server.strip() or SETTINGS.proxy_server)
+    except ValueError as error:
+        raise HTTPException(
+            status_code=400, detail={"code": "invalid_proxy", "message": str(error)}
+        ) from error
+
+    started = time.monotonic()
+    async with BROWSER_SLOTS:
+        try:
+            cookies, final_url = await _navigate(target, proxy)
+        except RedirectNotAllowed as error:
+            raise HTTPException(
+                status_code=403,
+                detail={"code": "redirect_host_not_allowed", "message": str(error)},
+            ) from error
+        except CookieWaitTimeout as error:
+            raise HTTPException(
+                status_code=504,
+                detail={
+                    "code": "cookie_wait_timeout",
+                    "message": str(error),
+                    "url": target,
+                    "cookie_count": error.cookie_count,
+                },
+            ) from error
+        except PlaywrightTimeoutError as error:
+            raise HTTPException(
+                status_code=504,
+                detail={"code": "page_load_timeout", "message": f"页面加载超时: {target}"},
+            ) from error
+        except PlaywrightError as error:
+            raise HTTPException(
+                status_code=502,
+                detail={
+                    "code": "navigation_failed",
+                    "message": f"页面加载失败: {target}",
+                    "detail": str(error),
+                },
+            ) from error
+
+    elapsed = round(time.monotonic() - started, 3)
+    LOGGER.info("导航完成: %s -> %s（%d 个 Cookie，%.2fs）", target, final_url, len(cookies), elapsed)
+    return BypassResponse(
+        url=final_url,
+        user_agent=SETTINGS.user_agent,
+        cookies=cookies,
+        elapsed_seconds=elapsed,
+    )

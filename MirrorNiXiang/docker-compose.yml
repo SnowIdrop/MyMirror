@@ -1,0 +1,17 @@
+services:
+  chatgpt-mirror:
+    image: lisa666520/chatgpt-mirror-django:all-in-one
+    pull_policy: never
+    env_file:
+      - .env
+    ports:
+      - "127.0.0.1:${PORT:-40002}:${PORT:-40002}"
+    volumes:
+      - ./data:/app/data
+    shm_size: "1gb"
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

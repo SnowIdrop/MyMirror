@@ -1,0 +1,76 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      DJANGO_ENV: PRODUCTION
+      DJANGO_DEBUG: "false"
+      DJANGO_SECRET_KEY: "${DJANGO_SECRET_KEY:?DJANGO_SECRET_KEY must be set}"
+      DJANGO_ALLOWED_HOSTS: "backend,localhost,127.0.0.1"
+      DJANGO_CSRF_TRUSTED_ORIGINS: "http://localhost:40002"
+      DJANGO_SECURE_SSL_REDIRECT: "false"
+      DJANGO_SESSION_COOKIE_SECURE: "false"
+      DJANGO_CSRF_COOKIE_SECURE: "false"
+      ADMIN_USERNAME: "${ADMIN_USERNAME:-admin}"
+      ADMIN_PASSWORD: "${ADMIN_PASSWORD:?ADMIN_PASSWORD must be set}"
+      GATEWAY_ADMIN_SECRET: "${GATEWAY_ADMIN_SECRET:?GATEWAY_ADMIN_SECRET must be set}"
+      CREDENTIAL_ENCRYPTION_KEY: "${CREDENTIAL_ENCRYPTION_KEY:?CREDENTIAL_ENCRYPTION_KEY must be set}"
+      CHATGPT_GATEWAY_URL: "http://gateway:8000"
+      ALLOW_REGISTER: "false"
+      SHOW_GITHUB: "false"
+    volumes:
+      - ./backend/db:/app/backend/db
+      - ./backend/logs:/app/backend/logs
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/0x/user/version-cfg', timeout=2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 10s
+    restart: "no"
+
+  gateway:
+    build:
+      context: .
+      dockerfile: gateway/Dockerfile
+    environment:
+      GATEWAY_ADMIN_SECRET: "${GATEWAY_ADMIN_SECRET:?GATEWAY_ADMIN_SECRET must be set}"
+      DJANGO_UPSTREAM: "http://backend:8000"
+      GATEWAY_CONNECT_TIMEOUT_SECONDS: "5"
+      GATEWAY_READ_TIMEOUT_SECONDS: "60"
+      DATABASE_URL: "sqlite:////app/gateway/gateway.db"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: "no"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "127.0.0.1:40002:80"
+    depends_on:
+      gateway:
+        condition: service_started
+    restart: "no"
+
+  cfbypass:
+    build:
+      context: .
+      dockerfile: cfbypass/Dockerfile
+    environment:
+      CF_BYPASS_SECRET: "${GATEWAY_ADMIN_SECRET:?GATEWAY_ADMIN_SECRET must be set}"
+      CF_BYPASS_ALLOWED_HOSTS: "127.0.0.1,localhost"
+      CF_BYPASS_HEADLESS: "true"
+      CF_BYPASS_MAX_WAIT_SECONDS: "20"
+      CF_BYPASS_PAGE_LOAD_TIMEOUT_SECONDS: "15"
+      CF_BYPASS_FIRST_COOKIE_WAIT_SECONDS: "6"
+      CF_BYPASS_POLL_INTERVAL_SECONDS: "0.5"
+      CF_BYPASS_COOKIE_STABLE_POLLS: "2"
+      CF_BYPASS_NAVIGATION_RETRIES: "1"
+      CF_BYPASS_ELEMENT_LOOKUP_TIMEOUT_SECONDS: "0.2"
+      CF_BYPASS_DISPLAY_SIZE: "1920x1080"
+    shm_size: "1gb"
+    restart: "no"

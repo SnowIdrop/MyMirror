@@ -1,0 +1,14 @@
+.git
+.env
+.env.*
+**/__pycache__
+**/*.pyc
+**/node_modules
+**/.venv
+**/*.db
+**/*.db-*
+**/*.sqlite*
+backend/logs
+frontend/dist
+gateway/static
+imageandvideo
