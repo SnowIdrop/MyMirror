@@ -14,7 +14,7 @@
     "real_environment_acceptance": "not run",
     "full_replacement_complete": false
   },
-  "NEXT_EXECUTABLE_ACTION": "NONE — paused by latest user request to converge. Preserve current code/evidence only; no next-stage task, repeated verification or real-token read.",
+  "NEXT_EXECUTABLE_ACTION": "缺口 1/2/3/5 的实现（用户 2026-09-23 指令）；范围、现状证据与依赖顺序见 artifacts/phase1/source/NEXT_WORK.md。缺口 4 为显式非目标，不再作为验收缺口。",
   "INPUT_PATHS": [
     "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\generation-egress\\HANDOFF.json",
     "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\generation-egress\\GATE_RESULTS.json",
@@ -31,11 +31,13 @@
   "phase": 1,
   "phase_complete": false,
   "remaining": [
-    "S12局部修复独立复验及安全入口；端到端浏览器/传输身份仍未验证",
-    "页面初始化隔离及同源改写，字体/图片/其他静态类型",
-    "初次登录accounts检查、更多真实响应/失败协议",
-    "第二阶段可信身份、账号映射、新库ACL/备份/后台/实时撤权接线；ACL仅独立暂存",
-    "第三至五阶段业务能力及第六阶段统一验收与部署交付"
+    "缺口 1：/backend-api/* 已登录读写、SSE、停止/重命名/删除，以及 /ws-chatgpt、/realtime 桥接；见 source/NEXT_WORK.md",
+    "缺口 2：注入脚本改写的 39 个同源前缀中仅 7 个被服务端接住，其余 32 个落 503；补齐静态/媒体/遥测前缀与 /external 语义；见 source/NEXT_WORK.md",
+    "缺口 3：归属登记（claim_conversation_owner 链）与 resource_acl 产品接线；必须与缺口 1 的读写同期落地；见 source/NEXT_WORK.md",
+    "缺口 5：传输身份（wreq/curl-impersonate 观测）、代理节点与出口 profile 绑定，补齐 MIRROR_API_PREFIX/ADMIN_UPSTREAM/CHATGPT_AB_BASE_URL/CF_BYPASS_PROXY_SERVER/TRUSTED_PROXY_IPS；见 source/NEXT_WORK.md",
+    "保留差异：初次登录 accounts/check、管理非空库自增 ID 与上游序列、login extra_cookies 严格提取契约",
+    "第六阶段：统一验收与 All-in-One 镜像交付（rebuild-reference/README.md 的六条交付步骤）",
+    "显式非目标（不再作为验收缺口）：计量/配额/限流/审核 provider/PoW；见 source/COMPATIBILITY.md"
   ],
   "rollback_scope": "restore a disposable source archive; not databases or already-executed upstream operations",
   "legacy_evidence": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\STATUS.json",
@@ -113,13 +115,19 @@
     }
   },
   "execution_control": {
-    "state": "paused_by_latest_user_instruction",
+    "state": "reauthorized_2026-09-23",
     "instruction": "立刻收敛，禁止TDD；只保存现有改动与已有证据，不开启后续阶段/新任务/扩测试/循环验收",
     "next_workflow_if_reauthorized": "源码定位 → 直接最小实现 → 必要既有检查；不采用TDD",
     "real_token_read": false,
     "real_requests_sent": false,
     "owner_processes": "none; gateway/QEMU process inventory observed zero",
     "automatic_continuation": "disabled by this newer user instruction; existing scheduler/coordinator must not dispatch next work from previous continuous policy",
-    "runtime_checks_this_closeout": "none; retained existing results only"
+    "runtime_checks_this_closeout": "none; retained existing results only",
+    "reauthorization": {
+      "date": "2026-09-23",
+      "instruction": "先推进缺口1，缺口2，缺口3，缺口5；缺口4不实现（个人小团体共享账号，非商业收费分发）",
+      "scope": "缺口 1/2/3/5 的实现与验证",
+      "record": "Mirror/gateway-rust/artifacts/phase1/source/NEXT_WORK.md"
+    }
   }
 }

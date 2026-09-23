@@ -17,6 +17,7 @@
 - 全局共享匿名上游身份：`server/anonymous.rs` 从 cfbypass 取 Cloudflare cookies（整组下发），持久化到 `gateway_settings['anonymous_upstream']`（整值加密）；只有实测的 Cloudflare 挑战（403 + `cf-mitigated: challenge`）才触发缓存处理：幂等 GET 刷新一次并重放一次，生成/上传类请求只失效缓存、由下一次请求重新获取。匿名链路以 cookies 为唯一凭据、不发 `Authorization`：`accessToken` 只属于真实账号登录（实测匿名 `/api/auth/session` 返回 200 `{}`），匿名对话与上传均不需要它。
 - 已接线六个管理端点，支持真实令牌轮换、访问计数、会话清理、审核配置持久化。审核 provider 成功协议尚未验证，明确返回未完成门禁。
 - 凭据类上游调用（`session_token` 换取、`/api/get-user-info`、`/api/diagnose-chatgpt-auth`、会话刷新）已统一注入 CF 白名单 cookies：命中实测挑战刷新一次并重放一次（只限幂等 GET，生成/SSE/上传不重放）；持续拦截返回 `502` + `code=upstream_blocked`，不回传上游 HTML，配套 Django 健康检测不再据此判失效或清空 token。这是相对原版的有意加固，见 COMPATIBILITY.md。
+- 显式非目标（产品决定：个人小团体内部共享账号，不对外收费分发）：请求计量、配额执行、限流、审核 provider 与 PoW/降智风险面**不在替代实现范围内**。`daily_quota`/`monthly_quota`/`limit_per_minute` 等字段保留仅为载荷兼容（`Policy::from_login` 要求下发），网关不写 `visit_logs` 的 `proxy` 行，因此管理端“今日请求/配额已用”恒为 0；`/api/political-moderation-config/test` 保持 503 门禁；注入模板已删除写死的“降智风险/PoW 难度”横幅。详见 COMPATIBILITY.md 的显式非目标一节。
 - 响应头、多值 Vary、真实逐帧 gzip 压缩、代理 CSP/缓存及 HTML 客户端模板已对照原版；见 COMPATIBILITY.md 的响应、数据库、上游三个维度，不以旧 101 项通过替代完整验收。
 
 ## 开发与验证
@@ -68,3 +69,9 @@ mirror-gateway migrate SOURCE_COPY NEW_DATABASE
 
 旧 45 项响应差异已消除；下一步处理扩展审核协议、管理自增 ID 与上游序列差异、严格输入提取契约，再补齐按用户归属的聊天读写与 SSE/WebSocket、指纹传输及 MCP/Skills 实际请求协议。准确当前结果与证据入口见 STATUS.json、COMPATIBILITY.md；本批仍未完整通过。
 每一步都要扩充原版观测再实现；禁止将缺口改为固定成功或移除共享账号保护来提高表面通过率。
+
+## 下一批优先工作
+
+2026-09-23 用户决定：优先推进**缺口 1（已登录业务面）、缺口 2（改写前缀与服务端不匹配）、
+缺口 3（归属登记与 ACL 接线）、缺口 5（传输身份与出口策略）**；缺口 4（计量/配额/限流/审核/PoW）
+列为显式非目标。范围、现状证据、依赖顺序与验收要点见 [NEXT_WORK.md](NEXT_WORK.md)。

@@ -34,7 +34,7 @@ Header 压缩审计绑定原始字节长度、摘要、gzip 校验和及解码�
 
 ## 未完成/显式差异
 
-- 审核 provider 成功请求/校准协议未获原版 TLS 观测；5 个扩展响应用例保留显式 503 门禁差异
+- 审核 provider 成功请求/校准协议未获原版 TLS 观测；5 个扩展响应用例保留显式 503 门禁差异（该面已列为显式非目标，见下节）
 - 管理非空数据库 gateway_sessions 自增 ID 偏移与上游调用序列仍有差异，未忽略 ID
 - auth/session 上游 accounts/check + me 刷新链未对齐
 - Connection 命名头按安全要求过滤，与原版泄漏行为显式不同
@@ -104,6 +104,23 @@ Django 健康检测据此把凭据标成不可用、可能发告警，刷新 cro
 合成回归：`tests/cloudflare_credentials.rs` 6 项（注入与重放、持续拦截、未配置 cfbypass、
 诊断标志、生成类不重放、并发单飞）与 Django 侧 5 项新增用例（三态健康检测、按需诊断、刷新 cron）。
 真实账号与真实 chatgpt.com 联调仍未执行。
+
+## 显式非目标：计量 / 配额 / 限流 / 审核 / PoW（产品决定，2026-09-23）
+
+本项目的用途是个人小团体内部共享同一个上游账号，**不对外收费分发**，因此原版的计量与风控面
+不列入替代实现范围，也不再作为验收缺口：
+
+| 项 | 原版 | 本候选 | 说明 |
+|---|---|---|---|
+| 请求计量 | 写 `visit_logs` 的 `proxy` 行，供 `get-user-use-count`/`get-chatgpt-use-count`/`operations-overview` 统计 | 只读不写 | 管理端“今日请求”“配额已用”恒为 0；Django 侧仅保留自己的 `login`/`choose-gpt` 日志 |
+| 配额与限流 | `enforce_metered_request`、`is_metered_proxy_request`、`limit_per_minute` | 不执行 | 字段与登录载荷保留（`Policy::from_login` 要求 `daily_quota`/`monthly_quota` 等），删除反而破坏兼容 |
+| 审核 provider | 10 个函数的完整审核链、`x-mirror-moderation` 响应头 | 仅保留配置 CRUD；`/api/political-moderation-config/test` 维持 503 | 不把“未拨号”伪报为连接失败，也不伪造成功协议 |
+| PoW / 降智风险 | `/api/pow-risk-stream`（SSE）与 `PowRiskSnapshot` 等符号 | 不实现；注入模板已删除写死的“当前降智风险 / POW难度检测值”横幅与其样式 | 该横幅原本没有调用者，会永久停在“未知 / 等待检测” |
+
+连带影响（必须知道）：删掉计量与限流后，共享账号剩下的安全边界只有**归属隔离**
+（`conversation_owners`/`project_owners`、`claim_conversation_owner`）、撤权与凭据隔离。
+因此开放 `/backend-api/*` 读写时，归属登记链必须同时落地，否则同一共享账号下任何镜像用户
+都能看到他人创建的会话。
 
 ## 证据
 

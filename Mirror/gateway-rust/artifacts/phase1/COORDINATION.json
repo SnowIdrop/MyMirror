@@ -75,7 +75,7 @@
     "binary": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-probe-targets\\modified\\debug\\mirror-gateway.exe",
     "binary_note": "Prefer immutable source snapshot; binary is current modified-only target output, may be rebuilt in later turns."
   },
-  "next_owner_work": "NONE — paused by latest user request to converge. Preserve current code/evidence only; no next-stage task, repeated verification or real-token read.",
+  "next_owner_work": "缺口 1/2/3/5 的实现（用户 2026-09-23 指令）— 暂停令解除；范围、现状证据与依赖顺序见 Mirror/gateway-rust/artifacts/phase1/source/NEXT_WORK.md。缺口 4（计量/配额/限流/审核/PoW）为显式非目标。不使用 TDD；每步先扩充原版观测或合成 fixture 再实现。",
   "reviewed_identity_proposal": "user_id canonical decimal string; is_admin staff|superuser; wire version opaque authorization_version; principal_kind separates FREE_ACCOUNT visitor. New ACL visitors fail closed; existing login unchanged. Not yet product-wired.",
   "auth_contract_delta": "auth_session now snapshots credentials for exact mirror token, drops DB lock, sends accounts/check then me each request, revalidates session after network; account-lookup HTTP failure=>free with me still checked, me auth failure/account mismatch=>empty object. Login request chain unchanged (one me); malformed/transport refresh=>502.",
   "regression_handoff_ack": "Completed: reviewed boundary file integrated, accounts fixture added, old no-egress assumption replaced with ordered accounts/check -> me assertions per account. All 8 tests executed in the 109-test combined gate; credential/isolation assertions retained. Original and upgraded hashes are in integrations/manifest.json. Login still calls only me.",
@@ -353,13 +353,19 @@
   "continuation_coordinator": "01a0c9c9-4508-75d1-a709-20aa6dbb69f9",
   "continuation_automation_id": "mirror (existing; do not duplicate)",
   "execution_control": {
-    "state": "paused_by_latest_user_instruction",
+    "state": "reauthorized_2026-09-23",
     "instruction": "立刻收敛，禁止TDD；只保存现有改动与已有证据，不开启后续阶段/新任务/扩测试/循环验收",
     "next_workflow_if_reauthorized": "源码定位 → 直接最小实现 → 必要既有检查；不采用TDD",
     "real_token_read": false,
     "real_requests_sent": false,
     "owner_processes": "none; gateway/QEMU process inventory observed zero",
     "automatic_continuation": "disabled by this newer user instruction; existing scheduler/coordinator must not dispatch next work from previous continuous policy",
-    "runtime_checks_this_closeout": "none; retained existing results only"
+    "runtime_checks_this_closeout": "none; retained existing results only",
+    "reauthorization": {
+      "date": "2026-09-23",
+      "instruction": "先推进缺口1，缺口2，缺口3，缺口5；缺口4不实现（个人小团体共享账号，非商业收费分发）",
+      "scope": "缺口 1/2/3/5 的实现与验证",
+      "record": "Mirror/gateway-rust/artifacts/phase1/source/NEXT_WORK.md"
+    }
   }
 }
