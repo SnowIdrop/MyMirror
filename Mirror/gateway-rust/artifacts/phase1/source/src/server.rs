@@ -1,4 +1,6 @@
 // Author: MingTea. Implemented contracts are listed in COMPATIBILITY.md; no original-binary fallback.
+mod anonymous;
+mod cloudflare;
 mod compression;
 mod egress;
 mod management;
@@ -17,7 +19,7 @@ use axum::{
     http::{HeaderMap, HeaderValue, StatusCode},
     middleware::{self, Next},
     response::{IntoResponse, Response},
-    routing::{any, get},
+    routing::{any, get, post},
     Json, Router,
 };
 use rand::RngCore;
@@ -35,20 +37,36 @@ pub struct App {
     config: Config,
     db: Mutex<Database>,
     client: reqwest::Client,
-    cf_cache: Mutex<Option<Value>>,
+    cloudflare: cloudflare::Cloudflare,
 }
 type Shared = Arc<App>;
 type ApiResult = std::result::Result<Json<Value>, ApiError>;
-pub struct ApiError(StatusCode, String);
+/// API 错误：状态码、面向用户的消息与可选稳定错误码。
+/// 只有明确的上游可用性问题才带 `code`（当前只有 Cloudflare 拦截），
+/// 其余错误保持原有 `{"message":...}` 形状不变。
+pub struct ApiError(StatusCode, String, Option<&'static str>);
 impl IntoResponse for ApiError {
     fn into_response(self) -> Response {
-        (self.0, Json(json!({"message":self.1}))).into_response()
+        let mut body = json!({"message":self.1});
+        if let Some(code) = self.2 {
+            body["code"] = json!(code);
+        }
+        (self.0, Json(body)).into_response()
     }
 }
 impl From<anyhow::Error> for ApiError {
     fn from(e: anyhow::Error) -> Self {
+        // 凭据校验被 Cloudflare 拦截是上游可用性问题：既不是请求错误，
+        // 也不能当成 token 失效，因此单独映射为 502 + upstream_blocked。
+        if let Some(blocked) = e.downcast_ref::<cloudflare::UpstreamBlocked>() {
+            return Self(
+                StatusCode::BAD_GATEWAY,
+                blocked.to_string(),
+                Some("upstream_blocked"),
+            );
+        }
         tracing::error!(module="gateway", error=%e, "request failed");
-        Self(StatusCode::BAD_REQUEST, e.to_string())
+        Self(StatusCode::BAD_REQUEST, e.to_string(), None)
     }
 }
 impl From<rusqlite::Error> for ApiError {
@@ -62,7 +80,7 @@ impl From<url::ParseError> for ApiError {
     }
 }
 fn error(status: StatusCode, message: &str) -> ApiError {
-    ApiError(status, message.into())
+    ApiError(status, message.into(), None)
 }
 fn now() -> i64 {
     SystemTime::now()
@@ -84,11 +102,11 @@ pub async fn router(config: Config) -> Result<Router> {
         config,
         db: Mutex::new(db),
         client,
-        cf_cache: Mutex::new(None),
+        cloudflare: cloudflare::Cloudflare::new(),
     });
     if app.config.cfbypass.is_some() {
-        match fetch_cfbypass(&app).await {
-            Ok(value) => *app.cf_cache.lock().await = Some(value),
+        match app.cloudflare.force(&app).await {
+            Ok(_) => {}
             Err(cause) => tracing::warn!(module="gateway", error=%cause, "cfbypass prewarm failed"),
         }
     }
@@ -134,6 +152,12 @@ pub async fn router(config: Config) -> Result<Router> {
         .merge(admin)
         .route("/api/not-login", get(handoff))
         .route("/api/auth/session", get(auth_session))
+        // 未登录前端自带的 next-auth 客户端在进入对话前会访问这几个端点；
+        // 实测形状见 evidence/anonymous-nextauth-001 与下方各 handler。
+        .route("/api/auth/providers", get(auth_providers))
+        .route("/api/auth/csrf", get(auth_csrf))
+        .route("/api/auth/_log", post(auth_log))
+        .route("/api/auth/error", get(auth_error))
         .route("/api/user-blocked-paths", get(user_blocked))
         .route("/api/refresh-cfbypass", any(refresh_cfbypass))
         .route("/0x/*path", any(proxy::django_proxy))
@@ -296,10 +320,12 @@ async fn login(
     State(app): State<Shared>,
     Json(input): Json<Login>,
 ) -> std::result::Result<Response, ApiError> {
-    if input.access_token.is_empty()
+    // 匿名会话只是开发阶段的入口：上游凭据全部缺失且开关显式打开时才成立，
+    // 默认仍按原版拒绝空凭据。
+    let anonymous_login = input.access_token.is_empty()
         && input.session_token.is_empty()
-        && input.chatgpt_token.is_empty()
-    {
+        && input.chatgpt_token.is_empty();
+    if anonymous_login && !app.config.allow_anonymous_session {
         return Err(error(
             StatusCode::BAD_REQUEST,
             "chatgpt_token、access_token、session_token 至少提供一个",
@@ -317,25 +343,37 @@ async fn login(
         egress::load(&db, &app.config, node)?
     };
     payload["rust_egress_binding"] = json!(outbound.binding);
+    // 提交的 extra_cookies 既用于入库，也注入凭据换取/校验请求
+    // （原版换取 session_token 时只带会话 cookie，见模块注释）。
+    let (extra_cookies, submitted) = submitted_cookies(payload.get("extra_cookies"));
     // 上游凭据必须经实际回环上游验证，不能以字符串非空代替验证。
-    let access = if !input.access_token.is_empty() {
-        input.access_token
+    let (email, access) = if anonymous_login {
+        // 匿名会话没有上游账号：上游身份由全局共享匿名身份提供
+        // （server/anonymous.rs），本地归属键使用保留标签。
+        (anonymous::ACCOUNT.to_owned(), String::new())
     } else {
-        exchange_session_with_client(
-            &app, &outbound.client,
-            if !input.session_token.is_empty() {
-                &input.session_token
-            } else {
-                &input.chatgpt_token
-            },
-        )
-        .await?
+        let access = if !input.access_token.is_empty() {
+            input.access_token
+        } else {
+            exchange_session_with_client(
+                &app, &outbound.client,
+                if !input.session_token.is_empty() {
+                    &input.session_token
+                } else {
+                    &input.chatgpt_token
+                },
+                &submitted,
+            )
+            .await?
+        };
+        let info = fetch_user_with_client(&app, &outbound.client, &access, &submitted).await?;
+        let email = info["email"]
+            .as_str()
+            .filter(|s| !s.is_empty())
+            .context("上游用户信息缺少 email")?
+            .to_owned();
+        (email, access)
     };
-    let info = fetch_user_with_client(&app, &outbound.client, &access).await?;
-    let email = info["email"]
-        .as_str()
-        .filter(|s| !s.is_empty())
-        .context("上游用户信息缺少 email")?;
     let mut random = [0u8; 32];
     rand::rngs::OsRng.fill_bytes(&mut random);
     let token: String = random.iter().map(|b| format!("{b:02x}")).collect();
@@ -351,17 +389,13 @@ async fn login(
     } else {
         Some(db.encrypt(&input.session_token)?)
     };
-    // extra_cookies 原版按 cookie 对象序列提交（观测 p1-login-carol → p1-carol-extra-cookies
-    // 上游还原 `probe_extra=EV`）；对象数组序列化入库，供代理侧 parse_extra_cookies 解析。
-    // 字符串形态保留既有兼容路径，缺失或其它形态落空数组。
-    let extra_cookies = match payload.get("extra_cookies") {
-        Some(value) if value.is_array() => value.to_string(),
-        Some(Value::String(text)) if !text.trim().is_empty() => text.clone(),
-        _ => "[]".to_owned(),
-    };
     let extra = db.encrypt(&extra_cookies)?;
     payload["rust_credential_binding"] = json!(sha256_hex(&json!([email, access, extra_cookies]).to_string()));
-    let mode = payload["login_mode"].as_str().unwrap_or("api");
+    let mode = if anonymous_login {
+        anonymous::LOGIN_MODE
+    } else {
+        payload["login_mode"].as_str().unwrap_or("api")
+    };
     let auth_payload = db.encrypt(&payload.to_string())?;
     let tx = db.conn.transaction()?;
     tx.execute("DELETE FROM rust_authorizations WHERE token_hash IN (SELECT mirror_token FROM gateway_sessions WHERE user_name=?1 AND chatgpt_username=?2)",params![input.user_name,email])?;
@@ -434,34 +468,124 @@ fn session_cookies(response: &mut Response, token: &str, secure: bool) -> Result
     Ok(())
 }
 
-async fn fetch_user(app: &App, access: &str) -> Result<Value> {
+/// 提交 cookies 的两种形态：数组按原版对象序列入库（观测 p1-login-carol →
+/// p1-carol-extra-cookies 上游还原 `probe_extra=EV`），字符串形态沿用既有兼容路径；
+/// 两者都只取 name/value 非空的条目，并注入凭据类上游请求。
+fn submitted_cookies(value: Option<&Value>) -> (String, Vec<(String, String)>) {
+    let stored = match value {
+        Some(value) if value.is_array() => value.to_string(),
+        Some(Value::String(text)) if !text.trim().is_empty() => text.clone(),
+        _ => "[]".to_owned(),
+    };
+    let cookies = proxy::parse_extra_cookies(&stored);
+    (stored, cookies)
+}
+
+async fn fetch_user(app: &App, access: &str, submitted: &[(String, String)]) -> Result<Value> {
     let outbound = { let db = app.db.lock().await; egress::load(&db, &app.config, None)? };
-    fetch_user_with_client(app, &outbound.client, access).await
+    fetch_user_with_client(app, &outbound.client, access, submitted).await
 }
-async fn fetch_user_with_client(app: &App, client: &reqwest::Client, access: &str) -> Result<Value> {
-    let response = client
-        .get(app.config.upstream.join("/backend-api/me")?)
-        .bearer_auth(access)
-        .send()
-        .await?;
-    anyhow::ensure!(response.status().is_success(), "access_token 校验失败");
-    Ok(response.json().await?)
+/// `access_token` 校验：提交 cookies 在前、CF cookies 在后；被 Cloudflare 拦截时
+/// 刷新一次并重放一次，仍被拦截按 [`cloudflare::UpstreamBlocked`] 上报。
+async fn fetch_user_with_client(
+    app: &App,
+    client: &reqwest::Client,
+    access: &str,
+    submitted: &[(String, String)],
+) -> Result<Value> {
+    let url = app.config.upstream.join("/backend-api/me")?;
+    let (response, refresh) = cloudflare::get_with_challenge_retry(app, |cf| {
+        let url = url.clone();
+        let client = client.clone();
+        let submitted = submitted.to_vec();
+        let access = access.to_owned();
+        async move {
+            let mut request = client.get(url).bearer_auth(access);
+            if let Some(cookie) = cloudflare::cookie_header(&[&submitted, &cf]) {
+                request = request.header(
+                    "cookie",
+                    HeaderValue::from_str(&cookie).context("Cookie 头无效")?,
+                );
+            }
+            request.send().await.context("上游请求失败")
+        }
+    })
+    .await?;
+    let answer = cloudflare::read(response).await?;
+    if !answer.status.is_success() {
+        if answer.blocked() {
+            return Err(cloudflare::blocked_error(
+                "access_token 校验失败",
+                "backend-api/me",
+                answer.status,
+                refresh.as_ref(),
+            )
+            .into());
+        }
+        anyhow::bail!(
+            "access_token 校验失败: backend-api/me 返回状态 {}",
+            answer.status.as_u16()
+        );
+    }
+    answer.json::<Value>()
 }
-async fn exchange_session(app: &App, session: &str) -> Result<String> {
+async fn exchange_session(
+    app: &App,
+    session: &str,
+    submitted: &[(String, String)],
+) -> Result<String> {
     let outbound = { let db = app.db.lock().await; egress::load(&db, &app.config, None)? };
-    exchange_session_with_client(app, &outbound.client, session).await
+    exchange_session_with_client(app, &outbound.client, session, submitted).await
 }
-async fn exchange_session_with_client(app: &App, client: &reqwest::Client, session: &str) -> Result<String> {
-    let response = client
-        .get(app.config.upstream.join("/api/auth/session")?)
-        .header(
-            "cookie",
-            format!("__Secure-next-auth.session-token={session}"),
-        )
-        .send()
-        .await?;
-    anyhow::ensure!(response.status().is_success(), "session_token 校验失败");
-    response.json::<Value>().await?["accessToken"]
+/// `session_token → access_token` 换取：会话 cookie 在前、提交 cookies 其次、
+/// CF cookies 最后；被 Cloudflare 拦截时刷新一次并重放一次。
+async fn exchange_session_with_client(
+    app: &App,
+    client: &reqwest::Client,
+    session: &str,
+    submitted: &[(String, String)],
+) -> Result<String> {
+    let url = app.config.upstream.join("/api/auth/session")?;
+    let session_token = [(
+        "__Secure-next-auth.session-token".to_owned(),
+        session.to_owned(),
+    )];
+    let (response, refresh) = cloudflare::get_with_challenge_retry(app, |cf| {
+        let url = url.clone();
+        let client = client.clone();
+        let submitted = submitted.to_vec();
+        let session_token = session_token.clone();
+        async move {
+            let mut request = client.get(url);
+            if let Some(cookie) =
+                cloudflare::cookie_header(&[session_token.as_slice(), &submitted, &cf])
+            {
+                request = request.header(
+                    "cookie",
+                    HeaderValue::from_str(&cookie).context("Cookie 头无效")?,
+                );
+            }
+            request.send().await.context("上游请求失败")
+        }
+    })
+    .await?;
+    let answer = cloudflare::read(response).await?;
+    if !answer.status.is_success() {
+        if answer.blocked() {
+            return Err(cloudflare::blocked_error(
+                "session_token 校验失败",
+                "api/auth/session",
+                answer.status,
+                refresh.as_ref(),
+            )
+            .into());
+        }
+        anyhow::bail!(
+            "session_token 校验失败: api/auth/session 返回状态 {}",
+            answer.status.as_u16()
+        );
+    }
+    answer.json::<Value>()?["accessToken"]
         .as_str()
         .filter(|s| !s.is_empty())
         .map(str::to_owned)
@@ -472,39 +596,50 @@ async fn user_info(State(app): State<Shared>, Json(input): Json<Value>) -> ApiRe
     if token.is_empty() {
         return Err(error(StatusCode::BAD_REQUEST, "chatgpt_token 不能为空"));
     }
+    let (_, submitted) = submitted_cookies(input.get("extra_cookies"));
     let access = if token.starts_with("eyJ") {
         token.into()
     } else {
-        exchange_session(&app, token).await?
+        exchange_session(&app, token, &submitted).await?
     };
-    Ok(Json(fetch_user(&app, &access).await?))
+    Ok(Json(fetch_user(&app, &access, &submitted).await?))
 }
 async fn diagnose(State(app): State<Shared>, Json(input): Json<Value>) -> ApiResult {
     let access = input["access_token"].as_str().unwrap_or("");
     let session = input["session_token"].as_str().unwrap_or("");
+    let (_, submitted) = submitted_cookies(input.get("extra_cookies"));
     let mut modes = Vec::new();
     let mut info = json!({"email":"","plan_type":"free"});
     let mut errors = Vec::new();
+    // 上游被 Cloudflare 拦截时两种凭据都“无法验证”，消费方必须优先看该标志，
+    // 不能把 false 当成凭据失效。
+    let mut blocked = false;
     if !access.is_empty() {
-        match fetch_user(&app, access).await {
+        match fetch_user(&app, access, &submitted).await {
             Ok(v) => {
                 info = v;
                 modes.push("api");
             }
-            Err(e) => errors.push(e.to_string()),
+            Err(e) => {
+                blocked |= e.downcast_ref::<cloudflare::UpstreamBlocked>().is_some();
+                errors.push(e.to_string());
+            }
         }
     }
     if !session.is_empty() {
-        match exchange_session(&app, session).await {
+        match exchange_session(&app, session, &submitted).await {
             Ok(_) => modes.push("web"),
-            Err(e) => errors.push(e.to_string()),
+            Err(e) => {
+                blocked |= e.downcast_ref::<cloudflare::UpstreamBlocked>().is_some();
+                errors.push(e.to_string());
+            }
         }
     }
     if access.is_empty() && session.is_empty() {
         errors.push("未提供任何可诊断的 token".into());
     }
     Ok(Json(
-        json!({"access_token_valid":modes.contains(&"api"),"session_token_valid":modes.contains(&"web"),"supported_login_modes":modes,"user_info":info,"last_check_at":now(),"last_error":errors.join("; ")}),
+        json!({"access_token_valid":modes.contains(&"api"),"session_token_valid":modes.contains(&"web"),"supported_login_modes":modes,"user_info":info,"last_check_at":now(),"last_error":errors.join("; "),"upstream_blocked":blocked}),
     ))
 }
 #[derive(Deserialize)]
@@ -627,6 +762,7 @@ fn validate_restored_settings(
         ("custom_scripts", "读取脚本配置失败"),
         ("blocked_paths", "读取访问限制配置失败"),
         ("political_moderation", "读取审查配置失败"),
+        ("anonymous_upstream", "读取匿名上游身份失败"),
     ] {
         let raw: Option<String> = conn
             .query_row(
@@ -636,7 +772,10 @@ fn validate_restored_settings(
             )
             .optional()?;
         let Some(raw) = raw else { continue };
-        let text = if matches!(key, "mirror_proxy" | "political_moderation") {
+        let text = if matches!(
+            key,
+            "mirror_proxy" | "political_moderation" | "anonymous_upstream"
+        ) {
             crypto.decrypt(&raw).map_err(|cause| {
                 let reason = if cause.to_string().contains("编码损坏") {
                     "敏感凭据编码损坏"
@@ -917,12 +1056,14 @@ struct Session {
     token_hash: String,
     credential_binding: String,
     outbound: egress::Egress,
+    /// 匿名会话（`login_mode = anonymous`）：上游凭据来自全局共享匿名身份。
+    anonymous: bool,
 }
 async fn session(app: &App, token: &str) -> Result<Option<Session>> {
     let hash = sha256_hex(token);
     let db = app.db.lock().await;
-    let record:Option<(String,String,String,String)>=db.conn.query_row("SELECT user_name,chatgpt_username,access_token,extra_cookies FROM gateway_sessions WHERE mirror_token=?1",[&hash],|r|Ok((r.get(0)?,r.get(1)?,r.get(2)?,r.get(3)?))).optional()?;
-    let Some((user, account, encrypted, cookies)) = record else {
+    let record:Option<(String,String,String,String,String)>=db.conn.query_row("SELECT user_name,chatgpt_username,access_token,extra_cookies,login_mode FROM gateway_sessions WHERE mirror_token=?1",[&hash],|r|Ok((r.get(0)?,r.get(1)?,r.get(2)?,r.get(3)?,r.get(4)?))).optional()?;
+    let Some((user, account, encrypted, cookies, login_mode)) = record else {
         return Ok(None);
     };
     let authorization: Option<(String,i64)> = db.conn.query_row(
@@ -948,6 +1089,7 @@ async fn session(app: &App, token: &str) -> Result<Option<Session>> {
         token_hash: hash,
         credential_binding,
         outbound,
+        anonymous: login_mode == anonymous::LOGIN_MODE,
     };
     drop(db);
     if let Some(policy) = &value.policy {
@@ -1018,6 +1160,66 @@ async fn handoff(
     session_cookies(&mut response, &token, app.config.cookie_secure)?;
     Ok(response)
 }
+/// 上游 next-auth 命名空间的本地兼容面：未登录前端自带的 next-auth 客户端在进入
+/// 对话前会访问这几个端点。2026-09-23 直连实测（evidence/anonymous-nextauth-001）：
+/// `providers` 是四个 oauth 条目、`csrf` 是 64 位十六进制 token、`_log` 空正文 200、
+/// `error` 是站点错误页 200。镜像只补齐形状：不创建登录态、不做访客会话引导、
+/// 不下发上游 cookie；`signinUrl`/`callbackUrl` 改写为同源相对路径，避免跳出镜像。
+const AUTH_PROVIDER_IDS: [&str; 4] = [
+    "openai",
+    "openai-dev",
+    "openai-sidetron",
+    "openai-sidetron-dev",
+];
+
+/// `/api/auth/_log` 请求体上限：该端点只上报客户端日志，读取后丢弃；
+/// 设上限避免匿名请求用超大正文占用内存。
+const AUTH_LOG_BODY_LIMIT: usize = 64 * 1024;
+
+/// `/api/auth/error` 的本地最小错误页。上游返回的是整站页面，这里只保留同源提示，
+/// 不引用任何上游资源，也不回显请求参数。
+const AUTH_ERROR_PAGE: &str = "<!DOCTYPE html><html lang=\"zh-CN\"><head><meta charset=\"utf-8\"><title>ChatGPT</title></head><body><p>此镜像未提供 ChatGPT 账号登录（NextAuth）流程，请返回 <a href=\"/\">首页</a>。</p></body></html>";
+
+async fn auth_providers() -> Json<Value> {
+    let mut providers = serde_json::Map::new();
+    for id in AUTH_PROVIDER_IDS {
+        providers.insert(
+            id.to_owned(),
+            json!({
+                "id": id,
+                "name": id,
+                "type": "oauth",
+                "signinUrl": format!("/api/auth/signin/{id}"),
+                "callbackUrl": format!("/api/auth/callback/{id}"),
+            }),
+        );
+    }
+    Json(Value::Object(providers))
+}
+
+async fn auth_csrf() -> Json<Value> {
+    let mut random = [0u8; 32];
+    rand::rngs::OsRng.fill_bytes(&mut random);
+    let token: String = random.iter().map(|b| format!("{b:02x}")).collect();
+    Json(json!({"csrfToken": token}))
+}
+
+async fn auth_log(body: Body) -> Response {
+    // 上游实测返回 200 空正文；日志体读取后丢弃。读取失败（超限或连接中断）同样
+    // 返回 200：该端点是客户端的尽力上报，没有需要回传客户端的语义。
+    let _ = to_bytes(body, AUTH_LOG_BODY_LIMIT).await;
+    StatusCode::OK.into_response()
+}
+
+async fn auth_error() -> Response {
+    (
+        StatusCode::OK,
+        [("content-type", "text/html; charset=utf-8")],
+        AUTH_ERROR_PAGE,
+    )
+        .into_response()
+}
+
 async fn auth_session(State(app): State<Shared>, headers: HeaderMap) -> ApiResult {
     let Some(token) = token_from(&headers) else {
         return Ok(Json(json!({})));
@@ -1025,6 +1227,10 @@ async fn auth_session(State(app): State<Shared>, headers: HeaderMap) -> ApiResul
     let Some(s) = session(&app, &token).await? else {
         return Ok(Json(json!({})));
     };
+    // 匿名会话没有可刷新的上游账号；返回空会话对象，前端按未登录界面渲染。
+    if s.anonymous {
+        return Ok(Json(json!({})));
+    }
     let refreshed = proxy::refresh_auth_session(&app, &s, &token).await.map_err(|cause| {
         tracing::warn!(error=%cause, "auth session upstream refresh failed");
         error(StatusCode::BAD_GATEWAY, "上游会话刷新失败")
@@ -1063,36 +1269,6 @@ async fn refresh_cfbypass(State(app): State<Shared>, headers: HeaderMap) -> ApiR
     if session(&app, &t).await?.is_none() {
         return Err(error(StatusCode::UNAUTHORIZED, "未登录"));
     }
-    let result = fetch_cfbypass(&app).await?;
-    *app.cf_cache.lock().await = Some(result);
+    app.cloudflare.force(&app).await?;
     Ok(Json(json!({"message":"cookies 已更新"})))
-}
-
-async fn fetch_cfbypass(app: &App) -> Result<Value> {
-    let base = app
-        .config
-        .cfbypass
-        .as_ref()
-        .context("CF_BYPASS_URL 未配置")?;
-    let result: Value = app
-        .client
-        .post(base.join("/cloudflare5s/bypass-v1")?)
-        .bearer_auth(&app.config.secret)
-        .json(&json!({"url":app.config.upstream.as_str(), "user_agent":proxy::DEFAULT_USER_AGENT}))
-        .send()
-        .await
-        .context("cfbypass 请求失败")?
-        .error_for_status()
-        .context("cfbypass 拒绝请求")?
-        .json()
-        .await
-        .context("cfbypass 响应无效")?;
-    if !result["cookies"]
-        .as_array()
-        .map(|v| !v.is_empty())
-        .unwrap_or(false)
-    {
-        anyhow::bail!("cfbypass 未返回有效 cookies");
-    }
-    Ok(result)
 }

@@ -1,0 +1,29 @@
+{
+  "capturedUrl": "http://127.0.0.1:18002/backend-anon/accounts/check/v4-2023-04-27?timezone_offset_min=-480",
+  "captured": {
+    "oai-language": "zh-CN",
+    "sec-ch-ua-platform": "\"Linux\"",
+    "sec-ch-ua-full-version-list": "\"Chromium\";v=\"151.0.7922.34\", \"Not=A?Brand\";v=\"99.0.0.0\"",
+    "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+    "sec-ch-ua-bitness": "\"64\"",
+    "sec-ch-ua-model": "\"\"",
+    "sec-ch-ua-mobile": "?0",
+    "oai-client-build-number": "11197841",
+    "sec-ch-ua-arch": "\"x86\"",
+    "x-openai-web-frontend": "core_web",
+    "sec-ch-ua-full-version": "\"151.0.7922.34\"",
+    "oai-client-version": "prod-3de21fe28a84a6099234ab4fe4e36259da6478b8",
+    "oai-session-id": "6d47e488-11e4-413b-844c-842461ae6f08",
+    "referer": "http://127.0.0.1:18002/",
+    "accept-language": "zh-CN",
+    "x-openai-target-path": "/backend-anon/accounts/check/v4-2023-04-27",
+    "oai-device-id": "f4dfb9be-4ce9-433c-af38-2e30951a8e46",
+    "x-openai-target-route": "/backend-anon/accounts/check/{version}",
+    "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+    "sec-ch-ua-platform-version": "\"\""
+  },
+  "upload": {
+    "status": 422,
+    "body": "{\"detail\":[{\"type\":\"model_attributes_type\",\"loc\":[\"body\"],\"msg\":\"Input should be a valid dictionary or object to extract fields from\"}]}"
+  }
+}

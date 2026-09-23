@@ -1,0 +1,4682 @@
+[
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/",
+    "resource": "document"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/",
+    "resource": "document"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/root-izi12y3s.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/root-ikky18n3.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/conversation-small-h5tbcwbw.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/04a8820c-mtwappyj8rkqw74g.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/zh-hans-gdo938le.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/manifest-05b2845b.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/entry.client-iu3rxnkr.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/f025431a-ehagpvg3m4e1cduv.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/4813494d-i6uoff53a7o08h8b.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/2340486e-b3t78qt0psmq9d8c.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/d42ee766-nbhfly5gmea1a53o.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/root-op5jfvi5.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/_conversation-nuzb56y1.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/8b34dbc2-oz862wcamnpza3ku.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/conversation-small-c1t85fv7s1nl9k7s.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/30901919-m6zy7lamtjtq7a2m.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/c470f5ab-ibdg9dt9pf5j85ba.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/82782bc9-flcycb1qytete6n4.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/0e5afe53-io5nu6yiiq3zxnrb.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/_conversation._index-p6f011tr.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/root-ikky18n3.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/conversation-small-h5tbcwbw.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/zh-hans-gdo938le.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/manifest-05b2845b.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/root-izi12y3s.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/api/user-blocked-paths",
+    "resource": "fetch"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/sprites-shell-f705d3e2.svg",
+    "resource": "other"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "https://cdn.openai.com/common/fonts/openai-sans/v4/OpenAISans-Semibold.woff2",
+    "resource": "font"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/entry.client-iu3rxnkr.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/f025431a-ehagpvg3m4e1cduv.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/d42ee766-nbhfly5gmea1a53o.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/2340486e-b3t78qt0psmq9d8c.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/root-op5jfvi5.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/_conversation-nuzb56y1.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/30901919-m6zy7lamtjtq7a2m.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/c470f5ab-ibdg9dt9pf5j85ba.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/api/user-blocked-paths",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/04a8820c-mtwappyj8rkqw74g.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/0e5afe53-io5nu6yiiq3zxnrb.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/4813494d-i6uoff53a7o08h8b.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/82782bc9-flcycb1qytete6n4.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/_conversation._index-p6f011tr.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/sprites-shell-f705d3e2.svg",
+    "resource": "other"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/8b34dbc2-oz862wcamnpza3ku.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/conversation-small-c1t85fv7s1nl9k7s.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/eec4c631-gf4jddhj2dxcoeip.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/5ab42519-g5918g8xmu8go56f.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/e6911992-kfc01pk08alxqeyl.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/88605b43-nranmlkt6wbdnxxx.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/be58453f-lpowk7ajrthwpym5.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/fd7f274b-nhavp4lbcnveg776.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/noise-watercolor-m3j88gni.webp",
+    "resource": "image"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/88605b43-nranmlkt6wbdnxxx.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/e6911992-kfc01pk08alxqeyl.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/eec4c631-gf4jddhj2dxcoeip.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/be58453f-lpowk7ajrthwpym5.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/5ab42519-g5918g8xmu8go56f.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/fd7f274b-nhavp4lbcnveg776.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/external/https/accounts.google.com/gsi/client",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/ces/v1/projects/oai/settings",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 503,
+    "url": "http://127.0.0.1:18002/external/https/accounts.google.com/gsi/client",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/backend-anon/accounts/check/v4-2023-04-27?timezone_offset_min=-480",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/noise-watercolor-m3j88gni.webp",
+    "resource": "image"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/70025534-l4sqswgvsuh33odr.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "POST",
+    "url": "http://127.0.0.1:18002/backend-anon/bazaar/obi/sync-token",
+    "resource": "fetch"
+  },
+  {
+    "phase": "request",
+    "method": "POST",
+    "url": "http://127.0.0.1:18002/ces/v1/rgstr?k=client-nb0qtYlZuy2tCMN5s5ncnuIBCJncjRViT0IzFm7GqST&st=javascript-client&sv=3.33.1&t=1790136645402&sid=d3e139d1-ea47-4767-8549-ad97eb94d571&ec=4&gz=1",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/70025534-l4sqswgvsuh33odr.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/backend-anon/me",
+    "resource": "fetch"
+  },
+  {
+    "phase": "request",
+    "method": "POST",
+    "url": "http://127.0.0.1:18002/backend-anon/sentinel/chat-requirements/prepare",
+    "resource": "fetch"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/backend-anon/system_hints?mode=basic&suggestions=true",
+    "resource": "fetch"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/backend-anon/system_hints?mode=plugins&suggestions=true",
+    "resource": "fetch"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/backend-anon/models?iim=false&is_gizmo=false&supports_model_picker_upgrade_presets=true",
+    "resource": "fetch"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/f1324c00-ngwlyq24gr3casul.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/root-ikky18n3.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/conversation-small-h5tbcwbw.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/ac827dee-gqmxr64t2ta2cgsy.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/6afb0137-pb390m8iv2m8v7j4.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/4e1f6607-o8xgpvdzagt4vpxd.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/0379e822-k07cugu499n5i289.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/3ed411a3-igyl0odqhta8tbfz.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/c2675c8c-dg65hhj46pldcd14.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/global-modals-ml4if1tf.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/9521ff6d-fe7b7aa1yoh3o3k8.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/4775c8e0-bwbe7smte45t9v3b.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/44d7f912-lnt19uyncegp5ll3.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/8d5bfd5c-by2yixf1dat8oc0v.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/9435784d-czrvso79lfn6vdet.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/3c02c844-ghob8wsqsc5bl57n.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/68039cf3-e8cv8eio5aos7buh.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/fc0b9bf1-h41eujbsf45neltd.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/sprites-shell-f705d3e2.svg",
+    "resource": "other"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/2c0ba89a-ka6ebo5pby6nyqma.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/e1d1ae28-fbaj20nxd8vp8n3p.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/eda93c10-o4pr0tos2eclry3t.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/6fd89734-lvaep1wpi1s9rps0.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/e802fc66-e90v8b3h3284j772.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/4fea45e2-s6xqt3f0hu856rjc.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/a9ba2cca-dg3l011t0qls9594.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/3e7baffa-d9d1vmzzpbrm2qbr.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/accdf855-cbha76f3072yot9x.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/41426670-nxrgspp5olgwa3qy.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/f95c074c-g3aa72ynzbzt7gxn.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/5fbbc85f-olx7pl9grgb1a7qk.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/f5cccfb7-g19amb5nf2fmigcc.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/65f98121-k03cy37dz6076yn2.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/0f8b28f8-mm98a70fqs61vr1r.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/f011c0a9-kzriewjlf5r2f47q.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/ffa880af-mh32jif6il1sqbzy.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/f40d6676-fbcps38zpwjue13r.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/c88606bd-ggsbgiakatupke2j.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/baf95bf2-g6v77u3vui7sn92u.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/30f82755-cwi7jq4uvb601los.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/79f982eb-c0yqgeh30od14jyp.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/85557f11-efzicuyxfk0jpnaz.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/e4fe0dae-lzw9421tvo8gg0ik.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/a0c3e3cc-bmmkli99ly2udfvi.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/4f3b7bd2-n77t6wqle6v9c39t.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/1878c176-d7xesvbz424g6hes.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/3cc06638-ds4h1e8dvp3v57u2.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/e00155ab-b3ldhmsae7tnaefm.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/0fd8fe12-c3bnckj0jsnj8ju9.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/428e79be-b981vuu5jj7d1ewm.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/ccb1dc91-g8dt9sqsld3bdhe8.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/07b12a2d-esx4riqlf9heghxd.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/d453dc2b-jjkow8vis946fi2o.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/ca6c2544-fgmykhksxjylwg5c.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/99cfde93-pfqf4l0b23ddxvxa.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/620d303b-e2p5hplspsm6u41d.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/e3b746a6-ib3bl0mns609qzmt.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/2ea88c7a-lxyla91xs6iv7odf.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/8d846022-abyk2bvrp61fwgqi.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/91969468-jnl5nyhhko57cibq.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/4d271a7b-jsor9t44d3d8u6xx.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/e1a66d2b-m85uwuthcbdkeae0.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/4c0f1f8e-mu0mapzbuyxwl1da.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/3509739a-kmmfyu4067ej06u9.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/25a66342-frlap8jff763txhz.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/25a66342-j7cd8h2bqav7weve.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/84983163-kle91nzec4n78ocy.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/7517017f-ksx983nz7clfuanh.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/58bafdef-g6mbuhcqryadmbim.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/e01e2324-kkj7w1422dbn57sy.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/5dc32f04-otqthgi3kxwuv5vi.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/40748e50-n3jqdjd2doiufktr.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/app-block-trigger-actions-hxl87txx.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/56dee4d8-s9qtaw0o4i1s011l.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/72bb039a-cbfj029k052x3vhk.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/9eb56efa-eyajvcq7ud97x68d.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/cc79834b-lnqzp0xd1k0cx0mm.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/ec72420d-mgvh7epw7yv76siu.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/560eefd0-jmdp0d2mpv64lwr3.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/3dcf3d3b-g6984h9hnwrn5rcj.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/9a717608-omz1iysix7yxbv43.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/55904901-mxy985uzi1tfcpr3.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/02df22f1-fneh18a3vquxmrj9.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/2071ed62-knfb94tetgn4otu0.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/109df894-o95aalz9hfh7xgzf.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/eb34548a-m66rfjm5tfv7e0j3.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/5b203e1c-ioqvsfeprydn6llu.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/f7e0bf69-ejygu2112gg83ejt.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/824d80d7-b7srths2o8gv3xqo.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/f254c486-evmoe616lsqojudy.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/e3349b6b-kqmjecy4sizzkwu3.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/1c86a5ac-of7xun7wci8rx89d.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/6601bf01-fcbxknibcl393quw.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/d86ca127-ftirckaioniwsopz.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/67fb493c-5tjc3hxxqea5eihq.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/cd7c6193-entqiv3j1kmj2gfv.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/08b6430b-bip4ocojirtgzocl.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/4143cd04-lbn33cjn5lupu7ry.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/b4b33d24-ec3qx5tdm23svb9h.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/31cec8d8-ejzahhq8v425zkie.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/54e99289-u9xsq2ozk9hcj326.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/2745b5be-n6gvl3aewwizgodn.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/72e0c7a5-gvr88fy09teggizm.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/b9e1b3a9-iqnck9kre1z1gzns.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/cc275b97-f3s71r4kut9vbe1m.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/5ab42519-4d7poafylt6rjay8.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/e0691314-j25je0r3ld54d0o7.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/239f44f1-h6a3zst8h1lh173d.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/5be378a2-bm09dvdgppmj1glj.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/c8f38d6c-d8n7lfzufkjjy3fh.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/58ab20f4-nsxeamheuhpvzglz.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/2d4fbc67-deia1j7amrnow2n2.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/af004db9-opfgq9uchzgvg3zg.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/9a292b8a-uunwg7iwhmpud0d7.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/c157dfba-dnhuqt5i3acp2h5b.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/a89794b1-l527ln4uuyv2l5sz.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/3b8bd72c-l4ar1f81w1ksc0ki.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/e04c699b-oiqa18t3tngrn769.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/6fd89734-ny5i76ta4bni7dqo.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/81fe9c28-ldjeiizatt6d6hn0.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/4740ae63-b3rfesbvptxkl7zc.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/da39060d-gn5osvalqeuqxxu5.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/7ae37b3b-muhmfh4bzqa2qoj7.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/385934b9-nlc2wfak036dhc72.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/backend-anon/checkout_pricing_config/configs/US",
+    "resource": "fetch"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/backend-anon/settings/voices?voice_mode=advanced",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "https://cdn.openai.com/common/fonts/openai-sans/v4/OpenAISans-Semibold.woff2",
+    "resource": "font"
+  },
+  {
+    "phase": "request",
+    "method": "POST",
+    "url": "http://127.0.0.1:18002/backend-anon/conversation/init",
+    "resource": "fetch"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/639d2afb-hqeglu4h8yklrrxo.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/b4c3a217-ju4psakvtob8p2l1.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/58cf4120-njr98xgc0vis5ifv.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/dcadf3b0-m6hufbktfjoifijm.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/96098dcc-kedftpxptu29xhn8.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/f6a81ab7-kho84va4zhpxf4el.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/f8d34c7f-m5rnctjy3e8a3jbm.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/0fbccedd-i84rw3xhfac4mrzy.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/c19d65aa-oz5cfrnlefivfsv9.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/dccfc4ad-o5a2o9jxtenhjxqt.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/8baac9c1-b3rfgyjav79c4u10.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/25e69e8b-lyrcpv07cncxb4ud.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/bd1b82bd-f3p6a03gk92g0p6q.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/819fa1c4-ghdklfk3w17jt0s5.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/23ad950b-ijp5pps7qbawl9se.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/8742b478-hrpduqu3i25aoof8.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/32a2db56-gza2z6ruulgi0ern.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/70ccb607-feh9hvicyzh5emls.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/4aa1bb90-jf0raq2glr0n6jtx.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/5422a199-ohc0ujx944q7esd3.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/e3127a4c-jevptwkqp618sx90.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/f56d3903-ejtrxyl96b494vs3.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/92cd10e6-muyqf6ooao6azsha.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/d8931810-e2r747dnmg5nhobe.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/5ab42519-kdwv9bn0x2gdcss2.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/8d846022-4pd73obr4wbkcrdr.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/ce52ae67-h7tlc5oeh6o4lhgs.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/2abddabb-drn0dowrd2hu9oio.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/32f10268-pb0b9zh2dsq50a2g.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/7ec8c41d-nibix4wfrdqdhma6.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/5fe72b0f-mpesntcup5zqacug.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/e87af100-jzkty07lgg89bcpc.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/051ead45-hajnnq1kur4ayj67.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/4bcd40e4-hzy12kloezyi563t.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/7bed292f-jag7hsysm17b6bdp.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/922a3d67-mv8yai8u6q1v31cx.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/b7324575-mamhknpjiuznp17w.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/24ecc29f-k3hjaifqsd0uk7si.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/cec13ce4-ezgg8ilz8308ux2m.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/18e7d84e-d3z4x48rc5wpbdkv.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/76b5a357-benxdh69028dkycz.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/2ab5aa6c-ibh9j90mx1o8xsrg.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/9e6b8179-cxj9ywq25ar17d5v.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/c01cad0d-kcla04z8lzj7ivsr.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/0d44a401-ocp5y55p23g4iwja.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/ff057340-e97udpm0u8pxhkw3.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/8becd41d-o1r6udnpvv6ogxpu.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/ae2c873a-l0alq1ar08x15tod.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/70c3dee7-lsaf5xtpkkhxv4cr.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/d4c3e8a1-fwrvhqh6h5dyi0r9.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/bf44528e-bn99w5w3laie47md.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/c0abab23-n108n9w3hgc00q2m.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/code-block-dop2czwo.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/a965fc59-m3pmz37v9tr7psyc.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/44246d2c-kucbc5f2ejd0r2gc.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/31e01dd8-db2uf6kx1p95vqeh.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/4117f58d-indoz5fm4s64gdlb.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/203cffdc-bjh2y6zpmk0wfp5c.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/25a66342-ntqunddbpna51zsv.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/a90e4a9a-jnqug3wesiawwzdx.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/27597608-b0egayycknt03v4s.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/ee696724-h3gx6ezk9vsn3bmt.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/85557f11-i2pahql63e9tkhz2.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/a7704736-bexi8aweszrih50z.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/react-elopj9y2.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/e54430f0-dwtvfyqt8l83wlkp.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/4748c0bc-dp86iebcnwcwqbl6.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/0631b696-b3zbs0k20913ixm5.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/781797c9-o579clt3cl9irqrc.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/2ac7f54f-xdacgd28on028a9c.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/296caa51-dxnel36sk9ynr533.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/writing-block-provider-lbnz1gc0.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/2f7309c2-ccbvjgluwjhf0rgg.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/920a0b2e-bwqxbmb8m6ky6jwo.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/12a8bcb0-clv9pfrqwouktjes.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/429593da-gg8ruwx0li5qb5jt.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/fc5e7148-iinjmrhe9qywgn2w.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/1af2f3f4-h2rvwv0073xl6i1n.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/ede2e481-dn5mww0nqmo3caxy.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/0e8433b5-moc31c54vnequh8v.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/3acfc0b4-l5xzfsyoaqhz591j.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/058a5ba2-kl09yd1wi0kxxbzq.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/017c9c5c-lzt49bfztt45r1vx.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/1a5e078c-iiwsp5j02n034pb8.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/57f71cac-oche3o4agd4azomp.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/5798741d-gy694h0dvfqm8xpx.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/a91a940c-f38dfgx2r0l401v2.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/4b2c6e28-f1wp2zqgprrmvt1a.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/2120deb9-lo0ue7eexxymb9f3.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/99a768a6-g2e5dfhusn1moxb1.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/3e88eafe-ckflnvd7dbqzd9me.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/49b0ba35-cdhhauziprmrbfs8.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/35710e11-h0tfpoazr0kxoio5.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/1c9ccc41-ivepwvopc8palpox.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/writing-block-gwgymy54.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/c7a1f949-md0uw2syx487c4uy.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/b5901a24-n8s4595hitzmnm5x.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/f53a4715-259ui0zay3k3lgog.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/bd043fcd-mnyilehji82fj402.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/5b8cbee9-2xyr5gf8ceiom1hj.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/7f997f1a-n8s4595hitzmnm5x.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/d005bbef-eyw0f6j27gm77dpu.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/d36fbe92-kx3bpxdo68stj996.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/c4153f57-f31ctkvfq8ixyapa.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/2ab871c9-c3px3fjekwgcftqw.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/client-defined-widget-gdqdmhro.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/023ae2e0-eksm6fbfodjqbmpb.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/5983c1e5-n6x2wdealcj7if8q.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/40ee9454-m9fwjm364fwxinhc.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/4c806318-ned9gacmdjmne2v0.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/ansi-1f6vhsjh.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/2af37e0b-kka6yrtm9ixanm2c.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/5f4d7fa0-kqr0144tot21c04y.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/dd81d43b-edewa7c4xsgaip7m.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/cf64444f-d2qln0samhsdmfae.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/ab92372e-mhejp2lua2sdxp7f.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/94e0eb8c-cu4udtb9hlcznocf.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/0f28d127-l8384lgzbmvauq0g.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/e7a416e4-ff4kmflpk07bhf4g.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/e8b55dd1-om77wq46i6d7p4yd.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/9e18a103-djwqc62ojrm0yscl.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/3f385189-n3sls8prf0uwjnan.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/3a774aaf-ef61x88n21ubqhc9.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/3625fe1a-dgf14mxzfih7vaoz.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/82d09521-g3omthx2xa4nbw60.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/06da37f5-mztqe59llbdwy98z.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/22bcb108-ih62rpyirn40rqgx.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/60549c99-ljg58x2g4xar4kyp.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/5ab42519-k568uuuaxbejj6ab.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/e7d6bdc9-e6t6nlcn8a596bgf.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/7a3b3573-chohk7qjt7qllfv8.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/c6ec27cf-iyqtiy5kn2cfvly7.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/19ad7347-iluks0qw5bgss4em.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/0e629c03-fr0ydylem4m4ar3m.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/e35f67a6-drjr7n10cfvblsmf.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/bb871603-f138dv027gibylqp.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/a10c6989-rfq47vf8ar7ee8j7.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/9d32acbb-biwtjv5vs4crady1.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/ba9404f9-krf2uione5hidwka.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/2b67bcd8-o8zi5wxrwp9kgtew.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/2f772deb-hf6166d3z8y9nk1a.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/0a3e27b8-ce2l2su647f7qihs.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/93027c7b-hirftbua7vm1s08i.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/830d32ee-nmii7gulm1jh52nf.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/b38665c9-6d2b5yzmherctfg1.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/8e0d0293-ng3cvtk0qjjj2ic0.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/a5f68020-d6ceud8k4zxrpsvw.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/da07a0d0-nc2uxe894nye3df8.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/498cd593-i0x9igoif12h1y67.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/74802342-g0b779xtuopd3uyg.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/b7675d69-je86n8m3kujalntp.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/table-components-b39fqymt.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/f4222f0c-lkcp2krt81egbcnz.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/407dfab1-mzhk87q2a913bh4v.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/a366adf3-kdwg7h6lflfpw8ld.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/427e2db6-d1llmkvkfzt2ldhp.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/bcae0416-n7x9v2qyucmjeq3q.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/2773dd5c-kc38a1ug6hp49c67.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/23264968-ntuwzbtduri5cl9v.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/4e933750-f7gjg44tku597aqw.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/f7f35c37-ezn4zav0upu4o4za.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/076c76af-oo9xete4y8mlablp.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/ba13b013-heez6fbfu1io4ql7.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/e19454c3-yo1o71ej56e4s7t4.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/44fdb285-fp52l18pejzs4f8k.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/540191af-bejz1026n4ryphjv.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/b9e74381-h0z6cp6y2ptcf91m.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/86793a97-eb23wpz7g6bnkcu4.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/183f19de-crrreflbb7icmfx5.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/656cec6a-c6tespay279ndreg.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/d93502a4-g45f2tdwyrokpphw.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/a35b0b5c-bd1899h93167uj2o.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/lightbox-b1e7tsj7.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/ae36c773-kxpomot5gqf59gw1.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/e1b7d567-8tcaplbxisfj1e49.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/wham-terminal-citation-renderer-nf9y3qm4.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/548f15e6-g6aw6hhrqdvza1uh.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/c2d4b446-f4yvyivqaacyoajq.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/23de51ef-j5y1i8mmtgok25o6.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/12fa2cb9-hue6wyypnwqnk9ur.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/FormattedText-j6xa3r87.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/ces/v1/projects/oai/settings",
+    "resource": "fetch"
+  },
+  {
+    "phase": "request",
+    "method": "POST",
+    "url": "http://127.0.0.1:18002/ces/v1/p",
+    "resource": "fetch"
+  },
+  {
+    "phase": "request",
+    "method": "POST",
+    "url": "http://127.0.0.1:18002/ces/v1/t",
+    "resource": "fetch"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/e8ccfb70-h3lmnftk5tg58i95.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/ad0d1100-fugvagta5lu72eok.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 202,
+    "url": "http://127.0.0.1:18002/ces/v1/rgstr?k=client-nb0qtYlZuy2tCMN5s5ncnuIBCJncjRViT0IzFm7GqST&st=javascript-client&sv=3.33.1&t=1790136645402&sid=d3e139d1-ea47-4767-8549-ad97eb94d571&ec=4&gz=1",
+    "resource": "fetch"
+  },
+  {
+    "phase": "request",
+    "method": "POST",
+    "url": "http://127.0.0.1:18002/ces/v1/rgstr?k=client-nb0qtYlZuy2tCMN5s5ncnuIBCJncjRViT0IzFm7GqST&st=javascript-client&sv=3.33.1&t=1790136646146&sid=d3e139d1-ea47-4767-8549-ad97eb94d571&ec=196&gz=1",
+    "resource": "fetch"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/a9c4a648-ea6kmdsnetmo9uaq.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/3a792387-lkf0egfnc80my8e2.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/411304d4-hontezq3hnkogxtc.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/root-ikky18n3.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/conversation-small-h5tbcwbw.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/backend-anon/accounts/check/v4-2023-04-27?timezone_offset_min=-480",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/global-modals-ml4if1tf.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/app-block-trigger-actions-hxl87txx.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/code-block-dop2czwo.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/backend-anon/me",
+    "resource": "fetch"
+  },
+  {
+    "phase": "request",
+    "method": "POST",
+    "url": "http://127.0.0.1:18002/ces/v1/rgstr?k=client-nb0qtYlZuy2tCMN5s5ncnuIBCJncjRViT0IzFm7GqST&st=javascript-client&sv=3.33.1&t=1790136646309&sid=d3e139d1-ea47-4767-8549-ad97eb94d571&ec=1&gz=1",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/react-elopj9y2.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/backend-anon/bazaar/obi/sync-token",
+    "resource": "fetch"
+  },
+  {
+    "phase": "request",
+    "method": "POST",
+    "url": "http://127.0.0.1:18002/external/https/bzr.openai.com/v1/obi/sync",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/writing-block-provider-lbnz1gc0.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/writing-block-gwgymy54.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/client-defined-widget-gdqdmhro.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/backend-anon/sentinel/chat-requirements/prepare",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/ansi-1f6vhsjh.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/table-components-b39fqymt.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/lightbox-b1e7tsj7.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/wham-terminal-citation-renderer-nf9y3qm4.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/FormattedText-j6xa3r87.css",
+    "resource": "stylesheet"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/f1324c00-ngwlyq24gr3casul.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/ac827dee-gqmxr64t2ta2cgsy.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/6afb0137-pb390m8iv2m8v7j4.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/4e1f6607-o8xgpvdzagt4vpxd.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/0379e822-k07cugu499n5i289.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/3ed411a3-igyl0odqhta8tbfz.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "POST",
+    "url": "http://127.0.0.1:18002/backend-anon/sentinel/chat-requirements/finalize",
+    "resource": "fetch"
+  },
+  {
+    "phase": "request",
+    "method": "POST",
+    "url": "http://127.0.0.1:18002/backend-anon/f/conversation/prepare",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/9521ff6d-fe7b7aa1yoh3o3k8.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/4775c8e0-bwbe7smte45t9v3b.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/44d7f912-lnt19uyncegp5ll3.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/8d5bfd5c-by2yixf1dat8oc0v.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/9435784d-czrvso79lfn6vdet.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/c2675c8c-dg65hhj46pldcd14.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/3c02c844-ghob8wsqsc5bl57n.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/68039cf3-e8cv8eio5aos7buh.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/ba0ab623-ccxx3ljzt416fb9t.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/5f339043-cowtcmfi3hsru7de.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/147d70af-gwsgvp9eibx7y582.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/fc0b9bf1-h41eujbsf45neltd.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/2c0ba89a-ka6ebo5pby6nyqma.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/e1d1ae28-fbaj20nxd8vp8n3p.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/eda93c10-o4pr0tos2eclry3t.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/6fd89734-lvaep1wpi1s9rps0.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/e802fc66-e90v8b3h3284j772.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/4fea45e2-s6xqt3f0hu856rjc.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/a9ba2cca-dg3l011t0qls9594.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/3e7baffa-d9d1vmzzpbrm2qbr.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/accdf855-cbha76f3072yot9x.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/41426670-nxrgspp5olgwa3qy.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/backend-anon/system_hints?mode=basic&suggestions=true",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/f95c074c-g3aa72ynzbzt7gxn.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "POST",
+    "url": "http://127.0.0.1:18002/backend-anon/f/conversation/prepare",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/5fbbc85f-olx7pl9grgb1a7qk.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/65f98121-k03cy37dz6076yn2.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/f5cccfb7-g19amb5nf2fmigcc.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/0f8b28f8-mm98a70fqs61vr1r.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/f011c0a9-kzriewjlf5r2f47q.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/backend-anon/system_hints?mode=plugins&suggestions=true",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/f40d6676-fbcps38zpwjue13r.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/ffa880af-mh32jif6il1sqbzy.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/c88606bd-ggsbgiakatupke2j.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/baf95bf2-g6v77u3vui7sn92u.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/85557f11-efzicuyxfk0jpnaz.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/30f82755-cwi7jq4uvb601los.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/79f982eb-c0yqgeh30od14jyp.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/e4fe0dae-lzw9421tvo8gg0ik.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/backend-anon/models?iim=false&is_gizmo=false&supports_model_picker_upgrade_presets=true",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/a0c3e3cc-bmmkli99ly2udfvi.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/4f3b7bd2-n77t6wqle6v9c39t.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/1878c176-d7xesvbz424g6hes.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/3cc06638-ds4h1e8dvp3v57u2.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/e00155ab-b3ldhmsae7tnaefm.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/0fd8fe12-c3bnckj0jsnj8ju9.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/428e79be-b981vuu5jj7d1ewm.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/ccb1dc91-g8dt9sqsld3bdhe8.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/d453dc2b-jjkow8vis946fi2o.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/07b12a2d-esx4riqlf9heghxd.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/ca6c2544-fgmykhksxjylwg5c.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/99cfde93-pfqf4l0b23ddxvxa.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/620d303b-e2p5hplspsm6u41d.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/e3b746a6-ib3bl0mns609qzmt.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/2ea88c7a-lxyla91xs6iv7odf.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/91969468-jnl5nyhhko57cibq.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/8d846022-abyk2bvrp61fwgqi.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/4d271a7b-jsor9t44d3d8u6xx.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/e1a66d2b-m85uwuthcbdkeae0.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/4c0f1f8e-mu0mapzbuyxwl1da.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/3509739a-kmmfyu4067ej06u9.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/25a66342-frlap8jff763txhz.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/25a66342-j7cd8h2bqav7weve.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/api/user-blocked-paths",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/84983163-kle91nzec4n78ocy.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/7517017f-ksx983nz7clfuanh.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/58bafdef-g6mbuhcqryadmbim.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/e01e2324-kkj7w1422dbn57sy.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/5dc32f04-otqthgi3kxwuv5vi.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/40748e50-n3jqdjd2doiufktr.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/56dee4d8-s9qtaw0o4i1s011l.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/72bb039a-cbfj029k052x3vhk.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/9eb56efa-eyajvcq7ud97x68d.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/ec72420d-mgvh7epw7yv76siu.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/560eefd0-jmdp0d2mpv64lwr3.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/cc79834b-lnqzp0xd1k0cx0mm.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/3dcf3d3b-g6984h9hnwrn5rcj.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/9a717608-omz1iysix7yxbv43.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/55904901-mxy985uzi1tfcpr3.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/02df22f1-fneh18a3vquxmrj9.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/2071ed62-knfb94tetgn4otu0.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/109df894-o95aalz9hfh7xgzf.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/eb34548a-m66rfjm5tfv7e0j3.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/5b203e1c-ioqvsfeprydn6llu.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/f7e0bf69-ejygu2112gg83ejt.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/824d80d7-b7srths2o8gv3xqo.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/f254c486-evmoe616lsqojudy.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/e3349b6b-kqmjecy4sizzkwu3.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/1c86a5ac-of7xun7wci8rx89d.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/6601bf01-fcbxknibcl393quw.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/d86ca127-ftirckaioniwsopz.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/67fb493c-5tjc3hxxqea5eihq.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/cd7c6193-entqiv3j1kmj2gfv.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/08b6430b-bip4ocojirtgzocl.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/4143cd04-lbn33cjn5lupu7ry.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/b4b33d24-ec3qx5tdm23svb9h.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/31cec8d8-ejzahhq8v425zkie.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/54e99289-u9xsq2ozk9hcj326.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/72e0c7a5-gvr88fy09teggizm.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/2745b5be-n6gvl3aewwizgodn.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/b9e1b3a9-iqnck9kre1z1gzns.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/cc275b97-f3s71r4kut9vbe1m.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/5ab42519-4d7poafylt6rjay8.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/e0691314-j25je0r3ld54d0o7.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/239f44f1-h6a3zst8h1lh173d.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/5be378a2-bm09dvdgppmj1glj.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/c8f38d6c-d8n7lfzufkjjy3fh.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/58ab20f4-nsxeamheuhpvzglz.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/2d4fbc67-deia1j7amrnow2n2.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/af004db9-opfgq9uchzgvg3zg.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/9a292b8a-uunwg7iwhmpud0d7.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/c157dfba-dnhuqt5i3acp2h5b.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/a89794b1-l527ln4uuyv2l5sz.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/e04c699b-oiqa18t3tngrn769.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/3b8bd72c-l4ar1f81w1ksc0ki.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/6fd89734-ny5i76ta4bni7dqo.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/81fe9c28-ldjeiizatt6d6hn0.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/4740ae63-b3rfesbvptxkl7zc.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/da39060d-gn5osvalqeuqxxu5.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/385934b9-nlc2wfak036dhc72.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/7ae37b3b-muhmfh4bzqa2qoj7.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/639d2afb-hqeglu4h8yklrrxo.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/b4c3a217-ju4psakvtob8p2l1.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/58cf4120-njr98xgc0vis5ifv.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/dcadf3b0-m6hufbktfjoifijm.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/96098dcc-kedftpxptu29xhn8.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/f6a81ab7-kho84va4zhpxf4el.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/f8d34c7f-m5rnctjy3e8a3jbm.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/0fbccedd-i84rw3xhfac4mrzy.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/c19d65aa-oz5cfrnlefivfsv9.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/dccfc4ad-o5a2o9jxtenhjxqt.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/8baac9c1-b3rfgyjav79c4u10.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/25e69e8b-lyrcpv07cncxb4ud.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/bd1b82bd-f3p6a03gk92g0p6q.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/819fa1c4-ghdklfk3w17jt0s5.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/23ad950b-ijp5pps7qbawl9se.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/8742b478-hrpduqu3i25aoof8.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/32a2db56-gza2z6ruulgi0ern.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/70ccb607-feh9hvicyzh5emls.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/4aa1bb90-jf0raq2glr0n6jtx.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/5422a199-ohc0ujx944q7esd3.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/e3127a4c-jevptwkqp618sx90.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/f56d3903-ejtrxyl96b494vs3.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/92cd10e6-muyqf6ooao6azsha.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/d8931810-e2r747dnmg5nhobe.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/5ab42519-kdwv9bn0x2gdcss2.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/8d846022-4pd73obr4wbkcrdr.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/ce52ae67-h7tlc5oeh6o4lhgs.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/2abddabb-drn0dowrd2hu9oio.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/32f10268-pb0b9zh2dsq50a2g.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/7ec8c41d-nibix4wfrdqdhma6.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/backend-anon/checkout_pricing_config/configs/US",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/5fe72b0f-mpesntcup5zqacug.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/e87af100-jzkty07lgg89bcpc.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/backend-anon/conversation/init",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/051ead45-hajnnq1kur4ayj67.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/4bcd40e4-hzy12kloezyi563t.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/7bed292f-jag7hsysm17b6bdp.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/922a3d67-mv8yai8u6q1v31cx.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/b7324575-mamhknpjiuznp17w.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/24ecc29f-k3hjaifqsd0uk7si.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/backend-anon/settings/voices?voice_mode=advanced",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/cec13ce4-ezgg8ilz8308ux2m.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/76b5a357-benxdh69028dkycz.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/18e7d84e-d3z4x48rc5wpbdkv.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/2ab5aa6c-ibh9j90mx1o8xsrg.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/9e6b8179-cxj9ywq25ar17d5v.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/c01cad0d-kcla04z8lzj7ivsr.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/0d44a401-ocp5y55p23g4iwja.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/ff057340-e97udpm0u8pxhkw3.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/8becd41d-o1r6udnpvv6ogxpu.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/ae2c873a-l0alq1ar08x15tod.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/70c3dee7-lsaf5xtpkkhxv4cr.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/bf44528e-bn99w5w3laie47md.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/c0abab23-n108n9w3hgc00q2m.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/d4c3e8a1-fwrvhqh6h5dyi0r9.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/a965fc59-m3pmz37v9tr7psyc.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/44246d2c-kucbc5f2ejd0r2gc.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/203cffdc-bjh2y6zpmk0wfp5c.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/4117f58d-indoz5fm4s64gdlb.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/31e01dd8-db2uf6kx1p95vqeh.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/25a66342-ntqunddbpna51zsv.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/a90e4a9a-jnqug3wesiawwzdx.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/27597608-b0egayycknt03v4s.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/ee696724-h3gx6ezk9vsn3bmt.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/a7704736-bexi8aweszrih50z.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/e54430f0-dwtvfyqt8l83wlkp.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/85557f11-i2pahql63e9tkhz2.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/4748c0bc-dp86iebcnwcwqbl6.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/0631b696-b3zbs0k20913ixm5.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/781797c9-o579clt3cl9irqrc.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/2ac7f54f-xdacgd28on028a9c.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/2f7309c2-ccbvjgluwjhf0rgg.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/296caa51-dxnel36sk9ynr533.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/920a0b2e-bwqxbmb8m6ky6jwo.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/12a8bcb0-clv9pfrqwouktjes.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/fc5e7148-iinjmrhe9qywgn2w.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/429593da-gg8ruwx0li5qb5jt.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/1af2f3f4-h2rvwv0073xl6i1n.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/ede2e481-dn5mww0nqmo3caxy.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/0e8433b5-moc31c54vnequh8v.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/3acfc0b4-l5xzfsyoaqhz591j.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/017c9c5c-lzt49bfztt45r1vx.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/058a5ba2-kl09yd1wi0kxxbzq.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/1a5e078c-iiwsp5j02n034pb8.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/57f71cac-oche3o4agd4azomp.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/5798741d-gy694h0dvfqm8xpx.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/a91a940c-f38dfgx2r0l401v2.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/4b2c6e28-f1wp2zqgprrmvt1a.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/99a768a6-g2e5dfhusn1moxb1.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/2120deb9-lo0ue7eexxymb9f3.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/49b0ba35-cdhhauziprmrbfs8.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/3e88eafe-ckflnvd7dbqzd9me.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/35710e11-h0tfpoazr0kxoio5.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/1c9ccc41-ivepwvopc8palpox.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/c7a1f949-md0uw2syx487c4uy.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/b5901a24-n8s4595hitzmnm5x.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/f53a4715-259ui0zay3k3lgog.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/bd043fcd-mnyilehji82fj402.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/5b8cbee9-2xyr5gf8ceiom1hj.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/7f997f1a-n8s4595hitzmnm5x.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/d36fbe92-kx3bpxdo68stj996.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/d005bbef-eyw0f6j27gm77dpu.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/c4153f57-f31ctkvfq8ixyapa.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/2ab871c9-c3px3fjekwgcftqw.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/023ae2e0-eksm6fbfodjqbmpb.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/4c806318-ned9gacmdjmne2v0.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/5983c1e5-n6x2wdealcj7if8q.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/2af37e0b-kka6yrtm9ixanm2c.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/5f4d7fa0-kqr0144tot21c04y.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/dd81d43b-edewa7c4xsgaip7m.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/40ee9454-m9fwjm364fwxinhc.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/ab92372e-mhejp2lua2sdxp7f.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/cf64444f-d2qln0samhsdmfae.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/0f28d127-l8384lgzbmvauq0g.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/94e0eb8c-cu4udtb9hlcznocf.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/e7a416e4-ff4kmflpk07bhf4g.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/e8b55dd1-om77wq46i6d7p4yd.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/3f385189-n3sls8prf0uwjnan.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/9e18a103-djwqc62ojrm0yscl.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/3a774aaf-ef61x88n21ubqhc9.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/3625fe1a-dgf14mxzfih7vaoz.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/82d09521-g3omthx2xa4nbw60.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/06da37f5-mztqe59llbdwy98z.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/22bcb108-ih62rpyirn40rqgx.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/60549c99-ljg58x2g4xar4kyp.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/5ab42519-k568uuuaxbejj6ab.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/e7d6bdc9-e6t6nlcn8a596bgf.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/c6ec27cf-iyqtiy5kn2cfvly7.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/7a3b3573-chohk7qjt7qllfv8.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/sprites-composer-ece24c50.svg",
+    "resource": "other"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/sprites-core-3809bd01.svg",
+    "resource": "other"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "blob:http://127.0.0.1:18002/3ca95e99-8baf-4537-8138-330e99e87e04",
+    "resource": "image"
+  },
+  {
+    "phase": "request",
+    "method": "POST",
+    "url": "http://127.0.0.1:18002/ces/v1/t",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "blob:http://127.0.0.1:18002/3ca95e99-8baf-4537-8138-330e99e87e04",
+    "resource": "image"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/19ad7347-iluks0qw5bgss4em.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/0e629c03-fr0ydylem4m4ar3m.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "POST",
+    "url": "http://127.0.0.1:18002/ces/v1/t",
+    "resource": "fetch"
+  },
+  {
+    "phase": "request",
+    "method": "POST",
+    "url": "http://127.0.0.1:18002/backend-anon/files",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/e35f67a6-drjr7n10cfvblsmf.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/bb871603-f138dv027gibylqp.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/a10c6989-rfq47vf8ar7ee8j7.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/9d32acbb-biwtjv5vs4crady1.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "POST",
+    "url": "http://127.0.0.1:18002/ces/v1/t",
+    "resource": "fetch"
+  },
+  {
+    "phase": "request",
+    "method": "POST",
+    "url": "http://127.0.0.1:18002/ces/v1/t",
+    "resource": "fetch"
+  },
+  {
+    "phase": "request",
+    "method": "POST",
+    "url": "http://127.0.0.1:18002/ces/v1/t",
+    "resource": "fetch"
+  },
+  {
+    "phase": "request",
+    "method": "POST",
+    "url": "http://127.0.0.1:18002/ces/v1/t",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/ba9404f9-krf2uione5hidwka.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/2b67bcd8-o8zi5wxrwp9kgtew.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/2f772deb-hf6166d3z8y9nk1a.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/93027c7b-hirftbua7vm1s08i.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/0a3e27b8-ce2l2su647f7qihs.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/830d32ee-nmii7gulm1jh52nf.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/b38665c9-6d2b5yzmherctfg1.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/8e0d0293-ng3cvtk0qjjj2ic0.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/a5f68020-d6ceud8k4zxrpsvw.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/da07a0d0-nc2uxe894nye3df8.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/498cd593-i0x9igoif12h1y67.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/74802342-g0b779xtuopd3uyg.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/b7675d69-je86n8m3kujalntp.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/f4222f0c-lkcp2krt81egbcnz.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/407dfab1-mzhk87q2a913bh4v.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/427e2db6-d1llmkvkfzt2ldhp.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/a366adf3-kdwg7h6lflfpw8ld.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/bcae0416-n7x9v2qyucmjeq3q.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/2773dd5c-kc38a1ug6hp49c67.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/23264968-ntuwzbtduri5cl9v.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/4e933750-f7gjg44tku597aqw.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/f7f35c37-ezn4zav0upu4o4za.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/076c76af-oo9xete4y8mlablp.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/ba13b013-heez6fbfu1io4ql7.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/e19454c3-yo1o71ej56e4s7t4.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/44fdb285-fp52l18pejzs4f8k.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/b9e74381-h0z6cp6y2ptcf91m.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/540191af-bejz1026n4ryphjv.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/86793a97-eb23wpz7g6bnkcu4.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/183f19de-crrreflbb7icmfx5.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/656cec6a-c6tespay279ndreg.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/d93502a4-g45f2tdwyrokpphw.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/a35b0b5c-bd1899h93167uj2o.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/ae36c773-kxpomot5gqf59gw1.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/e1b7d567-8tcaplbxisfj1e49.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/548f15e6-g6aw6hhrqdvza1uh.js",
+    "resource": "script"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/api/user-blocked-paths",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/c2d4b446-f4yvyivqaacyoajq.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/23de51ef-j5y1i8mmtgok25o6.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/12fa2cb9-hue6wyypnwqnk9ur.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/e8ccfb70-h3lmnftk5tg58i95.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/ad0d1100-fugvagta5lu72eok.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/a9c4a648-ea6kmdsnetmo9uaq.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/3a792387-lkf0egfnc80my8e2.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 503,
+    "url": "http://127.0.0.1:18002/external/https/bzr.openai.com/v1/obi/sync",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/411304d4-hontezq3hnkogxtc.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/ces/v1/t",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/ces/v1/p",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 202,
+    "url": "http://127.0.0.1:18002/ces/v1/rgstr?k=client-nb0qtYlZuy2tCMN5s5ncnuIBCJncjRViT0IzFm7GqST&st=javascript-client&sv=3.33.1&t=1790136646309&sid=d3e139d1-ea47-4767-8549-ad97eb94d571&ec=1&gz=1",
+    "resource": "fetch"
+  },
+  {
+    "phase": "request",
+    "method": "POST",
+    "url": "http://127.0.0.1:18002/ces/v1/rgstr?k=client-nb0qtYlZuy2tCMN5s5ncnuIBCJncjRViT0IzFm7GqST&st=javascript-client&sv=3.33.1&t=1790136651384&sid=d3e139d1-ea47-4767-8549-ad97eb94d571&ec=32&gz=1",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/ba0ab623-ccxx3ljzt416fb9t.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/5f339043-cowtcmfi3hsru7de.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/api/user-blocked-paths",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/backend-anon/f/conversation/prepare",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/147d70af-gwsgvp9eibx7y582.js",
+    "resource": "script"
+  },
+  {
+    "phase": "response",
+    "status": 202,
+    "url": "http://127.0.0.1:18002/ces/v1/rgstr?k=client-nb0qtYlZuy2tCMN5s5ncnuIBCJncjRViT0IzFm7GqST&st=javascript-client&sv=3.33.1&t=1790136646146&sid=d3e139d1-ea47-4767-8549-ad97eb94d571&ec=196&gz=1",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/backend-anon/sentinel/chat-requirements/finalize",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/ces/v1/t",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/backend-anon/f/conversation/prepare",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/ces/v1/t",
+    "resource": "fetch"
+  },
+  {
+    "phase": "request",
+    "method": "POST",
+    "url": "http://127.0.0.1:18002/backend-anon/f/conversation/prepare",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/api/user-blocked-paths",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/ces/v1/t",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/backend-anon/files",
+    "resource": "fetch"
+  },
+  {
+    "phase": "request",
+    "method": "POST",
+    "url": "http://127.0.0.1:18002/ces/v1/t",
+    "resource": "fetch"
+  },
+  {
+    "phase": "request",
+    "method": "POST",
+    "url": "http://127.0.0.1:18002/ces/v1/t",
+    "resource": "fetch"
+  },
+  {
+    "phase": "request",
+    "method": "PUT",
+    "url": "http://127.0.0.1:18002/internal-upstream/https/files.oaiusercontent.com/file-HrEmrfESAmFzhq81JKcApy?se=2026-09-23T04%3A15%3A52Z&sp=cw&sv=2026-02-06&sr=b&skoid=82d55f1d-674a-4346-a655-5d0f48e4ede8&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-22T14%3A47%3A07Z&ske=2026-09-23T14%3A47%3A07Z&sks=b&skv=2026-02-06&sig=WjdKWUtHk2Qa05PIKArzo1uNb5uvFU0ZGmu/pK5Rim8%3D",
+    "resource": "xhr"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/ces/v1/t",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/sprites-shell-f705d3e2.svg",
+    "resource": "other"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/sprites-composer-ece24c50.svg",
+    "resource": "other"
+  },
+  {
+    "phase": "response",
+    "status": 202,
+    "url": "http://127.0.0.1:18002/ces/v1/rgstr?k=client-nb0qtYlZuy2tCMN5s5ncnuIBCJncjRViT0IzFm7GqST&st=javascript-client&sv=3.33.1&t=1790136651384&sid=d3e139d1-ea47-4767-8549-ad97eb94d571&ec=32&gz=1",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/ces/v1/t",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/ces/v1/t",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/ces/v1/t",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/backend-anon/f/conversation/prepare",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/sprites-core-3809bd01.svg",
+    "resource": "other"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/cdn/assets/favicon-l4nq08hd.svg",
+    "resource": "other"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/cdn/assets/favicon-l4nq08hd.svg",
+    "resource": "other"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/ces/v1/t",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 201,
+    "url": "http://127.0.0.1:18002/internal-upstream/https/files.oaiusercontent.com/file-HrEmrfESAmFzhq81JKcApy?se=2026-09-23T04%3A15%3A52Z&sp=cw&sv=2026-02-06&sr=b&skoid=82d55f1d-674a-4346-a655-5d0f48e4ede8&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-22T14%3A47%3A07Z&ske=2026-09-23T14%3A47%3A07Z&sks=b&skv=2026-02-06&sig=WjdKWUtHk2Qa05PIKArzo1uNb5uvFU0ZGmu/pK5Rim8%3D",
+    "resource": "xhr"
+  },
+  {
+    "phase": "request",
+    "method": "POST",
+    "url": "http://127.0.0.1:18002/ces/v1/t",
+    "resource": "fetch"
+  },
+  {
+    "phase": "request",
+    "method": "POST",
+    "url": "http://127.0.0.1:18002/ces/v1/t",
+    "resource": "fetch"
+  },
+  {
+    "phase": "request",
+    "method": "POST",
+    "url": "http://127.0.0.1:18002/backend-anon/files/process_upload_stream",
+    "resource": "fetch"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/api/user-blocked-paths",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/api/user-blocked-paths",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/ces/v1/t",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/ces/v1/t",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/backend-anon/files/process_upload_stream",
+    "resource": "fetch"
+  },
+  {
+    "phase": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:18002/backend-anon/files/download/file-HrEmrfESAmFzhq81JKcApy?download_intent=false",
+    "resource": "fetch"
+  },
+  {
+    "phase": "request",
+    "method": "POST",
+    "url": "http://127.0.0.1:18002/ces/v1/t",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:18002/ces/v1/t",
+    "resource": "fetch"
+  },
+  {
+    "phase": "response",
+    "status": 403,
+    "url": "http://127.0.0.1:18002/backend-anon/files/download/file-HrEmrfESAmFzhq81JKcApy?download_intent=false",
+    "resource": "fetch"
+  }
+]

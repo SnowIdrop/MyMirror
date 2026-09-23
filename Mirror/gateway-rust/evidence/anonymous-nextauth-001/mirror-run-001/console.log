@@ -1,0 +1,17 @@
+info: Executing inline script violates the following Content Security Policy directive 'script-src-elem 'nonce-821d532d-4e20-489d-89b1-459cd5395e55' 'self' 'sha256-Z5we4+MWtdDkWs67HhZwjrbqNxc9ymzHYfHGNEF7JoM=' 'sha256-eMuh8xiwcX72rRYNAGENurQBAcH7kLlAUQcoOri3BIo=' 'sha384-Sr5xwyR0H5rcDXa7/iDJDM3qBBvtHuR97A8ELbd+DFBDi32Caf72to9UVqvI8R95' auth0.openai.com challenges.cloudflare.com chatgpt.com/ces htt
+log: [gw] init suppress
+log: [gw] patchLocation called
+log: [gw] patchLocation applying
+error: Should not call addAction before initialize
+error: Datadog Browser SDK: SDK initialized on a non-allowed domain.
+error: Failed to load resource: the server responded with a status of 503 (Service Unavailable)
+error: Refused to execute script from 'http://127.0.0.1:18002/external/https/accounts.google.com/gsi/client' because its MIME type ('application/json') is not executable, and strict MIME type checking is enabled.
+error: Failed to load resource: the server responded with a status of 503 (Service Unavailable)
+error: Error: OBI synchronization failed with status 503
+    at syncToWadi (http://127.0.0.1:18002/cdn/assets/4813494d-i6uoff53a7o08h8b.js:424:44667)
+    at async s (http://127.0.0.1:18002/cdn/assets/4813494d-i6uoff53a7o08h8b.js:424:43402) {feature: bazaar_browser_profile_cookie_sync}
+error: Failed to load resource: the server responded with a status of 503 (Service Unavailable)
+error: Failed to load resource: the server responded with a status of 503 (Service Unavailable)
+error: Refused to execute script from 'http://127.0.0.1:18002/backend-api/sentinel/sdk.js' because its MIME type ('application/json') is not executable, and strict MIME type checking is enabled.
+error: Failed to load resource: the server responded with a status of 401 (Unauthorized)
+error: Failed to load resource: the server responded with a status of 404 (Not Found)

@@ -1,0 +1,10 @@
+{
+  "traffic": [
+    {
+      "status": 201,
+      "method": "PUT",
+      "url": "https://files.oaiusercontent.com/file-JjTjr6ii8XEpaf7SG5PFrm?se=2026-09-23T04%3A17%3A39Z&sp=cw&sv=2026-02-06&sr=b&skoid=c2bffb7b-6b0f-4a8c-b463-fd9905d53544&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&"
+    }
+  ],
+  "bodyText": "新聊天\n图片\n插件\n深度研究\n查看套餐和定价\n设置\n帮助\n获取为你量身定制的回复\n\n登录以获取基于已保存聊天的回答，并可创建图片和上传文件。\n\n登录\nChatGPT\n登录\n免费注册\n我们先从哪里开始呢？\n与 ChatGPT 聊天\n\nChatGPT 是 AI。使用即表示你同意我们的条款和隐私政策。聊天内容可能会被审核，并用于改进我们的 AI 模型。了解更多"
+}

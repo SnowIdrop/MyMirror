@@ -8,6 +8,18 @@
   var _gwSessionLogoutPath = "/api/user-logout";
   var _gwSessionRedirecting = false;
   var _gwInternalUpstreamHosts = @@INTERNAL_HOSTS@@;
+  var _gwInternalUpstreamSuffixes = @@INTERNAL_HOST_SUFFIXES@@;
+  // 内部上游主机判定：精确表 + 后缀族。签名上传地址的分片主机名会变化
+  //（实测 files.oaiusercontent.com → files09.oaiusercontent.com），
+  // 精确表无法覆盖，因此后缀族必须与服务端 proxy.rs 的同一份常量一致。
+  var isInternalUpstreamHost = function(host) {
+    if (_gwInternalUpstreamHosts.indexOf(host) !== -1) return true;
+    for (var i = 0; i < _gwInternalUpstreamSuffixes.length; i += 1) {
+      var suffix = _gwInternalUpstreamSuffixes[i];
+      if (host.length > suffix.length && host.slice(-suffix.length) === suffix) return true;
+    }
+    return false;
+  };
   var rewriteAbsoluteUrl = function(input) {
     var raw = '';
     if (typeof input === 'string') {
@@ -117,7 +129,7 @@
       if ((url.protocol !== 'http:' && url.protocol !== 'https:') || url.origin === window.location.origin) return null;
       if (isBlockedExternalHost(url.hostname)) return null;
       var normalizedHost = String(url.hostname || '').toLowerCase();
-      if (!url.port && _gwInternalUpstreamHosts.indexOf(normalizedHost) !== -1) {
+      if (!url.port && isInternalUpstreamHost(normalizedHost)) {
         url.protocol = 'https:';
         return '/internal-upstream/https/' + url.host + url.pathname + url.search + url.hash;
       }

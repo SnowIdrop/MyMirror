@@ -81,6 +81,7 @@ async fn fixture() -> Fixture {
         timeout: Duration::from_secs(3),
         mirror_profile: true,
         cookie_secure: false,
+        allow_anonymous_session: false,
     })
     .await
     .unwrap();

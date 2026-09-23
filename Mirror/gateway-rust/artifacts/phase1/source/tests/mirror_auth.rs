@@ -35,6 +35,7 @@ async fn mirror_authority_revocation_and_relogin_are_enforced() {
         timeout: Duration::from_secs(3),
         mirror_profile: true,
         cookie_secure: false,
+        allow_anonymous_session: false,
     };
     let app = server::router(config).await.unwrap();
     let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
@@ -94,7 +95,9 @@ async fn mirror_authority_revocation_and_relogin_are_enforced() {
             .status(),
         200
     );
-    for path in ["/backend-api/conversation", "/assets/unverified.js", "/"] {
+    // 页面路由 `/` 已按本批契约放行（见 coord_boundary_regression 的
+    // coord_page_and_anonymous_routes_are_open），这里只保留仍然关闭的路径。
+    for path in ["/backend-api/conversation", "/assets/unverified.js"] {
         assert_eq!(
             client
                 .get(format!("{base}{path}"))

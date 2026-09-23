@@ -12,8 +12,11 @@
 - 独立 Mirror 签名授权适配：调用 Django 校验、每次认证请求重新核对版本和有效期、版本匹配撤销、重新登录保护。
 - 登录交接、Cookie 轮换和退出清理；配置持久化、Django 回环代理（含查询串/响应流）。
 - 纯模型与能力允许清单策略及回归测试；**MCP/Skills 请求侧协议、完整配额执行未接线**。
-- 已开放 GET `/backend-api/me` 和 GET `/backend-api/conversations`，后者按共享账号内用户归属过滤并保留分页语义；其它聊天路径仍有明确门禁。完整隔离、SSE、WebSocket、指纹客户端尚未实现，不能宣称可正常聊天。
+- 匿名上游前端已接通（2026-09-23 真实上游实测）：页面 `/`、`/c/*`，匿名通道 `/backend-anon/*`，公共接口 `/public-api/`、`/ces/`、`/cdn-cgi/`、`/sentinel/`，以及 `/assets/`、`/cdn/` 与 `/internal-upstream/https/<host>/...` 媒体代理；页面 HTML 在 `</head>` 之前注入客户端模板，匿名对话（SSE）、匿名上传（签名 blob PUT）与媒体加载均在真实上游通过。
+- 已开放 GET `/backend-api/me` 和 GET `/backend-api/conversations`，后者按共享账号内用户归属过滤并保留分页语义；其它 `/backend-api/*` 与 `/external/*`、WS/realtime 仍有明确门禁，完整隔离与 WebSocket 桥接尚未实现。
+- 全局共享匿名上游身份：`server/anonymous.rs` 从 cfbypass 取 Cloudflare cookies（整组下发），持久化到 `gateway_settings['anonymous_upstream']`（整值加密）；只有实测的 Cloudflare 挑战（403 + `cf-mitigated: challenge`）才触发缓存处理：幂等 GET 刷新一次并重放一次，生成/上传类请求只失效缓存、由下一次请求重新获取。匿名链路以 cookies 为唯一凭据、不发 `Authorization`：`accessToken` 只属于真实账号登录（实测匿名 `/api/auth/session` 返回 200 `{}`），匿名对话与上传均不需要它。
 - 已接线六个管理端点，支持真实令牌轮换、访问计数、会话清理、审核配置持久化。审核 provider 成功协议尚未验证，明确返回未完成门禁。
+- 凭据类上游调用（`session_token` 换取、`/api/get-user-info`、`/api/diagnose-chatgpt-auth`、会话刷新）已统一注入 CF 白名单 cookies：命中实测挑战刷新一次并重放一次（只限幂等 GET，生成/SSE/上传不重放）；持续拦截返回 `502` + `code=upstream_blocked`，不回传上游 HTML，配套 Django 健康检测不再据此判失效或清空 token。这是相对原版的有意加固，见 COMPATIBILITY.md。
 - 响应头、多值 Vary、真实逐帧 gzip 压缩、代理 CSP/缓存及 HTML 客户端模板已对照原版；见 COMPATIBILITY.md 的响应、数据库、上游三个维度，不以旧 101 项通过替代完整验收。
 
 ## 开发与验证
@@ -38,7 +41,9 @@ Linux x86-64 musl 制品使用本工程 `.build/zig/ziglang` 中的 Zig 0.13.0 �
 `GATEWAY_ADMIN_SECRET` 至少 16 字节；`CREDENTIAL_ENCRYPTION_KEY` 去除两端空白后至少 32 字节。
 `GATEWAY_UPSTREAM_MODE` 默认 `offline`：`DJANGO_UPSTREAM`、`CHATGPT_BASE_URL`、可选 `CHATGPT_CDN_BASE_URL` / `CF_BYPASS_URL` 只接受数字 HTTP 回环服务源。
 显式设为 `configured` 时接受 HTTP/HTTPS 服务名和端口，Django、聊天、CDN 三个源必须各自配置，CF 源可选。拒绝凭据、路径前缀、查询串和片段；不提供默认公网地址。配置模板见 `.env.configured.example`。
-CDN 已接入受限公共 JS/CSS 的 `/assets/` 与 `/cdn/` 路径；不转发凭据或上游 Cookie，拒绝路径穿越、错误 MIME 与重定向。字体、图片及其他路径仍有门禁，聊天页面尚未开放。TLS 校验保持启用，请求无法改写配置目标。
+CDN 已接入公共静态的 `/assets/` 与 `/cdn/` 路径（脚本、样式、图片、字体、音视频扩展名白名单）；不转发凭据或上游 Cookie，拒绝路径穿越、错误 MIME、HTML 正文与重定向。TLS 校验保持启用，请求无法改写配置目标。
+`/internal-upstream/https/<host>/<path>` 是注入脚本内置主机表（`src/assets/gateway-client-hosts.json`）的媒体代理：GET/HEAD 读取，PUT 用于匿名上传返回的签名 blob 地址；主机不在表内、非 https、缺少路径分隔符或其它方法都在接触上游前拒绝。
+`GATEWAY_ALLOW_ANONYMOUS_SESSION` 默认 `false`（只接受字面量 `true`/`false`）：打开后 `/api/login` 允许无上游凭据的镜像会话，该会话绑定全局共享匿名上游身份。关闭时与原版一致，空凭据登录仍然 400。镜像自身的登录门禁不变：无 `mirror_token` 的页面/匿名请求仍是 401。
 `/api/auth/session` 已接入 accounts/check → me 的逐次刷新，网络等待不持数据库锁，并在返回前重新校验撤权；初次登录的accounts检查仍未对齐。独立ACL模块只暂存和运行契约测试，没有产品权限接线。
 `GATEWAY_COMPAT_PROFILE=mirror` 是默认值，必须传 Django 授权与策略字段；`original` 只用于原版契约观测，不自动降级到该模式。
 `COOKIE_SECURE` 默认 true。局部合成 HTTP 测试可设 false；这不是公网部署配置。

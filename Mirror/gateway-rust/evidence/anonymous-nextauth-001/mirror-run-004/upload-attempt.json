@@ -1,0 +1,28 @@
+{
+  "capturedHeaders": {
+    "oai-language": "zh-CN",
+    "sec-ch-ua-platform": "\"Linux\"",
+    "sec-ch-ua-full-version-list": "\"Chromium\";v=\"151.0.7922.34\", \"Not=A?Brand\";v=\"99.0.0.0\"",
+    "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+    "sec-ch-ua-bitness": "\"64\"",
+    "sec-ch-ua-model": "\"\"",
+    "sec-ch-ua-mobile": "?0",
+    "oai-client-build-number": "11197841",
+    "sec-ch-ua-arch": "\"x86\"",
+    "x-openai-web-frontend": "core_web",
+    "sec-ch-ua-full-version": "\"151.0.7922.34\"",
+    "oai-client-version": "prod-3de21fe28a84a6099234ab4fe4e36259da6478b8",
+    "oai-session-id": "9f338d91-3888-4ff7-b376-3ac391f3ae0c",
+    "referer": "http://127.0.0.1:18002/",
+    "accept-language": "zh-CN",
+    "x-openai-target-path": "/backend-anon/accounts/check/v4-2023-04-27",
+    "oai-device-id": "e49c99bd-0e49-437f-bacd-7ce2033fc540",
+    "x-openai-target-route": "/backend-anon/accounts/check/{version}",
+    "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+    "sec-ch-ua-platform-version": "\"\""
+  },
+  "upload": {
+    "status": 401,
+    "body": "{\"detail\":\"Unauthorized\"}"
+  }
+}

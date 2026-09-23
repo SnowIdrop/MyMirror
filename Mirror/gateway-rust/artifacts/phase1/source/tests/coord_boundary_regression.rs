@@ -65,6 +65,32 @@ async fn spawn_fixture(
                 };
                 return axum::Json(json!({"email":email,"id":email,"name":"Synthetic account"})).into_response();
             }
+            // 页面与匿名通道的上游正文：用于断言注入点与匿名转发（不含任何账号凭据）。
+            if role == "chat" && (parts.uri.path() == "/" || parts.uri.path().starts_with("/c/")) {
+                return (
+                    [(axum::http::header::CONTENT_TYPE, "text/html")],
+                    "<html><head><script src=\"/assets/fixture.js\"></script></head><body>fixture-page</body></html>",
+                )
+                    .into_response();
+            }
+            // 访客会话路由与资源：同属 HTML/脚本，用于覆盖 /uc/ 与 /unauth-mweb/ 放行。
+            if role == "chat" && parts.uri.path().starts_with("/uc/") {
+                return (
+                    [(axum::http::header::CONTENT_TYPE, "text/html")],
+                    "<html><head></head><body>guest-page</body></html>",
+                )
+                    .into_response();
+            }
+            if role == "chat" && parts.uri.path().starts_with("/unauth-mweb/assets/") {
+                return (
+                    [(axum::http::header::CONTENT_TYPE, "application/javascript")],
+                    "export const guest = true;",
+                )
+                    .into_response();
+            }
+            if role == "chat" && parts.uri.path().starts_with("/backend-anon/") {
+                return axum::Json(json!({"path":parts.uri.path(),"anonymous":true})).into_response();
+            }
             (StatusCode::IM_A_TEAPOT, "unexpected fixture route").into_response()
         }
     });
@@ -125,6 +151,7 @@ impl Harness {
             timeout: Duration::from_secs(2),
             mirror_profile: true,
             cookie_secure: false,
+            allow_anonymous_session: false,
         })
         .await
         .unwrap();
@@ -250,7 +277,8 @@ async fn coord_unknown_route_matrix_stays_closed() {
     let h = Harness::new("unknown_route_matrix").await;
     let token = h.login("alice", ACCESS_A, "api").await;
     let chat_before = h.egress("chat").len();
-    // Guessed HTML/bootstrap/resource paths are gate probes, not proposed routes.
+    // 页面（`/`、`/c/*`）与 `/backend-anon/*` 已按本批契约放行，见
+    // coord_page_and_anonymous_routes_are_open；这里只保留仍然关闭的路径。
     // Static assets are deliberately left to the owner's static_assets.rs.
     for path in [
         "/external",
@@ -258,8 +286,6 @@ async fn coord_unknown_route_matrix_stays_closed() {
         "/external/http://127.0.0.1/unknown",
         "/internal-upstream",
         "/internal-upstream/backend-api/me",
-        "/",
-        "/c/coord-guessed-resource",
         "/_next/data/coord-guessed-build/index.json",
         "/backend-api/conversation/coord-guessed-resource",
         "/backend-api/coord-unknown",
@@ -297,6 +323,70 @@ async fn coord_unknown_route_matrix_stays_closed() {
     assert_eq!(h.egress("chat").len(), chat_before);
     assert!(h.egress("cdn-unwired").is_empty());
     assert!(h.egress("client-target-decoy").is_empty());
+}
+
+/// 本批放行的页面/匿名路由：页面 HTML 必须在 `</head>` 之前完成注入
+/// （证据：artifacts/phase1/page-original-001 的 authenticated-root）。
+#[tokio::test]
+async fn coord_page_and_anonymous_routes_are_open() {
+    let h = Harness::new("page_and_anonymous").await;
+    let token = h.login("alice", ACCESS_A, "api").await;
+
+    for path in [
+        "/",
+        "/c/coord-visible-conversation",
+        // 未登录站点实测会跳到 /uc/<uuid> 并加载 /unauth-mweb/assets/*。
+        "/uc/6ab33f32-9230-83ea-9cda-e015bee7286e",
+        "/unauth-mweb/assets/conversation-small-fixture.js",
+    ] {
+        let response = h
+            .request(
+                path,
+                h.client
+                    .get(format!("{}{path}", h.base))
+                    .header("x-mirror-token", &token),
+            )
+            .await;
+        assert_eq!(response.status, 200, "{path}");
+        // HTML 才注入；`/unauth-mweb/assets/*` 是脚本，不注入也不得改写正文。
+        if path.starts_with("/unauth-mweb/") {
+            assert_eq!(response.body, "export const guest = true;");
+        } else {
+            let injected = response.body.find("gateway-user-logout-button");
+            let head_end = response.body.find("</head>");
+            assert!(injected.is_some(), "注入资源缺失: {path}");
+            assert!(
+                injected.unwrap() < head_end.expect("fixture 必须含 </head>"),
+                "注入必须位于 </head> 之前: {path}"
+            );
+        }
+        no_credential_echo(&response, &[&token, ADMIN, ACCESS_A]);
+    }
+
+    let anonymous = h
+        .request(
+            "anonymous-channel",
+            h.client
+                .get(format!("{}/backend-anon/sentinel/chat-requirements", h.base))
+                .header("x-mirror-token", &token),
+        )
+        .await;
+    assert_eq!(anonymous.status, 200);
+    assert_eq!(
+        serde_json::from_str::<Value>(&anonymous.body).unwrap()["anonymous"],
+        true
+    );
+
+    // 未认证仍然被镜像门禁拦住，不会转发到上游。
+    for path in ["/", "/c/coord-visible-conversation", "/backend-anon/me"] {
+        let response = h
+            .request(
+                &format!("unauthenticated {path}"),
+                h.client.get(format!("{}{path}", h.base)),
+            )
+            .await;
+        assert_eq!(response.status, 401, "{path}");
+    }
 }
 
 #[tokio::test]

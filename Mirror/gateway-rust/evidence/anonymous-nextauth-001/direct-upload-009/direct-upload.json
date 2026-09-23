@@ -1,0 +1,17 @@
+{
+  "title": "ChatGPT: Chat, Work, Create & Code with AI",
+  "url": "https://chatgpt.com/",
+  "fileInputs": 3,
+  "uploaded": true,
+  "uploads": [
+    {
+      "method": "PUT",
+      "url": "https://files09.oaiusercontent.com/file-TxYGmPoFQUL45PAKCGHvCj?se=2026-09-23T04%3A17%3A04Z&sp=cw&sv=2026-02-06&sr=b&skoid=ef8304e4-7c69-43f0-8eda-e3cf4e027be8&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-22T21%3A53%3A19Z&ske=2026-09-23T21%3A53%3A19Z&sks=b&skv=2026-02-06&sig=133qHYrhW%2B1%2BiMior2Kwv0D%2BFfxzH2YHT2s7cbSaLUg%3D"
+    },
+    {
+      "status": 201,
+      "method": "PUT",
+      "url": "https://files09.oaiusercontent.com/file-TxYGmPoFQUL45PAKCGHvCj?se=2026-09-23T04%3A17%3A04Z&sp=cw&sv=2026-02-06&sr=b&skoid=ef8304e4-7c69-43f0-8eda-e3cf4e027be8&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-22T21%3A53%3A19Z&ske=2026-09-23T21%3A53%3A19Z&sks=b&skv=2026-02-06&sig=133qHYrhW%2B1%2BiMior2Kwv0D%2BFfxzH2YHT2s7cbSaLUg%3D"
+    }
+  ]
+}

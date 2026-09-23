@@ -1,0 +1,12 @@
+{
+  "steps": [
+    "file-selected",
+    "sent",
+    "assistant-node-found"
+  ],
+  "fileInputs": 4,
+  "assistantNodes": [
+    "收"
+  ],
+  "bodyText": "跳至内容\n历史聊天记录\n新聊天\n图片\n已更新\n插件\n深度研究\n查看套餐和定价\n设置\n帮助\n\n获取为你量身定制的回复\n\n登录以获取基于已保存聊天的回答，并可创建图片和上传文件。\n\n登录\nChatGPT\n分享\n登录\n免费注册\n只回答两个字：收到\n\n收\n\nChatGPT 是 AI，可能会犯错。\n\n当前降智风险: 未知\n当前POW难度检测值为: 等待检测\n返回后台 / 换号\nCFToken失效\n切到混合模式\n›"
+}

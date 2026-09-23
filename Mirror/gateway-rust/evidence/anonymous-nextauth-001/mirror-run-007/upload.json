@@ -1,0 +1,221 @@
+{
+  "inputs": [
+    "<input accept=\"image/jpeg,.jpg,.jpeg,.mpo,image/png,.png,image/webp,.webp,image/gif,.gif\" multiple=\"\" type=\"file\" style=\"border:0;clip:rect(0, 0, 0, 0);clip-path:inset(50%);height:1px;margin:0 -1px -1px 0;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap\" tabindex=\"-1\" id=\"upl",
+    "<input class=\"sr-only select-none\" type=\"file\" tabindex=\"-1\" aria-hidden=\"true\" id=\"upload-photos\" data-testid=\"upload-photos-input\" accept=\"image/*\" multiple=\"\" aria-label=\"输入内容\">",
+    "<input class=\"sr-only select-none\" type=\"file\" tabindex=\"-1\" aria-hidden=\"true\" id=\"upload-camera\" accept=\"image/*\" capture=\"environment\" multiple=\"\" aria-label=\"输入内容\">",
+    "<input accept=\"image/jpeg,.jpg,.jpeg,.mpo,image/png,.png,image/webp,.webp,image/gif,.gif\" multiple=\"\" type=\"file\" style=\"border:0;clip:rect(0, 0, 0, 0);clip-path:inset(50%);height:1px;margin:0 -1px -1px 0;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap\" tabindex=\"-1\" id=\"upl"
+  ],
+  "attempts": [
+    {
+      "file": "mirror-fixture.png",
+      "newUploadRequests": [
+        {
+          "method": "POST",
+          "url": "http://127.0.0.1:18002/backend-anon/files",
+          "headers": {
+            "oai-language": "zh-CN",
+            "sec-ch-ua-platform": "\"Linux\"",
+            "sec-ch-ua-full-version-list": "\"Chromium\";v=\"151.0.7922.34\", \"Not=A?Brand\";v=\"99.0.0.0\"",
+            "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+            "sec-ch-ua-bitness": "\"64\"",
+            "sec-ch-ua-model": "\"\"",
+            "sec-ch-ua-mobile": "?0",
+            "oai-client-build-number": "11197841",
+            "sec-ch-ua-arch": "\"x86\"",
+            "x-openai-web-frontend": "core_web",
+            "sec-ch-ua-full-version": "\"151.0.7922.34\"",
+            "content-type": "application/json",
+            "oai-client-version": "prod-3de21fe28a84a6099234ab4fe4e36259da6478b8",
+            "oai-session-id": "d3e139d1-ea47-4767-8549-ad97eb94d571",
+            "referer": "http://127.0.0.1:18002/",
+            "accept-language": "zh-CN",
+            "x-openai-target-path": "/backend-anon/files",
+            "oai-device-id": "e9ed5d7b-54c4-459d-9dec-7440392daba3",
+            "x-openai-target-route": "/backend-anon/files",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+            "sec-ch-ua-platform-version": "\"\""
+          }
+        },
+        {
+          "method": "PUT",
+          "url": "http://127.0.0.1:18002/internal-upstream/https/files.oaiusercontent.com/file-HrEmrfESAmFzhq81JKcApy?se=2026-09-23T04%3A15%3A52Z&sp=cw&sv=2026-02-06&sr=b&skoid=82d55f1d-674a-4346-a655-5d0f48e4ede8&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-22T14%3A47%3A07Z&ske=2026-09-23T14%3A47%3A07Z&sks=b&skv=2026-02-06&sig=WjdKWUtHk2Qa05PIKArzo1uNb5uvFU0ZGmu/pK5Rim8%3D",
+          "headers": {
+            "sec-ch-ua-full-version-list": "\"Chromium\";v=\"151.0.7922.34\", \"Not=A?Brand\";v=\"99.0.0.0\"",
+            "sec-ch-ua-platform": "\"Linux\"",
+            "x-ms-version": "2020-04-08",
+            "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+            "sec-ch-ua-bitness": "\"64\"",
+            "sec-ch-ua-model": "\"\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-arch": "\"x86\"",
+            "sec-ch-ua-full-version": "\"151.0.7922.34\"",
+            "accept": "application/json, text/plain, */*",
+            "content-type": "image/png",
+            "referer": "http://127.0.0.1:18002/",
+            "accept-language": "zh-CN",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+            "x-ms-blob-type": "BlockBlob",
+            "sec-ch-ua-platform-version": "\"\""
+          }
+        },
+        {
+          "method": "POST",
+          "url": "http://127.0.0.1:18002/backend-anon/files/process_upload_stream",
+          "headers": {
+            "oai-language": "zh-CN",
+            "sec-ch-ua-platform": "\"Linux\"",
+            "sec-ch-ua-full-version-list": "\"Chromium\";v=\"151.0.7922.34\", \"Not=A?Brand\";v=\"99.0.0.0\"",
+            "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+            "sec-ch-ua-bitness": "\"64\"",
+            "sec-ch-ua-model": "\"\"",
+            "sec-ch-ua-mobile": "?0",
+            "oai-client-build-number": "11197841",
+            "sec-ch-ua-arch": "\"x86\"",
+            "x-openai-web-frontend": "core_web",
+            "sec-ch-ua-full-version": "\"151.0.7922.34\"",
+            "content-type": "application/json",
+            "oai-client-version": "prod-3de21fe28a84a6099234ab4fe4e36259da6478b8",
+            "oai-session-id": "d3e139d1-ea47-4767-8549-ad97eb94d571",
+            "referer": "http://127.0.0.1:18002/",
+            "accept-language": "zh-CN",
+            "x-openai-target-path": "/backend-anon/files/process_upload_stream",
+            "oai-device-id": "e9ed5d7b-54c4-459d-9dec-7440392daba3",
+            "x-openai-target-route": "/backend-anon/files/process_upload_stream",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+            "sec-ch-ua-platform-version": "\"\""
+          }
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:18002/backend-anon/files/download/file-HrEmrfESAmFzhq81JKcApy?download_intent=false",
+          "headers": {
+            "oai-language": "zh-CN",
+            "sec-ch-ua-platform": "\"Linux\"",
+            "sec-ch-ua-full-version-list": "\"Chromium\";v=\"151.0.7922.34\", \"Not=A?Brand\";v=\"99.0.0.0\"",
+            "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+            "sec-ch-ua-bitness": "\"64\"",
+            "sec-ch-ua-model": "\"\"",
+            "sec-ch-ua-mobile": "?0",
+            "oai-client-build-number": "11197841",
+            "sec-ch-ua-arch": "\"x86\"",
+            "x-openai-web-frontend": "core_web",
+            "sec-ch-ua-full-version": "\"151.0.7922.34\"",
+            "oai-client-version": "prod-3de21fe28a84a6099234ab4fe4e36259da6478b8",
+            "oai-session-id": "d3e139d1-ea47-4767-8549-ad97eb94d571",
+            "referer": "http://127.0.0.1:18002/",
+            "accept-language": "zh-CN",
+            "x-openai-target-path": "/backend-anon/files/download/file-HrEmrfESAmFzhq81JKcApy",
+            "oai-device-id": "e9ed5d7b-54c4-459d-9dec-7440392daba3",
+            "x-openai-target-route": "/backend-anon/files/download/{file_id}",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+            "sec-ch-ua-platform-version": "\"\""
+          }
+        }
+      ]
+    }
+  ],
+  "uploadSeen": [
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:18002/backend-anon/files",
+      "headers": {
+        "oai-language": "zh-CN",
+        "sec-ch-ua-platform": "\"Linux\"",
+        "sec-ch-ua-full-version-list": "\"Chromium\";v=\"151.0.7922.34\", \"Not=A?Brand\";v=\"99.0.0.0\"",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-bitness": "\"64\"",
+        "sec-ch-ua-model": "\"\"",
+        "sec-ch-ua-mobile": "?0",
+        "oai-client-build-number": "11197841",
+        "sec-ch-ua-arch": "\"x86\"",
+        "x-openai-web-frontend": "core_web",
+        "sec-ch-ua-full-version": "\"151.0.7922.34\"",
+        "content-type": "application/json",
+        "oai-client-version": "prod-3de21fe28a84a6099234ab4fe4e36259da6478b8",
+        "oai-session-id": "d3e139d1-ea47-4767-8549-ad97eb94d571",
+        "referer": "http://127.0.0.1:18002/",
+        "accept-language": "zh-CN",
+        "x-openai-target-path": "/backend-anon/files",
+        "oai-device-id": "e9ed5d7b-54c4-459d-9dec-7440392daba3",
+        "x-openai-target-route": "/backend-anon/files",
+        "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+        "sec-ch-ua-platform-version": "\"\""
+      }
+    },
+    {
+      "method": "PUT",
+      "url": "http://127.0.0.1:18002/internal-upstream/https/files.oaiusercontent.com/file-HrEmrfESAmFzhq81JKcApy?se=2026-09-23T04%3A15%3A52Z&sp=cw&sv=2026-02-06&sr=b&skoid=82d55f1d-674a-4346-a655-5d0f48e4ede8&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-22T14%3A47%3A07Z&ske=2026-09-23T14%3A47%3A07Z&sks=b&skv=2026-02-06&sig=WjdKWUtHk2Qa05PIKArzo1uNb5uvFU0ZGmu/pK5Rim8%3D",
+      "headers": {
+        "sec-ch-ua-full-version-list": "\"Chromium\";v=\"151.0.7922.34\", \"Not=A?Brand\";v=\"99.0.0.0\"",
+        "sec-ch-ua-platform": "\"Linux\"",
+        "x-ms-version": "2020-04-08",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-bitness": "\"64\"",
+        "sec-ch-ua-model": "\"\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-arch": "\"x86\"",
+        "sec-ch-ua-full-version": "\"151.0.7922.34\"",
+        "accept": "application/json, text/plain, */*",
+        "content-type": "image/png",
+        "referer": "http://127.0.0.1:18002/",
+        "accept-language": "zh-CN",
+        "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+        "x-ms-blob-type": "BlockBlob",
+        "sec-ch-ua-platform-version": "\"\""
+      }
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:18002/backend-anon/files/process_upload_stream",
+      "headers": {
+        "oai-language": "zh-CN",
+        "sec-ch-ua-platform": "\"Linux\"",
+        "sec-ch-ua-full-version-list": "\"Chromium\";v=\"151.0.7922.34\", \"Not=A?Brand\";v=\"99.0.0.0\"",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-bitness": "\"64\"",
+        "sec-ch-ua-model": "\"\"",
+        "sec-ch-ua-mobile": "?0",
+        "oai-client-build-number": "11197841",
+        "sec-ch-ua-arch": "\"x86\"",
+        "x-openai-web-frontend": "core_web",
+        "sec-ch-ua-full-version": "\"151.0.7922.34\"",
+        "content-type": "application/json",
+        "oai-client-version": "prod-3de21fe28a84a6099234ab4fe4e36259da6478b8",
+        "oai-session-id": "d3e139d1-ea47-4767-8549-ad97eb94d571",
+        "referer": "http://127.0.0.1:18002/",
+        "accept-language": "zh-CN",
+        "x-openai-target-path": "/backend-anon/files/process_upload_stream",
+        "oai-device-id": "e9ed5d7b-54c4-459d-9dec-7440392daba3",
+        "x-openai-target-route": "/backend-anon/files/process_upload_stream",
+        "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+        "sec-ch-ua-platform-version": "\"\""
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:18002/backend-anon/files/download/file-HrEmrfESAmFzhq81JKcApy?download_intent=false",
+      "headers": {
+        "oai-language": "zh-CN",
+        "sec-ch-ua-platform": "\"Linux\"",
+        "sec-ch-ua-full-version-list": "\"Chromium\";v=\"151.0.7922.34\", \"Not=A?Brand\";v=\"99.0.0.0\"",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-bitness": "\"64\"",
+        "sec-ch-ua-model": "\"\"",
+        "sec-ch-ua-mobile": "?0",
+        "oai-client-build-number": "11197841",
+        "sec-ch-ua-arch": "\"x86\"",
+        "x-openai-web-frontend": "core_web",
+        "sec-ch-ua-full-version": "\"151.0.7922.34\"",
+        "oai-client-version": "prod-3de21fe28a84a6099234ab4fe4e36259da6478b8",
+        "oai-session-id": "d3e139d1-ea47-4767-8549-ad97eb94d571",
+        "referer": "http://127.0.0.1:18002/",
+        "accept-language": "zh-CN",
+        "x-openai-target-path": "/backend-anon/files/download/file-HrEmrfESAmFzhq81JKcApy",
+        "oai-device-id": "e9ed5d7b-54c4-459d-9dec-7440392daba3",
+        "x-openai-target-route": "/backend-anon/files/download/{file_id}",
+        "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+        "sec-ch-ua-platform-version": "\"\""
+      }
+    }
+  ]
+}

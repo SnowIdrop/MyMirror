@@ -1,0 +1,17 @@
+{
+  "fileId": "file-NVz4RZc7PTnqbMkKh442m1",
+  "downloadTraffic": [
+    {
+      "status": 403,
+      "url": "http://127.0.0.1:18002/backend-anon/files/download/file-NVz4RZc7PTnqbMkKh442m1?download_intent=false"
+    },
+    {
+      "status": 403,
+      "url": "http://127.0.0.1:18002/backend-anon/files/download/file-NVz4RZc7PTnqbMkKh442m1?download_intent=false"
+    }
+  ],
+  "replay": {
+    "status": 403,
+    "body": "{\"detail\":\"User does not have permission to download this file\"}"
+  }
+}

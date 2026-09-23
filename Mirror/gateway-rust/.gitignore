@@ -1,5 +1,7 @@
 /target/
 /.build/
+# 现有候选源码树（phase1/source）单独构建时的产物目录。
+/artifacts/phase1/source/target/
 /evidence/**/qemu.stderr
 *.db
 *.db-wal

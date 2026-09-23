@@ -1,0 +1,15 @@
+{
+  "filesResponse": "{\"status\":\"success\",\"upload_url\":\"https://files.oaiusercontent.com/file-VeuiMDY14bAjhGgrT1zo1W?se=2026-09-23T04%3A16%3A18Z&sp=cw&sv=2026-02-06&sr=b&skoid=ef8304e4-7c69-43f0-8eda-e3cf4e027be8&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-22T15%3A30%3A35Z&ske=2026-09-23T15%3A30%3A35Z&sks=b&skv=2026-02-06&sig=kYPN%2BniHqO8hW74j8p9k5xZueMlX%2BbDhuwIKXGA/OiA%3D\",\"file_id\":\"file-VeuiMDY14bAjhGgrT1zo1W\"}",
+  "wantedSha": "8581e78087dce3ca1c5c43155ba55e2e675a909507a73e326bb26089451bbe51",
+  "signed": {
+    "file_id": "file-VeuiMDY14bAjhGgrT1zo1W",
+    "download_url": "",
+    "absoluteHost": "files.oaiusercontent.com"
+  },
+  "readBack": {
+    "status": 404,
+    "bytes": 44,
+    "sha256": "46b5b655b0bcce3558f8d4cdc8377babe32612ac8fb1ed12b8abd15162088568",
+    "contentType": "application/json"
+  }
+}

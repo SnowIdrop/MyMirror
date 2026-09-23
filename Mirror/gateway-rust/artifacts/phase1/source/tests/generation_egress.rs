@@ -96,6 +96,7 @@ impl Fixture {
             timeout: Duration::from_secs(2),
             mirror_profile: true,
             cookie_secure: false,
+            allow_anonymous_session: false,
         };
         let (base, task) = bind(server::router(config.clone()).await.unwrap()).await;
         Self {

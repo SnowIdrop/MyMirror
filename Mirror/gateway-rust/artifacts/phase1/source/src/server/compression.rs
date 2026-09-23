@@ -372,6 +372,50 @@ pub(super) fn decode_upstream(body: Body, headers: &mut HeaderMap) -> Body {
     }
 }
 
+/// 缓冲正文按 `content-encoding` 全量解码，供注入前取得明文。
+///
+/// 流式的 [`decode_upstream`] 只处理 gzip（原版观测到的行为）；注入需要保证拿到
+/// 明文，因此这里额外支持 br/zstd/deflate。未识别或多段编码返回错误，
+/// 调用方保持原字节与原头部不变。
+// `compression.rs` 已导入 `std::task::Context`，因此这里显式使用 `anyhow::anyhow!`
+// 构造错误而不是 `anyhow::Context` 扩展方法。
+pub(super) fn decode_buffered(headers: &HeaderMap, body: &[u8]) -> anyhow::Result<Vec<u8>> {
+    use std::io::Read;
+
+    let Some(value) = headers.get(header::CONTENT_ENCODING) else {
+        return Ok(body.to_vec());
+    };
+    let encoding = value
+        .to_str()
+        .map_err(|_| anyhow::anyhow!("上游 content-encoding 不是合法头值"))?
+        .trim();
+    if encoding.is_empty() {
+        return Ok(body.to_vec());
+    }
+    anyhow::ensure!(
+        !encoding.contains(','),
+        "多段上游编码尚未验证: {encoding}"
+    );
+    let mut decoded = Vec::new();
+    match encoding.to_ascii_lowercase().as_str() {
+        "gzip" | "x-gzip" => flate2::read::GzDecoder::new(body)
+            .read_to_end(&mut decoded)
+            .map_err(|cause| anyhow::anyhow!("上游 gzip 解码失败: {cause}"))?,
+        "deflate" => flate2::read::ZlibDecoder::new(body)
+            .read_to_end(&mut decoded)
+            .map_err(|cause| anyhow::anyhow!("上游 deflate 解码失败: {cause}"))?,
+        "br" => brotli::Decompressor::new(body, 4096)
+            .read_to_end(&mut decoded)
+            .map_err(|cause| anyhow::anyhow!("上游 brotli 解码失败: {cause}"))?,
+        "zstd" => zstd::stream::read::Decoder::new(body)
+            .map_err(|cause| anyhow::anyhow!("上游 zstd 初始化失败: {cause}"))?
+            .read_to_end(&mut decoded)
+            .map_err(|cause| anyhow::anyhow!("上游 zstd 解码失败: {cause}"))?,
+        other => anyhow::bail!("上游编码尚未验证: {other}"),
+    };
+    Ok(decoded)
+}
+
 struct GunzipBody {
     inner: Body,
     decoder: flate2::write::GzDecoder<Vec<u8>>,
@@ -436,6 +480,60 @@ impl HttpBody for GunzipBody {
 mod tests {
     use super::*;
     use axum::http::HeaderName;
+
+    /// 缓冲解码覆盖 gzip/deflate/br/zstd，未知编码与损坏正文必须报错而不是静默透传。
+    #[test]
+    fn buffered_decode_covers_observed_encodings() {
+        use std::io::Write;
+        let plain = b"<html><head></head><body>plain</body></html>".to_vec();
+
+        let gzip = {
+            let mut encoder = flate2::write::GzEncoder::new(Vec::new(), Compression::default());
+            encoder.write_all(&plain).unwrap();
+            encoder.finish().unwrap()
+        };
+        let deflate = {
+            let mut encoder = flate2::write::ZlibEncoder::new(Vec::new(), Compression::default());
+            encoder.write_all(&plain).unwrap();
+            encoder.finish().unwrap()
+        };
+        let brotli = {
+            let mut encoder = brotli::CompressorWriter::new(Vec::new(), 4096, 5, 22);
+            encoder.write_all(&plain).unwrap();
+            encoder.into_inner()
+        };
+        let zstd = zstd::stream::encode_all(plain.as_slice(), 3).unwrap();
+
+        for (encoding, encoded) in [
+            ("gzip", gzip),
+            ("deflate", deflate),
+            ("br", brotli),
+            ("zstd", zstd),
+        ] {
+            let mut headers = HeaderMap::new();
+            headers.insert(header::CONTENT_ENCODING, HeaderValue::from_str(encoding).unwrap());
+            assert_eq!(
+                decode_buffered(&headers, &encoded).unwrap(),
+                plain,
+                "{encoding}"
+            );
+        }
+
+        let mut identity = HeaderMap::new();
+        assert_eq!(decode_buffered(&identity, &plain).unwrap(), plain);
+        identity.insert(
+            header::CONTENT_ENCODING,
+            HeaderValue::from_static("compress"),
+        );
+        assert!(decode_buffered(&identity, &plain).is_err());
+        identity.insert(
+            header::CONTENT_ENCODING,
+            HeaderValue::from_static("gzip, br"),
+        );
+        assert!(decode_buffered(&identity, &plain).is_err());
+        identity.insert(header::CONTENT_ENCODING, HeaderValue::from_static("br"));
+        assert!(decode_buffered(&identity, b"not-brotli").is_err());
+    }
 
     #[tokio::test]
     async fn gzip_encodes_multiple_frames_and_propagates_stream_failure() {

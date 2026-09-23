@@ -1,0 +1,23 @@
+HTTP 403
+Date: Wed, 23 Sep 2026 04:04:41 GMT
+Transfer-Encoding: chunked
+Connection: close
+Accept-Ch: Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA
+Cf-Mitigated: challenge
+X-Frame-Options: SAMEORIGIN
+Server: cloudflare
+Critical-Ch: Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA
+Cross-Origin-Embedder-Policy: require-corp
+Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Resource-Policy: same-origin
+Origin-Agent-Cluster: ?1
+Permissions-Policy: accelerometer=(),camera=(),clipboard-read=(),clipboard-write=(),geolocation=(),gyroscope=(),hid=(),magnetometer=(),microphone=(),payment=(),publickey-credentials-get=(),screen-wake-lock=(),serial=(),sync-xhr=(),usb=(),xr-spatial-tracking=*
+Referrer-Policy: same-origin
+Server-Timing: chlray;desc="a3f6aab0fd5a7bf5"
+X-Content-Type-Options: nosniff
+Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+Set-Cookie: __cf_bm=fl9APeSHsj1AVs0zmkcSRudz1YvmiRX2XASbLgynrDg-1790136281.753876-1.0.1.1-UsjXS_FXDKBCTtBT9MwNlP8pdDOA_VeOTfLqN509oZ5rqEVuefKwZy41GuWOuDNs4oVGf7XXYbewza1xvU.wbKDfegUZbFGbdoS5_yXoGkG7.70FXqBeIz7QS0insy3H; HttpOnly; SameSite=None; Secure; Path=/; Domain=chatgpt.com; Expires=Wed, 23 Sep 2026 04:34:41 GMT
+Report-To: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=tRSoNa34%2FR8eCIrrSuOFiws3eQoB3fXFYwE8tZ8nECtR7XqKJFxfNEClMlMGSR%2BWUn%2FV5arnVRx6wIXFvFVfGilrjnak2sTYxUNtC0ZQCZ7hAgOS1J2e2c8%2FgHuJtNmlg40lpg%2B8MCZ9"}]}
+Nel: {"report_to":"cf-nel","success_fraction":0.01,"max_age":604800}
+CF-RAY: a3f6aab0fd5a7bf5-SLC
+Content-Type: text/html; charset=UTF-8

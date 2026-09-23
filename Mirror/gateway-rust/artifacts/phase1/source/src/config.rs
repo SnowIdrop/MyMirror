@@ -18,6 +18,9 @@ pub struct Config {
     pub timeout: Duration,
     pub mirror_profile: bool,
     pub cookie_secure: bool,
+    /// 开发阶段匿名上游开关。默认关闭；仅显式 true 时允许无上游凭据的镜像会话
+    /// 绑定全局共享匿名身份（见 server/anonymous.rs）。
+    pub allow_anonymous_session: bool,
 }
 
 pub fn loopback_url(value: &str) -> Result<Url> {
@@ -53,6 +56,16 @@ fn service_url(value: &str, offline: bool) -> Result<Url> {
         bail!("上游必须是 HTTP(S) 服务源地址，不能含凭据、路径前缀、查询串或片段");
     }
     Ok(url)
+}
+
+/// 安全开关只接受字面量 true/false：拼写错误必须拒绝启动，
+/// 不能因为宽容比较而意外放开匿名上游。
+fn anonymous_session_flag(value: Option<&str>) -> Result<bool> {
+    match value {
+        None | Some("false") => Ok(false),
+        Some("true") => Ok(true),
+        Some(_) => bail!("GATEWAY_ALLOW_ANONYMOUS_SESSION 只能是 true 或 false"),
+    }
 }
 
 impl Config {
@@ -98,6 +111,10 @@ impl Config {
             Err(env::VarError::NotPresent) => None,
             Err(error) => return Err(error).context("CF_BYPASS_URL 无效"),
         };
+        // 非 UTF-8 取值按“未设置”处理（保持关闭），与其它可选变量一致。
+        let anonymous_env = env::var("GATEWAY_ALLOW_ANONYMOUS_SESSION").ok();
+        let allow_anonymous_session = anonymous_session_flag(anonymous_env.as_deref())
+            .context("GATEWAY_ALLOW_ANONYMOUS_SESSION 无效")?;
         Ok(Self {
             host: env::var("HOST").unwrap_or_else(|_| "127.0.0.1".into()),
             port: env::var("PORT")
@@ -121,6 +138,7 @@ impl Config {
             cookie_secure: env::var("COOKIE_SECURE")
                 .map(|v| v != "false")
                 .unwrap_or(true),
+            allow_anonymous_session,
         })
     }
 }
@@ -176,6 +194,16 @@ mod tests {
         ] {
             assert!(service_url(value, false).is_err(), "{value}");
             assert!(service_url(value, true).is_err(), "{value}");
+        }
+    }
+
+    #[test]
+    fn anonymous_session_switch_requires_explicit_true() {
+        assert!(!anonymous_session_flag(None).unwrap());
+        assert!(!anonymous_session_flag(Some("false")).unwrap());
+        assert!(anonymous_session_flag(Some("true")).unwrap());
+        for value in ["True", "1", "yes", "enable", ""] {
+            assert!(anonymous_session_flag(Some(value)).is_err(), "{value}");
         }
     }
 }

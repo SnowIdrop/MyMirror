@@ -220,7 +220,7 @@ impl Database {
         Ok(db)
     }
 
-    /// 读取设置：`mirror_proxy` / `political_moderation` 为整值加密，先解密再解析 JSON。
+    /// 读取设置：`is_encrypted_setting_key` 列出的键为整值加密，先解密再解析 JSON。
     pub fn get_setting(&self, key: &str) -> Result<Option<Value>> {
         let raw: Option<String> = self
             .conn
@@ -909,7 +909,10 @@ fn reencrypt_columns(
 
 /// 需要整值加密的 settings 键（报告 §6）。
 fn is_encrypted_setting_key(key: &str) -> bool {
-    matches!(key, "mirror_proxy" | "political_moderation")
+    matches!(
+        key,
+        "mirror_proxy" | "political_moderation" | "anonymous_upstream"
+    )
 }
 
 /// 可空列加密辅助：`None` 保持 NULL，不写入占位密文。

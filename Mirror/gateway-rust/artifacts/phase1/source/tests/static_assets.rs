@@ -51,6 +51,7 @@ async fn fixture(stub: Router, enable_cdn: bool) -> Fixture {
         timeout: Duration::from_secs(3),
         mirror_profile: true,
         cookie_secure: false,
+        allow_anonymous_session: false,
     };
     let app = server::router(config).await.unwrap();
     let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
@@ -152,8 +153,9 @@ async fn unknown_paths_methods_and_unconfigured_cdn_never_contact_upstream() {
     )
     .await;
     for path in [
-        "/assets/private.png",
         "/assets/a.json",
+        "/assets/page.html",
+        "/assets/archive.zip",
         "/cdn/backend-api/me.js",
         "/cdn//host/a.js",
         "/assets/%2Fsecret.js",

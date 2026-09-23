@@ -1,0 +1,598 @@
+[
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/native-initial-sentinel-prewarm-D3w1V6GB.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/stylex-initial-modern-VIBAtXhr.css"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/octane-home-client-BDoyXyJp.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/stylex-remaining-modern-HZfebHYn.css"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/native-initial-composer-sentinel-runtime-m85sEAxk.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/scripts/declarative-partial-updates-7d1f39f3ba1b.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/octane-signal-bootstrap-OKdm5oCW.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-DnwGB__Q.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/octane-shell-shared-D_8Xjvl4.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/images/favicon.svg"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/octane-signals-engine-IZ1REA5U.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-DWUN-dwP.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/application-hydration-capture-CrdQjeAG.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/conversation-history-cache-boundary-C6dyIzsR.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-CPwDIaaC.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-AFfVf4n2.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/native-home-interaction-loaders-YbuGKR6X.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/frame-support-B-7RCjHv.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/client-fatal-error-AxxDAk5x.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/application-presentation-runtime-DU2Sisz_.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-yHWOuJAF.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-B4idkST0.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-DD7bhyYF.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/native-telemetry-BO97pl24.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/native-composer-accepted-turn-CXTYWq6P.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/conversation-shared-ZL0ahxNa.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/early-shared-runtime-CDyBYoIx.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-DolV4z0w.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-Bo7GwWyx.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/rolldown-runtime-DOd5ywYy.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-DLaQc4Ek.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/sentinel-Du0BabFV.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-Dp9OVNVQ.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-D2EpGp1e.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-GZFD4_P1.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-DKKn-0bz.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-BA_aGhFf.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-CMl08OqC.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-Dl3zefxR.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-uwzxM61y.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-CbTXS6-Q.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-D3cI5SAw.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/client-loader-BqqIdT7l.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-E0DfTjEL.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-6C9BvILA.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-xVwIZA6y.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-9WKvlgRs.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-SxHAeVvL.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-15Ad4nw1.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-DcdQK59E.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-BoZpPKDM.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-CLzUGEZZ.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-BZ-Ijpja.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-BBVmFw7W.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-DfCxRLeF.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-vEi3tKoE.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-SbPKnGHh.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-OT3UjrJR.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-CeM3SvA6.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-gwEJQ8fT.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-C47Ci6AK.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-CS_SNNzn.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-fM9Ru9Z-.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-BHDbFh6v.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-CEcOdopQ.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/conversations.server-BbCOaRw9.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-BdIZNofs.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-Cyq7wh3q.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-CW2n4Efr.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-D6ba5aJk.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-BWqPtxRL.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/conversation-observer-T71tHc3m.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-D-UxxOwN.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-ChkQBiyd.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-xFNtP6SJ.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-Cpp3k0AT.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-Cimltltn.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/retired-service-worker-cleanup-BxH8NpNJ.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-C5I2T-3r.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/app.startup-Dbl25Mo3.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/zh-CN-NxfOml5I.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/recurring-login-banner-BAmq8lTU.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/desktop-product-popover-CHblTIT0.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/trending-searches-surface-rq_GOfMO.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/conversation-icon-sprite-CSFuL5JY.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/native-desktop-sidebar-DZsP1LRb.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-B-cvRn5M.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/composer-actions-icon-sprite-CpKoRh_u.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/home-composer-B-ZmLsnV.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-jz860mFS.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-Bc2d18Ks.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-oVLkU2bu.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-JaAtxTRP.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-BC7_QoNj.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-CdC1xWdV.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-BbppSFil.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-CGLmCBIJ.js"
+  },
+  {
+    "status": 204,
+    "url": "https://chatgpt.com/unauth-mweb/events/page-view"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/native-sidebar-navigation-metrics-DCWrpQbV.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/native-soft-login-rate-limit-8SXnigGf.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/native-cold-feature-bootstrap-hyygdwka.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/conversation-CAn-5ix4.svg"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/deferred-conversation-runtime-Bk3omtyv.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/conversation-followup-dom-controller-KdUil-jo.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/registry-DjPBa0wC.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/native-composer-draft-bootstrap-D0lyJ2HN.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/declarative-partial-updates-D_-ewDcG.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/native-performance-bootstrap-sn9ShoWX.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-Dub_r51U.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/native-desktop-one-tap-hySHu6Gu.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/native-desktop-sidebar-controller-Yj8to_Z5.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-CMFu0mkd.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/navigated-conversation-outcome-CSqxLk_3.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-C_XIesPv.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-Dh4Uuljk.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/sentinel/chat-requirements/prepare"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-CIEWMZ-c.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-HVF90PEv.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-AH7KHv0U.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-D5X_34xg.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-BW-AQrrQ.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-DjhsQK2d.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-BNo-2BjE.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-C4a7rLUi.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/performance-metrics-C7Jtdcbu.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-C6wTcq6d.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-0aC5C-Gn.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/conversation/prepare?lightweight_authenticated=0"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/desktop-sidebar-swipe-BL_R4vYF.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-B8VDRc1-.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-BKJSR0az.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/a-BXlOFTeE.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/web-vitals.attribution-B4rGc8Ot.js"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/assets/onINP-Ux77p0ip.js"
+  },
+  {
+    "status": 204,
+    "url": "https://chatgpt.com/unauth-mweb/events/performance?lightweight_authenticated=0"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/unauth-mweb/events/statsc/flush?lightweight_authenticated=0"
+  },
+  {
+    "status": 204,
+    "url": "https://chatgpt.com/unauth-mweb/events/business"
+  },
+  {
+    "status": 204,
+    "url": "https://chatgpt.com/unauth-mweb/events/business"
+  },
+  {
+    "status": 204,
+    "url": "https://chatgpt.com/unauth-mweb/events/business"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/api/auth/providers"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/api/auth/csrf"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/api/auth/_log"
+  },
+  {
+    "status": 302,
+    "url": "https://chatgpt.com/api/auth/error?error=Configuration"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/auth/error?error=Configuration"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/cdn/assets/root-ikky18n3.css"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/cdn/assets/conversation-small-h5tbcwbw.css"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/cdn/assets/root-izi12y3s.css"
+  },
+  {
+    "status": 200,
+    "url": "https://chatgpt.com/api/auth/session"
+  }
+]
