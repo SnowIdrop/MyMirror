@@ -1,0 +1,5 @@
+    Checking fastrand v2.5.0
+    Checking getrandom v0.4.3
+    Checking mirror-gateway v0.1.0 (D:\Project\Mirror\gateway-rust)
+    Checking tempfile v3.27.0
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.96s

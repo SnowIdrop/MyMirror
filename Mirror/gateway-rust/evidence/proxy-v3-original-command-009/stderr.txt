@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "D:\Project\Mirror\gateway-rust\tools\oracle.py", line 117, in <module>
+    main()
+  File "D:\Project\Mirror\gateway-rust\tools\oracle.py", line 101, in main
+    raise RuntimeError("Guest did not produce successful result evidence")
+RuntimeError: Guest did not produce successful result evidence

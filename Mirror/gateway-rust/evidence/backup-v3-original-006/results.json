@@ -1,0 +1,331 @@
+[
+  {
+    "kind": "process",
+    "case": "seed-schema",
+    "stdout": "\u001b[2m2026-09-22T08:46:25.805366Z\u001b[0m \u001b[32m INFO\u001b[0m \u001b[2mchatgpt_mirror_gateway\u001b[0m\u001b[2m:\u001b[0m gateway upstreams configured \u001b[3mdjango_upstream\u001b[0m\u001b[2m=\u001b[0mSome(Url { scheme: \"http\", cannot_be_a_base: false, username: \"\", password: None, host: Some(Ipv4(127.0.0.1)), port: Some(18091), path: \"/\", query: None, fragment: None }) \u001b[3madmin_upstream\u001b[0m\u001b[2m=\u001b[0mSome(Url { scheme: \"http\", cannot_be_a_base: false, username: \"\", password: None, host: Some(Ipv4(127.0.0.1)), port: Some(18091), path: \"/\", query: None, fragment: None }) \u001b[3mchatgpt_base_url\u001b[0m\u001b[2m=\u001b[0mhttp://127.0.0.1:18091/ \u001b[3mcf_bypass_url\u001b[0m\u001b[2m=\u001b[0mSome(Url { scheme: \"http\", cannot_be_a_base: false, username: \"\", password: None, host: Some(Ipv4(127.0.0.1)), port: Some(18091), path: \"/\", query: None, fragment: None })\n\u001b[2m2026-09-22T08:46:25.818021Z\u001b[0m \u001b[32m INFO\u001b[0m \u001b[2mchatgpt_mirror_gateway\u001b[0m\u001b[2m:\u001b[0m 开始异步预热 CF bypass 缓存 \u001b[3mattempt\u001b[0m\u001b[2m=\u001b[0m1\n\u001b[2m2026-09-22T08:46:25.924877Z\u001b[0m \u001b[32m INFO\u001b[0m \u001b[2mchatgpt_mirror_gateway\u001b[0m\u001b[2m:\u001b[0m gateway listening on http://127.0.0.1:40210\n",
+    "stderr": "",
+    "exit": -15
+  },
+  {
+    "kind": "process",
+    "case": "seed-migrate",
+    "stdout": "\u001b[2m2026-09-22T08:46:26.521076Z\u001b[0m \u001b[32m INFO\u001b[0m \u001b[2mchatgpt_mirror_gateway\u001b[0m\u001b[2m:\u001b[0m gateway upstreams configured \u001b[3mdjango_upstream\u001b[0m\u001b[2m=\u001b[0mSome(Url { scheme: \"http\", cannot_be_a_base: false, username: \"\", password: None, host: Some(Ipv4(127.0.0.1)), port: Some(18091), path: \"/\", query: None, fragment: None }) \u001b[3madmin_upstream\u001b[0m\u001b[2m=\u001b[0mSome(Url { scheme: \"http\", cannot_be_a_base: false, username: \"\", password: None, host: Some(Ipv4(127.0.0.1)), port: Some(18091), path: \"/\", query: None, fragment: None }) \u001b[3mchatgpt_base_url\u001b[0m\u001b[2m=\u001b[0mhttp://127.0.0.1:18091/ \u001b[3mcf_bypass_url\u001b[0m\u001b[2m=\u001b[0mSome(Url { scheme: \"http\", cannot_be_a_base: false, username: \"\", password: None, host: Some(Ipv4(127.0.0.1)), port: Some(18091), path: \"/\", query: None, fragment: None })\n\u001b[2m2026-09-22T08:46:26.521952Z\u001b[0m \u001b[32m INFO\u001b[0m \u001b[2mchatgpt_mirror_gateway\u001b[0m\u001b[2m:\u001b[0m 开始异步预热 CF bypass 缓存 \u001b[3mattempt\u001b[0m\u001b[2m=\u001b[0m1\n\u001b[2m2026-09-22T08:46:26.546784Z\u001b[0m \u001b[32m INFO\u001b[0m \u001b[2mchatgpt_mirror_gateway\u001b[0m\u001b[2m:\u001b[0m gateway listening on http://127.0.0.1:40212\n\u001b[2m2026-09-22T08:46:26.569429Z\u001b[0m \u001b[33m WARN\u001b[0m \u001b[2mchatgpt_mirror_gateway::proxy\u001b[0m\u001b[2m:\u001b[0m cfbypass 返回成功但 cookies 为空，视为失败 \u001b[3moriginal_target\u001b[0m\u001b[2m=\u001b[0mhttp://127.0.0.1:18091/ \u001b[3mcfbypass_target\u001b[0m\u001b[2m=\u001b[0mhttp://127.0.0.1:18091/ \u001b[3mendpoint\u001b[0m\u001b[2m=\u001b[0m/cloudflare5s/bypass-v1\n\u001b[2m2026-09-22T08:46:26.569899Z\u001b[0m \u001b[33m WARN\u001b[0m \u001b[2mchatgpt_mirror_gateway::proxy\u001b[0m\u001b[2m:\u001b[0m cfbypass 未返回有效 cookies \u001b[3moriginal_target\u001b[0m\u001b[2m=\u001b[0mhttp://127.0.0.1:18091/ \u001b[3mcfbypass_target\u001b[0m\u001b[2m=\u001b[0mhttp://127.0.0.1:18091/\n\u001b[2m2026-09-22T08:46:26.572038Z\u001b[0m \u001b[33m WARN\u001b[0m \u001b[2mchatgpt_mirror_gateway\u001b[0m\u001b[2m:\u001b[0m CF bypass 缓存预热失败，稍后重试 \u001b[3mattempt\u001b[0m\u001b[2m=\u001b[0m1\n",
+    "stderr": "",
+    "exit": -15
+  },
+  {
+    "kind": "seed",
+    "path": "/tmp/v3-seed.db",
+    "sql": [
+      "INSERT INTO chatgpt_accounts (id, chatgpt_username, auth_status, plan_type, access_token, session_token, extra_cookies, refresh_token, remark, created_time, updated_time) VALUES (1, 'fixture-one@example.invalid', 1, 'plus', 'synthetic-access-token-0001', 'synthetic-session-token-0001', '[]', 'synthetic-refresh-token-0001', 'seed-one', 1700000000, 1700000001)",
+      "INSERT INTO chatgpt_accounts (id, chatgpt_username, auth_status, plan_type, access_token, session_token, extra_cookies, refresh_token, remark, created_time, updated_time) VALUES (2, 'fixture-two@example.invalid', 0, 'free', 'synthetic-access-token-0002', NULL, '[]', 'synthetic-refresh-token-0002', 'seed-two', 1700000002, 1700000003)",
+      "INSERT INTO gateway_settings (key, value, updated_at) VALUES ('mirror_proxy', '{\"enabled\":true,\"nodes\":[]}', 1700000010)",
+      "INSERT INTO gateway_settings (key, value, updated_at) VALUES ('political_moderation', '{\"mode\":\"relaxed\"}', 1700000011)",
+      "INSERT INTO gateway_settings (key, value, updated_at) VALUES ('custom_scripts', '{\"scripts\":[]}', 1700000012)",
+      "INSERT INTO gateway_settings (key, value, updated_at) VALUES ('blocked_paths', '{\"paths\":[\"/seed\"]}', 1700000013)",
+      "INSERT INTO gateway_sessions (id, user_name, chatgpt_username, access_token, session_token, extra_cookies, login_mode, mirror_token, isolated_session, force_chat_mode, limits, proxy_node_id, daily_quota, monthly_quota, created_at, updated_at) VALUES (1, 'seed-user', 'fixture-one@example.invalid', 'synthetic-session-access-0001', 'synthetic-session-token-0002', '[]', 'api', 'synthetic-mirror-token-0001', 1, 1, '[]', NULL, 5, 50, 1700000020, 1700000021)",
+      "INSERT INTO conversation_owners (chatgpt_username, conversation_id, user_name, created_at, updated_at) VALUES ('fixture-one@example.invalid', 'conv-seed-1', 'seed-user', 1700000030, 1700000031)",
+      "INSERT INTO project_owners (chatgpt_username, project_id, user_name, created_at, updated_at) VALUES ('fixture-one@example.invalid', 'proj-seed-1', 'seed-user', 1700000040, 1700000041)",
+      "INSERT INTO visit_logs (id, username, chatgpt_username, log_type, created_at, ip, user_agent) VALUES (1, 'seed-user', 'fixture-one@example.invalid', 'login', 1700000050, '127.0.0.1', 'SeedFixture/1')",
+      "INSERT INTO conversation_statistics (chatgpt_username, conversation_id, user_name, title, message_count, conversation_counted, created_at, updated_at) VALUES ('fixture-one@example.invalid', 'conv-seed-1', 'seed-user', 'seed-title', 3, 1, 1700000060, 1700000061)",
+      "INSERT INTO conversation_model_statistics (user_name, model_name, message_count, updated_at) VALUES ('seed-user', 'gpt-5', 2, 1700000070)"
+    ],
+    "snapshot": {
+      "chatgpt_accounts": {
+        "columns": [
+          "id",
+          "chatgpt_username",
+          "auth_status",
+          "plan_type",
+          "access_token",
+          "session_token",
+          "extra_cookies",
+          "refresh_token",
+          "remark",
+          "created_time",
+          "updated_time"
+        ],
+        "rows": [
+          [
+            1,
+            "fixture-one@example.invalid",
+            1,
+            "plus",
+            "enc:v1:SlyQZ1ahluZVS4UIpy1czzsdTyT6rWOmKXzaaTWpiiuVOfR-lCrIpHgWDhpQQoME_cXHUnkqZw",
+            "enc:v1:VlorrQ4GfyOrni3EhgRLYnxF070ItSogBvi_L0i2emzJ_ODdwAMgOe_cuw-yys97D0QRrxF4SVI",
+            "enc:v1:MfQ41OyZJretZ1qlaPjv21GrrJA7JDy4FbIQ1u9u",
+            "enc:v1:rgNolPnvh6-RFIFb_kH6HcxZ8e0yT2cbhMUpTyiUO0_rxv2mbxPAYNGx3Ra2_yD4iMnajSrQnKQ",
+            "seed-one",
+            1700000000,
+            1700000001
+          ],
+          [
+            2,
+            "fixture-two@example.invalid",
+            0,
+            "free",
+            "enc:v1:myBFqoyb2trwInuKBrX5UTYq1-rOu_lI4EOLqLocIFMYLPAKGPS6L6Qb3FrnxKzaNu8019IXag",
+            null,
+            "enc:v1:A2kxmJ3ttkwtfuZYs6eF0egZBHNl84nVc8tvnH35",
+            "enc:v1:wa3DIBsKTsuMslhadVALJ_jIwJCQBumGu92CAhGM2_bOjgfWzmpEFZQXRZgzv1HOeMjaKnkuyNA",
+            "seed-two",
+            1700000002,
+            1700000003
+          ]
+        ]
+      },
+      "conversation_model_statistics": {
+        "columns": [
+          "user_name",
+          "model_name",
+          "message_count",
+          "updated_at"
+        ],
+        "rows": [
+          [
+            "seed-user",
+            "gpt-5",
+            2,
+            1700000070
+          ]
+        ]
+      },
+      "conversation_owners": {
+        "columns": [
+          "chatgpt_username",
+          "conversation_id",
+          "user_name",
+          "created_at",
+          "updated_at"
+        ],
+        "rows": [
+          [
+            "fixture-one@example.invalid",
+            "conv-seed-1",
+            "seed-user",
+            1700000030,
+            1700000031
+          ]
+        ]
+      },
+      "conversation_statistics": {
+        "columns": [
+          "chatgpt_username",
+          "conversation_id",
+          "user_name",
+          "title",
+          "message_count",
+          "conversation_counted",
+          "created_at",
+          "updated_at"
+        ],
+        "rows": [
+          [
+            "fixture-one@example.invalid",
+            "conv-seed-1",
+            "seed-user",
+            "seed-title",
+            3,
+            1,
+            1700000060,
+            1700000061
+          ]
+        ]
+      },
+      "gateway_sessions": {
+        "columns": [
+          "id",
+          "user_name",
+          "chatgpt_username",
+          "access_token",
+          "session_token",
+          "extra_cookies",
+          "login_mode",
+          "mirror_token",
+          "isolated_session",
+          "force_chat_mode",
+          "limits",
+          "proxy_node_id",
+          "daily_quota",
+          "monthly_quota",
+          "created_at",
+          "updated_at"
+        ],
+        "rows": [
+          [
+            1,
+            "seed-user",
+            "fixture-one@example.invalid",
+            "enc:v1:WbIfvjkjbr2biCM5mhVlGKrkhzHj5OWtCcAMnKTbtoW-7Hkuh1G_lNWYSWLTVluYpmRfLE21hzST",
+            "enc:v1:lj8ll6vhrBCzQDUkqZN4meIJhTxye_2U7W7sT4T3InzYLF3BNWb6-ttdWnmwqwxZKRt8eHN6Ong",
+            "enc:v1:sMS8_6g0Z9bt3hayaAfpBqIb9UDewLCIkJHynpr2",
+            "api",
+            "sha256:ffa6af22298d4fa2195f6654fd2856c9ac71dbccace8802badf6fa0774870a78",
+            1,
+            1,
+            "[]",
+            null,
+            5,
+            50,
+            1700000020,
+            1700000021
+          ]
+        ]
+      },
+      "gateway_settings": {
+        "columns": [
+          "key",
+          "value",
+          "updated_at"
+        ],
+        "rows": [
+          [
+            "mirror_proxy",
+            "enc:v1:ySWLwaoT9eP_xHaQdbUgLKZ8fazUivLKFGePkJRmkkSZ9610dGzYIXdn0ZKW0vA3D2GtEaZOBg",
+            1700000010
+          ],
+          [
+            "political_moderation",
+            "{\"mode\":\"relaxed\"}",
+            1700000011
+          ],
+          [
+            "custom_scripts",
+            "{\"scripts\":[]}",
+            1700000012
+          ],
+          [
+            "blocked_paths",
+            "{\"paths\":[\"/seed\"]}",
+            1700000013
+          ]
+        ]
+      },
+      "project_owners": {
+        "columns": [
+          "chatgpt_username",
+          "project_id",
+          "user_name",
+          "created_at",
+          "updated_at"
+        ],
+        "rows": [
+          [
+            "fixture-one@example.invalid",
+            "proj-seed-1",
+            "seed-user",
+            1700000040,
+            1700000041
+          ]
+        ]
+      },
+      "visit_logs": {
+        "columns": [
+          "id",
+          "username",
+          "chatgpt_username",
+          "log_type",
+          "created_at",
+          "ip",
+          "user_agent"
+        ],
+        "rows": [
+          [
+            1,
+            "seed-user",
+            "fixture-one@example.invalid",
+            "login",
+            1700000050,
+            "127.0.0.1",
+            "SeedFixture/1"
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "kind": "export",
+    "path": "/api/backup/export",
+    "response": {
+      "status": 200,
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "cloudflare-cdn-cache-control",
+          "private, no-store, no-cache, must-revalidate, max-age=0"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "expires",
+          "0"
+        ],
+        [
+          "vary",
+          "Cookie, Authorization"
+        ],
+        [
+          "vary",
+          "accept-encoding"
+        ],
+        [
+          "x-content-type-options",
+          "nosniff"
+        ],
+        [
+          "referrer-policy",
+          "same-origin"
+        ],
+        [
+          "x-frame-options",
+          "SAMEORIGIN"
+        ],
+        [
+          "cross-origin-opener-policy",
+          "same-origin"
+        ],
+        [
+          "permissions-policy",
+          "camera=(), microphone=(), geolocation=()"
+        ],
+        [
+          "accept-ch",
+          "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+        ],
+        [
+          "strict-transport-security",
+          "max-age=31536000; includeSubDomains; preload"
+        ],
+        [
+          "content-length",
+          "2973"
+        ],
+        [
+          "date",
+          "Tue, 22 Sep 2026 08:46:27 GMT"
+        ]
+      ],
+      "body": "{\"chatgpt_accounts\":[{\"access_token\":\"enc:v1:SlyQZ1ahluZVS4UIpy1czzsdTyT6rWOmKXzaaTWpiiuVOfR-lCrIpHgWDhpQQoME_cXHUnkqZw\",\"auth_status\":true,\"chatgpt_username\":\"fixture-one@example.invalid\",\"created_time\":1700000000,\"extra_cookies\":\"enc:v1:MfQ41OyZJretZ1qlaPjv21GrrJA7JDy4FbIQ1u9u\",\"id\":1,\"plan_type\":\"plus\",\"refresh_token\":\"enc:v1:rgNolPnvh6-RFIFb_kH6HcxZ8e0yT2cbhMUpTyiUO0_rxv2mbxPAYNGx3Ra2_yD4iMnajSrQnKQ\",\"remark\":\"seed-one\",\"session_token\":\"enc:v1:VlorrQ4GfyOrni3EhgRLYnxF070ItSogBvi_L0i2emzJ_ODdwAMgOe_cuw-yys97D0QRrxF4SVI\",\"updated_time\":1700000001},{\"access_token\":\"enc:v1:myBFqoyb2trwInuKBrX5UTYq1-rOu_lI4EOLqLocIFMYLPAKGPS6L6Qb3FrnxKzaNu8019IXag\",\"auth_status\":false,\"chatgpt_username\":\"fixture-two@example.invalid\",\"created_time\":1700000002,\"extra_cookies\":\"enc:v1:A2kxmJ3ttkwtfuZYs6eF0egZBHNl84nVc8tvnH35\",\"id\":2,\"plan_type\":\"free\",\"refresh_token\":\"enc:v1:wa3DIBsKTsuMslhadVALJ_jIwJCQBumGu92CAhGM2_bOjgfWzmpEFZQXRZgzv1HOeMjaKnkuyNA\",\"remark\":\"seed-two\",\"session_token\":null,\"updated_time\":1700000003}],\"conversation_model_statistics\":[{\"message_count\":2,\"model_name\":\"gpt-5\",\"updated_at\":1700000070,\"user_name\":\"seed-user\"}],\"conversation_owners\":[{\"chatgpt_username\":\"fixture-one@example.invalid\",\"conversation_id\":\"conv-seed-1\",\"created_at\":1700000030,\"updated_at\":1700000031,\"user_name\":\"seed-user\"}],\"conversation_statistics\":[{\"chatgpt_username\":\"fixture-one@example.invalid\",\"conversation_counted\":true,\"conversation_id\":\"conv-seed-1\",\"created_at\":1700000060,\"message_count\":3,\"title\":\"seed-title\",\"updated_at\":1700000061,\"user_name\":\"seed-user\"}],\"gateway_sessions\":[{\"access_token\":\"enc:v1:WbIfvjkjbr2biCM5mhVlGKrkhzHj5OWtCcAMnKTbtoW-7Hkuh1G_lNWYSWLTVluYpmRfLE21hzST\",\"chatgpt_username\":\"fixture-one@example.invalid\",\"created_at\":1700000020,\"daily_quota\":5,\"extra_cookies\":\"enc:v1:sMS8_6g0Z9bt3hayaAfpBqIb9UDewLCIkJHynpr2\",\"force_chat_mode\":true,\"id\":1,\"isolated_session\":true,\"limits\":\"[]\",\"login_mode\":\"api\",\"mirror_token\":\"sha256:ffa6af22298d4fa2195f6654fd2856c9ac71dbccace8802badf6fa0774870a78\",\"monthly_quota\":50,\"proxy_node_id\":null,\"session_token\":\"enc:v1:lj8ll6vhrBCzQDUkqZN4meIJhTxye_2U7W7sT4T3InzYLF3BNWb6-ttdWnmwqwxZKRt8eHN6Ong\",\"updated_at\":1700000021,\"user_name\":\"seed-user\"}],\"project_owners\":[{\"chatgpt_username\":\"fixture-one@example.invalid\",\"created_at\":1700000040,\"project_id\":\"proj-seed-1\",\"updated_at\":1700000041,\"user_name\":\"seed-user\"}],\"settings\":[{\"key\":\"mirror_proxy\",\"updated_at\":1700000010,\"value\":\"enc:v1:ySWLwaoT9eP_xHaQdbUgLKZ8fazUivLKFGePkJRmkkSZ9610dGzYIXdn0ZKW0vA3D2GtEaZOBg\"},{\"key\":\"political_moderation\",\"updated_at\":1700000011,\"value\":\"{\\\"mode\\\":\\\"relaxed\\\"}\"},{\"key\":\"custom_scripts\",\"updated_at\":1700000012,\"value\":\"{\\\"scripts\\\":[]}\"},{\"key\":\"blocked_paths\",\"updated_at\":1700000013,\"value\":\"{\\\"paths\\\":[\\\"/seed\\\"]}\"}],\"version\":2,\"visit_logs\":[{\"chatgpt_username\":\"fixture-one@example.invalid\",\"created_at\":1700000050,\"id\":1,\"ip\":\"127.0.0.1\",\"log_type\":\"login\",\"user_agent\":\"SeedFixture/1\",\"username\":\"seed-user\"}]}"
+    }
+  },
+  {
+    "kind": "process",
+    "case": "export",
+    "stdout": "\u001b[2m2026-09-22T08:46:27.124347Z\u001b[0m \u001b[32m INFO\u001b[0m \u001b[2mchatgpt_mirror_gateway\u001b[0m\u001b[2m:\u001b[0m gateway upstreams configured \u001b[3mdjango_upstream\u001b[0m\u001b[2m=\u001b[0mSome(Url { scheme: \"http\", cannot_be_a_base: false, username: \"\", password: None, host: Some(Ipv4(127.0.0.1)), port: Some(18091), path: \"/\", query: None, fragment: None }) \u001b[3madmin_upstream\u001b[0m\u001b[2m=\u001b[0mSome(Url { scheme: \"http\", cannot_be_a_base: false, username: \"\", password: None, host: Some(Ipv4(127.0.0.1)), port: Some(18091), path: \"/\", query: None, fragment: None }) \u001b[3mchatgpt_base_url\u001b[0m\u001b[2m=\u001b[0mhttp://127.0.0.1:18091/ \u001b[3mcf_bypass_url\u001b[0m\u001b[2m=\u001b[0mSome(Url { scheme: \"http\", cannot_be_a_base: false, username: \"\", password: None, host: Some(Ipv4(127.0.0.1)), port: Some(18091), path: \"/\", query: None, fragment: None })\n\u001b[2m2026-09-22T08:46:27.125800Z\u001b[0m \u001b[32m INFO\u001b[0m \u001b[2mchatgpt_mirror_gateway\u001b[0m\u001b[2m:\u001b[0m 开始异步预热 CF bypass 缓存 \u001b[3mattempt\u001b[0m\u001b[2m=\u001b[0m1\n\u001b[2m2026-09-22T08:46:27.142078Z\u001b[0m \u001b[33m WARN\u001b[0m \u001b[2mchatgpt_mirror_gateway::proxy\u001b[0m\u001b[2m:\u001b[0m cfbypass 返回成功但 cookies 为空，视为失败 \u001b[3moriginal_target\u001b[0m\u001b[2m=\u001b[0mhttp://127.0.0.1:18091/ \u001b[3mcfbypass_target\u001b[0m\u001b[2m=\u001b[0mhttp://127.0.0.1:18091/ \u001b[3mendpoint\u001b[0m\u001b[2m=\u001b[0m/cloudflare5s/bypass-v1\n\u001b[2m2026-09-22T08:46:27.142201Z\u001b[0m \u001b[33m WARN\u001b[0m \u001b[2mchatgpt_mirror_gateway::proxy\u001b[0m\u001b[2m:\u001b[0m cfbypass 未返回有效 cookies \u001b[3moriginal_target\u001b[0m\u001b[2m=\u001b[0mhttp://127.0.0.1:18091/ \u001b[3mcfbypass_target\u001b[0m\u001b[2m=\u001b[0mhttp://127.0.0.1:18091/\n\u001b[2m2026-09-22T08:46:27.142271Z\u001b[0m \u001b[33m WARN\u001b[0m \u001b[2mchatgpt_mirror_gateway\u001b[0m\u001b[2m:\u001b[0m CF bypass 缓存预热失败，稍后重试 \u001b[3mattempt\u001b[0m\u001b[2m=\u001b[0m1\n\u001b[2m2026-09-22T08:46:27.146915Z\u001b[0m \u001b[32m INFO\u001b[0m \u001b[2mchatgpt_mirror_gateway\u001b[0m\u001b[2m:\u001b[0m gateway listening on http://127.0.0.1:40211\n",
+    "stderr": "",
+    "exit": -15
+  }
+]

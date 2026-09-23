@@ -1,0 +1,1 @@
+{"scope": "management recorded DB projections, seed time offsets, and upstream request sequences/headers/bodies", "cases": 47, "matched": 32, "different": 15}

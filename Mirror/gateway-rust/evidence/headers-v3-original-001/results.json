@@ -1,0 +1,219 @@
+[
+  {
+    "kind": "subject",
+    "subject": "original",
+    "binary": "/app/chatgpt-mirror-gateway"
+  },
+  {
+    "kind": "scenario",
+    "id": "hdr-login",
+    "method": "POST",
+    "path": "/api/login",
+    "auth": true,
+    "request_headers": [
+      [
+        "Authorization",
+        "Bearer contract-admin-secret-0001"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ]
+    ],
+    "status": 200,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "set-cookie",
+        "mirror_token=ef1b2facc2dc0384aff2c61f2246b48f6a6b075497acf7f12dbc5bd9f772ed08; Path=/; SameSite=Lax; Max-Age=604800; Secure; HttpOnly"
+      ],
+      [
+        "set-cookie",
+        "access_token=; Path=/; SameSite=Lax; Max-Age=0; Secure; HttpOnly"
+      ],
+      [
+        "set-cookie",
+        "session_token=; Path=/; SameSite=Lax; Max-Age=0; Secure; HttpOnly"
+      ],
+      [
+        "set-cookie",
+        "next-auth.session-token=; Path=/; SameSite=Lax; Max-Age=0; Secure; HttpOnly"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "203"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 09:21:59 GMT"
+      ]
+    ],
+    "body": "{\"chatgpt_username\":\"fixture@example.invalid\",\"login_mode\":\"api\",\"login_url\":\"/api/not-login?user_gateway_token=ef1b2facc2dc0384aff2c61f2246b48f6a6b075497acf7f12dbc5bd9f772ed08\",\"message\":\"登录成功\"}",
+    "body_raw_b64": "eyJjaGF0Z3B0X3VzZXJuYW1lIjoiZml4dHVyZUBleGFtcGxlLmludmFsaWQiLCJsb2dpbl9tb2RlIjoiYXBpIiwibG9naW5fdXJsIjoiL2FwaS9ub3QtbG9naW4/dXNlcl9nYXRld2F5X3Rva2VuPWVmMWIyZmFjYzJkYzAzODRhZmYyYzYxZjIyNDZiNDhmNmE2YjA3NTQ5N2FjZjdmMTJkYmM1YmQ5Zjc3MmVkMDgiLCJtZXNzYWdlIjoi55m75b2V5oiQ5YqfIn0=",
+    "body_raw_sha256": "27a278924d5b5f735625ef42f1ee246b19c4abbf7bb5b7be590f5629dbd32ad2",
+    "body_raw_length": 203,
+    "content_encoding": null,
+    "body_decoded": true,
+    "decode_status": "none",
+    "body_raw_is_utf8_text": true,
+    "zstd_magic": false,
+    "first_bytes_hex": "7b22636861746770745f757365726e61",
+    "observed_content_length": null
+  },
+  {
+    "kind": "scenario",
+    "id": "hdr-handoff",
+    "method": "GET",
+    "path": "/api/not-login",
+    "auth": false,
+    "status": 302,
+    "headers": [
+      [
+        "location",
+        "/"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "set-cookie",
+        "mirror_token=7f69898054f3a9f0d9d94d4751848a11cd0d04fc5fb9a65b158e3916d7314496; Path=/; SameSite=Lax; Max-Age=604800; Secure; HttpOnly"
+      ],
+      [
+        "set-cookie",
+        "access_token=; Path=/; SameSite=Lax; Max-Age=0; Secure; HttpOnly"
+      ],
+      [
+        "set-cookie",
+        "session_token=; Path=/; SameSite=Lax; Max-Age=0; Secure; HttpOnly"
+      ],
+      [
+        "set-cookie",
+        "next-auth.session-token=; Path=/; SameSite=Lax; Max-Age=0; Secure; HttpOnly"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "0"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 09:21:59 GMT"
+      ]
+    ],
+    "body": ""
+  },
+  {
+    "kind": "process",
+    "stdout": "\u001b[2m2026-09-22T09:21:59.051104Z\u001b[0m \u001b[32m INFO\u001b[0m \u001b[2mchatgpt_mirror_gateway\u001b[0m\u001b[2m:\u001b[0m gateway upstreams configured \u001b[3mdjango_upstream\u001b[0m\u001b[2m=\u001b[0mSome(Url { scheme: \"http\", cannot_be_a_base: false, username: \"\", password: None, host: Some(Ipv4(127.0.0.1)), port: Some(18092), path: \"/\", query: None, fragment: None }) \u001b[3madmin_upstream\u001b[0m\u001b[2m=\u001b[0mSome(Url { scheme: \"http\", cannot_be_a_base: false, username: \"\", password: None, host: Some(Ipv4(127.0.0.1)), port: Some(18092), path: \"/\", query: None, fragment: None }) \u001b[3mchatgpt_base_url\u001b[0m\u001b[2m=\u001b[0mhttp://127.0.0.1:18092/ \u001b[3mcf_bypass_url\u001b[0m\u001b[2m=\u001b[0mSome(Url { scheme: \"http\", cannot_be_a_base: false, username: \"\", password: None, host: Some(Ipv4(127.0.0.1)), port: Some(18092), path: \"/\", query: None, fragment: None })\n\u001b[2m2026-09-22T09:21:59.063297Z\u001b[0m \u001b[32m INFO\u001b[0m \u001b[2mchatgpt_mirror_gateway\u001b[0m\u001b[2m:\u001b[0m 开始异步预热 CF bypass 缓存 \u001b[3mattempt\u001b[0m\u001b[2m=\u001b[0m1\n\u001b[2m2026-09-22T09:21:59.175661Z\u001b[0m \u001b[32m INFO\u001b[0m \u001b[2mchatgpt_mirror_gateway\u001b[0m\u001b[2m:\u001b[0m gateway listening on http://127.0.0.1:40200\n\u001b[2m2026-09-22T09:21:59.321005Z\u001b[0m \u001b[32m INFO\u001b[0m \u001b[2mchatgpt_mirror_gateway::proxy\u001b[0m\u001b[2m:\u001b[0m cfbypass 获取到有效 cookies \u001b[3moriginal_target\u001b[0m\u001b[2m=\u001b[0mhttp://127.0.0.1:18092/ \u001b[3mcfbypass_target\u001b[0m\u001b[2m=\u001b[0mhttp://127.0.0.1:18092/ \u001b[3mendpoint\u001b[0m\u001b[2m=\u001b[0m/cloudflare5s/bypass-v1 \u001b[3mcookie_count\u001b[0m\u001b[2m=\u001b[0m1 \u001b[3mhas_user_agent\u001b[0m\u001b[2m=\u001b[0mtrue\n\u001b[2m2026-09-22T09:21:59.325456Z\u001b[0m \u001b[32m INFO\u001b[0m \u001b[2mchatgpt_mirror_gateway\u001b[0m\u001b[2m:\u001b[0m CF bypass 缓存预热完成 \u001b[3mattempt\u001b[0m\u001b[2m=\u001b[0m1\n",
+    "stderr": "",
+    "exit": -15
+  }
+]

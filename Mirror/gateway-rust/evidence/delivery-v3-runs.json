@@ -1,0 +1,68 @@
+[
+  {
+    "suite": "core",
+    "subject": "candidate",
+    "execution_exit": 0,
+    "comparison_exit": 0
+  },
+  {
+    "suite": "headers",
+    "subject": "candidate",
+    "execution_exit": 0,
+    "comparison_exit": 0,
+    "audit_exit": 0
+  },
+  {
+    "suite": "management",
+    "subject": "candidate",
+    "execution_exit": 0,
+    "comparison_exit": 1,
+    "audit_exit": 1
+  },
+  {
+    "suite": "proxy",
+    "subject": "candidate",
+    "execution_exit": 0,
+    "comparison_exit": 1,
+    "audit_exit": 1
+  },
+  {
+    "suite": "backup",
+    "subject": "candidate",
+    "execution_exit": 0,
+    "comparison_exit": 1
+  },
+  {
+    "suite": "core",
+    "subject": "rollback",
+    "execution_exit": 0,
+    "comparison_exit": 0
+  },
+  {
+    "suite": "headers",
+    "subject": "rollback",
+    "execution_exit": 0,
+    "comparison_exit": 0,
+    "audit_exit": 0
+  },
+  {
+    "suite": "management",
+    "subject": "rollback",
+    "execution_exit": 0,
+    "comparison_exit": 0,
+    "audit_exit": 0
+  },
+  {
+    "suite": "proxy",
+    "subject": "rollback",
+    "execution_exit": 0,
+    "comparison_exit": 0,
+    "audit_exit": 0
+  },
+  {
+    "suite": "backup",
+    "subject": "rollback",
+    "execution_exit": 0,
+    "comparison_exit": 0
+  }
+]

@@ -1,0 +1,880 @@
+{
+  "response_cases": 283,
+  "matched": 278,
+  "different": 5,
+  "scope": "response status, JSON/text body, headers; no whole-product equivalence claim",
+  "not_compared": [
+    "upstream traces",
+    "full schema beyond backup",
+    "SSE/WebSocket",
+    "retry timing",
+    "real TLS"
+  ],
+  "matched_cases": [
+    "GET /api/auth/session auth=False",
+    "GET /api/auth/session auth=True",
+    "GET /api/backup/export auth=False",
+    "GET /api/backup/export auth=True",
+    "GET /api/backup/restore auth=False",
+    "GET /api/backup/restore auth=True",
+    "GET /api/blocked-paths auth=False",
+    "GET /api/blocked-paths auth=True",
+    "GET /api/close-chatgpt-memory auth=False",
+    "GET /api/close-chatgpt-memory auth=True",
+    "GET /api/conversation-statistics auth=False",
+    "GET /api/conversation-statistics auth=True",
+    "GET /api/conversation-statistics/reset auth=False",
+    "GET /api/conversation-statistics/reset auth=True",
+    "GET /api/custom-scripts auth=False",
+    "GET /api/custom-scripts auth=True",
+    "GET /api/diagnose-chatgpt-auth auth=False",
+    "GET /api/diagnose-chatgpt-auth auth=True",
+    "GET /api/get-chatgpt-use-count auth=False",
+    "GET /api/get-chatgpt-use-count auth=True",
+    "GET /api/get-mirror-token auth=False",
+    "GET /api/get-mirror-token auth=True",
+    "GET /api/get-user-info auth=False",
+    "GET /api/get-user-info auth=True",
+    "GET /api/get-user-quota-usage auth=False",
+    "GET /api/get-user-quota-usage auth=True",
+    "GET /api/get-user-use-count auth=False",
+    "GET /api/get-user-use-count auth=True",
+    "GET /api/login auth=False",
+    "GET /api/login auth=True",
+    "GET /api/logout auth=False",
+    "GET /api/logout auth=True",
+    "GET /api/mirror-proxy-config auth=False",
+    "GET /api/mirror-proxy-config auth=True",
+    "GET /api/not-login auth=False",
+    "GET /api/not-login auth=True",
+    "GET /api/operations-overview auth=False",
+    "GET /api/operations-overview auth=True",
+    "GET /api/political-moderation-config auth=False",
+    "GET /api/political-moderation-config auth=True",
+    "GET /api/political-moderation-config/test auth=False",
+    "GET /api/political-moderation-config/test auth=True",
+    "GET /api/refresh-cfbypass auth=False",
+    "GET /api/refresh-cfbypass auth=True",
+    "GET /api/test-mirror-proxy-config auth=False",
+    "GET /api/test-mirror-proxy-config auth=True",
+    "GET /api/user-blocked-paths auth=False",
+    "GET /api/user-blocked-paths auth=True",
+    "GET /api/user-work-mode auth=False",
+    "GET /api/user-work-mode auth=True",
+    "POST /api/auth/session auth=True",
+    "POST /api/backup/export auth=True",
+    "POST /api/backup/restore auth=True",
+    "POST /api/blocked-paths auth=True",
+    "POST /api/close-chatgpt-memory auth=True",
+    "POST /api/conversation-statistics auth=True",
+    "POST /api/conversation-statistics/reset auth=True",
+    "POST /api/custom-scripts auth=True",
+    "POST /api/diagnose-chatgpt-auth auth=True",
+    "POST /api/get-chatgpt-use-count auth=True",
+    "POST /api/get-mirror-token auth=True",
+    "POST /api/get-user-info auth=True",
+    "POST /api/get-user-quota-usage auth=True",
+    "POST /api/get-user-use-count auth=True",
+    "POST /api/login auth=True",
+    "POST /api/logout auth=True",
+    "POST /api/mirror-proxy-config auth=True",
+    "POST /api/not-login auth=True",
+    "POST /api/operations-overview auth=True",
+    "POST /api/political-moderation-config auth=True",
+    "POST /api/political-moderation-config/test auth=True",
+    "POST /api/refresh-cfbypass auth=True",
+    "POST /api/test-mirror-proxy-config auth=True",
+    "POST /api/user-blocked-paths auth=True",
+    "POST /api/user-work-mode auth=True",
+    "scenario:account-counts",
+    "scenario:blocked-persist",
+    "scenario:close-all-fields",
+    "scenario:close-blank-both",
+    "scenario:close-blank-token",
+    "scenario:close-blank-user",
+    "scenario:close-chatgpt-name",
+    "scenario:close-chatgpt-username-field",
+    "scenario:close-empty",
+    "scenario:close-session-check",
+    "scenario:close-space-user",
+    "scenario:close-spaced-token",
+    "scenario:close-token",
+    "scenario:close-token-other-user",
+    "scenario:close-trimmed-user",
+    "scenario:close-type-access_token",
+    "scenario:close-type-chatgpt",
+    "scenario:close-type-chatgpt_name",
+    "scenario:close-type-chatgpt_names",
+    "scenario:close-type-chatgpt_username",
+    "scenario:close-type-force_chat_mode",
+    "scenario:close-type-id",
+    "scenario:close-type-isolated_session",
+    "scenario:close-type-login_mode",
+    "scenario:close-type-mirror_token",
+    "scenario:close-type-name",
+    "scenario:close-type-session_token",
+    "scenario:close-type-token",
+    "scenario:close-type-tokens",
+    "scenario:close-type-user",
+    "scenario:close-type-user_gateway_token",
+    "scenario:close-type-user_names",
+    "scenario:close-unknown-user",
+    "scenario:close-user-name",
+    "scenario:counts",
+    "scenario:counts-accounts",
+    "scenario:counts-accounts-after-model-seed",
+    "scenario:counts-blank-items",
+    "scenario:counts-case",
+    "scenario:counts-dup",
+    "scenario:counts-edge",
+    "scenario:counts-empty-list",
+    "scenario:counts-many",
+    "scenario:counts-trim",
+    "scenario:counts-unknown-user",
+    "scenario:counts-users",
+    "scenario:counts-users-after-model-seed",
+    "scenario:export-populated",
+    "scenario:handoff",
+    "scenario:login-fixture",
+    "scenario:login-minimal",
+    "scenario:logout-minimal",
+    "scenario:mirror-account-all-fields",
+    "scenario:mirror-account-basic",
+    "scenario:mirror-account-other-user",
+    "scenario:mirror-blank-item",
+    "scenario:mirror-case-account",
+    "scenario:mirror-disabled-account",
+    "scenario:mirror-dup-accounts",
+    "scenario:mirror-empty-list-live",
+    "scenario:mirror-empty-user-live",
+    "scenario:mirror-list",
+    "scenario:mirror-live-all-fields",
+    "scenario:mirror-live-basic",
+    "scenario:mirror-live-case",
+    "scenario:mirror-live-dup",
+    "scenario:mirror-live-force-true",
+    "scenario:mirror-live-isolated-false",
+    "scenario:mirror-live-isolated-true",
+    "scenario:mirror-live-mixed",
+    "scenario:mirror-live-other-user",
+    "scenario:mirror-live-trim",
+    "scenario:mirror-login-mode-web",
+    "scenario:mirror-mixed-known",
+    "scenario:mirror-optional-overrides",
+    "scenario:mirror-token",
+    "scenario:mirror-trim-account",
+    "scenario:mirror-two-accounts",
+    "scenario:mirror-unknown-account",
+    "scenario:mod-get-after-blank-key",
+    "scenario:mod-get-after-enabled-true",
+    "scenario:mod-get-after-key-matrix",
+    "scenario:mod-get-after-ladder",
+    "scenario:mod-get-after-minimal",
+    "scenario:mod-get-after-save",
+    "scenario:mod-get-after-save2",
+    "scenario:mod-get-after-tests",
+    "scenario:mod-get-default",
+    "scenario:mod-get-restarted",
+    "scenario:mod-key-blank-after-protocol",
+    "scenario:mod-key-blank-back-a",
+    "scenario:mod-key-blank-other-base",
+    "scenario:mod-key-blank-other-base-again",
+    "scenario:mod-key-blank-same-base",
+    "scenario:mod-key-blank-slash-base",
+    "scenario:mod-key-set-a",
+    "scenario:mod-key-set-a2",
+    "scenario:mod-ladder-enabled",
+    "scenario:mod-ladder-five",
+    "scenario:mod-ladder-hour",
+    "scenario:mod-ladder-key",
+    "scenario:mod-ladder-minute",
+    "scenario:mod-ladder-mode",
+    "scenario:mod-ladder-terms",
+    "scenario:mod-order-key-base",
+    "scenario:mod-order-key-http",
+    "scenario:mod-order-key-loopback",
+    "scenario:mod-order-protocol-mode",
+    "scenario:mod-save-base-credentials",
+    "scenario:mod-save-base-empty",
+    "scenario:mod-save-base-fragment",
+    "scenario:mod-save-base-http",
+    "scenario:mod-save-base-loopback-http",
+    "scenario:mod-save-base-loopback-https",
+    "scenario:mod-save-base-no-path",
+    "scenario:mod-save-base-plain",
+    "scenario:mod-save-base-private-ip",
+    "scenario:mod-save-base-query",
+    "scenario:mod-save-base-trailing-slash",
+    "scenario:mod-save-blank-key",
+    "scenario:mod-save-blank-key2",
+    "scenario:mod-save-blank-mode",
+    "scenario:mod-save-blank-model",
+    "scenario:mod-save-disabled-full2",
+    "scenario:mod-save-disabled-public",
+    "scenario:mod-save-enabled-true-blank-key",
+    "scenario:mod-save-enabled-true-loopback",
+    "scenario:mod-save-enabled-true-loopback-http",
+    "scenario:mod-save-extra-field",
+    "scenario:mod-save-minimal",
+    "scenario:mod-save-norm-double-trailing",
+    "scenario:mod-save-norm-hostname",
+    "scenario:mod-save-norm-ipv6-loopback",
+    "scenario:mod-save-norm-spaces",
+    "scenario:mod-save-norm-upper-scheme",
+    "scenario:mod-save-norm-userinfo-empty",
+    "scenario:mod-save-probe-enabled-str",
+    "scenario:mod-save-probe-limit-str",
+    "scenario:mod-save-probe-mode-int",
+    "scenario:mod-save-probe-terms-int",
+    "scenario:mod-save-protocol-anthropic_messages",
+    "scenario:mod-save-protocol-bogus",
+    "scenario:mod-save-protocol-empty",
+    "scenario:mod-save-protocol-gemini_generate_",
+    "scenario:mod-save-protocol-gemini_generate_content",
+    "scenario:mod-save-protocol-generate_content",
+    "scenario:mod-save-protocol-model",
+    "scenario:mod-save-protocol-model-key",
+    "scenario:mod-save-protocol-only",
+    "scenario:mod-save-protocol-openai_chat",
+    "scenario:mod-save-protocol-openai_responses",
+    "scenario:mod-test-blank-mode",
+    "scenario:mod-test-bogus-protocol",
+    "scenario:mod-test-loopback",
+    "scenario:mod-test-loopback-http",
+    "scenario:mod-test-protocol-model",
+    "scenario:mod-test-protocol-only",
+    "scenario:mod-type-limit-negative",
+    "scenario:mod-type-terms-item",
+    "scenario:overview",
+    "scenario:p1-login",
+    "scenario:p1-login-2",
+    "scenario:p1-login-3",
+    "scenario:p1-login-4",
+    "scenario:p1-login-5",
+    "scenario:p1-login-6",
+    "scenario:p1-login-7",
+    "scenario:p1-login-8",
+    "scenario:p1-login-9",
+    "scenario:quota-empty",
+    "scenario:quota-period",
+    "scenario:restore-v2",
+    "scenario:route-close-chatgpt-memory-get-no-ct",
+    "scenario:route-close-chatgpt-memory-put-ct-json",
+    "scenario:route-close-put-json-body",
+    "scenario:route-counts-put-json-body",
+    "scenario:route-get-chatgpt-use-count-get-no-ct",
+    "scenario:route-get-chatgpt-use-count-put-ct-json",
+    "scenario:route-get-mirror-token-get-no-ct",
+    "scenario:route-get-mirror-token-put-ct-json",
+    "scenario:route-get-user-use-count-get-no-ct",
+    "scenario:route-get-user-use-count-put-ct-json",
+    "scenario:route-mirror-put-json-body",
+    "scenario:route-mod-get-ct-empty-json",
+    "scenario:route-mod-get-ct-no-body",
+    "scenario:route-mod-post-no-ct",
+    "scenario:route-political-moderation-config-get-no-ct",
+    "scenario:route-political-moderation-config-put-ct-json",
+    "scenario:route-political-moderation-config/test-get-no-ct",
+    "scenario:route-political-moderation-config/test-put-ct-json",
+    "scenario:route-test-get-ct-no-body",
+    "scenario:script-persist",
+    "scenario:session:/0x/user/version-cfg?fixture=1",
+    "scenario:session:/api/auth/session",
+    "scenario:session:/api/user-blocked-paths",
+    "scenario:session:/backend-api/conversations?offset=0&limit=20",
+    "scenario:session:/backend-api/me",
+    "scenario:token-fixture",
+    "scenario:work-mode",
+    "scenario:work-set",
+    "startup:[\"short\", \"40002\"]",
+    "startup:[\"short\", \"bad\"]",
+    "startup:[null, \"40002\"]"
+  ],
+  "differences": [
+    {
+      "case": "scenario:mod-save-enabled-true-public",
+      "baseline": {
+        "status": 400,
+        "body": {
+          "message": "模型连通性验证失败: 审查模型连接失败"
+        },
+        "headers": {
+          "content-type": [
+            "application/json"
+          ],
+          "cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cloudflare-cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "pragma": [
+            "no-cache"
+          ],
+          "expires": [
+            "0"
+          ],
+          "vary": [
+            "Cookie, Authorization",
+            "accept-encoding"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "referrer-policy": [
+            "same-origin"
+          ],
+          "x-frame-options": [
+            "SAMEORIGIN"
+          ],
+          "cross-origin-opener-policy": [
+            "same-origin"
+          ],
+          "permissions-policy": [
+            "camera=(), microphone=(), geolocation=()"
+          ],
+          "accept-ch": [
+            "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+          ],
+          "strict-transport-security": [
+            "max-age=31536000; includeSubDomains; preload"
+          ],
+          "content-length": [
+            "<verified-body-length>"
+          ],
+          "date": [
+            "<validated-http-date>"
+          ]
+        }
+      },
+      "candidate": {
+        "status": 503,
+        "body": {
+          "message": "审核上游成功契约尚未验证；隔离传输不允许公网请求"
+        },
+        "headers": {
+          "content-type": [
+            "application/json"
+          ],
+          "cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cloudflare-cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "pragma": [
+            "no-cache"
+          ],
+          "expires": [
+            "0"
+          ],
+          "vary": [
+            "Cookie, Authorization",
+            "accept-encoding"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "referrer-policy": [
+            "same-origin"
+          ],
+          "x-frame-options": [
+            "SAMEORIGIN"
+          ],
+          "cross-origin-opener-policy": [
+            "same-origin"
+          ],
+          "permissions-policy": [
+            "camera=(), microphone=(), geolocation=()"
+          ],
+          "accept-ch": [
+            "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+          ],
+          "strict-transport-security": [
+            "max-age=31536000; includeSubDomains; preload"
+          ],
+          "content-length": [
+            "<verified-body-length>"
+          ],
+          "date": [
+            "<validated-http-date>"
+          ]
+        }
+      }
+    },
+    {
+      "case": "scenario:mod-test-blank-key",
+      "baseline": {
+        "status": 400,
+        "body": {
+          "message": "模型连通性验证失败: 审查模型连接失败"
+        },
+        "headers": {
+          "content-type": [
+            "application/json"
+          ],
+          "cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cloudflare-cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "pragma": [
+            "no-cache"
+          ],
+          "expires": [
+            "0"
+          ],
+          "vary": [
+            "Cookie, Authorization",
+            "accept-encoding"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "referrer-policy": [
+            "same-origin"
+          ],
+          "x-frame-options": [
+            "SAMEORIGIN"
+          ],
+          "cross-origin-opener-policy": [
+            "same-origin"
+          ],
+          "permissions-policy": [
+            "camera=(), microphone=(), geolocation=()"
+          ],
+          "accept-ch": [
+            "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+          ],
+          "strict-transport-security": [
+            "max-age=31536000; includeSubDomains; preload"
+          ],
+          "content-length": [
+            "<verified-body-length>"
+          ],
+          "date": [
+            "<validated-http-date>"
+          ]
+        }
+      },
+      "candidate": {
+        "status": 503,
+        "body": {
+          "message": "审核上游成功契约尚未验证；隔离传输不允许公网请求"
+        },
+        "headers": {
+          "content-type": [
+            "application/json"
+          ],
+          "cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cloudflare-cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "pragma": [
+            "no-cache"
+          ],
+          "expires": [
+            "0"
+          ],
+          "vary": [
+            "Cookie, Authorization",
+            "accept-encoding"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "referrer-policy": [
+            "same-origin"
+          ],
+          "x-frame-options": [
+            "SAMEORIGIN"
+          ],
+          "cross-origin-opener-policy": [
+            "same-origin"
+          ],
+          "permissions-policy": [
+            "camera=(), microphone=(), geolocation=()"
+          ],
+          "accept-ch": [
+            "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+          ],
+          "strict-transport-security": [
+            "max-age=31536000; includeSubDomains; preload"
+          ],
+          "content-length": [
+            "<verified-body-length>"
+          ],
+          "date": [
+            "<validated-http-date>"
+          ]
+        }
+      }
+    },
+    {
+      "case": "scenario:mod-test-blank-model",
+      "baseline": {
+        "status": 400,
+        "body": {
+          "message": "模型连通性验证失败: 审查模型连接失败"
+        },
+        "headers": {
+          "content-type": [
+            "application/json"
+          ],
+          "cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cloudflare-cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "pragma": [
+            "no-cache"
+          ],
+          "expires": [
+            "0"
+          ],
+          "vary": [
+            "Cookie, Authorization",
+            "accept-encoding"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "referrer-policy": [
+            "same-origin"
+          ],
+          "x-frame-options": [
+            "SAMEORIGIN"
+          ],
+          "cross-origin-opener-policy": [
+            "same-origin"
+          ],
+          "permissions-policy": [
+            "camera=(), microphone=(), geolocation=()"
+          ],
+          "accept-ch": [
+            "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+          ],
+          "strict-transport-security": [
+            "max-age=31536000; includeSubDomains; preload"
+          ],
+          "content-length": [
+            "<verified-body-length>"
+          ],
+          "date": [
+            "<validated-http-date>"
+          ]
+        }
+      },
+      "candidate": {
+        "status": 503,
+        "body": {
+          "message": "审核上游成功契约尚未验证；隔离传输不允许公网请求"
+        },
+        "headers": {
+          "content-type": [
+            "application/json"
+          ],
+          "cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cloudflare-cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "pragma": [
+            "no-cache"
+          ],
+          "expires": [
+            "0"
+          ],
+          "vary": [
+            "Cookie, Authorization",
+            "accept-encoding"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "referrer-policy": [
+            "same-origin"
+          ],
+          "x-frame-options": [
+            "SAMEORIGIN"
+          ],
+          "cross-origin-opener-policy": [
+            "same-origin"
+          ],
+          "permissions-policy": [
+            "camera=(), microphone=(), geolocation=()"
+          ],
+          "accept-ch": [
+            "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+          ],
+          "strict-transport-security": [
+            "max-age=31536000; includeSubDomains; preload"
+          ],
+          "content-length": [
+            "<verified-body-length>"
+          ],
+          "date": [
+            "<validated-http-date>"
+          ]
+        }
+      }
+    },
+    {
+      "case": "scenario:mod-test-disabled-public",
+      "baseline": {
+        "status": 400,
+        "body": {
+          "message": "模型连通性验证失败: 审查模型连接失败"
+        },
+        "headers": {
+          "content-type": [
+            "application/json"
+          ],
+          "cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cloudflare-cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "pragma": [
+            "no-cache"
+          ],
+          "expires": [
+            "0"
+          ],
+          "vary": [
+            "Cookie, Authorization",
+            "accept-encoding"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "referrer-policy": [
+            "same-origin"
+          ],
+          "x-frame-options": [
+            "SAMEORIGIN"
+          ],
+          "cross-origin-opener-policy": [
+            "same-origin"
+          ],
+          "permissions-policy": [
+            "camera=(), microphone=(), geolocation=()"
+          ],
+          "accept-ch": [
+            "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+          ],
+          "strict-transport-security": [
+            "max-age=31536000; includeSubDomains; preload"
+          ],
+          "content-length": [
+            "<verified-body-length>"
+          ],
+          "date": [
+            "<validated-http-date>"
+          ]
+        }
+      },
+      "candidate": {
+        "status": 503,
+        "body": {
+          "message": "审核上游成功契约尚未验证；隔离传输不允许公网请求"
+        },
+        "headers": {
+          "content-type": [
+            "application/json"
+          ],
+          "cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cloudflare-cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "pragma": [
+            "no-cache"
+          ],
+          "expires": [
+            "0"
+          ],
+          "vary": [
+            "Cookie, Authorization",
+            "accept-encoding"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "referrer-policy": [
+            "same-origin"
+          ],
+          "x-frame-options": [
+            "SAMEORIGIN"
+          ],
+          "cross-origin-opener-policy": [
+            "same-origin"
+          ],
+          "permissions-policy": [
+            "camera=(), microphone=(), geolocation=()"
+          ],
+          "accept-ch": [
+            "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+          ],
+          "strict-transport-security": [
+            "max-age=31536000; includeSubDomains; preload"
+          ],
+          "content-length": [
+            "<verified-body-length>"
+          ],
+          "date": [
+            "<validated-http-date>"
+          ]
+        }
+      }
+    },
+    {
+      "case": "scenario:mod-test-enabled-public",
+      "baseline": {
+        "status": 400,
+        "body": {
+          "message": "模型连通性验证失败: 审查模型连接失败"
+        },
+        "headers": {
+          "content-type": [
+            "application/json"
+          ],
+          "cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cloudflare-cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "pragma": [
+            "no-cache"
+          ],
+          "expires": [
+            "0"
+          ],
+          "vary": [
+            "Cookie, Authorization",
+            "accept-encoding"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "referrer-policy": [
+            "same-origin"
+          ],
+          "x-frame-options": [
+            "SAMEORIGIN"
+          ],
+          "cross-origin-opener-policy": [
+            "same-origin"
+          ],
+          "permissions-policy": [
+            "camera=(), microphone=(), geolocation=()"
+          ],
+          "accept-ch": [
+            "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+          ],
+          "strict-transport-security": [
+            "max-age=31536000; includeSubDomains; preload"
+          ],
+          "content-length": [
+            "<verified-body-length>"
+          ],
+          "date": [
+            "<validated-http-date>"
+          ]
+        }
+      },
+      "candidate": {
+        "status": 503,
+        "body": {
+          "message": "审核上游成功契约尚未验证；隔离传输不允许公网请求"
+        },
+        "headers": {
+          "content-type": [
+            "application/json"
+          ],
+          "cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cloudflare-cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "pragma": [
+            "no-cache"
+          ],
+          "expires": [
+            "0"
+          ],
+          "vary": [
+            "Cookie, Authorization",
+            "accept-encoding"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "referrer-policy": [
+            "same-origin"
+          ],
+          "x-frame-options": [
+            "SAMEORIGIN"
+          ],
+          "cross-origin-opener-policy": [
+            "same-origin"
+          ],
+          "permissions-policy": [
+            "camera=(), microphone=(), geolocation=()"
+          ],
+          "accept-ch": [
+            "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+          ],
+          "strict-transport-security": [
+            "max-age=31536000; includeSubDomains; preload"
+          ],
+          "content-length": [
+            "<verified-body-length>"
+          ],
+          "date": [
+            "<validated-http-date>"
+          ]
+        }
+      }
+    }
+  ]
+}

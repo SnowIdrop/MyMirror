@@ -1,0 +1,10 @@
+{
+  "event": "command_execution",
+  "command": [
+    "C:\\Users\\peropero\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "tools/package_artifacts.py"
+  ],
+  "cwd": "D:\\Project\\Mirror\\gateway-rust",
+  "exit": 0,
+  "elapsed_seconds": 7.087357997894287
+}

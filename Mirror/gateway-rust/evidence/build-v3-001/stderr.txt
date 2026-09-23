@@ -1,0 +1,7 @@
+   Compiling crc32fast v1.5.2
+   Compiling simd-adler32 v0.3.10
+   Compiling adler2 v2.0.1
+   Compiling miniz_oxide v0.9.1
+   Compiling flate2 v1.1.10
+   Compiling mirror-gateway v0.1.0 (D:\Project\Mirror\gateway-rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 7.40s

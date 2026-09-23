@@ -1,0 +1,12 @@
+{
+  "source": "D:\\Project\\Mirror\\gateway-rust\\evidence\\proxy-v3-original-010\\results.json",
+  "case": "p1-me-html",
+  "original_resource_sha256": "97ffff5a75fec31ea5b66f91046030a0a8017943dbbe219180631b3d52a2a8c2",
+  "template_sha256": "465719ae5e4ffcd33dd7e35605d82c9ef73cb3a5689a79daf747a44af06208dc",
+  "parameters": [
+    "force_chat_mode",
+    "blocked_paths",
+    "configured_upstream_host"
+  ],
+  "validation": "HTTP resource byte comparison only; no browser execution"
+}

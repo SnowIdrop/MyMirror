@@ -1,0 +1,1 @@
+{"scope": "raw wire length, digest, gzip integrity and decoded-body binding", "baseline_checked": 85, "candidate_checked": 85, "different": 0}

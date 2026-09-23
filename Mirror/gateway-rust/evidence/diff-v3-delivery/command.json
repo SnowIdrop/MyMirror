@@ -1,0 +1,11 @@
+{
+  "event": "command_execution",
+  "command": [
+    "git",
+    "diff",
+    "--check"
+  ],
+  "cwd": "D:\\Project\\Mirror\\gateway-rust",
+  "exit": 0,
+  "elapsed_seconds": 0.042258262634277344
+}

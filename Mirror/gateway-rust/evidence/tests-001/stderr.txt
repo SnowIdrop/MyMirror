@@ -1,0 +1,8 @@
+   Compiling mirror-gateway v0.1.0 (D:\Project\Mirror\gateway-rust)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.98s
+     Running unittests src\lib.rs (target\debug\deps\mirror_gateway-03a2b678e793c620.exe)
+     Running unittests src\main.rs (target\debug\deps\mirror_gateway-75c4c2a96d3e60f0.exe)
+     Running tests\migration.rs (target\debug\deps\migration-acbb6c07418708cf.exe)
+     Running tests\mirror_auth.rs (target\debug\deps\mirror_auth-5a437f7744708752.exe)
+     Running tests\original_crypto.rs (target\debug\deps\original_crypto-a2f37db2d3425abe.exe)
+error: test failed, to rerun pass `--test original_crypto`

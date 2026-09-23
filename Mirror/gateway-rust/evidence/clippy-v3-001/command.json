@@ -1,0 +1,16 @@
+{
+  "event": "command_execution",
+  "command": [
+    "cargo",
+    "clippy",
+    "--locked",
+    "--offline",
+    "--all-targets",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "cwd": "D:\\Project\\Mirror\\gateway-rust",
+  "exit": 101,
+  "elapsed_seconds": 2.2744500637054443
+}

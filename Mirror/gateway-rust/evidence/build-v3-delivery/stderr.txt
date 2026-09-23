@@ -1,0 +1,2 @@
+   Compiling mirror-gateway v0.1.0 (D:\Project\Mirror\gateway-rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 5.13s

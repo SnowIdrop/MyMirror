@@ -1,0 +1,28 @@
+{
+  "event": "artifact_readback",
+  "roles": {
+    "MODIFIED_FILE": {
+      "path": "D:\\Project\\Mirror\\gateway-rust\\artifacts\\MODIFIED_FILE",
+      "sha256": "ba22ef7e8aa87298c9a661de63b3781a94003f9d282b8dd3de3cd7e8a5fdf6cd",
+      "bytes": 115607496
+    },
+    "DIFF_FILE.patch": {
+      "path": "D:\\Project\\Mirror\\gateway-rust\\artifacts\\DIFF_FILE.patch",
+      "sha256": "41729d5c2cb0e0ccde1fbf7fdc1ff01d117bf849d017452d232d44e5aa28662e",
+      "bytes": 58522901
+    },
+    "VERIFICATION.txt": {
+      "path": "D:\\Project\\Mirror\\gateway-rust\\artifacts\\VERIFICATION.txt",
+      "sha256": "7d7fe2c4364826d47096fd1b3c6c2d8d0b696fcde056b13682c05be185d26d26",
+      "bytes": 7530877
+    },
+    "ROLLBACK.sh": {
+      "path": "D:\\Project\\Mirror\\gateway-rust\\artifacts\\ROLLBACK.sh",
+      "sha256": "c029d1fb9eeaa718b6bce01cf0ab1fe5c530e682a857b8b36733a5b4b9efb2f7",
+      "bytes": 440
+    }
+  },
+  "original_hash_unchanged": true,
+  "source_archive_matches_current_files": true,
+  "patch_reconstruction": true
+}

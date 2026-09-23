@@ -1,0 +1,6 @@
+Collecting ziglang==0.13.0
+  Downloading ziglang-0.13.0-py3-none-win_amd64.whl.metadata (1.8 kB)
+Downloading ziglang-0.13.0-py3-none-win_amd64.whl (80.4 MB)
+   ---------------------------------------- 80.4/80.4 MB 34.9 MB/s  0:00:02
+Installing collected packages: ziglang
+Successfully installed ziglang-0.13.0

@@ -1,0 +1,18 @@
+{
+  "event": "command_execution",
+  "command": [
+    "C:/Users/peropero/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe",
+    "tools/oracle.py",
+    "--guest-script",
+    "tools/observe_backup_v3.py",
+    "--subject",
+    "candidate",
+    "--serial-port",
+    "45625",
+    "--output",
+    "evidence/backup-v3-candidate-002"
+  ],
+  "cwd": "D:\\Project\\Mirror\\gateway-rust",
+  "exit": 0,
+  "elapsed_seconds": 37.156874656677246
+}

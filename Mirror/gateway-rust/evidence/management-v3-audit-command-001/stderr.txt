@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "D:\Project\Mirror\gateway-rust\tools\audit_v3.py", line 116, in <module>
+    if __name__=='__main__':sys.exit(main())
+                                     ^^^^^^
+  File "D:\Project\Mirror\gateway-rust\tools\audit_v3.py", line 110, in main
+    b=normalize_records(left,a.mode);c=normalize_records(right,a.mode)
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Project\Mirror\gateway-rust\tools\audit_v3.py", line 26, in normalize_records
+    try:bind(json.loads(record['body']),identity)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Project\Mirror\gateway-rust\tools\audit_v3.py", line 16, in bind
+    for key,child in value.items():bind(child,identity+'/'+key)
+                                              ~~~~~~~~^~~~
+TypeError: unsupported operand type(s) for +: 'NoneType' and 'str'

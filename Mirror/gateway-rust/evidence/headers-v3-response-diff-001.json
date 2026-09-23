@@ -1,0 +1,688 @@
+{
+  "response_cases": 82,
+  "matched": 77,
+  "different": 5,
+  "scope": "response status, JSON/text body, headers; no whole-product equivalence claim",
+  "not_compared": [
+    "upstream traces",
+    "full schema beyond backup",
+    "SSE/WebSocket",
+    "retry timing",
+    "real TLS"
+  ],
+  "matched_cases": [
+    "scenario:admin-401-br",
+    "scenario:admin-401-gzip",
+    "scenario:admin-401-no-header",
+    "scenario:ct-bin-64-gzip",
+    "scenario:ct-html-64-gzip",
+    "scenario:ct-img-64-gzip",
+    "scenario:ct-json-20-gzip",
+    "scenario:ct-json-29-gzip",
+    "scenario:ct-json-64-gzip",
+    "scenario:ct-json-64-no-header",
+    "scenario:ct-json-8-gzip",
+    "scenario:ct-sse-64-gzip",
+    "scenario:ct-sse-64-no-header",
+    "scenario:ct-text-64-gzip",
+    "scenario:hdr-handoff",
+    "scenario:hdr-login",
+    "scenario:len-22-conversations-gzip",
+    "scenario:len-29-close-gzip",
+    "scenario:len-29-proxy-streamed-gzip",
+    "scenario:len-30-close-gzip",
+    "scenario:len-31-close-gzip",
+    "scenario:len-31-close-identity",
+    "scenario:len-32-close-br",
+    "scenario:len-32-close-gzip",
+    "scenario:len-32-close-identity",
+    "scenario:len-33-close-gzip",
+    "scenario:len-33-close-no-header",
+    "scenario:len-33-proxy-streamed-gzip",
+    "scenario:len-8-proxy-streamed-gzip",
+    "scenario:method-405-export",
+    "scenario:method-405-not-login",
+    "scenario:method-405-session",
+    "scenario:native-close-29-gzip",
+    "scenario:native-close-29-identity",
+    "scenario:native-counts-2-br",
+    "scenario:native-logout-26-gzip",
+    "scenario:native-logout-26-no-header",
+    "scenario:native-overview-40-br",
+    "scenario:native-overview-40-gzip",
+    "scenario:native-quota-33-gzip",
+    "scenario:native-testproxy-32-gzip",
+    "scenario:native-testproxy-32-identity",
+    "scenario:neg-all-four",
+    "scenario:neg-br",
+    "scenario:neg-br-q1-gzip-q09",
+    "scenario:neg-deflate",
+    "scenario:neg-deflate-q1-gzip-q09",
+    "scenario:neg-deflate-x-gzip",
+    "scenario:neg-empty",
+    "scenario:neg-gzip",
+    "scenario:neg-gzip-br",
+    "scenario:neg-gzip-q0",
+    "scenario:neg-gzip-q0-br-q0",
+    "scenario:neg-gzip-q05-br",
+    "scenario:neg-gzip-q09",
+    "scenario:neg-gzip-q1-zstd-q01",
+    "scenario:neg-identity",
+    "scenario:neg-identity-q0",
+    "scenario:neg-identity-q09-gzip-q05",
+    "scenario:neg-identity-q1-gzip",
+    "scenario:neg-proxy-br",
+    "scenario:neg-proxy-deflate",
+    "scenario:neg-proxy-gzip-q05-br",
+    "scenario:neg-proxy-zstd",
+    "scenario:neg-q-abc",
+    "scenario:neg-star",
+    "scenario:neg-upper-gzip",
+    "scenario:neg-x-gzip",
+    "scenario:neg-zstd",
+    "scenario:neg-zstd-gzip",
+    "scenario:neg-zstd-q08-br-q09",
+    "scenario:neg-zstd-q1-gzip-q09",
+    "scenario:proxy-json-64-no-cookie",
+    "scenario:proxy-vary-ae",
+    "scenario:proxy-vary-cookie",
+    "scenario:user-401-br",
+    "scenario:user-401-gzip"
+  ],
+  "differences": [
+    {
+      "case": "scenario:proxy-upstream-gzip-client-gzip",
+      "baseline": {
+        "status": 200,
+        "body": {
+          "p": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "headers": {
+          "server": [
+            "BaseHTTP/0.6 Python/3.12.14"
+          ],
+          "date": [
+            "<validated-http-date>"
+          ],
+          "content-type": [
+            "application/json"
+          ],
+          "content-security-policy": [
+            "default-src 'self'; connect-src 'self' ws: wss: blob: https://static.cloudflareinsights.com https://chatgpt.com https://ab.chatgpt.com https://cdn.oaistatic.com https://cdn.openai.com https://images.openai.com https://*.oaiusercontent.com https://files.openai.com https://persistent.oaistatic.com https://www.google.com https://t0.gstatic.com https://t1.gstatic.com https://t2.gstatic.com https://t3.gstatic.com https://lh3.googleusercontent.com https://cdn.auth0.com; img-src 'self' data: blob: https://static.cloudflareinsights.com https://*.oaiusercontent.com https://files.openai.com https://persistent.oaistatic.com https://www.google.com https://t0.gstatic.com https://t1.gstatic.com https://t2.gstatic.com https://t3.gstatic.com https://lh3.googleusercontent.com https://cdn.auth0.com; font-src 'self' data: https://cdn.openai.com https://*.oaiusercontent.com https://persistent.oaistatic.com; style-src 'self' 'unsafe-inline' https://*.oaiusercontent.com https://persistent.oaistatic.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://chatgpt.com https://static.cloudflareinsights.com https://*.oaiusercontent.com; worker-src 'self' blob:; frame-src 'self' https://*.oaiusercontent.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
+          ],
+          "cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cloudflare-cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "pragma": [
+            "no-cache"
+          ],
+          "expires": [
+            "0"
+          ],
+          "vary": [
+            "Cookie, Authorization",
+            "accept-encoding"
+          ],
+          "content-encoding": [
+            "gzip"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "referrer-policy": [
+            "same-origin"
+          ],
+          "x-frame-options": [
+            "SAMEORIGIN"
+          ],
+          "cross-origin-opener-policy": [
+            "same-origin"
+          ],
+          "permissions-policy": [
+            "camera=(), microphone=(), geolocation=()"
+          ],
+          "accept-ch": [
+            "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+          ],
+          "strict-transport-security": [
+            "max-age=31536000; includeSubDomains; preload"
+          ],
+          "transfer-encoding": [
+            "chunked"
+          ]
+        }
+      },
+      "candidate": {
+        "status": 200,
+        "body": {
+          "p": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "headers": {
+          "server": [
+            "BaseHTTP/0.6 Python/3.12.14"
+          ],
+          "date": [
+            "<validated-http-date>"
+          ],
+          "content-type": [
+            "application/json"
+          ],
+          "content-encoding": [
+            "gzip"
+          ],
+          "cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cloudflare-cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "pragma": [
+            "no-cache"
+          ],
+          "expires": [
+            "0"
+          ],
+          "vary": [
+            "Cookie, Authorization"
+          ],
+          "content-security-policy": [
+            "default-src 'self'; connect-src 'self' ws: wss: blob: https://static.cloudflareinsights.com https://chatgpt.com https://ab.chatgpt.com https://cdn.oaistatic.com https://cdn.openai.com https://images.openai.com https://*.oaiusercontent.com https://files.openai.com https://persistent.oaistatic.com https://www.google.com https://t0.gstatic.com https://t1.gstatic.com https://t2.gstatic.com https://t3.gstatic.com https://lh3.googleusercontent.com https://cdn.auth0.com; img-src 'self' data: blob: https://static.cloudflareinsights.com https://*.oaiusercontent.com https://files.openai.com https://persistent.oaistatic.com https://www.google.com https://t0.gstatic.com https://t1.gstatic.com https://t2.gstatic.com https://t3.gstatic.com https://lh3.googleusercontent.com https://cdn.auth0.com; font-src 'self' data: https://cdn.openai.com https://*.oaiusercontent.com https://persistent.oaistatic.com; style-src 'self' 'unsafe-inline' https://*.oaiusercontent.com https://persistent.oaistatic.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://chatgpt.com https://static.cloudflareinsights.com https://*.oaiusercontent.com; worker-src 'self' blob:; frame-src 'self' https://*.oaiusercontent.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "referrer-policy": [
+            "same-origin"
+          ],
+          "x-frame-options": [
+            "SAMEORIGIN"
+          ],
+          "cross-origin-opener-policy": [
+            "same-origin"
+          ],
+          "permissions-policy": [
+            "camera=(), microphone=(), geolocation=()"
+          ],
+          "accept-ch": [
+            "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+          ],
+          "strict-transport-security": [
+            "max-age=31536000; includeSubDomains; preload"
+          ],
+          "transfer-encoding": [
+            "chunked"
+          ]
+        }
+      }
+    },
+    {
+      "case": "scenario:proxy-upstream-gzip-no-header",
+      "baseline": {
+        "status": 200,
+        "body": {
+          "p": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "headers": {
+          "server": [
+            "BaseHTTP/0.6 Python/3.12.14"
+          ],
+          "date": [
+            "<validated-http-date>"
+          ],
+          "content-type": [
+            "application/json"
+          ],
+          "content-security-policy": [
+            "default-src 'self'; connect-src 'self' ws: wss: blob: https://static.cloudflareinsights.com https://chatgpt.com https://ab.chatgpt.com https://cdn.oaistatic.com https://cdn.openai.com https://images.openai.com https://*.oaiusercontent.com https://files.openai.com https://persistent.oaistatic.com https://www.google.com https://t0.gstatic.com https://t1.gstatic.com https://t2.gstatic.com https://t3.gstatic.com https://lh3.googleusercontent.com https://cdn.auth0.com; img-src 'self' data: blob: https://static.cloudflareinsights.com https://*.oaiusercontent.com https://files.openai.com https://persistent.oaistatic.com https://www.google.com https://t0.gstatic.com https://t1.gstatic.com https://t2.gstatic.com https://t3.gstatic.com https://lh3.googleusercontent.com https://cdn.auth0.com; font-src 'self' data: https://cdn.openai.com https://*.oaiusercontent.com https://persistent.oaistatic.com; style-src 'self' 'unsafe-inline' https://*.oaiusercontent.com https://persistent.oaistatic.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://chatgpt.com https://static.cloudflareinsights.com https://*.oaiusercontent.com; worker-src 'self' blob:; frame-src 'self' https://*.oaiusercontent.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
+          ],
+          "cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cloudflare-cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "pragma": [
+            "no-cache"
+          ],
+          "expires": [
+            "0"
+          ],
+          "vary": [
+            "Cookie, Authorization",
+            "accept-encoding"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "referrer-policy": [
+            "same-origin"
+          ],
+          "x-frame-options": [
+            "SAMEORIGIN"
+          ],
+          "cross-origin-opener-policy": [
+            "same-origin"
+          ],
+          "permissions-policy": [
+            "camera=(), microphone=(), geolocation=()"
+          ],
+          "accept-ch": [
+            "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+          ],
+          "strict-transport-security": [
+            "max-age=31536000; includeSubDomains; preload"
+          ],
+          "transfer-encoding": [
+            "chunked"
+          ]
+        }
+      },
+      "candidate": {
+        "status": 200,
+        "body": {
+          "p": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "headers": {
+          "server": [
+            "BaseHTTP/0.6 Python/3.12.14"
+          ],
+          "date": [
+            "<validated-http-date>"
+          ],
+          "content-type": [
+            "application/json"
+          ],
+          "content-encoding": [
+            "gzip"
+          ],
+          "cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cloudflare-cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "pragma": [
+            "no-cache"
+          ],
+          "expires": [
+            "0"
+          ],
+          "vary": [
+            "Cookie, Authorization"
+          ],
+          "content-security-policy": [
+            "default-src 'self'; connect-src 'self' ws: wss: blob: https://static.cloudflareinsights.com https://chatgpt.com https://ab.chatgpt.com https://cdn.oaistatic.com https://cdn.openai.com https://images.openai.com https://*.oaiusercontent.com https://files.openai.com https://persistent.oaistatic.com https://www.google.com https://t0.gstatic.com https://t1.gstatic.com https://t2.gstatic.com https://t3.gstatic.com https://lh3.googleusercontent.com https://cdn.auth0.com; img-src 'self' data: blob: https://static.cloudflareinsights.com https://*.oaiusercontent.com https://files.openai.com https://persistent.oaistatic.com https://www.google.com https://t0.gstatic.com https://t1.gstatic.com https://t2.gstatic.com https://t3.gstatic.com https://lh3.googleusercontent.com https://cdn.auth0.com; font-src 'self' data: https://cdn.openai.com https://*.oaiusercontent.com https://persistent.oaistatic.com; style-src 'self' 'unsafe-inline' https://*.oaiusercontent.com https://persistent.oaistatic.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://chatgpt.com https://static.cloudflareinsights.com https://*.oaiusercontent.com; worker-src 'self' blob:; frame-src 'self' https://*.oaiusercontent.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "referrer-policy": [
+            "same-origin"
+          ],
+          "x-frame-options": [
+            "SAMEORIGIN"
+          ],
+          "cross-origin-opener-policy": [
+            "same-origin"
+          ],
+          "permissions-policy": [
+            "camera=(), microphone=(), geolocation=()"
+          ],
+          "accept-ch": [
+            "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+          ],
+          "strict-transport-security": [
+            "max-age=31536000; includeSubDomains; preload"
+          ],
+          "transfer-encoding": [
+            "chunked"
+          ]
+        }
+      }
+    },
+    {
+      "case": "scenario:stat-shape-array-body",
+      "baseline": {
+        "status": 422,
+        "body": "Failed to deserialize the JSON body into the target type: [0]: invalid type: string \"probe-user\", expected a sequence at line 1 column 13",
+        "headers": {
+          "content-type": [
+            "text/plain; charset=utf-8"
+          ],
+          "vary": [
+            "accept-encoding"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "referrer-policy": [
+            "same-origin"
+          ],
+          "x-frame-options": [
+            "SAMEORIGIN"
+          ],
+          "cross-origin-opener-policy": [
+            "same-origin"
+          ],
+          "permissions-policy": [
+            "camera=(), microphone=(), geolocation=()"
+          ],
+          "accept-ch": [
+            "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+          ],
+          "strict-transport-security": [
+            "max-age=31536000; includeSubDomains; preload"
+          ],
+          "cache-control": [
+            "no-cache"
+          ],
+          "content-length": [
+            "<verified-body-length>"
+          ],
+          "date": [
+            "<validated-http-date>"
+          ]
+        }
+      },
+      "candidate": {
+        "status": 200,
+        "body": {},
+        "headers": {
+          "content-type": [
+            "application/json"
+          ],
+          "cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cloudflare-cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "pragma": [
+            "no-cache"
+          ],
+          "expires": [
+            "0"
+          ],
+          "vary": [
+            "Cookie, Authorization"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "referrer-policy": [
+            "same-origin"
+          ],
+          "x-frame-options": [
+            "SAMEORIGIN"
+          ],
+          "cross-origin-opener-policy": [
+            "same-origin"
+          ],
+          "permissions-policy": [
+            "camera=(), microphone=(), geolocation=()"
+          ],
+          "accept-ch": [
+            "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+          ],
+          "strict-transport-security": [
+            "max-age=31536000; includeSubDomains; preload"
+          ],
+          "content-length": [
+            "<verified-body-length>"
+          ],
+          "date": [
+            "<validated-http-date>"
+          ]
+        }
+      }
+    },
+    {
+      "case": "scenario:stat-shape-user-name",
+      "baseline": {
+        "status": 200,
+        "body": {
+          "conversation_count": 0,
+          "conversations": [],
+          "message_count": 0,
+          "model_message_counts": {}
+        },
+        "headers": {
+          "content-type": [
+            "application/json"
+          ],
+          "cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cloudflare-cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "pragma": [
+            "no-cache"
+          ],
+          "expires": [
+            "0"
+          ],
+          "vary": [
+            "Cookie, Authorization",
+            "accept-encoding"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "referrer-policy": [
+            "same-origin"
+          ],
+          "x-frame-options": [
+            "SAMEORIGIN"
+          ],
+          "cross-origin-opener-policy": [
+            "same-origin"
+          ],
+          "permissions-policy": [
+            "camera=(), microphone=(), geolocation=()"
+          ],
+          "accept-ch": [
+            "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+          ],
+          "strict-transport-security": [
+            "max-age=31536000; includeSubDomains; preload"
+          ],
+          "content-length": [
+            "<verified-body-length>"
+          ],
+          "date": [
+            "<validated-http-date>"
+          ]
+        }
+      },
+      "candidate": {
+        "status": 200,
+        "body": {},
+        "headers": {
+          "content-type": [
+            "application/json"
+          ],
+          "cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cloudflare-cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "pragma": [
+            "no-cache"
+          ],
+          "expires": [
+            "0"
+          ],
+          "vary": [
+            "Cookie, Authorization"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "referrer-policy": [
+            "same-origin"
+          ],
+          "x-frame-options": [
+            "SAMEORIGIN"
+          ],
+          "cross-origin-opener-policy": [
+            "same-origin"
+          ],
+          "permissions-policy": [
+            "camera=(), microphone=(), geolocation=()"
+          ],
+          "accept-ch": [
+            "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+          ],
+          "strict-transport-security": [
+            "max-age=31536000; includeSubDomains; preload"
+          ],
+          "content-length": [
+            "<verified-body-length>"
+          ],
+          "date": [
+            "<validated-http-date>"
+          ]
+        }
+      }
+    },
+    {
+      "case": "scenario:stat-shape-username-list",
+      "baseline": {
+        "status": 200,
+        "body": {},
+        "headers": {
+          "content-type": [
+            "application/json"
+          ],
+          "cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cloudflare-cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "pragma": [
+            "no-cache"
+          ],
+          "expires": [
+            "0"
+          ],
+          "vary": [
+            "Cookie, Authorization"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "referrer-policy": [
+            "same-origin"
+          ],
+          "x-frame-options": [
+            "SAMEORIGIN"
+          ],
+          "cross-origin-opener-policy": [
+            "same-origin"
+          ],
+          "permissions-policy": [
+            "camera=(), microphone=(), geolocation=()"
+          ],
+          "accept-ch": [
+            "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+          ],
+          "strict-transport-security": [
+            "max-age=31536000; includeSubDomains; preload"
+          ],
+          "content-length": [
+            "<verified-body-length>"
+          ],
+          "date": [
+            "<validated-http-date>"
+          ]
+        }
+      },
+      "candidate": {
+        "status": 200,
+        "body": {
+          "probe-user": 0
+        },
+        "headers": {
+          "content-type": [
+            "application/json"
+          ],
+          "cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "cloudflare-cdn-cache-control": [
+            "private, no-store, no-cache, must-revalidate, max-age=0"
+          ],
+          "pragma": [
+            "no-cache"
+          ],
+          "expires": [
+            "0"
+          ],
+          "vary": [
+            "Cookie, Authorization"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "referrer-policy": [
+            "same-origin"
+          ],
+          "x-frame-options": [
+            "SAMEORIGIN"
+          ],
+          "cross-origin-opener-policy": [
+            "same-origin"
+          ],
+          "permissions-policy": [
+            "camera=(), microphone=(), geolocation=()"
+          ],
+          "accept-ch": [
+            "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+          ],
+          "strict-transport-security": [
+            "max-age=31536000; includeSubDomains; preload"
+          ],
+          "content-length": [
+            "<verified-body-length>"
+          ],
+          "date": [
+            "<validated-http-date>"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,2221 @@
+{
+ "functions": [
+  {
+   "name": "core::ptr::drop_in_place<chatgpt_mirror_gateway::proxy::proxy_chatgpt_ws_via_configured_proxy::{{closure}}>",
+   "entry": "0x00212b40",
+   "body": "00212b40, 00212d1b",
+   "callees": [
+    "<tokio::sync::batch_semaphore::Acquire_as_core::ops::drop::Drop>::drop",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::ptr::drop_in_place<axum::extract::ws::WebSocketUpgrade>",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::db::MirrorProxyConfig>",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::proxy::connect_chatgpt_ws_via_http_proxy::{{closure}}>",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::proxy::connect_chatgpt_ws_via_socks_proxy::{{closure}}>",
+    "core::ptr::drop_in_place<http::request::Parts>",
+    "core::ptr::drop_in_place<tokio_tungstenite::connect::connect::{{closure}}>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<chatgpt_mirror_gateway::proxy::get_cfbypass_payload_with_proxy_server::{{closure}}>",
+   "entry": "0x004510f0",
+   "body": "004510f0, 004514a5",
+   "callees": [
+    "<hashbrown::raw::RawTable<T,A>as_core::ops::drop::Drop>::drop",
+    "<tokio::sync::batch_semaphore::Acquire_as_core::ops::drop::Drop>::drop",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::sync::Arc<T,A>::drop_slow",
+    "core::ptr::drop_in_place<http_body_util::combinators::collect::Collect<http_body_util::combinators::box_body::BoxBody<bytes::bytes::Bytes,alloc::boxed::Box<dyn_core::error::Error+core::marker::Send+core::marker::Sync>>>>",
+    "core::ptr::drop_in_place<reqwest::async_impl::client::Pending>",
+    "core::ptr::drop_in_place<reqwest::async_impl::response::Response>",
+    "tokio::sync::batch_semaphore::Semaphore::release"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<chatgpt_mirror_gateway::proxy::record_chat_requirements_pow_if_present::{{closure}}>",
+   "entry": "0x00213420",
+   "body": "00213420, 00213494",
+   "callees": [
+    "<tokio::sync::batch_semaphore::Acquire_as_core::ops::drop::Drop>::drop",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::proxy::PowRiskSnapshot>",
+    "core::ptr::drop_in_place<serde_json::value::Value>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<core::option::Option<alloc::vec::Vec<chatgpt_mirror_gateway::db::MirrorProxyNodeConfig>>>",
+   "entry": "0x00213500",
+   "body": "00213500, 0021353d",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_dealloc"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<chatgpt_mirror_gateway::proxy::clear_cfbypass_cache_entry_with_proxy_server::{{closure}}>",
+   "entry": "0x00292880",
+   "body": "00292880, 002928e2",
+   "callees": [
+    "<tokio::sync::batch_semaphore::Acquire_as_core::ops::drop::Drop>::drop"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<tokio::sync::mutex::Mutex<chatgpt_mirror_gateway::db::BlockedPathsConfig>::lock::{{closure}}>",
+   "entry": "0x002930a0",
+   "body": "002930a0, 002930e1",
+   "callees": [
+    "<tokio::sync::batch_semaphore::Acquire_as_core::ops::drop::Drop>::drop"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<core::result::Result<core::option::Option<(alloc::string::String,core::option::Option<alloc::string::String>,alloc::vec::Vec<chatgpt_mirror_gateway::db::SupplementalCookie>)>,alloc::string::String>>",
+   "entry": "0x002163b0",
+   "body": "002163b0, 00216495",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::db::SupplementalCookie>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<<chatgpt_mirror_gateway::proxy::proxy_admin_as_axum::handler::Handler<(axum_core::extract::private::ViaRequest,axum::extract::state::State<chatgpt_mirror_gateway::AppState>,http::request::Request<axum_core::body::Body>),chatgpt_mirror_gateway::AppState>>::call::{{closure}}>",
+   "entry": "0x00216ca0",
+   "body": "00216ca0, 00216e61",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::AppState>",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::proxy::proxy_request::{{closure}}>",
+    "core::ptr::drop_in_place<http::request::Parts>",
+    "core::ptr::drop_in_place<http::request::Request<axum_core::body::Body>>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<<chatgpt_mirror_gateway::proxy::proxy_gateway_as_axum::handler::Handler<(axum_core::extract::private::ViaRequest,axum::extract::state::State<chatgpt_mirror_gateway::AppState>,http::request::Request<axum_core::body::Body>),chatgpt_mirror_gateway::AppState>>::call::{{closure}}>",
+   "entry": "0x00216f80",
+   "body": "00216f80, 002170d9",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::AppState>",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::proxy::proxy_gateway::{{closure}}>",
+    "core::ptr::drop_in_place<http::request::Parts>",
+    "core::ptr::drop_in_place<http::request::Request<axum_core::body::Body>>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<<chatgpt_mirror_gateway::proxy::proxy_chatgpt_api_as_axum::handler::Handler<(axum_core::extract::private::ViaRequest,axum::extract::state::State<chatgpt_mirror_gateway::AppState>,http::request::Request<axum_core::body::Body>),chatgpt_mirror_gateway::AppState>>::call::{{closure}}>",
+   "entry": "0x002172a0",
+   "body": "002172a0, 002173f9",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::AppState>",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::proxy::proxy_chatgpt_api::{{closure}}>",
+    "core::ptr::drop_in_place<http::request::Parts>",
+    "core::ptr::drop_in_place<http::request::Request<axum_core::body::Body>>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<<chatgpt_mirror_gateway::proxy::proxy_chatgpt_ws_as_axum::handler::Handler<(axum_core::extract::private::ViaParts,axum::extract::state::State<chatgpt_mirror_gateway::AppState>,axum::extract::ws::WebSocketUpgrade,http::uri::Uri,http::header::map::HeaderMap),chatgpt_mirror_gateway::AppState>>::call::{{closure}}>",
+   "entry": "0x002177d0",
+   "body": "002177d0, 002179da",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::ptr::drop_in_place<axum::extract::ws::WebSocketUpgrade>",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::AppState>",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::proxy::proxy_chatgpt_ws::{{closure}}>",
+    "core::ptr::drop_in_place<http::request::Parts>",
+    "core::ptr::drop_in_place<http::request::Request<axum_core::body::Body>>",
+    "core::ptr::drop_in_place<http::uri::Uri>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<<chatgpt_mirror_gateway::proxy::proxy_django_as_axum::handler::Handler<(axum_core::extract::private::ViaRequest,axum::extract::state::State<chatgpt_mirror_gateway::AppState>,axum::extract::connect_info::ConnectInfo<core::net::socket_addr::SocketAddr>,http::request::Request<axum_core::body::Body>),chatgpt_mirror_gateway::AppState>>::call::{{closure}}>",
+   "entry": "0x00218c50",
+   "body": "00218c50, 00218e51",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::AppState>",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::proxy::proxy_request::{{closure}}>",
+    "core::ptr::drop_in_place<http::request::Parts>",
+    "core::ptr::drop_in_place<http::request::Request<axum_core::body::Body>>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<chatgpt_mirror_gateway::db::MirrorProxyConfig>",
+   "entry": "0x004afb60",
+   "body": "004afb60, 004afbe8",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_dealloc"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<chatgpt_mirror_gateway::db::CustomScriptConfig>",
+   "entry": "0x004afd50",
+   "body": "004afd50, 004afd95",
+   "callees": [
+    "<alloc::vec::Vec<T,A>as_core::ops::drop::Drop>::drop",
+    "__rustc[4794b31dd7191200]::__rust_dealloc"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<chatgpt_mirror_gateway::db::SupplementalCookie>",
+   "entry": "0x004cc870",
+   "body": "004cc870, 004cc911",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_dealloc"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<chatgpt_mirror_gateway::db::GatewaySessionRecord>",
+   "entry": "0x0029bf70",
+   "body": "0029bf70, 0029c08e",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::db::SupplementalCookie>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<chatgpt_mirror_gateway::db::MirrorProxyNodeConfig>",
+   "entry": "0x00311350",
+   "body": "00311350, 003113c5",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_dealloc"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<chatgpt_mirror_gateway::db::PoliticalModerationConfig>",
+   "entry": "0x004b0620",
+   "body": "004b0620, 004b06c2",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_dealloc"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<alloc::vec::Vec<chatgpt_mirror_gateway::db::CustomScriptItem>>",
+   "entry": "0x004cd1e0",
+   "body": "004cd1e0, 004cd205",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_dealloc"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<alloc::vec::Vec<chatgpt_mirror_gateway::db::SupplementalCookie>>",
+   "entry": "0x004cd470",
+   "body": "004cd470, 004cd4d8",
+   "callees": [
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::db::SupplementalCookie>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<chatgpt_mirror_gateway::proxy::proxy_admin::{{closure}}>",
+   "entry": "0x002206c0",
+   "body": "002206c0, 0022070e",
+   "callees": [
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::AppState>",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::proxy::proxy_request::{{closure}}>",
+    "core::ptr::drop_in_place<http::request::Request<axum_core::body::Body>>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<alloc::vec::Vec<chatgpt_mirror_gateway::db::MirrorProxyNodeConfig>>",
+   "entry": "0x004cd5b0",
+   "body": "004cd5b0, 004cd5e1",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_dealloc"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<chatgpt_mirror_gateway::proxy::proxy_django::{{closure}}>",
+   "entry": "0x00220ba0",
+   "body": "00220ba0, 00220bee",
+   "callees": [
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::AppState>",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::proxy::proxy_request::{{closure}}>",
+    "core::ptr::drop_in_place<http::request::Request<axum_core::body::Body>>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<chatgpt_mirror_gateway::proxy::proxy_gateway::{{closure}}>",
+   "entry": "0x002213f0",
+   "body": "002213f0, 002214d8",
+   "callees": [
+    "<tokio::sync::batch_semaphore::Acquire_as_core::ops::drop::Drop>::drop",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::AppState>",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::proxy::proxy_request::{{closure}}>",
+    "core::ptr::drop_in_place<http::request::Request<axum_core::body::Body>>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<chatgpt_mirror_gateway::proxy::proxy_request::{{closure}}>",
+   "entry": "0x00221580",
+   "body": "00221580, 00221b3a",
+   "callees": [
+    "<tokio::sync::batch_semaphore::Acquire_as_core::ops::drop::Drop>::drop",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::AppState>",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::db::PoliticalModerationConfig>",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::moderation::review_text::{{closure}}>",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::proxy::UpstreamAuthContext>",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::proxy::UpstreamHttpResponse>",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::proxy::build_proxy_response::{{closure}}>",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::proxy::clear_cfbypass_cache_entry_with_proxy_server::{{closure}}>",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::proxy::get_cfbypass_payload_with_proxy_server::{{closure}}>",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::proxy::send_upstream_request::{{closure}}>",
+    "core::ptr::drop_in_place<http::header::map::HeaderMap>",
+    "core::ptr::drop_in_place<http::request::Request<axum_core::body::Body>>",
+    "core::ptr::drop_in_place<http::uri::Uri>",
+    "core::ptr::drop_in_place<http_body_util::combinators::collect::Collect<http_body_util::limited::Limited<axum_core::body::Body>>>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<chatgpt_mirror_gateway::moderation::review_text::{{closure}}>",
+   "entry": "0x0029e590",
+   "body": "0029e590, 0029e70a",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::sync::Arc<T,A>::drop_slow",
+    "core::ptr::drop_in_place<http_body_util::combinators::collect::Collect<http_body_util::combinators::box_body::BoxBody<bytes::bytes::Bytes,alloc::boxed::Box<dyn_core::error::Error+core::marker::Send+core::marker::Sync>>>>",
+    "core::ptr::drop_in_place<reqwest::async_impl::client::Pending>",
+    "core::ptr::drop_in_place<reqwest::async_impl::response::Response>",
+    "tokio::runtime::task::raw::RawTask::drop_join_handle_slow",
+    "tokio::runtime::task::state::State::drop_join_handle_fast"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<chatgpt_mirror_gateway::proxy::proxy_chatgpt_ws::{{closure}}>",
+   "entry": "0x00222860",
+   "body": "00222860, 0022295f",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::ptr::drop_in_place<axum::extract::ws::WebSocketUpgrade>",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::AppState>",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::proxy::UpstreamAuthContext>",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::proxy::build_chatgpt_ws_request::{{closure}}>",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::proxy::proxy_chatgpt_ws_via_configured_proxy::{{closure}}>",
+    "core::ptr::drop_in_place<http::header::map::HeaderMap>",
+    "core::ptr::drop_in_place<http::uri::Uri>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<chatgpt_mirror_gateway::proxy::proxy_chatgpt_api::{{closure}}>",
+   "entry": "0x00222b50",
+   "body": "00222b50, 00222bbe",
+   "callees": [
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::AppState>",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::db::GatewaySessionRecord>",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::proxy::proxy_request::{{closure}}>",
+    "core::ptr::drop_in_place<http::request::Request<axum_core::body::Body>>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::moderation::review_text::{{closure}}",
+   "entry": "0x002ef010",
+   "body": "002ef010, 002ef054",
+   "callees": [],
+   "failed": true
+  },
+  {
+   "name": "chatgpt_mirror_gateway::proxy::proxy_chatgpt_ws_via_configured_proxy::{{closure}}",
+   "entry": "0x0023a100",
+   "body": "0023a100, 0023a15e",
+   "callees": [],
+   "failed": true
+  },
+  {
+   "name": "chatgpt_mirror_gateway::proxy::proxy_request::{{closure}}",
+   "entry": "0x0024e100",
+   "body": "0024e100, 0024e139",
+   "callees": [],
+   "failed": true
+  },
+  {
+   "name": "chatgpt_mirror_gateway::proxy::apply_chrome_146_network_identity",
+   "entry": "0x0025c8b0",
+   "body": "0025c8b0, 0025cd61",
+   "callees": [
+    "<EXTERNAL>::_Unwind_Resume",
+    "core::panicking::panic_fmt",
+    "core::result::unwrap_failed",
+    "http::header::map::HeaderMap<T>::try_insert2",
+    "http::header::name::HdrName::from_bytes",
+    "http::header::name::HeaderName::from_static"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::proxy::get_cached_cfbypass_payload_with_proxy_server::{{closure}}",
+   "entry": "0x002f94a0",
+   "body": "002f94a0, 002f94fb",
+   "callees": [
+    "<EXTERNAL>::bcmp",
+    "<alloc::string::String_as_core::clone::Clone>::clone",
+    "<tokio::sync::batch_semaphore::Acquire_as_core::ops::drop::Drop>::drop",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::hash::BuildHasher::hash_one",
+    "core::panicking::panic_const::panic_const_async_fn_resumed",
+    "core::panicking::panic_const::panic_const_async_fn_resumed_panic",
+    "std::time::Instant::now",
+    "tokio::sync::batch_semaphore::Semaphore::release",
+    "tokio::sync::rwlock::RwLock<T>::read::{{closure}}"
+   ],
+   "failed": true
+  },
+  {
+   "name": "<chatgpt_mirror_gateway::db::PoliticalModerationConfig_as_core::clone::Clone>::clone",
+   "entry": "0x002faa40",
+   "body": "002faa40, 002fab5d",
+   "callees": [
+    "<alloc::string::String_as_core::clone::Clone>::clone",
+    "<alloc::vec::Vec<T,A>as_core::clone::Clone>::clone"
+   ],
+   "failed": false
+  },
+  {
+   "name": "<chatgpt_mirror_gateway::db::GatewaySessionRecord_as_core::clone::Clone>::clone",
+   "entry": "0x0028aa60",
+   "body": "0028aa60, 0028ac53",
+   "callees": [
+    "<alloc::string::String_as_core::clone::Clone>::clone",
+    "<alloc::vec::Vec<T,A>as_core::clone::Clone>::clone"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::proxy::proxy_chatgpt_ws_via_configured_proxy::{{closure}}::{{closure}}",
+   "entry": "0x0028b4f0",
+   "body": "0028b4f0, 0028b598",
+   "callees": [
+    "log::logger",
+    "tracing::__macro_support::__tracing_log",
+    "tracing_core::event::Event::dispatch"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::proxy::proxy_request::{{closure}}::{{closure}}",
+   "entry": "0x0028be10",
+   "body": "0028be10, 0028beb7",
+   "callees": [
+    "log::logger",
+    "tracing::__macro_support::__tracing_log",
+    "tracing_core::event::Event::dispatch"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::proxy::record_chat_requirements_pow_if_present::{{closure}}::{{closure}}",
+   "entry": "0x0028c620",
+   "body": "0028c620, 0028c6c7",
+   "callees": [
+    "log::logger",
+    "tracing::__macro_support::__tracing_log",
+    "tracing_core::event::Event::dispatch"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::proxy::get_cfbypass_payload_with_proxy_server::{{closure}}::{{closure}}",
+   "entry": "0x002fad60",
+   "body": "002fad60, 002fae07",
+   "callees": [
+    "log::logger",
+    "tracing::__macro_support::__tracing_log",
+    "tracing_core::event::Event::dispatch"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<core::result::Result<core::option::Option<chatgpt_mirror_gateway::db::GatewaySessionRecord>,alloc::string::String>>",
+   "entry": "0x002932e0",
+   "body": "002932e0, 0029330a",
+   "callees": [],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<chatgpt_mirror_gateway::db::CustomScriptItem>",
+   "entry": "0x003110e0",
+   "body": "003110e0, 00311145",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_dealloc"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::proxy::get_cfbypass_payload_with_proxy_server::{{closure}}",
+   "entry": "0x002f6040",
+   "body": "002f6040, 002f607e",
+   "callees": [
+    "<EXTERNAL>::_Unwind_Resume",
+    "<EXTERNAL>::bcmp",
+    "<EXTERNAL>::memcpy",
+    "<alloc::string::String_as_core::clone::Clone>::clone",
+    "<alloc::string::String_as_core::iter::traits::collect::FromIterator<char>>::from_iter",
+    "<hashbrown::raw::RawTable<T,A>as_core::clone::Clone>::clone",
+    "<hashbrown::raw::RawTable<T,A>as_core::ops::drop::Drop>::drop",
+    "<reqwest::async_impl::client::Pending_as_core::future::future::Future>::poll",
+    "<std::time::Instant_as_core::ops::arith::Add<core::time::Duration>>::add",
+    "<tokio::sync::batch_semaphore::Acquire_as_core::future::future::Future>::poll",
+    "<tokio::sync::batch_semaphore::Acquire_as_core::ops::drop::Drop>::drop",
+    "__rustc[4794b31dd7191200]::__rust_alloc",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::raw_vec::handle_error",
+    "alloc::string::String::from_utf8_lossy",
+    "alloc::sync::Arc<T,A>::drop_slow",
+    "chatgpt_mirror_gateway::proxy::cf_cache_key_with_proxy",
+    "chatgpt_mirror_gateway::proxy::cfbypass_fallback_client",
+    "chatgpt_mirror_gateway::proxy::get_cfbypass_payload_with_proxy_server::{{closure}}::{{closure}}",
+    "chatgpt_mirror_gateway::proxy::normalize_cfbypass_cookies",
+    "chatgpt_mirror_gateway::proxy::normalize_cfbypass_target_url",
+    "core::hash::BuildHasher::hash_one",
+    "core::panicking::panic",
+    "core::panicking::panic_const::panic_const_async_fn_resumed",
+    "core::ptr::drop_in_place<http_body_util::combinators::collect::Collect<http_body_util::combinators::box_body::BoxBody<bytes::bytes::Bytes,alloc::boxed::Box<dyn_core::error::Error+core::marker::Send+core::marker::Sync>>>>",
+    "core::ptr::drop_in_place<reqwest::async_impl::client::Pending>",
+    "core::ptr::drop_in_place<reqwest::async_impl::response::Response>",
+    "core::ptr::drop_in_place<reqwest::error::Error>",
+    "core::str::<impl_str>::trim_matches",
+    "hashbrown::map::HashMap<K,V,S,A>::insert",
+    "log::logger",
+    "reqwest::async_impl::client::Client::request",
+    "reqwest::async_impl::request::RequestBuilder::bearer_auth",
+    "reqwest::async_impl::request::RequestBuilder::json",
+    "reqwest::async_impl::request::RequestBuilder::send",
+    "reqwest::async_impl::response::Response::bytes::{{closure}}",
+    "reqwest::error::Error::new",
+    "serde_json::de::from_slice",
+    "std::time::Instant::now",
+    "tokio::sync::batch_semaphore::Semaphore::release",
+    "tokio::sync::rwlock::RwLock<T>::read::{{closure}}",
+    "tokio::sync::rwlock::RwLock<T>::write::{{closure}}",
+    "tracing::__macro_support::__is_enabled",
+    "tracing::__macro_support::__tracing_log",
+    "tracing_core::callsite::DefaultCallsite::register",
+    "tracing_core::event::Event::dispatch",
+    "url::ParseOptions::parse"
+   ],
+   "failed": true
+  },
+  {
+   "name": "<chatgpt_mirror_gateway::db::MirrorProxyConfig_as_core::clone::Clone>::clone",
+   "entry": "0x002fa880",
+   "body": "002fa880, 002fa9b3",
+   "callees": [
+    "<alloc::string::String_as_core::clone::Clone>::clone",
+    "<alloc::vec::Vec<T,A>as_core::clone::Clone>::clone"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<alloc::vec::in_place_drop::InPlaceDstDataSrcBufDrop<chatgpt_mirror_gateway::db::SupplementalCookie,chatgpt_mirror_gateway::db::SupplementalCookie>>",
+   "entry": "0x0030f6e0",
+   "body": "0030f6e0, 0030f745",
+   "callees": [
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::db::SupplementalCookie>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<chatgpt_mirror_gateway::main::{{closure}}>",
+   "entry": "0x004b09b0",
+   "body": "004b09b0, 004b0aae",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::sync::Arc<T,A>::drop_slow",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::AppState>",
+    "tokio::runtime::task::raw::RawTask::drop_join_handle_slow",
+    "tokio::runtime::task::state::State::drop_join_handle_fast"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<(std::time::Instant,chatgpt_mirror_gateway::db::GatewaySessionRecord)>",
+   "entry": "0x0049ba70",
+   "body": "0049ba70, 0049bb94",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::db::SupplementalCookie>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::credential_key",
+   "entry": "0x003478a0",
+   "body": "003478a0, 00347a65",
+   "callees": [
+    "<D_as_digest::digest::Digest>::digest",
+    "__rustc[4794b31dd7191200]::__rust_alloc",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::raw_vec::handle_error",
+    "core::str::<impl_str>::trim_matches",
+    "std::env::_var"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::encrypt_secret",
+   "entry": "0x00347aa0",
+   "body": "00347aa0, 00347f84",
+   "callees": [
+    "<Alg_as_aead::Aead>::encrypt",
+    "<EXTERNAL>::memcpy",
+    "<crypto_common::InvalidLength_as_core::fmt::Display>::fmt",
+    "<rand_core::os::OsRng_as_rand_core::RngCore>::fill_bytes",
+    "__rustc[4794b31dd7191200]::__rust_alloc",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::fmt::format::format_inner",
+    "alloc::raw_vec::RawVecInner<A>::reserve::do_reserve_and_handle",
+    "alloc::raw_vec::handle_error",
+    "base64::engine::Engine::encode::inner",
+    "chatgpt_mirror_gateway::db::credential_key",
+    "core::result::unwrap_failed",
+    "crypto_common::KeyInit::new_from_slice"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::decrypt_secret",
+   "entry": "0x00348050",
+   "body": "00348050, 00348517",
+   "callees": [
+    "<Alg_as_aead::Aead>::decrypt",
+    "<EXTERNAL>::memcpy",
+    "<T_as_alloc::slice::<impl[T]>::to_vec_in::ConvertVec>::to_vec",
+    "<crypto_common::InvalidLength_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_alloc",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::raw_vec::handle_error",
+    "alloc::string::String::from_utf8",
+    "base64::engine::Engine::decode::inner",
+    "chatgpt_mirror_gateway::db::credential_key",
+    "chatgpt_mirror_gateway::db::decrypt_secret::{{closure}}",
+    "core::result::unwrap_failed",
+    "core::str::slice_error_fail",
+    "crypto_common::KeyInit::new_from_slice"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::decrypt_secret::{{closure}}",
+   "entry": "0x00348570",
+   "body": "00348570, 003485ff",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_alloc",
+    "alloc::raw_vec::handle_error"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::mirror_token_hash",
+   "entry": "0x00348630",
+   "body": "00348630, 003486ec",
+   "callees": [
+    "<D_as_digest::digest::Digest>::digest",
+    "<alloc::string::String_as_core::iter::traits::collect::FromIterator<char>>::from_iter",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::fmt::format::format_inner"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::default_moderation_mode",
+   "entry": "0x00348720",
+   "body": "00348720, 0034877f",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_alloc",
+    "alloc::raw_vec::handle_error"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::SupplementalCookie::is_mirror_local",
+   "entry": "0x00348780",
+   "body": "00348780, 003488d9",
+   "callees": [
+    "<EXTERNAL>::bcmp",
+    "core::str::<impl_str>::trim_matches"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::SupplementalCookie::is_current_at",
+   "entry": "0x003488e0",
+   "body": "003488e0, 00348915",
+   "callees": [],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::SupplementalCookie::scope_identity",
+   "entry": "0x00348920",
+   "body": "00348920, 00348983",
+   "callees": [
+    "<EXTERNAL>::memcpy",
+    "__rustc[4794b31dd7191200]::__rust_alloc",
+    "alloc::raw_vec::handle_error",
+    "core::str::<impl_str>::trim_matches"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::SupplementalCookie::applies_to_url",
+   "entry": "0x00348e40",
+   "body": "00348e40, 003494c8",
+   "callees": [
+    "<EXTERNAL>::bcmp",
+    "<EXTERNAL>::memcpy",
+    "__rustc[4794b31dd7191200]::__rust_alloc",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::fmt::format::format_inner",
+    "alloc::raw_vec::handle_error",
+    "chatgpt_mirror_gateway::db::SupplementalCookie::scope_identity",
+    "core::str::<impl_str>::trim_matches",
+    "core::str::slice_error_fail",
+    "url::Url::host_str",
+    "url::Url::path",
+    "url::Url::slice"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::init_db",
+   "entry": "0x00349540",
+   "body": "00349540, 00349d22",
+   "callees": [
+    "<alloc::vec::Vec<T,A>as_core::ops::drop::Drop>::drop",
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "<rusqlite::row::Rows_as_fallible_streaming_iterator::FallibleStreamingIterator>::advance",
+    "<std::io::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "chatgpt_mirror_gateway::db::ensure_gateway_sessions_force_chat_mode_column",
+    "chatgpt_mirror_gateway::db::ensure_gateway_sessions_proxy_node_id_column",
+    "chatgpt_mirror_gateway::db::ensure_gateway_sessions_quota_columns",
+    "chatgpt_mirror_gateway::db::migrate_sensitive_rows",
+    "core::cell::panic_already_borrowed",
+    "core::iter::adapters::try_process",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::ptr::drop_in_place<rusqlite::row::Rows>",
+    "core::ptr::drop_in_place<rusqlite::statement::Statement>",
+    "core::result::unwrap_failed",
+    "rusqlite::Connection::execute",
+    "rusqlite::Connection::execute_batch",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::inner_connection::InnerConnection::prepare",
+    "rusqlite::path_to_cstring",
+    "rusqlite::row::Row::get",
+    "sqlite3_bind_parameter_count",
+    "std::fs::DirBuilder::_create",
+    "std::path::Path::parent"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::migrate_sensitive_rows",
+   "entry": "0x0034b9b0",
+   "body": "0034b9b0, 0034bcce",
+   "callees": [
+    "<alloc::vec::into_iter::IntoIter<T,A>as_core::ops::drop::Drop>::drop",
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "chatgpt_mirror_gateway::db::encrypt_secret",
+    "chatgpt_mirror_gateway::db::export_backup::{{closure}}",
+    "chatgpt_mirror_gateway::db::mirror_token_hash",
+    "core::cell::panic_already_borrowed",
+    "core::iter::adapters::try_process",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::ptr::drop_in_place<rusqlite::statement::Statement>",
+    "core::result::unwrap_failed",
+    "rusqlite::Connection::execute",
+    "rusqlite::inner_connection::InnerConnection::prepare",
+    "rusqlite::statement::Statement::query_row",
+    "sqlite3_bind_parameter_count"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::get_mirror_proxy_config",
+   "entry": "0x0034db60",
+   "body": "0034db60, 0034e3db",
+   "callees": [
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "<serde_json::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::vec::Vec<T,A>::dedup_by",
+    "alloc::vec::Vec<T,A>::retain",
+    "chatgpt_mirror_gateway::db::decrypt_secret",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::ptr::drop_in_place<rusqlite::statement::Statement>",
+    "core::ptr::drop_in_place<serde_json::error::Error>",
+    "core::result::unwrap_failed",
+    "core::slice::sort::shared::smallsort::insertion_sort_shift_left",
+    "core::slice::sort::stable::driftsort_main",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::inner_connection::InnerConnection::prepare",
+    "rusqlite::path_to_cstring",
+    "rusqlite::statement::Statement::query_row",
+    "serde_json::de::from_trait"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::save_mirror_proxy_config",
+   "entry": "0x0034e540",
+   "body": "0034e540, 0034ed7d",
+   "callees": [
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "<serde_json::error::Error_as_core::fmt::Display>::fmt",
+    "<serde_json::ser::Compound<W,F>as_serde_core::ser::SerializeStruct>::serialize_field",
+    "__rustc[4794b31dd7191200]::__rust_alloc",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::raw_vec::handle_error",
+    "alloc::vec::Vec<T,A>::extend_from_slice",
+    "chatgpt_mirror_gateway::db::encrypt_secret",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::ptr::drop_in_place<serde_json::error::Error>",
+    "core::result::unwrap_failed",
+    "rusqlite::Connection::execute",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::path_to_cstring",
+    "serde_core::ser::SerializeMap::serialize_entry",
+    "serde_json::ser::invalid_raw_value",
+    "std::time::SystemTime::duration_since",
+    "std::time::SystemTime::now"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::clear_stored_cloudflare_cookies",
+   "entry": "0x0034eec0",
+   "body": "0034eec0, 0034f550",
+   "callees": [
+    "<alloc::vec::Vec<T,A>as_core::ops::drop::Drop>::drop",
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "<serde_json::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_alloc",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::fmt::format::format_inner",
+    "alloc::raw_vec::handle_error",
+    "alloc::vec::Vec<T,A>::retain",
+    "chatgpt_mirror_gateway::db::decrypt_secret",
+    "chatgpt_mirror_gateway::db::encrypt_secret",
+    "chatgpt_mirror_gateway::db::export_backup::{{closure}}",
+    "core::cell::panic_already_borrowed",
+    "core::iter::adapters::try_process",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::db::SupplementalCookie>",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::ptr::drop_in_place<rusqlite::statement::Statement>",
+    "core::ptr::drop_in_place<rusqlite::transaction::Transaction>",
+    "core::ptr::drop_in_place<serde_json::error::Error>",
+    "core::result::unwrap_failed",
+    "rusqlite::Connection::execute",
+    "rusqlite::Connection::execute_batch",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::inner_connection::InnerConnection::prepare",
+    "rusqlite::path_to_cstring",
+    "rusqlite::transaction::Transaction::commit",
+    "serde_core::ser::Serializer::collect_seq",
+    "serde_json::de::from_trait",
+    "sqlite3_bind_parameter_count"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::get_custom_script_config",
+   "entry": "0x00350950",
+   "body": "00350950, 0035115a",
+   "callees": [
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "<serde_json::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::vec::Vec<T,A>::dedup_by",
+    "alloc::vec::Vec<T,A>::retain",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::ptr::drop_in_place<rusqlite::statement::Statement>",
+    "core::ptr::drop_in_place<serde_json::error::Error>",
+    "core::result::unwrap_failed",
+    "core::slice::sort::shared::smallsort::insertion_sort_shift_left",
+    "core::slice::sort::stable::driftsort_main",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::inner_connection::InnerConnection::prepare",
+    "rusqlite::path_to_cstring",
+    "rusqlite::statement::Statement::query_row",
+    "serde_json::de::from_trait"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::save_custom_script_config",
+   "entry": "0x003512a0",
+   "body": "003512a0, 00351997",
+   "callees": [
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "<serde_json::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_alloc",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::raw_vec::handle_error",
+    "alloc::vec::Vec<T,A>::extend_from_slice",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::ptr::drop_in_place<serde_json::error::Error>",
+    "core::result::unwrap_failed",
+    "rusqlite::Connection::execute",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::path_to_cstring",
+    "serde_core::ser::SerializeMap::serialize_entry",
+    "serde_json::ser::invalid_raw_value",
+    "std::time::SystemTime::duration_since",
+    "std::time::SystemTime::now"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::get_political_moderation_config",
+   "entry": "0x00351ac0",
+   "body": "00351ac0, 00352371",
+   "callees": [
+    "<EXTERNAL>::memcpy",
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "<serde_json::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_alloc",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::raw_vec::handle_error",
+    "chatgpt_mirror_gateway::db::decrypt_secret",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::ptr::drop_in_place<rusqlite::statement::Statement>",
+    "core::ptr::drop_in_place<serde_json::error::Error>",
+    "core::result::unwrap_failed",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::inner_connection::InnerConnection::prepare",
+    "rusqlite::path_to_cstring",
+    "rusqlite::statement::Statement::query_row",
+    "serde_json::de::from_trait"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::save_political_moderation_config",
+   "entry": "0x00352500",
+   "body": "00352500, 00352e24",
+   "callees": [
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "<serde_json::error::Error_as_core::fmt::Display>::fmt",
+    "<serde_json::ser::Compound<W,F>as_serde_core::ser::SerializeStruct>::serialize_field",
+    "__rustc[4794b31dd7191200]::__rust_alloc",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::raw_vec::handle_error",
+    "alloc::vec::Vec<T,A>::extend_from_slice",
+    "chatgpt_mirror_gateway::db::encrypt_secret",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::ptr::drop_in_place<serde_json::error::Error>",
+    "core::result::unwrap_failed",
+    "rusqlite::Connection::execute",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::path_to_cstring",
+    "serde_core::ser::SerializeMap::serialize_entry",
+    "serde_json::ser::invalid_raw_value",
+    "std::time::SystemTime::duration_since",
+    "std::time::SystemTime::now"
+   ],
+   "failed": false
+  },
+  {
+   "name": "<chatgpt_mirror_gateway::db::BlockedPathsConfig_as_core::default::Default>::default",
+   "entry": "0x00352f60",
+   "body": "00352f60, 00353217",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_alloc",
+    "alloc::alloc::handle_alloc_error",
+    "alloc::raw_vec::handle_error",
+    "chatgpt_mirror_gateway::db::BlockedPathsConfig::new"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::BlockedPathsConfig::try_new",
+   "entry": "0x003532b0",
+   "body": "003532b0, 0035333e",
+   "callees": [
+    "<alloc::string::String_as_core::clone::Clone>::clone",
+    "__rustc[4794b31dd7191200]::__rust_alloc",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::raw_vec::RawVec<T,A>::grow_one",
+    "alloc::raw_vec::handle_error",
+    "chatgpt_mirror_gateway::db::normalize_blocked_path",
+    "chatgpt_mirror_gateway::db::validate_blocked_path",
+    "core::ops::function::FnOnce::call_once",
+    "hashbrown::map::HashMap<K,V,S,A>::insert",
+    "std::thread::local::panic_access_error"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::BlockedPathsConfig::new",
+   "entry": "0x00353b20",
+   "body": "00353b20, 00353bf5",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::vec::in_place_collect::from_iter_in_place",
+    "core::ops::function::FnOnce::call_once",
+    "std::thread::local::panic_access_error"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::validate_blocked_path",
+   "entry": "0x00353ce0",
+   "body": "00353ce0, 00353d6e",
+   "callees": [
+    "<EXTERNAL>::memcpy",
+    "<T_as_alloc::slice::<impl[T]>::to_vec_in::ConvertVec>::to_vec",
+    "<char_as_core::str::pattern::Pattern>::is_contained_in",
+    "__rustc[4794b31dd7191200]::__rust_alloc",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::raw_vec::handle_error",
+    "core::iter::traits::iterator::Iterator::try_fold",
+    "core::unicode::unicode_data::cc::lookup"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::normalize_blocked_path",
+   "entry": "0x00354400",
+   "body": "00354400, 00354655",
+   "callees": [
+    "<EXTERNAL>::memcpy",
+    "__rustc[4794b31dd7191200]::__rust_alloc",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::fmt::format::format_inner",
+    "alloc::raw_vec::handle_error",
+    "core::str::<impl_str>::trim_matches"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::get_blocked_paths_config",
+   "entry": "0x00354680",
+   "body": "00354680, 00354d74",
+   "callees": [
+    "<chatgpt_mirror_gateway::db::BlockedPathsConfig_as_core::default::Default>::default",
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "<serde_json::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "chatgpt_mirror_gateway::db::BlockedPathsConfig::new",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::ptr::drop_in_place<rusqlite::statement::Statement>",
+    "core::ptr::drop_in_place<serde_json::error::Error>",
+    "core::result::unwrap_failed",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::inner_connection::InnerConnection::prepare",
+    "rusqlite::path_to_cstring",
+    "rusqlite::statement::Statement::query_row",
+    "serde_json::de::from_trait"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::save_blocked_paths_config",
+   "entry": "0x00354eb0",
+   "body": "00354eb0, 0035533e",
+   "callees": [
+    "<alloc::vec::Vec<T,A>as_core::clone::Clone>::clone",
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "<serde_json::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_alloc",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::raw_vec::RawVecInner<A>::reserve::do_reserve_and_handle",
+    "alloc::raw_vec::handle_error",
+    "chatgpt_mirror_gateway::db::BlockedPathsConfig::new",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::ptr::drop_in_place<serde_json::error::Error>",
+    "core::result::unwrap_failed",
+    "rusqlite::Connection::execute",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::path_to_cstring",
+    "serde_core::ser::SerializeMap::serialize_entry",
+    "std::time::SystemTime::duration_since",
+    "std::time::SystemTime::now"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::save_gateway_session",
+   "entry": "0x003557d0",
+   "body": "003557d0, 003562e4",
+   "callees": [
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "<serde_json::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_alloc",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::raw_vec::handle_error",
+    "chatgpt_mirror_gateway::db::encrypt_secret",
+    "chatgpt_mirror_gateway::db::export_backup::{{closure}}",
+    "chatgpt_mirror_gateway::db::mirror_token_hash",
+    "chatgpt_mirror_gateway::db::now_ts",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::ptr::drop_in_place<serde_json::error::Error>",
+    "core::result::unwrap_failed",
+    "rusqlite::Connection::execute",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::path_to_cstring",
+    "serde_core::ser::Serializer::collect_seq"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::get_gateway_session_by_token",
+   "entry": "0x003564f0",
+   "body": "003564f0, 00356c52",
+   "callees": [
+    "<EXTERNAL>::memcpy",
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "chatgpt_mirror_gateway::db::mirror_token_hash",
+    "core::cell::panic_already_borrowed",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::ptr::drop_in_place<rusqlite::statement::Statement>",
+    "core::result::unwrap_failed",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::inner_connection::InnerConnection::prepare",
+    "rusqlite::path_to_cstring",
+    "rusqlite::statement::Statement::query_row",
+    "std::time::SystemTime::duration_since",
+    "std::time::SystemTime::now"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::update_gateway_session_extra_cookies",
+   "entry": "0x00356d50",
+   "body": "00356d50, 00357488",
+   "callees": [
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "<serde_json::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_alloc",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::raw_vec::handle_error",
+    "chatgpt_mirror_gateway::db::encrypt_secret",
+    "chatgpt_mirror_gateway::db::mirror_token_hash",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::ptr::drop_in_place<serde_json::error::Error>",
+    "core::result::unwrap_failed",
+    "rusqlite::Connection::execute",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::path_to_cstring",
+    "serde_core::ser::Serializer::collect_seq",
+    "std::time::SystemTime::duration_since",
+    "std::time::SystemTime::now"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::get_chatgpt_credentials_for_user",
+   "entry": "0x00357600",
+   "body": "00357600, 00357c1d",
+   "callees": [
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::ptr::drop_in_place<rusqlite::statement::Statement>",
+    "core::result::unwrap_failed",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::inner_connection::InnerConnection::prepare",
+    "rusqlite::path_to_cstring",
+    "rusqlite::statement::Statement::query_row"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::delete_gateway_sessions_by_user",
+   "entry": "0x00357d00",
+   "body": "00357d00, 0035812f",
+   "callees": [
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::result::unwrap_failed",
+    "rusqlite::Connection::execute",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::path_to_cstring"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::update_gateway_session_force_chat_mode_by_user",
+   "entry": "0x003581e0",
+   "body": "003581e0, 003586cd",
+   "callees": [
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::result::unwrap_failed",
+    "core::str::<impl_str>::trim_matches",
+    "rusqlite::Connection::execute",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::path_to_cstring",
+    "std::time::SystemTime::duration_since",
+    "std::time::SystemTime::now"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::delete_gateway_session_by_token",
+   "entry": "0x00358780",
+   "body": "00358780, 00358bf1",
+   "callees": [
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "chatgpt_mirror_gateway::db::mirror_token_hash",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::result::unwrap_failed",
+    "rusqlite::Connection::execute",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::path_to_cstring"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::claim_conversation_owner",
+   "entry": "0x00358cd0",
+   "body": "00358cd0, 00359bdc",
+   "callees": [
+    "<EXTERNAL>::bcmp",
+    "<EXTERNAL>::memcpy",
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_alloc",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::raw_vec::handle_error",
+    "chatgpt_mirror_gateway::db::conversation_belongs_to_user_c",
+    "chatgpt_mirror_gateway::db::ensure_conversation_statistic",
+    "chatgpt_mirror_gateway::db::export_backup::{{closure}}",
+    "chatgpt_mirror_gateway::db::now_ts",
+    "core::iter::adapters::try_process",
+    "core::ptr::drop_in_place<alloc::vec::Vec<alloc::string::String>>",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::ptr::drop_in_place<rusqlite::statement::Statement>",
+    "core::result::unwrap_failed",
+    "core::str::<impl_str>::trim_matches",
+    "rusqlite::Connection::execute",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::inner_connection::InnerConnection::prepare",
+    "rusqlite::path_to_cstring",
+    "rusqlite::statement::Statement::bind_parameter",
+    "sqlite3_bind_parameter_count"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::conversation_belongs_to_user",
+   "entry": "0x00359d60",
+   "body": "00359d60, 0035a094",
+   "callees": [
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "chatgpt_mirror_gateway::db::conversation_belongs_to_user_c",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::result::unwrap_failed",
+    "core::str::<impl_str>::trim_matches",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::path_to_cstring"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::conversation_belongs_to_user_c",
+   "entry": "0x0035a110",
+   "body": "0035a110, 0035a456",
+   "callees": [
+    "<EXTERNAL>::bcmp",
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::cell::panic_already_borrowed",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::ptr::drop_in_place<rusqlite::statement::Statement>",
+    "core::result::unwrap_failed",
+    "rusqlite::inner_connection::InnerConnection::prepare",
+    "rusqlite::statement::Statement::query_row"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::get_owned_conversation_ids",
+   "entry": "0x0035a4b0",
+   "body": "0035a4b0, 0035ad1c",
+   "callees": [
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::iter::adapters::try_process",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::ptr::drop_in_place<rusqlite::statement::Statement>",
+    "core::result::unwrap_failed",
+    "core::str::<impl_str>::trim_matches",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::inner_connection::InnerConnection::prepare",
+    "rusqlite::path_to_cstring",
+    "rusqlite::statement::Statement::bind_parameter",
+    "sqlite3_bind_parameter_count"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::claim_project_owner",
+   "entry": "0x0035ae60",
+   "body": "0035ae60, 0035b3f4",
+   "callees": [
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "chatgpt_mirror_gateway::db::project_belongs_to_user_c",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::result::unwrap_failed",
+    "core::str::<impl_str>::trim_matches",
+    "rusqlite::Connection::execute",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::path_to_cstring",
+    "std::time::SystemTime::duration_since",
+    "std::time::SystemTime::now"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::project_belongs_to_user",
+   "entry": "0x0035b4a0",
+   "body": "0035b4a0, 0035b7d4",
+   "callees": [
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "chatgpt_mirror_gateway::db::project_belongs_to_user_c",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::result::unwrap_failed",
+    "core::str::<impl_str>::trim_matches",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::path_to_cstring"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::project_belongs_to_user_c",
+   "entry": "0x0035b850",
+   "body": "0035b850, 0035bb9c",
+   "callees": [
+    "<EXTERNAL>::bcmp",
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::cell::panic_already_borrowed",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::ptr::drop_in_place<rusqlite::statement::Statement>",
+    "core::result::unwrap_failed",
+    "rusqlite::inner_connection::InnerConnection::prepare",
+    "rusqlite::statement::Statement::query_row"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::get_owned_project_ids",
+   "entry": "0x0035bc00",
+   "body": "0035bc00, 0035c46c",
+   "callees": [
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::iter::adapters::try_process",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::ptr::drop_in_place<rusqlite::statement::Statement>",
+    "core::result::unwrap_failed",
+    "core::str::<impl_str>::trim_matches",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::inner_connection::InnerConnection::prepare",
+    "rusqlite::path_to_cstring",
+    "rusqlite::statement::Statement::bind_parameter",
+    "sqlite3_bind_parameter_count"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::ensure_conversation_statistic",
+   "entry": "0x0035c5b0",
+   "body": "0035c5b0, 0035cb0f",
+   "callees": [
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::result::unwrap_failed",
+    "core::str::<impl_str>::trim_matches",
+    "rusqlite::Connection::execute",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::path_to_cstring",
+    "std::time::SystemTime::duration_since",
+    "std::time::SystemTime::now"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::record_conversation_message",
+   "entry": "0x0035cbd0",
+   "body": "0035cbd0, 0035d730",
+   "callees": [
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::cell::panic_already_mutably_borrowed",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::result::unwrap_failed",
+    "core::str::<impl_str>::trim_matches",
+    "rusqlite::Connection::execute",
+    "rusqlite::Connection::execute_batch",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::path_to_cstring",
+    "sqlite3_get_autocommit",
+    "std::time::SystemTime::duration_since",
+    "std::time::SystemTime::now"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::update_conversation_title",
+   "entry": "0x0035d8c0",
+   "body": "0035d8c0, 0035de3b",
+   "callees": [
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::result::unwrap_failed",
+    "core::str::<impl_str>::trim_matches",
+    "rusqlite::Connection::execute",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::path_to_cstring",
+    "std::time::SystemTime::duration_since",
+    "std::time::SystemTime::now"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::conversation_statistics_for_users",
+   "entry": "0x0035def0",
+   "body": "0035def0, 0035ef52",
+   "callees": [
+    "<alloc::collections::btree::map::BTreeMap<K,V,A>as_core::ops::drop::Drop>::drop",
+    "<alloc::string::String_as_core::clone::Clone>::clone",
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "<rusqlite::row::Rows_as_fallible_streaming_iterator::FallibleStreamingIterator>::advance",
+    "__rustc[4794b31dd7191200]::__rust_alloc",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::collections::btree::map::BTreeMap<K,V,A>::insert",
+    "alloc::raw_vec::handle_error",
+    "core::cell::panic_already_borrowed",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::ptr::drop_in_place<rusqlite::row::Rows>",
+    "core::ptr::drop_in_place<rusqlite::statement::Statement>",
+    "core::ptr::drop_in_place<serde_json::value::Value>",
+    "core::result::unwrap_failed",
+    "core::str::<impl_str>::trim_matches",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::inner_connection::InnerConnection::prepare",
+    "rusqlite::path_to_cstring",
+    "rusqlite::row::Row::get",
+    "rusqlite::statement::Statement::bind_parameter",
+    "rusqlite::statement::Statement::query_row",
+    "serde_json::value::to_value",
+    "sqlite3_bind_parameter_count"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::conversation_statistics_detail",
+   "entry": "0x0035f1e0",
+   "body": "0035f1e0, 0035ffdb",
+   "callees": [
+    "<EXTERNAL>::_Unwind_Resume",
+    "<EXTERNAL>::memcpy",
+    "<T_as_alloc::slice::<impl[T]>::to_vec_in::ConvertVec>::to_vec",
+    "<alloc::collections::btree::map::BTreeMap<K,V,A>as_core::clone::Clone>::clone::clone_subtree",
+    "<alloc::string::String_as_core::clone::Clone>::clone",
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "<str_as_serde_json::value::index::Index>::index_into",
+    "__rustc[4794b31dd7191200]::__rust_alloc",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::collections::btree::map::BTreeMap<K,V,A>::insert",
+    "alloc::raw_vec::handle_error",
+    "chatgpt_mirror_gateway::db::conversation_statistics_for_users",
+    "core::iter::adapters::try_process",
+    "core::option::unwrap_failed",
+    "core::ptr::drop_in_place<alloc::vec::Vec<serde_json::value::Value>>",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::ptr::drop_in_place<rusqlite::statement::Statement>",
+    "core::ptr::drop_in_place<serde_json::value::Value>",
+    "core::result::unwrap_failed",
+    "core::str::<impl_str>::trim_matches",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::inner_connection::InnerConnection::prepare",
+    "rusqlite::path_to_cstring",
+    "rusqlite::statement::Statement::bind_parameter",
+    "sqlite3_bind_parameter_count"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::reset_conversation_statistics",
+   "entry": "0x003601c0",
+   "body": "003601c0, 00360c3a",
+   "callees": [
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::cell::panic_already_mutably_borrowed",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::result::unwrap_failed",
+    "core::str::<impl_str>::trim_matches",
+    "rusqlite::Connection::execute",
+    "rusqlite::Connection::execute_batch",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::path_to_cstring",
+    "sqlite3_get_autocommit",
+    "std::time::SystemTime::duration_since",
+    "std::time::SystemTime::now"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::close_chatgpt_memory",
+   "entry": "0x00360dd0",
+   "body": "00360dd0, 003615d0",
+   "callees": [
+    "<EXTERNAL>::memcpy",
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_alloc",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::fmt::format::format_inner",
+    "alloc::raw_vec::RawVec<T,A>::grow_one",
+    "alloc::raw_vec::handle_error",
+    "alloc::str::join_generic_copy",
+    "chatgpt_mirror_gateway::db::mirror_token_hash",
+    "core::cell::panic_already_borrowed",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::ptr::drop_in_place<rusqlite::statement::Statement>",
+    "core::result::unwrap_failed",
+    "core::str::<impl_str>::trim_matches",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::inner_connection::InnerConnection::prepare",
+    "rusqlite::path_to_cstring",
+    "rusqlite::statement::Statement::bind_parameter",
+    "rusqlite::statement::Statement::execute_with_bound_parameters",
+    "sqlite3_bind_parameter_count"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::insert_visit_log",
+   "entry": "0x00361b40",
+   "body": "00361b40, 00362069",
+   "callees": [
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::result::unwrap_failed",
+    "rusqlite::Connection::execute",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::path_to_cstring",
+    "std::time::SystemTime::duration_since",
+    "std::time::SystemTime::now"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::usage_count_since",
+   "entry": "0x00362120",
+   "body": "00362120, 00362653",
+   "callees": [
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::ptr::drop_in_place<rusqlite::statement::Statement>",
+    "core::result::unwrap_failed",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::inner_connection::InnerConnection::prepare",
+    "rusqlite::path_to_cstring",
+    "rusqlite::statement::Statement::query_row"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::usage_count_current_period",
+   "entry": "0x00362720",
+   "body": "00362720, 00362d1c",
+   "callees": [
+    "<EXTERNAL>::_Unwind_Resume",
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_alloc",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::raw_vec::handle_error",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::ptr::drop_in_place<rusqlite::statement::Statement>",
+    "core::result::unwrap_failed",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::inner_connection::InnerConnection::prepare",
+    "rusqlite::path_to_cstring",
+    "rusqlite::statement::Statement::query_row"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::operations_overview",
+   "entry": "0x00362de0",
+   "body": "00362de0, 0036377f",
+   "callees": [
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_alloc",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::collections::btree::map::BTreeMap<K,V,A>::insert",
+    "alloc::raw_vec::handle_error",
+    "core::cell::panic_already_borrowed",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::ptr::drop_in_place<rusqlite::statement::Statement>",
+    "core::ptr::drop_in_place<serde_json::value::Value>",
+    "core::result::unwrap_failed",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::inner_connection::InnerConnection::prepare",
+    "rusqlite::path_to_cstring",
+    "rusqlite::statement::Statement::query_row",
+    "std::time::SystemTime::duration_since",
+    "std::time::SystemTime::now"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::aggregate_use_count",
+   "entry": "0x003638c0",
+   "body": "003638c0, 00363d61",
+   "callees": [
+    "<alloc::collections::btree::map::BTreeMap<K,V,A>as_core::ops::drop::Drop>::drop",
+    "<alloc::string::String_as_core::clone::Clone>::clone",
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_alloc",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::collections::btree::map::BTreeMap<K,V,A>::insert",
+    "alloc::fmt::format::format_inner",
+    "alloc::raw_vec::handle_error",
+    "core::cell::panic_already_borrowed",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::ptr::drop_in_place<rusqlite::statement::Statement>",
+    "core::ptr::drop_in_place<serde_json::value::Value>",
+    "core::result::unwrap_failed",
+    "core::str::<impl_str>::trim_matches",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::inner_connection::InnerConnection::prepare",
+    "rusqlite::path_to_cstring",
+    "rusqlite::statement::Statement::query_row",
+    "std::time::SystemTime::duration_since",
+    "std::time::SystemTime::now"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::export_backup",
+   "entry": "0x003648e0",
+   "body": "003648e0, 003668e2",
+   "callees": [
+    "<T_as_alloc::slice::<impl[T]>::to_vec_in::ConvertVec>::to_vec",
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::collections::btree::map::BTreeMap<K,V,A>::insert",
+    "chatgpt_mirror_gateway::db::export_backup::{{closure}}",
+    "core::cell::panic_already_borrowed",
+    "core::iter::adapters::try_process",
+    "core::ptr::drop_in_place<[serde_json::value::Value]>",
+    "core::ptr::drop_in_place<alloc::vec::Vec<serde_json::value::Value>>",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::ptr::drop_in_place<rusqlite::statement::Statement>",
+    "core::ptr::drop_in_place<serde_json::value::Value>",
+    "core::result::unwrap_failed",
+    "rusqlite::Connection::prepare_with_flags",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::inner_connection::InnerConnection::prepare",
+    "rusqlite::path_to_cstring",
+    "serde_core::ser::Serializer::collect_seq",
+    "sqlite3_bind_parameter_count"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::export_backup::{{closure}}",
+   "entry": "0x00366d00",
+   "body": "00366d00, 00366da2",
+   "callees": [
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::result::unwrap_failed"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::restore_backup",
+   "entry": "0x00366de0",
+   "body": "00366de0, 00369d0e",
+   "callees": [
+    "<T_as_alloc::slice::<impl[T]>::to_vec_in::ConvertVec>::to_vec",
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "<str_as_serde_json::value::index::Index>::index_into",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::fmt::format::format_inner",
+    "chatgpt_mirror_gateway::db::export_backup::{{closure}}",
+    "core::ptr::drop_in_place<rusqlite::Connection>",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::ptr::drop_in_place<rusqlite::transaction::Transaction>",
+    "core::result::unwrap_failed",
+    "rusqlite::Connection::execute",
+    "rusqlite::Connection::execute_batch",
+    "rusqlite::inner_connection::InnerConnection::open_with_flags",
+    "rusqlite::path_to_cstring",
+    "std::time::SystemTime::duration_since",
+    "std::time::SystemTime::now"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::now_ts",
+   "entry": "0x0036a020",
+   "body": "0036a020, 0036a05e",
+   "callees": [
+    "std::time::SystemTime::duration_since",
+    "std::time::SystemTime::now"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::ensure_gateway_sessions_force_chat_mode_column",
+   "entry": "0x0036a060",
+   "body": "0036a060, 0036a6f1",
+   "callees": [
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "<rusqlite::row::Rows_as_fallible_streaming_iterator::FallibleStreamingIterator>::advance",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::cell::panic_already_borrowed",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::ptr::drop_in_place<rusqlite::row::Rows>",
+    "core::ptr::drop_in_place<rusqlite::statement::Statement>",
+    "core::result::unwrap_failed",
+    "rusqlite::Connection::execute",
+    "rusqlite::inner_connection::InnerConnection::prepare",
+    "rusqlite::row::Row::get",
+    "sqlite3_bind_parameter_count"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::ensure_gateway_sessions_proxy_node_id_column",
+   "entry": "0x0036a800",
+   "body": "0036a800, 0036aac5",
+   "callees": [
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::cell::panic_already_borrowed",
+    "core::iter::adapters::try_process",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::ptr::drop_in_place<rusqlite::statement::Statement>",
+    "core::result::unwrap_failed",
+    "rusqlite::Connection::execute",
+    "rusqlite::inner_connection::InnerConnection::prepare",
+    "sqlite3_bind_parameter_count"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::ensure_gateway_sessions_quota_columns",
+   "entry": "0x0036af30",
+   "body": "0036af30, 0036b1f6",
+   "callees": [
+    "<rusqlite::error::Error_as_core::fmt::Display>::fmt",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::cell::panic_already_borrowed",
+    "core::iter::adapters::try_process",
+    "core::ptr::drop_in_place<rusqlite::error::Error>",
+    "core::ptr::drop_in_place<rusqlite::statement::Statement>",
+    "core::result::unwrap_failed",
+    "rusqlite::Connection::execute",
+    "rusqlite::inner_connection::InnerConnection::prepare",
+    "sqlite3_bind_parameter_count"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::_::<impl_serde_core::ser::Serialize_for_chatgpt_mirror_gateway::db::UpstreamTransportMode>::serialize",
+   "entry": "0x0036b830",
+   "body": "0036b830, 0036b91f",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_alloc",
+    "alloc::raw_vec::handle_error"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::_::<impl_serde_core::de::Deserialize_for_chatgpt_mirror_gateway::db::UpstreamTransportMode>::deserialize",
+   "entry": "0x0036b920",
+   "body": "0036b920, 0036bb53",
+   "callees": [
+    "<core::marker::PhantomData<T>as_serde_core::de::DeserializeSeed>::deserialize",
+    "<serde_json::de::VariantAccess<R>as_serde_core::de::VariantAccess>::unit_variant",
+    "serde_json::de::Deserializer<R>::error",
+    "serde_json::de::Deserializer<R>::peek_error"
+   ],
+   "failed": false
+  },
+  {
+   "name": "<chatgpt_mirror_gateway::db::_::<impl_serde_core::de::Deserialize_for_chatgpt_mirror_gateway::db::MirrorProxyConfig>::deserialize::__FieldVisitor_as_serde_core::de::Visitor>::visit_str",
+   "entry": "0x0036bb80",
+   "body": "0036bb80, 0036bba7",
+   "callees": [],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::_::<impl_serde_core::ser::Serialize_for_chatgpt_mirror_gateway::db::MirrorProxyNodeConfig>::serialize",
+   "entry": "0x0036bc70",
+   "body": "0036bc70, 0036bdd9",
+   "callees": [
+    "alloc::raw_vec::RawVecInner<A>::reserve::do_reserve_and_handle",
+    "alloc::vec::Vec<T,A>::extend_from_slice",
+    "serde_core::ser::SerializeMap::serialize_entry"
+   ],
+   "failed": false
+  },
+  {
+   "name": "<chatgpt_mirror_gateway::db::_::<impl_serde_core::de::Deserialize_for_chatgpt_mirror_gateway::db::MirrorProxyNodeConfig>::deserialize::__FieldVisitor_as_serde_core::de::Visitor>::visit_str",
+   "entry": "0x0036bde0",
+   "body": "0036bde0, 0036be0b",
+   "callees": [],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::_::<impl_serde_core::ser::Serialize_for_chatgpt_mirror_gateway::db::CustomScriptItem>::serialize",
+   "entry": "0x0036c050",
+   "body": "0036c050, 0036c20e",
+   "callees": [
+    "<alloc::collections::btree::map::BTreeMap<K,V,A>as_core::ops::drop::Drop>::drop",
+    "<serde_json::value::ser::SerializeMap_as_serde_core::ser::SerializeStruct>::end",
+    "<serde_json::value::ser::SerializeMap_as_serde_core::ser::SerializeStruct>::serialize_field",
+    "<serde_json::value::ser::Serializer_as_serde_core::ser::Serializer>::serialize_struct",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::ptr::drop_in_place<serde_json::value::Value>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "<chatgpt_mirror_gateway::db::_::<impl_serde_core::de::Deserialize_for_chatgpt_mirror_gateway::db::CustomScriptItem>::deserialize::__FieldVisitor_as_serde_core::de::Visitor>::visit_str",
+   "entry": "0x0036c250",
+   "body": "0036c250, 0036c304",
+   "callees": [],
+   "failed": false
+  },
+  {
+   "name": "<chatgpt_mirror_gateway::db::_::<impl_serde_core::de::Deserialize_for_chatgpt_mirror_gateway::db::CustomScriptItem>::deserialize::__Visitor_as_serde_core::de::Visitor>::expecting",
+   "entry": "0x0036c310",
+   "body": "0036c310, 0036c324",
+   "callees": [],
+   "failed": false
+  },
+  {
+   "name": "<chatgpt_mirror_gateway::db::_::<impl_serde_core::de::Deserialize_for_chatgpt_mirror_gateway::db::PoliticalModerationConfig>::deserialize::__FieldVisitor_as_serde_core::de::Visitor>::visit_str",
+   "entry": "0x0036c330",
+   "body": "0036c330, 0036c4b4",
+   "callees": [
+    "<EXTERNAL>::bcmp"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::db::_::<impl_serde_core::ser::Serialize_for_chatgpt_mirror_gateway::db::SupplementalCookie>::serialize",
+   "entry": "0x0036c730",
+   "body": "0036c730, 0036c93f",
+   "callees": [
+    "<serde_json::ser::Compound<W,F>as_serde_core::ser::SerializeStruct>::serialize_field",
+    "alloc::raw_vec::RawVecInner<A>::reserve::do_reserve_and_handle",
+    "alloc::vec::Vec<T,A>::extend_from_slice",
+    "serde_core::ser::SerializeMap::serialize_entry",
+    "serde_json::ser::invalid_raw_value"
+   ],
+   "failed": false
+  },
+  {
+   "name": "<chatgpt_mirror_gateway::db::_::<impl_serde_core::de::Deserialize_for_chatgpt_mirror_gateway::db::SupplementalCookie>::deserialize::__FieldVisitor_as_serde_core::de::Visitor>::visit_str",
+   "entry": "0x0036c940",
+   "body": "0036c940, 0036c97d",
+   "callees": [
+    "<EXTERNAL>::bcmp"
+   ],
+   "failed": false
+  },
+  {
+   "name": "<chatgpt_mirror_gateway::db::_::<impl_serde_core::de::Deserialize_for_chatgpt_mirror_gateway::db::SupplementalCookie>::deserialize::__Visitor_as_serde_core::de::Visitor>::expecting",
+   "entry": "0x0036ca90",
+   "body": "0036ca90, 0036caa4",
+   "callees": [],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<chatgpt_mirror_gateway::main::{{closure}}::{{closure}}>",
+   "entry": "0x00480100",
+   "body": "00480100, 00480233",
+   "callees": [
+    "<hashbrown::raw::RawTable<T,A>as_core::ops::drop::Drop>::drop",
+    "<tokio::sync::batch_semaphore::Acquire_as_core::ops::drop::Drop>::drop",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::sync::Arc<T,A>::drop_slow",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::AppState>",
+    "core::ptr::drop_in_place<core::option::Option<core::pin::Pin<alloc::boxed::Box<tokio::time::sleep::Sleep>>>>",
+    "core::ptr::drop_in_place<core::option::Option<tokio::runtime::Timer>>",
+    "core::ptr::drop_in_place<http::header::map::HeaderMap>",
+    "core::ptr::drop_in_place<reqwest::async_impl::client::ResponseFuture>",
+    "core::ptr::drop_in_place<reqwest::async_impl::response::Response::bytes::{{closure}}>",
+    "tokio::sync::batch_semaphore::Semaphore::release"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<tokio::runtime::task::core::Stage<chatgpt_mirror_gateway::main::{{closure}}::{{closure}}>>",
+   "entry": "0x00452540",
+   "body": "00452540, 0045259f",
+   "callees": [
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::main::{{closure}}::{{closure}}>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<alloc::boxed::Box<tokio::runtime::task::core::Cell<chatgpt_mirror_gateway::main::{{closure}}::{{closure}},alloc::sync::Arc<tokio::runtime::scheduler::current_thread::Handle>>>>",
+   "entry": "0x0036fa00",
+   "body": "0036fa00, 0036fac2",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::sync::Arc<T,A>::drop_slow",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::main::{{closure}}::{{closure}}>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<alloc::boxed::Box<tokio::runtime::task::core::Cell<chatgpt_mirror_gateway::main::{{closure}}::{{closure}},alloc::sync::Arc<tokio::runtime::scheduler::multi_thread::handle::Handle>>>>",
+   "entry": "0x0036fb60",
+   "body": "0036fb60, 0036fc22",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::sync::Arc<T,A>::drop_slow",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::main::{{closure}}::{{closure}}>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "<chatgpt_mirror_gateway::db::SupplementalCookie_as_core::clone::Clone>::clone",
+   "entry": "0x003a3130",
+   "body": "003a3130, 003a32dc",
+   "callees": [
+    "<alloc::string::String_as_core::clone::Clone>::clone"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<core::result::Result<chatgpt_mirror_gateway::db::CustomScriptItem,serde_json::error::Error>>",
+   "entry": "0x003a9b00",
+   "body": "003a9b00, 003a9b9f",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::ptr::drop_in_place<serde_json::error::ErrorCode>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<core::result::Result<chatgpt_mirror_gateway::db::MirrorProxyConfig,serde_json::error::Error>>",
+   "entry": "0x003a9bc0",
+   "body": "003a9bc0, 003a9bfc",
+   "callees": [
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::db::MirrorProxyConfig>",
+    "core::ptr::drop_in_place<serde_json::error::ErrorCode>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<core::result::Result<chatgpt_mirror_gateway::db::CustomScriptConfig,serde_json::error::Error>>",
+   "entry": "0x003a9c20",
+   "body": "003a9c20, 003a9c5c",
+   "callees": [
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::db::CustomScriptConfig>",
+    "core::ptr::drop_in_place<serde_json::error::ErrorCode>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<core::result::Result<chatgpt_mirror_gateway::db::SupplementalCookie,serde_json::error::Error>>",
+   "entry": "0x003a9c80",
+   "body": "003a9c80, 003a9cba",
+   "callees": [
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::db::SupplementalCookie>",
+    "core::ptr::drop_in_place<serde_json::error::ErrorCode>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<core::result::Result<chatgpt_mirror_gateway::db::MirrorProxyNodeConfig,serde_json::error::Error>>",
+   "entry": "0x003a9fe0",
+   "body": "003a9fe0, 003aa093",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::ptr::drop_in_place<serde_json::error::ErrorCode>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<core::result::Result<chatgpt_mirror_gateway::db::PoliticalModerationConfig,serde_json::error::Error>>",
+   "entry": "0x003aa0c0",
+   "body": "003aa0c0, 003aa0fc",
+   "callees": [
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::db::PoliticalModerationConfig>",
+    "core::ptr::drop_in_place<serde_json::error::ErrorCode>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<core::result::Result<alloc::vec::Vec<chatgpt_mirror_gateway::db::CustomScriptItem>,serde_json::error::Error>>",
+   "entry": "0x003aa320",
+   "body": "003aa320, 003aa381",
+   "callees": [
+    "<alloc::vec::Vec<T,A>as_core::ops::drop::Drop>::drop",
+    "core::ptr::drop_in_place<serde_json::error::ErrorCode>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<core::result::Result<alloc::vec::Vec<chatgpt_mirror_gateway::db::SupplementalCookie>,serde_json::error::Error>>",
+   "entry": "0x0042aac0",
+   "body": "0042aac0, 0042ab71",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::db::SupplementalCookie>",
+    "core::ptr::drop_in_place<std::io::error::Error>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<core::result::Result<alloc::vec::Vec<chatgpt_mirror_gateway::db::MirrorProxyNodeConfig>,serde_json::error::Error>>",
+   "entry": "0x003aa4b0",
+   "body": "003aa4b0, 003aa589",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "core::ptr::drop_in_place<serde_json::error::ErrorCode>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<chatgpt_mirror_gateway::db::BlockedPathsConfig>",
+   "entry": "0x003db110",
+   "body": "003db110, 003db135",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_dealloc"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<core::result::Result<chatgpt_mirror_gateway::db::BlockedPathsConfig,alloc::string::String>>",
+   "entry": "0x004ac1d0",
+   "body": "004ac1d0, 004ac20e",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_dealloc"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<alloc::sync::ArcInner<tokio::sync::mutex::Mutex<chatgpt_mirror_gateway::db::BlockedPathsConfig>>>",
+   "entry": "0x004ac2f0",
+   "body": "004ac2f0, 004ac315",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_dealloc"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<tokio::runtime::task::core::CoreStage<chatgpt_mirror_gateway::main::{{closure}}::{{closure}}>>",
+   "entry": "0x003d4f40",
+   "body": "003d4f40, 003d4f9f",
+   "callees": [
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::main::{{closure}}::{{closure}}>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::main::{{closure}}::{{closure}}",
+   "entry": "0x004c5100",
+   "body": "004c5100, 004c5163",
+   "callees": [
+    "std::io::stdio::_eprint",
+    "std::process::exit"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<core::option::Option<alloc::vec::Vec<chatgpt_mirror_gateway::db::SupplementalCookie>>>",
+   "entry": "0x0040fb00",
+   "body": "0040fb00, 0040fb81",
+   "callees": [
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::db::SupplementalCookie>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<tokio::runtime::task::core::Cell<chatgpt_mirror_gateway::main::{{closure}}::{{closure}},alloc::sync::Arc<tokio::runtime::scheduler::current_thread::Handle>>>",
+   "entry": "0x00453a90",
+   "body": "00453a90, 00453b4e",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::sync::Arc<T,A>::drop_slow",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::main::{{closure}}::{{closure}}>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<tokio::runtime::task::core::Cell<chatgpt_mirror_gateway::main::{{closure}}::{{closure}},alloc::sync::Arc<tokio::runtime::scheduler::multi_thread::handle::Handle>>>",
+   "entry": "0x00453e60",
+   "body": "00453e60, 00453f1e",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::sync::Arc<T,A>::drop_slow",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::main::{{closure}}::{{closure}}>"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<tower::util::map_future::MapFuture<tower::util::map_response::MapResponse<axum::handler::service::HandlerService<chatgpt_mirror_gateway::proxy::proxy_chatgpt_ws,(axum_core::extract::private::ViaParts,axum::extract::state::State<chatgpt_mirror_gateway::AppState>,axum::extract::ws::WebSocketUpgrade,http::uri::Uri,http::header::map::HeaderMap),chatgpt_mirror_gateway::AppState>,<http::response::Response<axum_core::body::Body>as_axum_core::response::into_response::IntoResponse>::into_response>,tower::util::boxed_clone::BoxCloneService<http::request::Request<axum_core::body::Body>,http::response::Response<axum_core::body::Body>,core::convert::Infallible>::new<tower::util::map_response::MapResponse<axum::handler::service::HandlerService<chatgpt_mirror_gateway::proxy::proxy_chatgpt_ws,(axum_core::extract::private::ViaParts,axum::extract::state::State<chatgpt_mirror_gateway::AppState>,axum::extract::ws::WebSocketUpgrade,http::uri::Uri,http::header::map::HeaderMap),chatgpt_mirror_gateway::AppState>,<http::response::Response<axum_core::body::Body>as_axum_core::response::into_response::IntoResponse>::into_response>>::{{closure}}>>",
+   "entry": "0x004800b0",
+   "body": "004800b0, 004800b4",
+   "callees": [],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::main",
+   "entry": "0x004c22f0",
+   "body": "004c22f0, 004c23f8",
+   "callees": [
+    "<EXTERNAL>::memcpy",
+    "core::ptr::drop_in_place<tokio::runtime::builder::Builder>",
+    "core::ptr::drop_in_place<tokio::runtime::runtime::Runtime>",
+    "core::result::unwrap_failed",
+    "tokio::runtime::builder::Builder::build",
+    "tokio::runtime::builder::Builder::new_multi_thread",
+    "tokio::runtime::runtime::Runtime::block_on"
+   ],
+   "failed": false
+  },
+  {
+   "name": "chatgpt_mirror_gateway::main::{{closure}}",
+   "entry": "0x004c2450",
+   "body": "004c2450, 004c2502",
+   "callees": [
+    "<EXTERNAL>::memcpy",
+    "<axum::serve::Serve<M,S>as_core::future::into_future::IntoFuture>::into_future::{{closure}}",
+    "<chatgpt_mirror_gateway::AppState_as_core::clone::Clone>::clone",
+    "<chatgpt_mirror_gateway::db::BlockedPathsConfig_as_core::default::Default>::default",
+    "<chatgpt_mirror_gateway::proxy::PowRiskSnapshot_as_core::clone::Clone>::clone",
+    "<chatgpt_mirror_gateway::proxy::PowRiskSnapshot_as_core::default::Default>::default",
+    "<tokio::net::addr::sealed::MaybeReady_as_core::future::future::Future>::poll",
+    "<tokio::net::addr::sealed::OneOrMore_as_core::iter::traits::iterator::Iterator>::next",
+    "__rustc[4794b31dd7191200]::__rust_alloc",
+    "__rustc[4794b31dd7191200]::__rust_dealloc",
+    "alloc::alloc::handle_alloc_error",
+    "alloc::fmt::format::format_inner",
+    "alloc::sync::Arc<T,A>::drop_slow",
+    "axum::routing::Router::into_make_service_with_connect_info",
+    "axum::routing::Router<S>::layer",
+    "chatgpt_mirror_gateway::build_router",
+    "chatgpt_mirror_gateway::config::Settings::from_env",
+    "chatgpt_mirror_gateway::db::get_blocked_paths_config",
+    "chatgpt_mirror_gateway::db::get_custom_script_config",
+    "chatgpt_mirror_gateway::db::get_mirror_proxy_config",
+    "chatgpt_mirror_gateway::db::get_political_moderation_config",
+    "chatgpt_mirror_gateway::db::init_db",
+    "chatgpt_mirror_gateway::init_tracing",
+    "chatgpt_mirror_gateway::main::{{closure}}::{{closure}}",
+    "chatgpt_mirror_gateway::proxy::build_http_client",
+    "chatgpt_mirror_gateway::proxy::new_cf_bypass_cache",
+    "chatgpt_mirror_gateway::proxy::new_mirror_proxy_runtime",
+    "chatgpt_mirror_gateway::proxy::new_pow_risk_monitor",
+    "core::panicking::panic_const::panic_const_async_fn_resumed",
+    "core::panicking::panic_const::panic_const_async_fn_resumed_panic",
+    "core::ptr::drop_in_place<chatgpt_mirror_gateway::AppState>",
+    "dotenvy::dotenv",
+    "log::logger",
+    "std::io::error::Error::new",
+    "std::io::stdio::_eprint",
+    "std::process::exit",
+    "std::sys::random::linux::hashmap_random_keys",
+    "tokio::net::addr::<impl_tokio::net::addr::sealed::ToSocketAddrsPriv_for_alloc::string::String>::to_socket_addrs",
+    "tokio::net::tcp::listener::TcpListener::bind_addr",
+    "tokio::runtime::task::raw::RawTask::drop_join_handle_slow",
+    "tokio::runtime::task::state::State::drop_join_handle_fast",
+    "tokio::sync::batch_semaphore::Semaphore::new",
+    "tokio::sync::notify::Notify::notify_waiters",
+    "tokio::sync::watch::channel",
+    "tokio::task::spawn::spawn",
+    "tracing::__macro_support::__is_enabled",
+    "tracing::__macro_support::__tracing_log",
+    "tracing_core::callsite::DefaultCallsite::register",
+    "tracing_core::event::Event::dispatch"
+   ],
+   "failed": false
+  },
+  {
+   "name": "core::ptr::drop_in_place<alloc::vec::in_place_drop::InPlaceDrop<chatgpt_mirror_gateway::db::MirrorProxyNodeConfig>>",
+   "entry": "0x004cabd0",
+   "body": "004cabd0, 004cac14",
+   "callees": [
+    "__rustc[4794b31dd7191200]::__rust_dealloc"
+   ],
+   "failed": false
+  }
+ ]
+}

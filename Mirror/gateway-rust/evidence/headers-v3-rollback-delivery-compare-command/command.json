@@ -1,0 +1,13 @@
+{
+  "event": "command_execution",
+  "command": [
+    "C:\\Users\\peropero\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "tools/compare.py",
+    "evidence/headers-v3-original-008/results.json",
+    "evidence/headers-v3-rollback-delivery/results.json",
+    "evidence/headers-v3-rollback-delivery-diff.json"
+  ],
+  "cwd": "D:\\Project\\Mirror\\gateway-rust",
+  "exit": 0,
+  "elapsed_seconds": 0.0970621109008789
+}

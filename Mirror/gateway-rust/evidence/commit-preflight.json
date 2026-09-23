@@ -1,0 +1,24 @@
+{
+  "operation": "initial local commit of the independent Rust gateway candidate",
+  "initial_repository_probe": {
+    "command": ["git", "-C", "D:/Project/Mirror/gateway-rust", "rev-parse", "--show-toplevel"],
+    "exit": 128,
+    "stderr": "fatal: not a git repository (or any of the parent directories): .git"
+  },
+  "first_staged_check": {
+    "command": ["git", "diff", "--cached", "--check"],
+    "exit": 2,
+    "finding": "Literal serial logs and VERIFICATION.txt contain original trailing whitespace; test stdout includes original terminal blank lines. No evidence bytes were trimmed."
+  },
+  "correction": "Use .gitattributes to preserve evidence bytes and exempt literal logs from whitespace lint; retain LF for executable shell scripts. Restage and rerun the same check.",
+  "scope": "gateway-rust only; exclude generated executables, binary patches, archives, build/cache directories; preserve the pre-existing chatgpt-mirror-build/README.md modification",
+  "behavior": "No Rust code changes and no tests rerun; recorded baseline/modified/rollback outcomes remain unchanged.",
+  "post_commit_byte_check": {
+    "commit": "d5449208bdbfefe2695337dc41ffe7c194dac471",
+    "exit": 1,
+    "raw_git_blob": "95b585c4e1dfed3c9471919d354f2af734f2fd8f",
+    "committed_git_blob": "3d650bc87ee7fde0a6d167aafcca9efde20eb912",
+    "finding": "Adding attributes did not refresh already-staged unchanged evidence paths; the index retained earlier newline normalization.",
+    "correction": "Run git add --renormalize on evidence and VERIFICATION.txt, verify every evidence blob against unfiltered disk bytes, then create a follow-up fix commit."
+  }
+}

@@ -1,0 +1,22 @@
+   Compiling simd-adler32 v0.3.10
+   Compiling adler2 v2.0.1
+   Compiling crc32fast v1.5.2
+   Compiling miniz_oxide v0.9.1
+   Compiling flate2 v1.1.10
+   Compiling mirror-gateway v0.1.0 (D:\Project\Mirror\gateway-rust)
+warning: unused import: `serde_json::json`
+   --> src\server\management.rs:575:9
+    |
+575 |     use serde_json::json;
+    |         ^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `mirror-gateway` (lib test) generated 1 warning (run `cargo fix --lib -p mirror-gateway --tests` to apply 1 suggestion)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 9.57s
+     Running unittests src\lib.rs (target\debug\deps\mirror_gateway-f44b91a75e7576ce.exe)
+     Running unittests src\main.rs (target\debug\deps\mirror_gateway-f24b420ce09bc57e.exe)
+     Running tests\backup_contract.rs (target\debug\deps\backup_contract-98a09c509f95d648.exe)
+     Running tests\migration.rs (target\debug\deps\migration-ee1c7ec7ec08b640.exe)
+     Running tests\mirror_auth.rs (target\debug\deps\mirror_auth-6a3dadd6b5b4dd44.exe)
+     Running tests\original_crypto.rs (target\debug\deps\original_crypto-a5a5dbb5f9806927.exe)

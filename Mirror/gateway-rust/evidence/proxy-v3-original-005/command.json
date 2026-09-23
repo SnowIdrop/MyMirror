@@ -1,0 +1,31 @@
+{
+  "command": [
+    "D:\\Project\\MirrorNiXiang\\reverse\\tools\\qemu-installer\\qemu-system-x86_64.exe",
+    "-m",
+    "1536",
+    "-no-reboot",
+    "-kernel",
+    "D:\\Project\\MirrorNiXiang\\reverse\\tools\\downloads\\vmlinuz-virt",
+    "-initrd",
+    "D:\\Project\\Mirror\\gateway-rust\\.build\\sandbox.cpio.gz",
+    "-append",
+    "console=ttyS0 rdinit=/init panic=60",
+    "-nic",
+    "none",
+    "-display",
+    "none",
+    "-serial",
+    "tcp:127.0.0.1:45602,server=on,wait=on",
+    "-monitor",
+    "none"
+  ],
+  "original_sha256": "4ff1a3b933dda0b9e0569d2f3ee9cf34993b0b3e21f734c4262a75b4c67ae098",
+  "external_network": false,
+  "guest_script_sha256": "cf3c5a597140c51ea14a62866d1907618bb6aea68cde9fa118d6321031309005",
+  "subject": "original",
+  "initramfs": {
+    "candidate_sha256": "3b1d41b5cd64c7287363cc754c3573411ea7ad45fde2addb055c18ad47a2f83e",
+    "initramfs_sha256": "5a1fa798ab981eb01aee6fef83c4e51414037bebe90362677448cf73cd2e97e5"
+  },
+  "qemu_exit": 1
+}

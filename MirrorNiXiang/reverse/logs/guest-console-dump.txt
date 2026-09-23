@@ -1,0 +1,57 @@
+busybox cat /app/gateway.log
+[2m2026-09-22T06:00:20.184661Z[0m [32m INFO[0m [2mchatgpt_mirror_gateway[0m[2m:[0m gateway upstreams configured [3mdjango_upstream[0m[2m=[0mSome(Url { scheme: "http", cannot_be_a_base: false, username: "", password: None, host: Some(Ipv4(10.0.2.2)), port: Some(18080), path: "/", query: None, fragment: None }) [3madmin_upstream[0m[2m=[0mSome(Url { scheme: "http", cannot_be_a_base: false, username: "", password: None, host: Some(Ipv4(10.0.2.2)), port: Some(18080), path: "/", query: None, fragment: None }) [3mchatgpt_base_url[0m[2m=[0mhttps://chatgpt.com/ [3mcf_bypass_url[0m[2m=[0mSome(Url { scheme: "http", cannot_be_a_base: false, username: "", password: None, host: Some(Ipv4(10.0.2.2)), port: Some(18081), path: "/", query: None, fragment: None })
+[2m2026-09-22T06:00:20.198426Z[0m [32m INFO[0m [2mchatgpt_mirror_gateway[0m[2m:[0m 开始异步预热 CF bypass 缓存 [3mattempt[0m[2m=[0m1
+[2m2026-09-22T06:00:20.299955Z[0m [32m INFO[0m [2mchatgpt_mirror_gateway[0m[2m:[0m gateway listening on http://0.0.0.0:40002
+[2m2026-09-22T06:00:25.261333Z[0m [33m WARN[0m [2mchatgpt_mirror_gateway::proxy[0m[2m:[0m cfbypass 未返回有效 cookies [3moriginal_target[0m[2m=[0mhttps://chatgpt.com/ [3mcfbypass_target[0m[2m=[0mhttps://chatgpt.com/
+[2m2026-09-22T06:00:25.263102Z[0m [33m WARN[0m [2mchatgpt_mirror_gateway[0m[2m:[0m CF bypass 缓存预热失败，稍后重试 [3mattempt[0m[2m=[0m1
+[2m2026-09-22T06:00:33.264798Z[0m [32m INFO[0m [2mchatgpt_mirror_gateway[0m[2m:[0m 开始异步预热 CF bypass 缓存 [3mattempt[0m[2m=[0m2
+[2m2026-09-22T06:00:38.270131Z[0m [33m WARN[0m [2mchatgpt_mirror_gateway::proxy[0m[2m:[0m cfbypass 未返回有效 cookies [3moriginal_target[0m[2m=[0mhttps://chatgpt.com/ [3mcfbypass_target[0m[2m=[0mhttps://chatgpt.com/
+[2m2026-09-22T06:00:38.270283Z[0m [33m WARN[0m [2mchatgpt_mirror_gateway[0m[2m:[0m CF bypass 缓存预热失败，稍后重试 [3mattempt[0m[2m=[0m2
+[2m2026-09-22T06:00:46.271744Z[0m [32m INFO[0m [2mchatgpt_mirror_gateway[0m[2m:[0m 开始异步预热 CF bypass 缓存 [3mattempt[0m[2m=[0m3
+[2m2026-09-22T06:00:51.275335Z[0m [33m WARN[0m [2mchatgpt_mirror_gateway::proxy[0m[2m:[0m cfbypass 未返回有效 cookies [3moriginal_target[0m[2m=[0mhttps://chatgpt.com/ [3mcfbypass_target[0m[2m=[0mhttps://chatgpt.com/
+[2m2026-09-22T06:00:51.275592Z[0m [33m WARN[0m [2mchatgpt_mirror_gateway[0m[2m:[0m CF bypass 缓存预热失败，将在登录时重试
+[2m2026-09-22T06:05:38.642286Z[0m [32m INFO[0m [2mchatgpt_mirror_gateway[0m[2m:[0m gateway upstreams configured [3mdjango_upstream[0m[2m=[0mSome(Url { scheme: "http", cannot_be_a_base: false, username: "", password: None, host: Some(Ipv4(10.0.2.2)), port: Some(18080), path: "/", query: None, fragment: None }) [3madmin_upstream[0m[2m=[0mSome(Url { scheme: "http", cannot_be_a_base: false, username: "", password: None, host: Some(Ipv4(10.0.2.2)), port: Some(18080), path: "/", query: None, fragment: None }) [3mchatgpt_base_url[0m[2m=[0mhttps://chatgpt.com/ [3mcf_bypass_url[0m[2m=[0mSome(Url { scheme: "http", cannot_be_a_base: false, username: "", password: None, host: Some(Ipv4(10.0.2.2)), port: Some(18081), path: "/", query: None, fragment: None })
+[2m2026-09-22T06:05:38.642709Z[0m [32m INFO[0m [2mchatgpt_mirror_gateway[0m[2m:[0m 开始异步预热 CF bypass 缓存 [3mattempt[0m[2m=[0m1
+[2m2026-09-22T06:05:38.659899Z[0m [32m INFO[0m [2mchatgpt_mirror_gateway[0m[2m:[0m gateway listening on http://0.0.0.0:40002
+[2m2026-09-22T06:05:38.711762Z[0m [33m WARN[0m [2mchatgpt_mirror_gateway::proxy[0m[2m:[0m cfbypass 未返回有效 cookies [3moriginal_target[0m[2m=[0mhttps://chatgpt.com/ [3mcfbypass_target[0m[2m=[0mhttps://chatgpt.com/
+[2m2026-09-22T06:05:38.711908Z[0m [33m WARN[0m [2mchatgpt_mirror_gateway[0m[2m:[0m CF bypass 缓存预热失败，稍后重试 [3mattempt[0m[2m=[0m1
+[2m2026-09-22T06:05:46.713107Z[0m [32m INFO[0m [2mchatgpt_mirror_gateway[0m[2m:[0m 开始异步预热 CF bypass 缓存 [3mattempt[0m[2m=[0m2
+[2m2026-09-22T06:05:46.723470Z[0m [33m WARN[0m [2mchatgpt_mirror_gateway::proxy[0m[2m:[0m cfbypass 未返回有效 cookies [3moriginal_target[0m[2m=[0mhttps://chatgpt.com/ [3mcfbypass_target[0m[2m=[0mhttps://chatgpt.com/
+[2m2026-09-22T06:05:46.723583Z[0m [33m WARN[0m [2mchatgpt_mirror_gateway[0m[2m:[0m CF bypass 缓存预热失败，稍后重试 [3mattempt[0m[2m=[0m2
+[2m2026-09-22T06:05:54.725632Z[0m [32m INFO[0m [2mchatgpt_mirror_gateway[0m[2m:[0m 开始异步预热 CF bypass 缓存 [3mattempt[0m[2m=[0m3
+[2m2026-09-22T06:05:54.731348Z[0m [33m WARN[0m [2mchatgpt_mirror_gateway::proxy[0m[2m:[0m cfbypass 未返回有效 cookies [3moriginal_target[0m[2m=[0mhttps://chatgpt.com/ [3mcfbypass_target[0m[2m=[0mhttps://chatgpt.com/
+[2m2026-09-22T06:05:54.731469Z[0m [33m WARN[0m [2mchatgpt_mirror_gateway[0m[2m:[0m CF bypass 缓存预热失败，将在登录时重试
+[2m2026-09-22T06:07:27.080110Z[0m [32m INFO[0m [2mchatgpt_mirror_gateway[0m[2m:[0m gateway upstreams configured [3mdjango_upstream[0m[2m=[0mSome(Url { scheme: "http", cannot_be_a_base: false, username: "", password: None, host: Some(Ipv4(10.0.2.2)), port: Some(18080), path: "/", query: None, fragment: None }) [3madmin_upstream[0m[2m=[0mSome(Url { scheme: "http", cannot_be_a_base: false, username: "", password: None, host: Some(Ipv4(10.0.2.2)), port: Some(18080), path: "/", query: None, fragment: None }) [3mchatgpt_base_url[0m[2m=[0mhttps://chatgpt.com/ [3mcf_bypass_url[0m[2m=[0mSome(Url { scheme: "http", cannot_be_a_base: false, username: "", password: None, host: Some(Ipv4(10.0.2.2)), port: Some(18081), path: "/", query: None, fragment: None })
+[2m2026-09-22T06:07:27.080752Z[0m [32m INFO[0m [2mchatgpt_mirror_gateway[0m[2m:[0m 开始异步预热 CF bypass 缓存 [3mattempt[0m[2m=[0m1
+[2m2026-09-22T06:07:27.091907Z[0m [32m INFO[0m [2mchatgpt_mirror_gateway[0m[2m:[0m gateway listening on http://0.0.0.0:40002
+[2m2026-09-22T06:07:27.093266Z[0m [33m WARN[0m [2mchatgpt_mirror_gateway::proxy[0m[2m:[0m cfbypass 未返回有效 cookies [3moriginal_target[0m[2m=[0mhttps://chatgpt.com/ [3mcfbypass_target[0m[2m=[0mhttps://chatgpt.com/
+[2m2026-09-22T06:07:27.093367Z[0m [33m WARN[0m [2mchatgpt_mirror_gateway[0m[2m:[0m CF bypass 缓存预热失败，稍后重试 [3mattempt[0m[2m=[0m1
+[2m2026-09-22T06:07:35.096021Z[0m [32m INFO[0m [2mchatgpt_mirror_gateway[0m[2m:[0m 开始异步预热 CF bypass 缓存 [3mattempt[0m[2m=[0m2
+[2m2026-09-22T06:07:35.104881Z[0m [33m WARN[0m [2mchatgpt_mirror_gateway::proxy[0m[2m:[0m cfbypass 未返回有效 cookies [3moriginal_target[0m[2m=[0mhttps://chatgpt.com/ [3mcfbypass_target[0m[2m=[0mhttps://chatgpt.com/
+[2m2026-09-22T06:07:35.105724Z[0m [33m WARN[0m [2mchatgpt_mirror_gateway[0m[2m:[0m CF bypass 缓存预热失败，稍后重试 [3mattempt[0m[2m=[0m2
+[2m2026-09-22T06:07:43.106654Z[0m [32m INFO[0m [2mchatgpt_mirror_gateway[0m[2m:[0m 开始异步预热 CF bypass 缓存 [3mattempt[0m[2m=[0m3
+[2m2026-09-22T06:07:43.116220Z[0m [33m WARN[0m [2mchatgpt_mirror_gateway::proxy[0m[2m:[0m cfbypass 未返回有效 cookies [3moriginal_target[0m[2m=[0mhttps://chatgpt.com/ [3mcfbypass_target[0m[2m=[0mhttps://chatgpt.com/
+[2m2026-09-22T06:07:43.116380Z[0m [33m WARN[0m [2mchatgpt_mirror_gateway[0m[2m:[0m CF bypass 缓存预热失败，将在登录时重试
+[2m2026-09-22T06:09:38.397979Z[0m [31mERROR[0m [2mchatgpt_mirror_gateway::proxy[0m[2m:[0m 代理请求失败: reqwest 请求失败: error sending request for url (http://10.0.2.2:18080/admin/) [3mtarget[0m[2m=[0mhttp://10.0.2.2:18080/admin/ [3mbase_url[0m[2m=[0mhttp://10.0.2.2:18080/ [3mattach_chatgpt_auth[0m[2m=[0mfalse
+[2m2026-09-22T06:09:38.402990Z[0m [31mERROR[0m [2mtower_http::trace::on_failure[0m[2m:[0m response failed [3mclassification[0m[2m=[0mStatus code: 502 Bad Gateway [3mlatency[0m[2m=[0m21 ms
+[2m2026-09-22T06:11:04.549447Z[0m [32m INFO[0m [2mchatgpt_mirror_gateway[0m[2m:[0m gateway upstreams configured [3mdjango_upstream[0m[2m=[0mSome(Url { scheme: "http", cannot_be_a_base: false, username: "", password: None, host: Some(Ipv4(10.0.2.2)), port: Some(18080), path: "/", query: None, fragment: None }) [3madmin_upstream[0m[2m=[0mSome(Url { scheme: "http", cannot_be_a_base: false, username: "", password: None, host: Some(Ipv4(10.0.2.2)), port: Some(18080), path: "/", query: None, fragment: None }) [3mchatgpt_base_url[0m[2m=[0mhttp://10.0.2.2:18082/ [3mcf_bypass_url[0m[2m=[0mSome(Url { scheme: "http", cannot_be_a_base: false, username: "", password: None, host: Some(Ipv4(10.0.2.2)), port: Some(18081), path: "/", query: None, fragment: None })
+[2m2026-09-22T06:11:04.550043Z[0m [32m INFO[0m [2mchatgpt_mirror_gateway[0m[2m:[0m 开始异步预热 CF bypass 缓存 [3mattempt[0m[2m=[0m1
+[2m2026-09-22T06:11:04.562992Z[0m [32m INFO[0m [2mchatgpt_mirror_gateway[0m[2m:[0m gateway listening on http://0.0.0.0:40002
+[2m2026-09-22T06:11:04.578316Z[0m [32m INFO[0m [2mchatgpt_mirror_gateway::proxy[0m[2m:[0m cfbypass 获取到有效 cookies [3moriginal_target[0m[2m=[0mhttp://10.0.2.2:18082/ [3mcfbypass_target[0m[2m=[0mhttp://10.0.2.2:18082/ [3mendpoint[0m[2m=[0m/cloudflare5s/bypass-v1 [3mcookie_count[0m[2m=[0m2 [3mhas_user_agent[0m[2m=[0mtrue
+[2m2026-09-22T06:11:04.579853Z[0m [32m INFO[0m [2mchatgpt_mirror_gateway[0m[2m:[0m CF bypass 缓存预热完成 [3mattempt[0m[2m=[0m1
+[2m2026-09-22T06:11:13.690443Z[0m [32m INFO[0m [2mchatgpt_mirror_gateway::proxy[0m[2m:[0m 上游响应完成 [3mtarget[0m[2m=[0mhttp://10.0.2.2:18082/sentinel/20260423af3c/sdk.js [3mduration_ms[0m[2m=[0m6
+/app # [6nls -la /app/data; echo ---; busybox cat /proc/version; echo ---; busybox 
+ifconfig lo | head -3
+total 92
+drwxr-xr-x 4 root root   100 Sep 22 06:00 .
+drwxr-xr-x 4 root root   160 Sep 22 06:11 ..
+drwxr-xr-x 2 root root    40 Sep  2 12:29 backend-db
+drwxr-xr-x 2 root root    40 Sep  2 12:29 backend-logs
+-rw-r--r-- 1 root root 94208 Sep 22 06:00 chatgpt_mirror.db
+---
+Linux version 6.18.52-0-virt (buildozer@build-3-24-x86_64) (cc (Alpine 15.2.0) 15.2.0, GNU ld (GNU Binutils) 2.45.1) #1-Alpine SMP PREEMPT_DYNAMIC 2026-09-15 05:37:48
+---
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+/app # [6n

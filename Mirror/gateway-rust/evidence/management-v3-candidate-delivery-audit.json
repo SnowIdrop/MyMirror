@@ -1,0 +1,2146 @@
+{
+  "scope": "management recorded DB projections, seed time offsets, and upstream request sequences/headers/bodies",
+  "cases": 47,
+  "matched": 32,
+  "different": 15,
+  "differences": [
+    {
+      "case": "db:p1-flags-after-login-mode-probe:gateway_sessions(detail)",
+      "baseline": [
+        [
+          1,
+          "alice",
+          "fixture@example.invalid",
+          "api",
+          0,
+          1,
+          "[]",
+          null,
+          0,
+          0
+        ],
+        [
+          5,
+          "bob",
+          "fixture@example.invalid",
+          "api",
+          0,
+          1,
+          "[]",
+          null,
+          0,
+          0
+        ],
+        [
+          6,
+          "alice",
+          "second@example.invalid",
+          "api",
+          0,
+          1,
+          "[]",
+          null,
+          0,
+          0
+        ],
+        [
+          12,
+          " alice ",
+          "fixture@example.invalid",
+          "api",
+          0,
+          1,
+          "[]",
+          null,
+          0,
+          0
+        ]
+      ],
+      "candidate": [
+        [
+          1,
+          "alice",
+          "fixture@example.invalid",
+          "api",
+          0,
+          1,
+          "[]",
+          null,
+          0,
+          0
+        ],
+        [
+          4,
+          "bob",
+          "fixture@example.invalid",
+          "api",
+          0,
+          1,
+          "[]",
+          null,
+          0,
+          0
+        ],
+        [
+          5,
+          "alice",
+          "second@example.invalid",
+          "api",
+          0,
+          1,
+          "[]",
+          null,
+          0,
+          0
+        ],
+        [
+          11,
+          " alice ",
+          "fixture@example.invalid",
+          "api",
+          0,
+          1,
+          "[]",
+          null,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "case": "db:p1-flags-after-mirror:gateway_sessions(detail)",
+      "baseline": [
+        [
+          1,
+          "alice",
+          "fixture@example.invalid",
+          "api",
+          0,
+          1,
+          "[]",
+          null,
+          0,
+          0
+        ],
+        [
+          5,
+          "bob",
+          "fixture@example.invalid",
+          "api",
+          0,
+          1,
+          "[]",
+          null,
+          0,
+          0
+        ],
+        [
+          6,
+          "alice",
+          "second@example.invalid",
+          "api",
+          0,
+          1,
+          "[]",
+          null,
+          0,
+          0
+        ],
+        [
+          12,
+          " alice ",
+          "fixture@example.invalid",
+          "api",
+          0,
+          1,
+          "[]",
+          null,
+          0,
+          0
+        ]
+      ],
+      "candidate": [
+        [
+          1,
+          "alice",
+          "fixture@example.invalid",
+          "api",
+          0,
+          1,
+          "[]",
+          null,
+          0,
+          0
+        ],
+        [
+          4,
+          "bob",
+          "fixture@example.invalid",
+          "api",
+          0,
+          1,
+          "[]",
+          null,
+          0,
+          0
+        ],
+        [
+          5,
+          "alice",
+          "second@example.invalid",
+          "api",
+          0,
+          1,
+          "[]",
+          null,
+          0,
+          0
+        ],
+        [
+          11,
+          " alice ",
+          "fixture@example.invalid",
+          "api",
+          0,
+          1,
+          "[]",
+          null,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "case": "db:p1-flags-after-overrides:gateway_sessions(detail)",
+      "baseline": [
+        [
+          1,
+          "alice",
+          "fixture@example.invalid",
+          "api",
+          0,
+          0,
+          "[\"probe-limit\"]",
+          null,
+          11,
+          22
+        ],
+        [
+          5,
+          "bob",
+          "fixture@example.invalid",
+          "api",
+          0,
+          1,
+          "[]",
+          null,
+          0,
+          0
+        ],
+        [
+          6,
+          "alice",
+          "second@example.invalid",
+          "api",
+          0,
+          1,
+          "[]",
+          null,
+          0,
+          0
+        ],
+        [
+          12,
+          " alice ",
+          "fixture@example.invalid",
+          "api",
+          0,
+          1,
+          "[]",
+          null,
+          0,
+          0
+        ]
+      ],
+      "candidate": [
+        [
+          1,
+          "alice",
+          "fixture@example.invalid",
+          "api",
+          0,
+          0,
+          "[\"probe-limit\"]",
+          null,
+          11,
+          22
+        ],
+        [
+          4,
+          "bob",
+          "fixture@example.invalid",
+          "api",
+          0,
+          1,
+          "[]",
+          null,
+          0,
+          0
+        ],
+        [
+          5,
+          "alice",
+          "second@example.invalid",
+          "api",
+          0,
+          1,
+          "[]",
+          null,
+          0,
+          0
+        ],
+        [
+          11,
+          " alice ",
+          "fixture@example.invalid",
+          "api",
+          0,
+          1,
+          "[]",
+          null,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "case": "db:p1-sessions-after-close-blank-token:gateway_sessions",
+      "baseline": [
+        [
+          22,
+          "alice",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "p1-login-7/cookie"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ]
+      ],
+      "candidate": [
+        [
+          21,
+          "alice",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "p1-login-7/cookie"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ]
+      ]
+    },
+    {
+      "case": "db:p1-sessions-after-close-chatgpt-name:gateway_sessions",
+      "baseline": [
+        [
+          6,
+          "alice",
+          "second@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-mixed-known/1/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ]
+      ],
+      "candidate": [
+        [
+          5,
+          "alice",
+          "second@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-mixed-known/1/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ]
+      ]
+    },
+    {
+      "case": "db:p1-sessions-after-close-space-user:gateway_sessions",
+      "baseline": [
+        [
+          22,
+          "alice",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "p1-login-8/cookie"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ]
+      ],
+      "candidate": [
+        [
+          21,
+          "alice",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "p1-login-8/cookie"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ]
+      ]
+    },
+    {
+      "case": "db:p1-sessions-after-close-spaced-token:gateway_sessions",
+      "baseline": [
+        [
+          22,
+          "alice",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "p1-login-9/cookie"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ]
+      ],
+      "candidate": [
+        [
+          21,
+          "alice",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "p1-login-9/cookie"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ]
+      ]
+    },
+    {
+      "case": "db:p1-sessions-after-close-token:gateway_sessions",
+      "baseline": [
+        [
+          5,
+          "bob",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-account-other-user/0/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ],
+        [
+          6,
+          "alice",
+          "second@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-mixed-known/1/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ],
+        [
+          12,
+          " alice ",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-trim-account/0/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ]
+      ],
+      "candidate": [
+        [
+          4,
+          "bob",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-account-other-user/0/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ],
+        [
+          5,
+          "alice",
+          "second@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-mixed-known/1/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ],
+        [
+          11,
+          " alice ",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-trim-account/0/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ]
+      ]
+    },
+    {
+      "case": "db:p1-sessions-after-close-trimmed-user:gateway_sessions",
+      "baseline": [
+        [
+          22,
+          "alice",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "p1-login-7/cookie"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ]
+      ],
+      "candidate": [
+        [
+          21,
+          "alice",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "p1-login-7/cookie"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ]
+      ]
+    },
+    {
+      "case": "db:p1-sessions-after-close-unknown:gateway_sessions",
+      "baseline": [
+        [
+          19,
+          "alice",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "p1-login-4/cookie"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ]
+      ],
+      "candidate": [
+        [
+          18,
+          "alice",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "p1-login-4/cookie"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ]
+      ]
+    },
+    {
+      "case": "db:p1-sessions-after-login-2:gateway_sessions",
+      "baseline": [
+        [
+          5,
+          "bob",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-account-other-user/0/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ],
+        [
+          6,
+          "alice",
+          "second@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-mixed-known/1/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ],
+        [
+          12,
+          " alice ",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-trim-account/0/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ],
+        [
+          17,
+          "alice",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "p1-login-2/cookie"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ]
+      ],
+      "candidate": [
+        [
+          4,
+          "bob",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-account-other-user/0/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ],
+        [
+          5,
+          "alice",
+          "second@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-mixed-known/1/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ],
+        [
+          11,
+          " alice ",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-trim-account/0/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ],
+        [
+          16,
+          "alice",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "p1-login-2/cookie"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ]
+      ]
+    },
+    {
+      "case": "db:p1-sessions-after-mirror:gateway_sessions",
+      "baseline": [
+        [
+          1,
+          "alice",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-blank-item/0/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ],
+        [
+          5,
+          "bob",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-account-other-user/0/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ],
+        [
+          6,
+          "alice",
+          "second@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-mixed-known/1/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ],
+        [
+          12,
+          " alice ",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-trim-account/0/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ]
+      ],
+      "candidate": [
+        [
+          1,
+          "alice",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-blank-item/0/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ],
+        [
+          4,
+          "bob",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-account-other-user/0/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ],
+        [
+          5,
+          "alice",
+          "second@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-mixed-known/1/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ],
+        [
+          11,
+          " alice ",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-trim-account/0/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ]
+      ]
+    },
+    {
+      "case": "db:p1-sessions-after-p1-login:gateway_sessions",
+      "baseline": [
+        [
+          1,
+          "alice",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "p1-login/cookie"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ],
+        [
+          5,
+          "bob",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-account-other-user/0/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ],
+        [
+          6,
+          "alice",
+          "second@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-mixed-known/1/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ],
+        [
+          12,
+          " alice ",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-trim-account/0/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ]
+      ],
+      "candidate": [
+        [
+          1,
+          "alice",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "p1-login/cookie"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ],
+        [
+          4,
+          "bob",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-account-other-user/0/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ],
+        [
+          5,
+          "alice",
+          "second@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-mixed-known/1/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ],
+        [
+          11,
+          " alice ",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-trim-account/0/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ]
+      ]
+    },
+    {
+      "case": "db:p1-sessions-before-close:gateway_sessions",
+      "baseline": [
+        [
+          1,
+          "alice",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-login-mode-web/0/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ],
+        [
+          5,
+          "bob",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-account-other-user/0/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ],
+        [
+          6,
+          "alice",
+          "second@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-mixed-known/1/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ],
+        [
+          12,
+          " alice ",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-trim-account/0/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ]
+      ],
+      "candidate": [
+        [
+          1,
+          "alice",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-login-mode-web/0/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ],
+        [
+          4,
+          "bob",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-account-other-user/0/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ],
+        [
+          5,
+          "alice",
+          "second@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-mixed-known/1/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ],
+        [
+          11,
+          " alice ",
+          "fixture@example.invalid",
+          "api",
+          {
+            "verified_issued_token": "mirror-trim-account/0/login_url"
+          },
+          "<validated-runtime-time>",
+          "<validated-runtime-time>"
+        ]
+      ]
+    },
+    {
+      "case": "upstream:None",
+      "baseline": [
+        {
+          "method": "POST",
+          "path": "/cloudflare5s/bypass-v1",
+          "headers": {
+            "authorization": [
+              "Bearer contract-admin-secret-0001"
+            ],
+            "content-type": [
+              "application/json"
+            ],
+            "accept": [
+              "*/*"
+            ],
+            "accept-encoding": [
+              "zstd,gzip,deflate,br"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ],
+            "content-length": [
+              "150"
+            ]
+          },
+          "body": "{\"url\":\"http://127.0.0.1:18090/\",\"user_agent\":\"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36\"}"
+        },
+        {
+          "method": "GET",
+          "path": "/api/auth/session",
+          "headers": {
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "accept": [
+              "application/json, text/plain, */*"
+            ],
+            "accept-encoding": [
+              "identity"
+            ],
+            "accept-language": [
+              "zh-CN,zh;q=0.9,en;q=0.8"
+            ],
+            "origin": [
+              "http://127.0.0.1:18090/"
+            ],
+            "referer": [
+              "http://127.0.0.1:18090/"
+            ],
+            "cookie": [
+              "__Secure-next-auth.session-token=synthetic-access-token"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/accounts/check/v4-2023-04-27",
+          "headers": {
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "accept": [
+              "application/json, text/plain, */*"
+            ],
+            "accept-encoding": [
+              "identity"
+            ],
+            "accept-language": [
+              "zh-CN,zh;q=0.9,en;q=0.8"
+            ],
+            "origin": [
+              "http://127.0.0.1:18090/"
+            ],
+            "referer": [
+              "http://127.0.0.1:18090/"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/me",
+          "headers": {
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "accept": [
+              "application/json, text/plain, */*"
+            ],
+            "accept-encoding": [
+              "identity"
+            ],
+            "accept-language": [
+              "zh-CN,zh;q=0.9,en;q=0.8"
+            ],
+            "origin": [
+              "http://127.0.0.1:18090/"
+            ],
+            "referer": [
+              "http://127.0.0.1:18090/"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/accounts/check/v4-2023-04-27",
+          "headers": {
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "accept": [
+              "application/json, text/plain, */*"
+            ],
+            "accept-encoding": [
+              "identity"
+            ],
+            "accept-language": [
+              "zh-CN,zh;q=0.9,en;q=0.8"
+            ],
+            "origin": [
+              "http://127.0.0.1:18090/"
+            ],
+            "referer": [
+              "http://127.0.0.1:18090/"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/me",
+          "headers": {
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "accept": [
+              "application/json, text/plain, */*"
+            ],
+            "accept-encoding": [
+              "identity"
+            ],
+            "accept-language": [
+              "zh-CN,zh;q=0.9,en;q=0.8"
+            ],
+            "origin": [
+              "http://127.0.0.1:18090/"
+            ],
+            "referer": [
+              "http://127.0.0.1:18090/"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/me",
+          "headers": {
+            "accept-encoding": [
+              "identity"
+            ],
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "origin": [
+              "http://127.0.0.1"
+            ],
+            "referer": [
+              "http://127.0.0.1/"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "accept": [
+              "*/*"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/conversations?offset=0&limit=20",
+          "headers": {
+            "accept-encoding": [
+              "identity"
+            ],
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "origin": [
+              "http://127.0.0.1"
+            ],
+            "referer": [
+              "http://127.0.0.1/"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "accept": [
+              "*/*"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/0x/user/version-cfg?fixture=1",
+          "headers": {
+            "accept-encoding": [
+              "identity"
+            ],
+            "x-chatgpt-mirror-client-ip": [
+              "127.0.0.1"
+            ],
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "accept": [
+              "*/*"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/accounts/check/v4-2023-04-27",
+          "headers": {
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "accept": [
+              "application/json, text/plain, */*"
+            ],
+            "accept-encoding": [
+              "identity"
+            ],
+            "accept-language": [
+              "zh-CN,zh;q=0.9,en;q=0.8"
+            ],
+            "origin": [
+              "http://127.0.0.1:18090/"
+            ],
+            "referer": [
+              "http://127.0.0.1:18090/"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/me",
+          "headers": {
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "accept": [
+              "application/json, text/plain, */*"
+            ],
+            "accept-encoding": [
+              "identity"
+            ],
+            "accept-language": [
+              "zh-CN,zh;q=0.9,en;q=0.8"
+            ],
+            "origin": [
+              "http://127.0.0.1:18090/"
+            ],
+            "referer": [
+              "http://127.0.0.1:18090/"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/accounts/check/v4-2023-04-27",
+          "headers": {
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "accept": [
+              "application/json, text/plain, */*"
+            ],
+            "accept-encoding": [
+              "identity"
+            ],
+            "accept-language": [
+              "zh-CN,zh;q=0.9,en;q=0.8"
+            ],
+            "origin": [
+              "http://127.0.0.1:18090/"
+            ],
+            "referer": [
+              "http://127.0.0.1:18090/"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/me",
+          "headers": {
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "accept": [
+              "application/json, text/plain, */*"
+            ],
+            "accept-encoding": [
+              "identity"
+            ],
+            "accept-language": [
+              "zh-CN,zh;q=0.9,en;q=0.8"
+            ],
+            "origin": [
+              "http://127.0.0.1:18090/"
+            ],
+            "referer": [
+              "http://127.0.0.1:18090/"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/accounts/check/v4-2023-04-27",
+          "headers": {
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "accept": [
+              "application/json, text/plain, */*"
+            ],
+            "accept-encoding": [
+              "identity"
+            ],
+            "accept-language": [
+              "zh-CN,zh;q=0.9,en;q=0.8"
+            ],
+            "origin": [
+              "http://127.0.0.1:18090/"
+            ],
+            "referer": [
+              "http://127.0.0.1:18090/"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/me",
+          "headers": {
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "accept": [
+              "application/json, text/plain, */*"
+            ],
+            "accept-encoding": [
+              "identity"
+            ],
+            "accept-language": [
+              "zh-CN,zh;q=0.9,en;q=0.8"
+            ],
+            "origin": [
+              "http://127.0.0.1:18090/"
+            ],
+            "referer": [
+              "http://127.0.0.1:18090/"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/accounts/check/v4-2023-04-27",
+          "headers": {
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "accept": [
+              "application/json, text/plain, */*"
+            ],
+            "accept-encoding": [
+              "identity"
+            ],
+            "accept-language": [
+              "zh-CN,zh;q=0.9,en;q=0.8"
+            ],
+            "origin": [
+              "http://127.0.0.1:18090/"
+            ],
+            "referer": [
+              "http://127.0.0.1:18090/"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/me",
+          "headers": {
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "accept": [
+              "application/json, text/plain, */*"
+            ],
+            "accept-encoding": [
+              "identity"
+            ],
+            "accept-language": [
+              "zh-CN,zh;q=0.9,en;q=0.8"
+            ],
+            "origin": [
+              "http://127.0.0.1:18090/"
+            ],
+            "referer": [
+              "http://127.0.0.1:18090/"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/accounts/check/v4-2023-04-27",
+          "headers": {
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "accept": [
+              "application/json, text/plain, */*"
+            ],
+            "accept-encoding": [
+              "identity"
+            ],
+            "accept-language": [
+              "zh-CN,zh;q=0.9,en;q=0.8"
+            ],
+            "origin": [
+              "http://127.0.0.1:18090/"
+            ],
+            "referer": [
+              "http://127.0.0.1:18090/"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/me",
+          "headers": {
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "accept": [
+              "application/json, text/plain, */*"
+            ],
+            "accept-encoding": [
+              "identity"
+            ],
+            "accept-language": [
+              "zh-CN,zh;q=0.9,en;q=0.8"
+            ],
+            "origin": [
+              "http://127.0.0.1:18090/"
+            ],
+            "referer": [
+              "http://127.0.0.1:18090/"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/accounts/check/v4-2023-04-27",
+          "headers": {
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "accept": [
+              "application/json, text/plain, */*"
+            ],
+            "accept-encoding": [
+              "identity"
+            ],
+            "accept-language": [
+              "zh-CN,zh;q=0.9,en;q=0.8"
+            ],
+            "origin": [
+              "http://127.0.0.1:18090/"
+            ],
+            "referer": [
+              "http://127.0.0.1:18090/"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/me",
+          "headers": {
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "accept": [
+              "application/json, text/plain, */*"
+            ],
+            "accept-encoding": [
+              "identity"
+            ],
+            "accept-language": [
+              "zh-CN,zh;q=0.9,en;q=0.8"
+            ],
+            "origin": [
+              "http://127.0.0.1:18090/"
+            ],
+            "referer": [
+              "http://127.0.0.1:18090/"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/accounts/check/v4-2023-04-27",
+          "headers": {
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "accept": [
+              "application/json, text/plain, */*"
+            ],
+            "accept-encoding": [
+              "identity"
+            ],
+            "accept-language": [
+              "zh-CN,zh;q=0.9,en;q=0.8"
+            ],
+            "origin": [
+              "http://127.0.0.1:18090/"
+            ],
+            "referer": [
+              "http://127.0.0.1:18090/"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/me",
+          "headers": {
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "accept": [
+              "application/json, text/plain, */*"
+            ],
+            "accept-encoding": [
+              "identity"
+            ],
+            "accept-language": [
+              "zh-CN,zh;q=0.9,en;q=0.8"
+            ],
+            "origin": [
+              "http://127.0.0.1:18090/"
+            ],
+            "referer": [
+              "http://127.0.0.1:18090/"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/accounts/check/v4-2023-04-27",
+          "headers": {
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "accept": [
+              "application/json, text/plain, */*"
+            ],
+            "accept-encoding": [
+              "identity"
+            ],
+            "accept-language": [
+              "zh-CN,zh;q=0.9,en;q=0.8"
+            ],
+            "origin": [
+              "http://127.0.0.1:18090/"
+            ],
+            "referer": [
+              "http://127.0.0.1:18090/"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/me",
+          "headers": {
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "accept": [
+              "application/json, text/plain, */*"
+            ],
+            "accept-encoding": [
+              "identity"
+            ],
+            "accept-language": [
+              "zh-CN,zh;q=0.9,en;q=0.8"
+            ],
+            "origin": [
+              "http://127.0.0.1:18090/"
+            ],
+            "referer": [
+              "http://127.0.0.1:18090/"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/accounts/check/v4-2023-04-27",
+          "headers": {
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "accept": [
+              "application/json, text/plain, */*"
+            ],
+            "accept-encoding": [
+              "identity"
+            ],
+            "accept-language": [
+              "zh-CN,zh;q=0.9,en;q=0.8"
+            ],
+            "origin": [
+              "http://127.0.0.1:18090/"
+            ],
+            "referer": [
+              "http://127.0.0.1:18090/"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/me",
+          "headers": {
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "accept": [
+              "application/json, text/plain, */*"
+            ],
+            "accept-encoding": [
+              "identity"
+            ],
+            "accept-language": [
+              "zh-CN,zh;q=0.9,en;q=0.8"
+            ],
+            "origin": [
+              "http://127.0.0.1:18090/"
+            ],
+            "referer": [
+              "http://127.0.0.1:18090/"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "POST",
+          "path": "/cloudflare5s/bypass-v1",
+          "headers": {
+            "authorization": [
+              "Bearer contract-admin-secret-0001"
+            ],
+            "content-type": [
+              "application/json"
+            ],
+            "accept": [
+              "*/*"
+            ],
+            "accept-encoding": [
+              "zstd,gzip,deflate,br"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ],
+            "content-length": [
+              "150"
+            ]
+          },
+          "body": "{\"url\":\"http://127.0.0.1:18090/\",\"user_agent\":\"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/cloudflare5s/bypass-v1",
+          "headers": {
+            "authorization": [
+              "Bearer contract-admin-secret-0001"
+            ],
+            "content-type": [
+              "application/json"
+            ],
+            "accept": [
+              "*/*"
+            ],
+            "accept-encoding": [
+              "zstd,gzip,deflate,br"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ],
+            "content-length": [
+              "150"
+            ]
+          },
+          "body": "{\"url\":\"http://127.0.0.1:18090/\",\"user_agent\":\"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36\"}"
+        }
+      ],
+      "candidate": [
+        {
+          "method": "POST",
+          "path": "/cloudflare5s/bypass-v1",
+          "headers": {
+            "authorization": [
+              "Bearer contract-admin-secret-0001"
+            ],
+            "content-type": [
+              "application/json"
+            ],
+            "accept": [
+              "*/*"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ],
+            "content-length": [
+              "150"
+            ]
+          },
+          "body": "{\"url\":\"http://127.0.0.1:18090/\",\"user_agent\":\"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36\"}"
+        },
+        {
+          "method": "GET",
+          "path": "/api/auth/session",
+          "headers": {
+            "cookie": [
+              "__Secure-next-auth.session-token=synthetic-access-token"
+            ],
+            "accept": [
+              "*/*"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/me",
+          "headers": {
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "accept": [
+              "*/*"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/me",
+          "headers": {
+            "accept-encoding": [
+              "identity"
+            ],
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "accept": [
+              "*/*"
+            ],
+            "origin": [
+              "http://127.0.0.1"
+            ],
+            "referer": [
+              "http://127.0.0.1/"
+            ],
+            "cookie": [
+              "cf_clearance=SYNTHETIC"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/conversations?offset=0&limit=20",
+          "headers": {
+            "accept-encoding": [
+              "identity"
+            ],
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "accept": [
+              "*/*"
+            ],
+            "origin": [
+              "http://127.0.0.1"
+            ],
+            "referer": [
+              "http://127.0.0.1/"
+            ],
+            "cookie": [
+              "cf_clearance=SYNTHETIC"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/0x/user/version-cfg?fixture=1",
+          "headers": {
+            "accept-encoding": [
+              "identity"
+            ],
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "accept": [
+              "*/*"
+            ],
+            "x-chatgpt-mirror-client-ip": [
+              "127.0.0.1"
+            ],
+            "cookie": [
+              "cf_clearance=SYNTHETIC"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/me",
+          "headers": {
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "accept": [
+              "*/*"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/me",
+          "headers": {
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "accept": [
+              "*/*"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/me",
+          "headers": {
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "accept": [
+              "*/*"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/me",
+          "headers": {
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "accept": [
+              "*/*"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/me",
+          "headers": {
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "accept": [
+              "*/*"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/me",
+          "headers": {
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "accept": [
+              "*/*"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/me",
+          "headers": {
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "accept": [
+              "*/*"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/me",
+          "headers": {
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "accept": [
+              "*/*"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/me",
+          "headers": {
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "accept": [
+              "*/*"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "POST",
+          "path": "/cloudflare5s/bypass-v1",
+          "headers": {
+            "authorization": [
+              "Bearer contract-admin-secret-0001"
+            ],
+            "content-type": [
+              "application/json"
+            ],
+            "accept": [
+              "*/*"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ],
+            "content-length": [
+              "150"
+            ]
+          },
+          "body": "{\"url\":\"http://127.0.0.1:18090/\",\"user_agent\":\"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/cloudflare5s/bypass-v1",
+          "headers": {
+            "authorization": [
+              "Bearer contract-admin-secret-0001"
+            ],
+            "content-type": [
+              "application/json"
+            ],
+            "accept": [
+              "*/*"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ],
+            "content-length": [
+              "150"
+            ]
+          },
+          "body": "{\"url\":\"http://127.0.0.1:18090/\",\"user_agent\":\"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36\"}"
+        }
+      ]
+    }
+  ]
+}

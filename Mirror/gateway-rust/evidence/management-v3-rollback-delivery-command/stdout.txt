@@ -1,0 +1,1 @@
+{"output": "D:\\Project\\Mirror\\gateway-rust\\evidence\\management-v3-rollback-delivery", "observations": 368, "guest_exit": 0}

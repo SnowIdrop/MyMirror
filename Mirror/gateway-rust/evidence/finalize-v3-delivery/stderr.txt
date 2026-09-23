@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "D:\Project\Mirror\gateway-rust\tools\finalize_v3.py", line 166, in <module>
+    main()
+  File "D:\Project\Mirror\gateway-rust\tools\finalize_v3.py", line 156, in main
+    sections.append(f"=== LITERAL {folder / name} ===\n" + (folder / name).read_text(encoding="utf-8", errors="replace"))
+                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\peropero\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\pathlib.py", line 1027, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\peropero\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'D:\\Project\\Mirror\\gateway-rust\\evidence\\finalize-v3-delivery\\command.json'

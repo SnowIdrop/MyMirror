@@ -1,0 +1,1 @@
+{"output": "D:\\Project\\Mirror\\gateway-rust\\evidence\\proxy-v3-candidate-delivery", "observations": 179, "guest_exit": 0}

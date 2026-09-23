@@ -1,0 +1,1 @@
+{"initramfs": "D:\\Project\\Mirror\\gateway-rust\\.build\\sandbox.cpio.gz", "entries": 1720, "candidate": "target/x86_64-unknown-linux-musl/debug/mirror-gateway"}

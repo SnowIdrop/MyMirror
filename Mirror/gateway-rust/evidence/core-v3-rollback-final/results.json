@@ -1,0 +1,7352 @@
+[
+  {
+    "kind": "rollback",
+    "command": [
+      "/app/ROLLBACK.sh",
+      "/app/rollback-copy"
+    ],
+    "stdout": "Restored pristine gateway bytes; database was not modified.\n",
+    "stderr": "",
+    "exit": 0,
+    "sha256": "4ff1a3b933dda0b9e0569d2f3ee9cf34993b0b3e21f734c4262a75b4c67ae098"
+  },
+  {
+    "kind": "startup",
+    "secret": null,
+    "input_port": "40002",
+    "stdout": "",
+    "stderr": "GATEWAY_ADMIN_SECRET 必须设置，不能使用内置默认值\n",
+    "exit": 1
+  },
+  {
+    "kind": "startup",
+    "secret": "short",
+    "input_port": "40002",
+    "stdout": "",
+    "stderr": "GATEWAY_ADMIN_SECRET 长度至少需要 16 个字符\n",
+    "exit": 1
+  },
+  {
+    "kind": "startup",
+    "secret": "short",
+    "input_port": "bad",
+    "stdout": "",
+    "stderr": "GATEWAY_ADMIN_SECRET 长度至少需要 16 个字符\n",
+    "exit": 1
+  },
+  {
+    "kind": "upstream",
+    "method": "POST",
+    "path": "/cloudflare5s/bypass-v1",
+    "headers": [
+      [
+        "authorization",
+        "Bearer contract-admin-secret-0001"
+      ],
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "accept",
+        "*/*"
+      ],
+      [
+        "accept-encoding",
+        "zstd,gzip,deflate,br"
+      ],
+      [
+        "host",
+        "127.0.0.1:18090"
+      ],
+      [
+        "content-length",
+        "150"
+      ]
+    ],
+    "body": "{\"url\":\"http://127.0.0.1:18090/\",\"user_agent\":\"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36\"}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/login",
+    "auth": false,
+    "input": null,
+    "status": 401,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "50"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"缺少或无效的网关认证信息\"}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/login",
+    "auth": true,
+    "input": null,
+    "status": 400,
+    "headers": [
+      [
+        "content-type",
+        "text/plain; charset=utf-8"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "content-length",
+        "86"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "Failed to parse the request body as JSON: EOF while parsing a value at line 1 column 0"
+  },
+  {
+    "kind": "http",
+    "method": "POST",
+    "path": "/api/login",
+    "auth": true,
+    "input": {},
+    "status": 422,
+    "headers": [
+      [
+        "content-type",
+        "text/plain; charset=utf-8"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "content-length",
+        "102"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "Failed to deserialize the JSON body into the target type: missing field `user_name` at line 1 column 2"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/logout",
+    "auth": false,
+    "input": null,
+    "status": 401,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "50"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"缺少或无效的网关认证信息\"}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/logout",
+    "auth": true,
+    "input": null,
+    "status": 400,
+    "headers": [
+      [
+        "content-type",
+        "text/plain; charset=utf-8"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "content-length",
+        "86"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "Failed to parse the request body as JSON: EOF while parsing a value at line 1 column 0"
+  },
+  {
+    "kind": "http",
+    "method": "POST",
+    "path": "/api/logout",
+    "auth": true,
+    "input": {},
+    "status": 422,
+    "headers": [
+      [
+        "content-type",
+        "text/plain; charset=utf-8"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "content-length",
+        "102"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "Failed to deserialize the JSON body into the target type: missing field `user_name` at line 1 column 2"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/user-work-mode",
+    "auth": false,
+    "input": null,
+    "status": 401,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "50"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"缺少或无效的网关认证信息\"}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/user-work-mode",
+    "auth": true,
+    "input": null,
+    "status": 400,
+    "headers": [
+      [
+        "content-type",
+        "text/plain; charset=utf-8"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "content-length",
+        "86"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "Failed to parse the request body as JSON: EOF while parsing a value at line 1 column 0"
+  },
+  {
+    "kind": "http",
+    "method": "POST",
+    "path": "/api/user-work-mode",
+    "auth": true,
+    "input": {},
+    "status": 422,
+    "headers": [
+      [
+        "content-type",
+        "text/plain; charset=utf-8"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "content-length",
+        "102"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "Failed to deserialize the JSON body into the target type: missing field `user_name` at line 1 column 2"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/get-user-info",
+    "auth": false,
+    "input": null,
+    "status": 401,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "50"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"缺少或无效的网关认证信息\"}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/get-user-info",
+    "auth": true,
+    "input": null,
+    "status": 400,
+    "headers": [
+      [
+        "content-type",
+        "text/plain; charset=utf-8"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "content-length",
+        "86"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "Failed to parse the request body as JSON: EOF while parsing a value at line 1 column 0"
+  },
+  {
+    "kind": "http",
+    "method": "POST",
+    "path": "/api/get-user-info",
+    "auth": true,
+    "input": {},
+    "status": 400,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "40"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"chatgpt_token 不能为空\"}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/diagnose-chatgpt-auth",
+    "auth": false,
+    "input": null,
+    "status": 401,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "50"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"缺少或无效的网关认证信息\"}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/diagnose-chatgpt-auth",
+    "auth": true,
+    "input": null,
+    "status": 400,
+    "headers": [
+      [
+        "content-type",
+        "text/plain; charset=utf-8"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "content-length",
+        "86"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "Failed to parse the request body as JSON: EOF while parsing a value at line 1 column 0"
+  },
+  {
+    "kind": "http",
+    "method": "POST",
+    "path": "/api/diagnose-chatgpt-auth",
+    "auth": true,
+    "input": {},
+    "status": 200,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "203"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "{\"access_token_valid\":false,\"last_check_at\":1790072856,\"last_error\":\"未提供任何可诊断的 token\",\"session_token_valid\":false,\"supported_login_modes\":[],\"user_info\":{\"email\":\"\",\"plan_type\":\"free\"}}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/get-mirror-token",
+    "auth": false,
+    "input": null,
+    "status": 401,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "50"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"缺少或无效的网关认证信息\"}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/get-mirror-token",
+    "auth": true,
+    "input": null,
+    "status": 400,
+    "headers": [
+      [
+        "content-type",
+        "text/plain; charset=utf-8"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "content-length",
+        "86"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "Failed to parse the request body as JSON: EOF while parsing a value at line 1 column 0"
+  },
+  {
+    "kind": "http",
+    "method": "POST",
+    "path": "/api/get-mirror-token",
+    "auth": true,
+    "input": {},
+    "status": 422,
+    "headers": [
+      [
+        "content-type",
+        "text/plain; charset=utf-8"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "content-length",
+        "102"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "Failed to deserialize the JSON body into the target type: missing field `user_name` at line 1 column 2"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/get-user-use-count",
+    "auth": false,
+    "input": null,
+    "status": 401,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "50"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"缺少或无效的网关认证信息\"}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/get-user-use-count",
+    "auth": true,
+    "input": null,
+    "status": 400,
+    "headers": [
+      [
+        "content-type",
+        "text/plain; charset=utf-8"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "content-length",
+        "86"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "Failed to parse the request body as JSON: EOF while parsing a value at line 1 column 0"
+  },
+  {
+    "kind": "http",
+    "method": "POST",
+    "path": "/api/get-user-use-count",
+    "auth": true,
+    "input": {},
+    "status": 422,
+    "headers": [
+      [
+        "content-type",
+        "text/plain; charset=utf-8"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "content-length",
+        "106"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "Failed to deserialize the JSON body into the target type: missing field `username_list` at line 1 column 2"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/get-chatgpt-use-count",
+    "auth": false,
+    "input": null,
+    "status": 401,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "50"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"缺少或无效的网关认证信息\"}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/get-chatgpt-use-count",
+    "auth": true,
+    "input": null,
+    "status": 400,
+    "headers": [
+      [
+        "content-type",
+        "text/plain; charset=utf-8"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "content-length",
+        "86"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "Failed to parse the request body as JSON: EOF while parsing a value at line 1 column 0"
+  },
+  {
+    "kind": "http",
+    "method": "POST",
+    "path": "/api/get-chatgpt-use-count",
+    "auth": true,
+    "input": {},
+    "status": 422,
+    "headers": [
+      [
+        "content-type",
+        "text/plain; charset=utf-8"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "content-length",
+        "105"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "Failed to deserialize the JSON body into the target type: missing field `chatgpt_list` at line 1 column 2"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/conversation-statistics",
+    "auth": false,
+    "input": null,
+    "status": 401,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "50"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"缺少或无效的网关认证信息\"}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/conversation-statistics",
+    "auth": true,
+    "input": null,
+    "status": 400,
+    "headers": [
+      [
+        "content-type",
+        "text/plain; charset=utf-8"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "content-length",
+        "86"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "Failed to parse the request body as JSON: EOF while parsing a value at line 1 column 0"
+  },
+  {
+    "kind": "http",
+    "method": "POST",
+    "path": "/api/conversation-statistics",
+    "auth": true,
+    "input": {},
+    "status": 200,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "2"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "{}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/conversation-statistics/reset",
+    "auth": false,
+    "input": null,
+    "status": 401,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "50"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"缺少或无效的网关认证信息\"}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/conversation-statistics/reset",
+    "auth": true,
+    "input": null,
+    "status": 400,
+    "headers": [
+      [
+        "content-type",
+        "text/plain; charset=utf-8"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "content-length",
+        "86"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "Failed to parse the request body as JSON: EOF while parsing a value at line 1 column 0"
+  },
+  {
+    "kind": "http",
+    "method": "POST",
+    "path": "/api/conversation-statistics/reset",
+    "auth": true,
+    "input": {},
+    "status": 400,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "26"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"缺少用户\"}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/get-user-quota-usage",
+    "auth": false,
+    "input": null,
+    "status": 401,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "50"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"缺少或无效的网关认证信息\"}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/get-user-quota-usage",
+    "auth": true,
+    "input": null,
+    "status": 400,
+    "headers": [
+      [
+        "content-type",
+        "text/plain; charset=utf-8"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "content-length",
+        "86"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "Failed to parse the request body as JSON: EOF while parsing a value at line 1 column 0"
+  },
+  {
+    "kind": "http",
+    "method": "POST",
+    "path": "/api/get-user-quota-usage",
+    "auth": true,
+    "input": {},
+    "status": 422,
+    "headers": [
+      [
+        "content-type",
+        "text/plain; charset=utf-8"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "content-length",
+        "102"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "Failed to deserialize the JSON body into the target type: missing field `user_name` at line 1 column 2"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/backup/export",
+    "auth": false,
+    "input": null,
+    "status": 401,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "50"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"缺少或无效的网关认证信息\"}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/backup/export",
+    "auth": true,
+    "input": null,
+    "status": 200,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "196"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": "{\"chatgpt_accounts\":[],\"conversation_model_statistics\":[],\"conversation_owners\":[],\"conversation_statistics\":[],\"gateway_sessions\":[],\"project_owners\":[],\"settings\":[],\"version\":2,\"visit_logs\":[]}"
+  },
+  {
+    "kind": "http",
+    "method": "POST",
+    "path": "/api/backup/export",
+    "auth": true,
+    "input": {},
+    "status": 405,
+    "headers": [
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "allow",
+        "GET,HEAD"
+      ],
+      [
+        "content-length",
+        "0"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:36 GMT"
+      ]
+    ],
+    "body": ""
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/backup/restore",
+    "auth": false,
+    "input": null,
+    "status": 401,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "50"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"缺少或无效的网关认证信息\"}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/backup/restore",
+    "auth": true,
+    "input": null,
+    "status": 400,
+    "headers": [
+      [
+        "content-type",
+        "text/plain; charset=utf-8"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "content-length",
+        "86"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "Failed to parse the request body as JSON: EOF while parsing a value at line 1 column 0"
+  },
+  {
+    "kind": "http",
+    "method": "POST",
+    "path": "/api/backup/restore",
+    "auth": true,
+    "input": {},
+    "status": 200,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "35"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"网关备份已恢复\"}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/operations-overview",
+    "auth": false,
+    "input": null,
+    "status": 401,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "50"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"缺少或无效的网关认证信息\"}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/operations-overview",
+    "auth": true,
+    "input": null,
+    "status": 400,
+    "headers": [
+      [
+        "content-type",
+        "text/plain; charset=utf-8"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "content-length",
+        "86"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "Failed to parse the request body as JSON: EOF while parsing a value at line 1 column 0"
+  },
+  {
+    "kind": "http",
+    "method": "POST",
+    "path": "/api/operations-overview",
+    "auth": true,
+    "input": {},
+    "status": 422,
+    "headers": [
+      [
+        "content-type",
+        "text/plain; charset=utf-8"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "content-length",
+        "102"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "Failed to deserialize the JSON body into the target type: missing field `day_start` at line 1 column 2"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/close-chatgpt-memory",
+    "auth": false,
+    "input": null,
+    "status": 401,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "50"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"缺少或无效的网关认证信息\"}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/close-chatgpt-memory",
+    "auth": true,
+    "input": null,
+    "status": 400,
+    "headers": [
+      [
+        "content-type",
+        "text/plain; charset=utf-8"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "content-length",
+        "86"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "Failed to parse the request body as JSON: EOF while parsing a value at line 1 column 0"
+  },
+  {
+    "kind": "http",
+    "method": "POST",
+    "path": "/api/close-chatgpt-memory",
+    "auth": true,
+    "input": {},
+    "status": 200,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "29"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "{\"affected\":0,\"message\":\"ok\"}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/mirror-proxy-config",
+    "auth": false,
+    "input": null,
+    "status": 401,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "50"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"缺少或无效的网关认证信息\"}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/mirror-proxy-config",
+    "auth": true,
+    "input": null,
+    "status": 200,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "140"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "{\"enabled\":false,\"has_password\":false,\"message\":null,\"nodes\":[],\"password\":null,\"proxy_url\":null,\"transport_mode\":\"reqwest\",\"username\":null}"
+  },
+  {
+    "kind": "http",
+    "method": "POST",
+    "path": "/api/mirror-proxy-config",
+    "auth": true,
+    "input": {},
+    "status": 200,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "159"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "{\"enabled\":false,\"has_password\":false,\"message\":\"代理配置已保存\",\"nodes\":[],\"password\":null,\"proxy_url\":null,\"transport_mode\":\"reqwest\",\"username\":null}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/test-mirror-proxy-config",
+    "auth": false,
+    "input": null,
+    "status": 401,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "50"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"缺少或无效的网关认证信息\"}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/test-mirror-proxy-config",
+    "auth": true,
+    "input": null,
+    "status": 400,
+    "headers": [
+      [
+        "content-type",
+        "text/plain; charset=utf-8"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "content-length",
+        "86"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "Failed to parse the request body as JSON: EOF while parsing a value at line 1 column 0"
+  },
+  {
+    "kind": "http",
+    "method": "POST",
+    "path": "/api/test-mirror-proxy-config",
+    "auth": true,
+    "input": {},
+    "status": 400,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "32"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"请先启用代理\"}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/custom-scripts",
+    "auth": false,
+    "input": null,
+    "status": 401,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "50"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"缺少或无效的网关认证信息\"}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/custom-scripts",
+    "auth": true,
+    "input": null,
+    "status": 200,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "39"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "{\"scripts\":[],\"trusted_cdn_sources\":[]}"
+  },
+  {
+    "kind": "http",
+    "method": "POST",
+    "path": "/api/custom-scripts",
+    "auth": true,
+    "input": {},
+    "status": 200,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "73"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"脚本配置已保存\",\"scripts\":[],\"trusted_cdn_sources\":[]}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/political-moderation-config",
+    "auth": false,
+    "input": null,
+    "status": 401,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "50"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"缺少或无效的网关认证信息\"}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/political-moderation-config",
+    "auth": true,
+    "input": null,
+    "status": 200,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "295"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "{\"api_key_configured\":false,\"base_url\":\"https://api.openai.com/v1\",\"custom_terms\":[],\"enabled\":false,\"latency_ms\":null,\"limit_per_five_minutes\":30,\"limit_per_hour\":120,\"limit_per_minute\":10,\"message\":\"政治敏感内容屏蔽配置已保存\",\"mode\":\"relaxed\",\"model\":\"\",\"protocol\":\"openai_chat\"}"
+  },
+  {
+    "kind": "http",
+    "method": "POST",
+    "path": "/api/political-moderation-config",
+    "auth": true,
+    "input": {},
+    "status": 422,
+    "headers": [
+      [
+        "content-type",
+        "text/plain; charset=utf-8"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "content-length",
+        "101"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "Failed to deserialize the JSON body into the target type: missing field `protocol` at line 1 column 2"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/political-moderation-config/test",
+    "auth": false,
+    "input": null,
+    "status": 401,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "50"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"缺少或无效的网关认证信息\"}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/political-moderation-config/test",
+    "auth": true,
+    "input": null,
+    "status": 400,
+    "headers": [
+      [
+        "content-type",
+        "text/plain; charset=utf-8"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "content-length",
+        "86"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "Failed to parse the request body as JSON: EOF while parsing a value at line 1 column 0"
+  },
+  {
+    "kind": "http",
+    "method": "POST",
+    "path": "/api/political-moderation-config/test",
+    "auth": true,
+    "input": {},
+    "status": 422,
+    "headers": [
+      [
+        "content-type",
+        "text/plain; charset=utf-8"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "content-length",
+        "101"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "Failed to deserialize the JSON body into the target type: missing field `protocol` at line 1 column 2"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/blocked-paths",
+    "auth": false,
+    "input": null,
+    "status": 401,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "50"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"缺少或无效的网关认证信息\"}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/blocked-paths",
+    "auth": true,
+    "input": null,
+    "status": 200,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "276"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "{\"hash_paths\":[\"/#settings/Personalization\",\"/#settings/Security\",\"/#settings/Billing\",\"/#settings/Account\",\"/#settings/Safety\",\"/#pricing\"],\"paths\":[\"/#settings/Personalization\",\"/#settings/Security\",\"/#settings/Billing\",\"/#settings/Account\",\"/#settings/Safety\",\"/#pricing\"]}"
+  },
+  {
+    "kind": "http",
+    "method": "POST",
+    "path": "/api/blocked-paths",
+    "auth": true,
+    "input": {},
+    "status": 200,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "68"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "{\"hash_paths\":[],\"message\":\"访问限制配置已保存\",\"paths\":[]}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/auth/session",
+    "auth": false,
+    "input": null,
+    "status": 200,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "2"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "{}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/auth/session",
+    "auth": true,
+    "input": null,
+    "status": 200,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "2"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "{}"
+  },
+  {
+    "kind": "http",
+    "method": "POST",
+    "path": "/api/auth/session",
+    "auth": true,
+    "input": {},
+    "status": 405,
+    "headers": [
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "allow",
+        "GET,HEAD"
+      ],
+      [
+        "content-length",
+        "0"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": ""
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/not-login",
+    "auth": false,
+    "input": null,
+    "status": 400,
+    "headers": [
+      [
+        "content-type",
+        "text/plain; charset=utf-8"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "content-length",
+        "70"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "Failed to deserialize query string: missing field `user_gateway_token`"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/not-login",
+    "auth": true,
+    "input": null,
+    "status": 400,
+    "headers": [
+      [
+        "content-type",
+        "text/plain; charset=utf-8"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "content-length",
+        "70"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "Failed to deserialize query string: missing field `user_gateway_token`"
+  },
+  {
+    "kind": "http",
+    "method": "POST",
+    "path": "/api/not-login",
+    "auth": true,
+    "input": {},
+    "status": 405,
+    "headers": [
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "allow",
+        "GET,HEAD"
+      ],
+      [
+        "content-length",
+        "0"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": ""
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/refresh-cfbypass",
+    "auth": false,
+    "input": null,
+    "status": 401,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "23"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"未登录\"}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/refresh-cfbypass",
+    "auth": true,
+    "input": null,
+    "status": 401,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "23"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"未登录\"}"
+  },
+  {
+    "kind": "http",
+    "method": "POST",
+    "path": "/api/refresh-cfbypass",
+    "auth": true,
+    "input": {},
+    "status": 401,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "23"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"未登录\"}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/user-blocked-paths",
+    "auth": false,
+    "input": null,
+    "status": 401,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "23"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"未登录\"}"
+  },
+  {
+    "kind": "http",
+    "method": "GET",
+    "path": "/api/user-blocked-paths",
+    "auth": true,
+    "input": null,
+    "status": 401,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "23"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"未登录\"}"
+  },
+  {
+    "kind": "http",
+    "method": "POST",
+    "path": "/api/user-blocked-paths",
+    "auth": true,
+    "input": {},
+    "status": 405,
+    "headers": [
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "allow",
+        "GET,HEAD"
+      ],
+      [
+        "content-length",
+        "0"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": ""
+  },
+  {
+    "kind": "schema",
+    "sql": [
+      [
+        "chatgpt_accounts",
+        "CREATE TABLE chatgpt_accounts (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            chatgpt_username TEXT UNIQUE NOT NULL,\n            auth_status BOOLEAN DEFAULT TRUE,\n            plan_type TEXT DEFAULT 'free',\n            access_token TEXT NOT NULL,\n            session_token TEXT,\n            extra_cookies TEXT DEFAULT '[]',\n            refresh_token TEXT,\n            remark TEXT,\n            created_time INTEGER,\n            updated_time INTEGER\n        )"
+      ],
+      [
+        "conversation_model_statistics",
+        "CREATE TABLE conversation_model_statistics (\n            user_name TEXT NOT NULL,\n            model_name TEXT NOT NULL,\n            message_count INTEGER NOT NULL DEFAULT 0,\n            updated_at INTEGER NOT NULL,\n            PRIMARY KEY(user_name, model_name)\n        )"
+      ],
+      [
+        "conversation_owners",
+        "CREATE TABLE conversation_owners (\n            chatgpt_username TEXT NOT NULL,\n            conversation_id TEXT NOT NULL,\n            user_name TEXT NOT NULL,\n            created_at INTEGER NOT NULL,\n            updated_at INTEGER NOT NULL,\n            PRIMARY KEY(chatgpt_username, conversation_id)\n        )"
+      ],
+      [
+        "conversation_statistics",
+        "CREATE TABLE conversation_statistics (\n            chatgpt_username TEXT NOT NULL,\n            conversation_id TEXT NOT NULL,\n            user_name TEXT NOT NULL,\n            title TEXT NOT NULL DEFAULT '',\n            message_count INTEGER NOT NULL DEFAULT 0,\n            conversation_counted BOOLEAN NOT NULL DEFAULT TRUE,\n            created_at INTEGER NOT NULL,\n            updated_at INTEGER NOT NULL,\n            PRIMARY KEY(chatgpt_username, conversation_id)\n        )"
+      ],
+      [
+        "gateway_sessions",
+        "CREATE TABLE gateway_sessions (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            user_name TEXT NOT NULL,\n            chatgpt_username TEXT NOT NULL,\n            access_token TEXT NOT NULL,\n            session_token TEXT,\n            extra_cookies TEXT DEFAULT '[]',\n            login_mode TEXT NOT NULL DEFAULT 'api',\n            mirror_token TEXT NOT NULL,\n            isolated_session BOOLEAN DEFAULT TRUE,\n            force_chat_mode BOOLEAN NOT NULL DEFAULT TRUE,\n            limits TEXT DEFAULT '[]',\n            proxy_node_id INTEGER,\n            daily_quota INTEGER NOT NULL DEFAULT 0,\n            monthly_quota INTEGER NOT NULL DEFAULT 0,\n            created_at INTEGER,\n            updated_at INTEGER,\n            UNIQUE(user_name, chatgpt_username),\n            UNIQUE(mirror_token)\n        )"
+      ],
+      [
+        "gateway_settings",
+        "CREATE TABLE gateway_settings (\n            key TEXT PRIMARY KEY,\n            value TEXT NOT NULL,\n            updated_at INTEGER\n        )"
+      ],
+      [
+        "project_owners",
+        "CREATE TABLE project_owners (\n            chatgpt_username TEXT NOT NULL,\n            project_id TEXT NOT NULL,\n            user_name TEXT NOT NULL,\n            created_at INTEGER NOT NULL,\n            updated_at INTEGER NOT NULL,\n            PRIMARY KEY(chatgpt_username, project_id)\n        )"
+      ],
+      [
+        "sqlite_sequence",
+        "CREATE TABLE sqlite_sequence(name,seq)"
+      ],
+      [
+        "visit_logs",
+        "CREATE TABLE visit_logs (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            username TEXT NOT NULL,\n            chatgpt_username TEXT,\n            log_type TEXT NOT NULL,\n            created_at INTEGER,\n            ip TEXT,\n            user_agent TEXT\n        )"
+      ]
+    ]
+  },
+  {
+    "kind": "scenario",
+    "id": "login-minimal",
+    "method": "POST",
+    "path": "/api/login",
+    "input": {
+      "user_name": "alice"
+    },
+    "status": 400,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "77"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"chatgpt_token、access_token、session_token 至少提供一个\"}"
+  },
+  {
+    "kind": "scenario",
+    "id": "logout-minimal",
+    "method": "POST",
+    "path": "/api/logout",
+    "input": {
+      "user_name": "alice"
+    },
+    "status": 200,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "set-cookie",
+        "access_token=; Path=/; SameSite=Lax; Max-Age=0; Secure; HttpOnly"
+      ],
+      [
+        "set-cookie",
+        "session_token=; Path=/; SameSite=Lax; Max-Age=0; Secure; HttpOnly"
+      ],
+      [
+        "set-cookie",
+        "next-auth.session-token=; Path=/; SameSite=Lax; Max-Age=0; Secure; HttpOnly"
+      ],
+      [
+        "set-cookie",
+        "__Secure-next-auth.session-token=; Path=/; SameSite=Lax; Max-Age=0; Secure; HttpOnly"
+      ],
+      [
+        "set-cookie",
+        "chatgpt_username=; Path=/; SameSite=Lax; Max-Age=0; Secure"
+      ],
+      [
+        "set-cookie",
+        "gateway_user_name=; Path=/; SameSite=Lax; Max-Age=0; Secure"
+      ],
+      [
+        "set-cookie",
+        "login_mode=; Path=/; SameSite=Lax; Max-Age=0; Secure"
+      ],
+      [
+        "set-cookie",
+        "mirror_token=; Path=/; SameSite=Lax; Max-Age=0; Secure; HttpOnly"
+      ],
+      [
+        "set-cookie",
+        "isolated_session=; Path=/; SameSite=Lax; Max-Age=0; Secure"
+      ],
+      [
+        "set-cookie",
+        "model_limits=; Path=/; SameSite=Lax; Max-Age=0; Secure"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "26"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:37 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"退出成功\"}"
+  },
+  {
+    "kind": "scenario",
+    "id": "work-mode",
+    "method": "POST",
+    "path": "/api/user-work-mode",
+    "input": {
+      "user_name": "alice"
+    },
+    "status": 422,
+    "headers": [
+      [
+        "content-type",
+        "text/plain; charset=utf-8"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "content-length",
+        "109"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:38 GMT"
+      ]
+    ],
+    "body": "Failed to deserialize the JSON body into the target type: missing field `force_chat_mode` at line 1 column 21"
+  },
+  {
+    "kind": "scenario",
+    "id": "mirror-token",
+    "method": "POST",
+    "path": "/api/get-mirror-token",
+    "input": {
+      "user_name": "alice"
+    },
+    "status": 422,
+    "headers": [
+      [
+        "content-type",
+        "text/plain; charset=utf-8"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "content-length",
+        "106"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:38 GMT"
+      ]
+    ],
+    "body": "Failed to deserialize the JSON body into the target type: missing field `chatgpt_list` at line 1 column 21"
+  },
+  {
+    "kind": "scenario",
+    "id": "quota-empty",
+    "method": "POST",
+    "path": "/api/get-user-quota-usage",
+    "input": {
+      "user_name": "alice"
+    },
+    "status": 422,
+    "headers": [
+      [
+        "content-type",
+        "text/plain; charset=utf-8"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "content-length",
+        "103"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:38 GMT"
+      ]
+    ],
+    "body": "Failed to deserialize the JSON body into the target type: missing field `day_start` at line 1 column 21"
+  },
+  {
+    "kind": "scenario",
+    "id": "quota-period",
+    "method": "POST",
+    "path": "/api/get-user-quota-usage",
+    "input": {
+      "user_name": "alice",
+      "day_start": 0,
+      "month_start": 0
+    },
+    "status": 200,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "33"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:38 GMT"
+      ]
+    ],
+    "body": "{\"daily_used\":0,\"monthly_used\":0}"
+  },
+  {
+    "kind": "scenario",
+    "id": "mirror-list",
+    "method": "POST",
+    "path": "/api/get-mirror-token",
+    "input": {
+      "user_name": "alice",
+      "chatgpt_list": [
+        "fixture@example.invalid"
+      ]
+    },
+    "status": 200,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "2"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:38 GMT"
+      ]
+    ],
+    "body": "[]"
+  },
+  {
+    "kind": "scenario",
+    "id": "work-set",
+    "method": "POST",
+    "path": "/api/user-work-mode",
+    "input": {
+      "user_name": "alice",
+      "force_chat_mode": false
+    },
+    "status": 200,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "14"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:38 GMT"
+      ]
+    ],
+    "body": "{\"affected\":0}"
+  },
+  {
+    "kind": "scenario",
+    "id": "counts",
+    "method": "POST",
+    "path": "/api/get-user-use-count",
+    "input": {
+      "username_list": [
+        "alice",
+        "bob"
+      ]
+    },
+    "status": 200,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "137"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:38 GMT"
+      ]
+    ],
+    "body": "{\"alice\":{\"gpt-4o\":{\"last_1h\":0,\"last_2h\":0,\"last_3h\":0,\"last_4h\":0}},\"bob\":{\"gpt-4o\":{\"last_1h\":0,\"last_2h\":0,\"last_3h\":0,\"last_4h\":0}}}"
+  },
+  {
+    "kind": "scenario",
+    "id": "account-counts",
+    "method": "POST",
+    "path": "/api/get-chatgpt-use-count",
+    "input": {
+      "chatgpt_list": [
+        "fixture@example.invalid"
+      ]
+    },
+    "status": 200,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "88"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:38 GMT"
+      ]
+    ],
+    "body": "{\"fixture@example.invalid\":{\"gpt-4o\":{\"last_1h\":0,\"last_2h\":0,\"last_3h\":0,\"last_4h\":0}}}"
+  },
+  {
+    "kind": "scenario",
+    "id": "overview",
+    "method": "POST",
+    "path": "/api/operations-overview",
+    "input": {
+      "day_start": 0,
+      "month_start": 0
+    },
+    "status": 200,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "40"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:38 GMT"
+      ]
+    ],
+    "body": "{\"active_sessions\":0,\"today_requests\":0}"
+  },
+  {
+    "kind": "scenario",
+    "id": "restore-v2",
+    "method": "POST",
+    "path": "/api/backup/restore",
+    "input": {
+      "version": 2,
+      "settings": [
+        {
+          "key": "custom_scripts",
+          "value": "{\"scripts\":[{\"name\":\"fixture\",\"content\":\"void 0\"}]}",
+          "updated_at": 1
+        }
+      ]
+    },
+    "status": 400,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "49"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:38 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"完整备份缺少 chatgpt_accounts\"}"
+  },
+  {
+    "kind": "scenario",
+    "id": "script-persist",
+    "method": "POST",
+    "path": "/api/custom-scripts",
+    "input": {
+      "scripts": [
+        {
+          "name": "fixture",
+          "content": "void 0",
+          "enabled": true
+        }
+      ],
+      "trusted_cdn_sources": []
+    },
+    "status": 422,
+    "headers": [
+      [
+        "content-type",
+        "text/plain; charset=utf-8"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "cache-control",
+        "no-cache"
+      ],
+      [
+        "content-length",
+        "108"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:38 GMT"
+      ]
+    ],
+    "body": "Failed to deserialize the JSON body into the target type: scripts[0]: missing field `id` at line 1 column 64"
+  },
+  {
+    "kind": "scenario",
+    "id": "blocked-persist",
+    "method": "POST",
+    "path": "/api/blocked-paths",
+    "input": {
+      "paths": [
+        "/secret",
+        "/#settings/Test"
+      ]
+    },
+    "status": 200,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "122"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:38 GMT"
+      ]
+    ],
+    "body": "{\"hash_paths\":[\"/secret\",\"/#settings/Test\"],\"message\":\"访问限制配置已保存\",\"paths\":[\"/secret\",\"/#settings/Test\"]}"
+  },
+  {
+    "kind": "upstream",
+    "method": "GET",
+    "path": "/api/auth/session",
+    "headers": [
+      [
+        "user-agent",
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+      ],
+      [
+        "accept",
+        "application/json, text/plain, */*"
+      ],
+      [
+        "accept-encoding",
+        "identity"
+      ],
+      [
+        "accept-language",
+        "zh-CN,zh;q=0.9,en;q=0.8"
+      ],
+      [
+        "origin",
+        "http://127.0.0.1:18090/"
+      ],
+      [
+        "referer",
+        "http://127.0.0.1:18090/"
+      ],
+      [
+        "cookie",
+        "__Secure-next-auth.session-token=synthetic-access-token"
+      ],
+      [
+        "host",
+        "127.0.0.1:18090"
+      ]
+    ],
+    "body": ""
+  },
+  {
+    "kind": "scenario",
+    "id": "token-fixture",
+    "method": "POST",
+    "path": "/api/get-user-info",
+    "input": {
+      "chatgpt_token": "synthetic-access-token"
+    },
+    "status": 400,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "53"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:38 GMT"
+      ]
+    ],
+    "body": "{\"message\":\"session_token 无法换取 access_token\"}"
+  },
+  {
+    "kind": "upstream",
+    "method": "GET",
+    "path": "/backend-api/accounts/check/v4-2023-04-27",
+    "headers": [
+      [
+        "user-agent",
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+      ],
+      [
+        "accept",
+        "application/json, text/plain, */*"
+      ],
+      [
+        "accept-encoding",
+        "identity"
+      ],
+      [
+        "accept-language",
+        "zh-CN,zh;q=0.9,en;q=0.8"
+      ],
+      [
+        "origin",
+        "http://127.0.0.1:18090/"
+      ],
+      [
+        "referer",
+        "http://127.0.0.1:18090/"
+      ],
+      [
+        "authorization",
+        "Bearer synthetic-access-token"
+      ],
+      [
+        "host",
+        "127.0.0.1:18090"
+      ]
+    ],
+    "body": ""
+  },
+  {
+    "kind": "upstream",
+    "method": "GET",
+    "path": "/backend-api/me",
+    "headers": [
+      [
+        "user-agent",
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+      ],
+      [
+        "accept",
+        "application/json, text/plain, */*"
+      ],
+      [
+        "accept-encoding",
+        "identity"
+      ],
+      [
+        "accept-language",
+        "zh-CN,zh;q=0.9,en;q=0.8"
+      ],
+      [
+        "origin",
+        "http://127.0.0.1:18090/"
+      ],
+      [
+        "referer",
+        "http://127.0.0.1:18090/"
+      ],
+      [
+        "authorization",
+        "Bearer synthetic-access-token"
+      ],
+      [
+        "host",
+        "127.0.0.1:18090"
+      ]
+    ],
+    "body": ""
+  },
+  {
+    "kind": "scenario",
+    "id": "login-fixture",
+    "method": "POST",
+    "path": "/api/login",
+    "input": {
+      "user_name": "alice",
+      "access_token": "synthetic-access-token",
+      "session_token": "",
+      "login_mode": "api",
+      "isolated_session": true,
+      "limits": [],
+      "daily_quota": 0,
+      "monthly_quota": 0,
+      "force_chat_mode": true
+    },
+    "status": 200,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "set-cookie",
+        "mirror_token=6b7159ff1ee8c5ac0cbe4b08f1fc88a38c4a4c9340c1d36d81a7b29827d17543; Path=/; SameSite=Lax; Max-Age=604800; Secure; HttpOnly"
+      ],
+      [
+        "set-cookie",
+        "access_token=; Path=/; SameSite=Lax; Max-Age=0; Secure; HttpOnly"
+      ],
+      [
+        "set-cookie",
+        "session_token=; Path=/; SameSite=Lax; Max-Age=0; Secure; HttpOnly"
+      ],
+      [
+        "set-cookie",
+        "next-auth.session-token=; Path=/; SameSite=Lax; Max-Age=0; Secure; HttpOnly"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "203"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:38 GMT"
+      ]
+    ],
+    "body": "{\"chatgpt_username\":\"fixture@example.invalid\",\"login_mode\":\"api\",\"login_url\":\"/api/not-login?user_gateway_token=6b7159ff1ee8c5ac0cbe4b08f1fc88a38c4a4c9340c1d36d81a7b29827d17543\",\"message\":\"登录成功\"}"
+  },
+  {
+    "kind": "scenario",
+    "id": "handoff",
+    "status": 302,
+    "headers": [
+      [
+        "location",
+        "/"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "set-cookie",
+        "mirror_token=f541d167404ac2874e70608731827c9798bb898d19555e915b5aa091340eae18; Path=/; SameSite=Lax; Max-Age=604800; Secure; HttpOnly"
+      ],
+      [
+        "set-cookie",
+        "access_token=; Path=/; SameSite=Lax; Max-Age=0; Secure; HttpOnly"
+      ],
+      [
+        "set-cookie",
+        "session_token=; Path=/; SameSite=Lax; Max-Age=0; Secure; HttpOnly"
+      ],
+      [
+        "set-cookie",
+        "next-auth.session-token=; Path=/; SameSite=Lax; Max-Age=0; Secure; HttpOnly"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "0"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:38 GMT"
+      ]
+    ],
+    "body": ""
+  },
+  {
+    "kind": "upstream",
+    "method": "GET",
+    "path": "/backend-api/accounts/check/v4-2023-04-27",
+    "headers": [
+      [
+        "user-agent",
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+      ],
+      [
+        "accept",
+        "application/json, text/plain, */*"
+      ],
+      [
+        "accept-encoding",
+        "identity"
+      ],
+      [
+        "accept-language",
+        "zh-CN,zh;q=0.9,en;q=0.8"
+      ],
+      [
+        "origin",
+        "http://127.0.0.1:18090/"
+      ],
+      [
+        "referer",
+        "http://127.0.0.1:18090/"
+      ],
+      [
+        "authorization",
+        "Bearer synthetic-access-token"
+      ],
+      [
+        "host",
+        "127.0.0.1:18090"
+      ]
+    ],
+    "body": ""
+  },
+  {
+    "kind": "upstream",
+    "method": "GET",
+    "path": "/backend-api/me",
+    "headers": [
+      [
+        "user-agent",
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+      ],
+      [
+        "accept",
+        "application/json, text/plain, */*"
+      ],
+      [
+        "accept-encoding",
+        "identity"
+      ],
+      [
+        "accept-language",
+        "zh-CN,zh;q=0.9,en;q=0.8"
+      ],
+      [
+        "origin",
+        "http://127.0.0.1:18090/"
+      ],
+      [
+        "referer",
+        "http://127.0.0.1:18090/"
+      ],
+      [
+        "authorization",
+        "Bearer synthetic-access-token"
+      ],
+      [
+        "host",
+        "127.0.0.1:18090"
+      ]
+    ],
+    "body": ""
+  },
+  {
+    "kind": "scenario",
+    "id": "session:/api/auth/session",
+    "status": 200,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "274"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:38 GMT"
+      ]
+    ],
+    "body": "{\"authProvider\":\"openai\",\"expires\":\"2099-12-31T23:59:59.000Z\",\"loginMode\":\"api\",\"planType\":\"free\",\"user\":{\"email\":\"fixture@example.invalid\",\"id\":\"cc6d96611cffa9f02c3626f0b9ee897dc171e2d540a5cae349d4ec316104997b\",\"image\":null,\"name\":\"fixture@example.invalid\",\"picture\":null}}"
+  },
+  {
+    "kind": "scenario",
+    "id": "session:/api/user-blocked-paths",
+    "status": 200,
+    "headers": [
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "62"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:38 GMT"
+      ]
+    ],
+    "body": "{\"force_chat_mode\":true,\"paths\":[\"/secret\",\"/#settings/Test\"]}"
+  },
+  {
+    "kind": "upstream",
+    "method": "GET",
+    "path": "/backend-api/me",
+    "headers": [
+      [
+        "accept-encoding",
+        "identity"
+      ],
+      [
+        "user-agent",
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+      ],
+      [
+        "origin",
+        "http://127.0.0.1"
+      ],
+      [
+        "referer",
+        "http://127.0.0.1/"
+      ],
+      [
+        "authorization",
+        "Bearer synthetic-access-token"
+      ],
+      [
+        "accept",
+        "*/*"
+      ],
+      [
+        "host",
+        "127.0.0.1:18090"
+      ]
+    ],
+    "body": ""
+  },
+  {
+    "kind": "scenario",
+    "id": "session:/backend-api/me",
+    "status": 200,
+    "headers": [
+      [
+        "server",
+        "BaseHTTP/0.6 Python/3.12.14"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:38 GMT"
+      ],
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "content-security-policy",
+        "default-src 'self'; connect-src 'self' ws: wss: blob: https://static.cloudflareinsights.com https://chatgpt.com https://ab.chatgpt.com https://cdn.oaistatic.com https://cdn.openai.com https://images.openai.com https://*.oaiusercontent.com https://files.openai.com https://persistent.oaistatic.com https://www.google.com https://t0.gstatic.com https://t1.gstatic.com https://t2.gstatic.com https://t3.gstatic.com https://lh3.googleusercontent.com https://cdn.auth0.com; img-src 'self' data: blob: https://static.cloudflareinsights.com https://*.oaiusercontent.com https://files.openai.com https://persistent.oaistatic.com https://www.google.com https://t0.gstatic.com https://t1.gstatic.com https://t2.gstatic.com https://t3.gstatic.com https://lh3.googleusercontent.com https://cdn.auth0.com; font-src 'self' data: https://cdn.openai.com https://*.oaiusercontent.com https://persistent.oaistatic.com; style-src 'self' 'unsafe-inline' https://*.oaiusercontent.com https://persistent.oaistatic.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://chatgpt.com https://static.cloudflareinsights.com https://*.oaiusercontent.com; worker-src 'self' blob:; frame-src 'self' https://*.oaiusercontent.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "77"
+      ]
+    ],
+    "body": "{\"id\": \"synthetic-id\", \"email\": \"fixture@example.invalid\", \"name\": \"Fixture\"}"
+  },
+  {
+    "kind": "upstream",
+    "method": "GET",
+    "path": "/backend-api/conversations?offset=0&limit=20",
+    "headers": [
+      [
+        "accept-encoding",
+        "identity"
+      ],
+      [
+        "user-agent",
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+      ],
+      [
+        "origin",
+        "http://127.0.0.1"
+      ],
+      [
+        "referer",
+        "http://127.0.0.1/"
+      ],
+      [
+        "authorization",
+        "Bearer synthetic-access-token"
+      ],
+      [
+        "accept",
+        "*/*"
+      ],
+      [
+        "host",
+        "127.0.0.1:18090"
+      ]
+    ],
+    "body": ""
+  },
+  {
+    "kind": "scenario",
+    "id": "session:/backend-api/conversations?offset=0&limit=20",
+    "status": 200,
+    "headers": [
+      [
+        "server",
+        "BaseHTTP/0.6 Python/3.12.14"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:38 GMT"
+      ],
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "content-security-policy",
+        "default-src 'self'; connect-src 'self' ws: wss: blob: https://static.cloudflareinsights.com https://chatgpt.com https://ab.chatgpt.com https://cdn.oaistatic.com https://cdn.openai.com https://images.openai.com https://*.oaiusercontent.com https://files.openai.com https://persistent.oaistatic.com https://www.google.com https://t0.gstatic.com https://t1.gstatic.com https://t2.gstatic.com https://t3.gstatic.com https://lh3.googleusercontent.com https://cdn.auth0.com; img-src 'self' data: blob: https://static.cloudflareinsights.com https://*.oaiusercontent.com https://files.openai.com https://persistent.oaistatic.com https://www.google.com https://t0.gstatic.com https://t1.gstatic.com https://t2.gstatic.com https://t3.gstatic.com https://lh3.googleusercontent.com https://cdn.auth0.com; font-src 'self' data: https://cdn.openai.com https://*.oaiusercontent.com https://persistent.oaistatic.com; style-src 'self' 'unsafe-inline' https://*.oaiusercontent.com https://persistent.oaistatic.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://chatgpt.com https://static.cloudflareinsights.com https://*.oaiusercontent.com; worker-src 'self' blob:; frame-src 'self' https://*.oaiusercontent.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "content-length",
+        "22"
+      ]
+    ],
+    "body": "{\"items\":[],\"total\":0}"
+  },
+  {
+    "kind": "upstream",
+    "method": "GET",
+    "path": "/0x/user/version-cfg?fixture=1",
+    "headers": [
+      [
+        "accept-encoding",
+        "identity"
+      ],
+      [
+        "x-chatgpt-mirror-client-ip",
+        "127.0.0.1"
+      ],
+      [
+        "user-agent",
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+      ],
+      [
+        "accept",
+        "*/*"
+      ],
+      [
+        "host",
+        "127.0.0.1:18090"
+      ]
+    ],
+    "body": ""
+  },
+  {
+    "kind": "scenario",
+    "id": "session:/0x/user/version-cfg?fixture=1",
+    "status": 200,
+    "headers": [
+      [
+        "server",
+        "BaseHTTP/0.6 Python/3.12.14"
+      ],
+      [
+        "date",
+        "Tue, 22 Sep 2026 10:27:38 GMT"
+      ],
+      [
+        "content-type",
+        "application/json"
+      ],
+      [
+        "content-security-policy",
+        "default-src 'self'; connect-src 'self' ws: wss: blob: https://static.cloudflareinsights.com https://chatgpt.com https://ab.chatgpt.com https://cdn.oaistatic.com https://cdn.openai.com https://images.openai.com https://*.oaiusercontent.com https://files.openai.com https://persistent.oaistatic.com https://www.google.com https://t0.gstatic.com https://t1.gstatic.com https://t2.gstatic.com https://t3.gstatic.com https://lh3.googleusercontent.com https://cdn.auth0.com; img-src 'self' data: blob: https://static.cloudflareinsights.com https://*.oaiusercontent.com https://files.openai.com https://persistent.oaistatic.com https://www.google.com https://t0.gstatic.com https://t1.gstatic.com https://t2.gstatic.com https://t3.gstatic.com https://lh3.googleusercontent.com https://cdn.auth0.com; font-src 'self' data: https://cdn.openai.com https://*.oaiusercontent.com https://persistent.oaistatic.com; style-src 'self' 'unsafe-inline' https://*.oaiusercontent.com https://persistent.oaistatic.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://chatgpt.com https://static.cloudflareinsights.com https://*.oaiusercontent.com; worker-src 'self' blob:; frame-src 'self' https://*.oaiusercontent.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
+      ],
+      [
+        "cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "cloudflare-cdn-cache-control",
+        "private, no-store, no-cache, must-revalidate, max-age=0"
+      ],
+      [
+        "pragma",
+        "no-cache"
+      ],
+      [
+        "expires",
+        "0"
+      ],
+      [
+        "vary",
+        "Cookie, Authorization"
+      ],
+      [
+        "vary",
+        "accept-encoding"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "referrer-policy",
+        "same-origin"
+      ],
+      [
+        "x-frame-options",
+        "SAMEORIGIN"
+      ],
+      [
+        "cross-origin-opener-policy",
+        "same-origin"
+      ],
+      [
+        "permissions-policy",
+        "camera=(), microphone=(), geolocation=()"
+      ],
+      [
+        "accept-ch",
+        "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version"
+      ],
+      [
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains; preload"
+      ],
+      [
+        "transfer-encoding",
+        "chunked"
+      ]
+    ],
+    "body": "{\"stub\": true, \"path\": \"/0x/user/version-cfg?fixture=1\", \"method\": \"GET\"}"
+  },
+  {
+    "kind": "scenario",
+    "id": "export-populated",
+    "status": 200,
+    "body": "{\"chatgpt_accounts\":[],\"conversation_model_statistics\":[],\"conversation_owners\":[],\"conversation_statistics\":[],\"gateway_sessions\":[{\"access_token\":\"enc:v1:ajOe05PHrXOQN0iT0rd4EPbdQ1ycThJ_qt2YEoy_ratWGNRKyAiVeC5W2EfbDVnyGkE\",\"chatgpt_username\":\"fixture@example.invalid\",\"created_at\":1790072858,\"daily_quota\":0,\"extra_cookies\":\"enc:v1:i4Y3XOda5jNQGUocuJiMY2PYYdurZydo8-OV4n3J\",\"force_chat_mode\":true,\"id\":1,\"isolated_session\":true,\"limits\":\"[]\",\"login_mode\":\"api\",\"mirror_token\":\"sha256:8d848f50042a9eb30e4a8e65a35ad25604da2ab9ac950b04c6c51a03c263f5d2\",\"monthly_quota\":0,\"proxy_node_id\":null,\"session_token\":null,\"updated_at\":1790072858,\"user_name\":\"alice\"}],\"project_owners\":[],\"settings\":[{\"key\":\"mirror_proxy\",\"updated_at\":1790072857,\"value\":\"enc:v1:_V0hmbooYH869Usr5LJsE17lcKx9cNMlQdDFQDx1__tqwIApdt0t_F-hcC04a4KCBMPk_3qvMaq82xTRZv-WLLUgn32WqKFy89k8e9bnATF-oiisr_vnKw7Eol2HFTVNtcFxTcMKtRt5VTqnSw5RLBrlR3nmPmZlh3yKEMFvvfjY-e-s\"},{\"key\":\"custom_scripts\",\"updated_at\":1790072857,\"value\":\"{\\\"scripts\\\":[],\\\"trusted_cdn_sources\\\":[]}\"},{\"key\":\"blocked_paths\",\"updated_at\":1790072858,\"value\":\"{\\\"paths\\\":[\\\"/secret\\\",\\\"/#settings/Test\\\"]}\"}],\"version\":2,\"visit_logs\":[]}"
+  },
+  {
+    "kind": "process",
+    "stdout": "\u001b[2m2026-09-22T10:27:35.956645Z\u001b[0m \u001b[32m INFO\u001b[0m \u001b[2mchatgpt_mirror_gateway\u001b[0m\u001b[2m:\u001b[0m gateway upstreams configured \u001b[3mdjango_upstream\u001b[0m\u001b[2m=\u001b[0mSome(Url { scheme: \"http\", cannot_be_a_base: false, username: \"\", password: None, host: Some(Ipv4(127.0.0.1)), port: Some(18090), path: \"/\", query: None, fragment: None }) \u001b[3madmin_upstream\u001b[0m\u001b[2m=\u001b[0mSome(Url { scheme: \"http\", cannot_be_a_base: false, username: \"\", password: None, host: Some(Ipv4(127.0.0.1)), port: Some(18090), path: \"/\", query: None, fragment: None }) \u001b[3mchatgpt_base_url\u001b[0m\u001b[2m=\u001b[0mhttp://127.0.0.1:18090/ \u001b[3mcf_bypass_url\u001b[0m\u001b[2m=\u001b[0mSome(Url { scheme: \"http\", cannot_be_a_base: false, username: \"\", password: None, host: Some(Ipv4(127.0.0.1)), port: Some(18090), path: \"/\", query: None, fragment: None })\n\u001b[2m2026-09-22T10:27:35.968926Z\u001b[0m \u001b[32m INFO\u001b[0m \u001b[2mchatgpt_mirror_gateway\u001b[0m\u001b[2m:\u001b[0m 开始异步预热 CF bypass 缓存 \u001b[3mattempt\u001b[0m\u001b[2m=\u001b[0m1\n\u001b[2m2026-09-22T10:27:36.079055Z\u001b[0m \u001b[32m INFO\u001b[0m \u001b[2mchatgpt_mirror_gateway\u001b[0m\u001b[2m:\u001b[0m gateway listening on http://127.0.0.1:40100\n\u001b[2m2026-09-22T10:27:36.219412Z\u001b[0m \u001b[32m INFO\u001b[0m \u001b[2mchatgpt_mirror_gateway::proxy\u001b[0m\u001b[2m:\u001b[0m cfbypass 获取到有效 cookies \u001b[3moriginal_target\u001b[0m\u001b[2m=\u001b[0mhttp://127.0.0.1:18090/ \u001b[3mcfbypass_target\u001b[0m\u001b[2m=\u001b[0mhttp://127.0.0.1:18090/ \u001b[3mendpoint\u001b[0m\u001b[2m=\u001b[0m/cloudflare5s/bypass-v1 \u001b[3mcookie_count\u001b[0m\u001b[2m=\u001b[0m1 \u001b[3mhas_user_agent\u001b[0m\u001b[2m=\u001b[0mtrue\n\u001b[2m2026-09-22T10:27:36.224002Z\u001b[0m \u001b[32m INFO\u001b[0m \u001b[2mchatgpt_mirror_gateway\u001b[0m\u001b[2m:\u001b[0m CF bypass 缓存预热完成 \u001b[3mattempt\u001b[0m\u001b[2m=\u001b[0m1\n\u001b[2m2026-09-22T10:27:37.646288Z\u001b[0m \u001b[32m INFO\u001b[0m \u001b[2mchatgpt_mirror_gateway::api\u001b[0m\u001b[2m:\u001b[0m gateway auth session resolved as anonymous\n\u001b[2m2026-09-22T10:27:37.662119Z\u001b[0m \u001b[32m INFO\u001b[0m \u001b[2mchatgpt_mirror_gateway::api\u001b[0m\u001b[2m:\u001b[0m gateway auth session resolved as anonymous\n\u001b[2m2026-09-22T10:27:38.528820Z\u001b[0m \u001b[32m INFO\u001b[0m \u001b[2mchatgpt_mirror_gateway::api\u001b[0m\u001b[2m:\u001b[0m gateway auth session resolved from access_token\n\u001b[2m2026-09-22T10:27:38.594216Z\u001b[0m \u001b[32m INFO\u001b[0m \u001b[2mchatgpt_mirror_gateway::proxy\u001b[0m\u001b[2m:\u001b[0m 上游响应完成 \u001b[3mtarget\u001b[0m\u001b[2m=\u001b[0mhttp://127.0.0.1:18090/backend-api/me \u001b[3mduration_ms\u001b[0m\u001b[2m=\u001b[0m13\n\u001b[2m2026-09-22T10:27:38.654696Z\u001b[0m \u001b[32m INFO\u001b[0m \u001b[2mchatgpt_mirror_gateway::proxy\u001b[0m\u001b[2m:\u001b[0m 上游响应完成 \u001b[3mtarget\u001b[0m\u001b[2m=\u001b[0mhttp://127.0.0.1:18090/backend-api/conversations?offset=0&limit=20 \u001b[3mduration_ms\u001b[0m\u001b[2m=\u001b[0m13\n\u001b[2m2026-09-22T10:27:38.720173Z\u001b[0m \u001b[32m INFO\u001b[0m \u001b[2mchatgpt_mirror_gateway::proxy\u001b[0m\u001b[2m:\u001b[0m 上游响应完成 \u001b[3mtarget\u001b[0m\u001b[2m=\u001b[0mhttp://127.0.0.1:18090/0x/user/version-cfg?fixture=1 \u001b[3mduration_ms\u001b[0m\u001b[2m=\u001b[0m14\n",
+    "stderr": "",
+    "exit": -15
+  }
+]

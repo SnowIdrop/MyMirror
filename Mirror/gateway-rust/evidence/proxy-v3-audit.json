@@ -1,0 +1,366 @@
+{
+  "scope": "proxy recorded DB projections, seed time offsets, and upstream request sequences/headers/bodies",
+  "cases": 75,
+  "matched": 69,
+  "different": 6,
+  "differences": [
+    {
+      "case": "upstream:p1-carol-extra-cookies",
+      "baseline": [
+        {
+          "method": "GET",
+          "path": "/backend-api/conversations?offset=0&limit=20",
+          "headers": {
+            "accept-encoding": [
+              "identity"
+            ],
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "origin": [
+              "http://127.0.0.1"
+            ],
+            "referer": [
+              "http://127.0.0.1/"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "cookie": [
+              "probe_extra=EV; cf_clearance=SYNTHETIC"
+            ],
+            "accept": [
+              "*/*"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        }
+      ],
+      "candidate": [
+        {
+          "method": "GET",
+          "path": "/backend-api/conversations?offset=0&limit=20",
+          "headers": {
+            "accept-encoding": [
+              "identity"
+            ],
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "accept": [
+              "*/*"
+            ],
+            "origin": [
+              "http://127.0.0.1"
+            ],
+            "referer": [
+              "http://127.0.0.1/"
+            ],
+            "cookie": [
+              "cf_clearance=SYNTHETIC"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        }
+      ]
+    },
+    {
+      "case": "upstream:p1-cfg-client-ip-headers",
+      "baseline": [
+        {
+          "method": "GET",
+          "path": "/0x/user/version-cfg?fixture=1",
+          "headers": {
+            "accept-encoding": [
+              "identity"
+            ],
+            "x-chatgpt-mirror-client-ip": [
+              "127.0.0.1"
+            ],
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "cookie": [
+              "cf_clearance=SYNTHETIC"
+            ],
+            "accept": [
+              "*/*"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        }
+      ],
+      "candidate": [
+        {
+          "method": "GET",
+          "path": "/0x/user/version-cfg?fixture=1",
+          "headers": {
+            "x-real-ip": [
+              "203.0.113.7"
+            ],
+            "accept-encoding": [
+              "identity"
+            ],
+            "x-forwarded-for": [
+              "203.0.113.9"
+            ],
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "accept": [
+              "*/*"
+            ],
+            "x-chatgpt-mirror-client-ip": [
+              "127.0.0.1"
+            ],
+            "cookie": [
+              "cf_clearance=SYNTHETIC"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        }
+      ]
+    },
+    {
+      "case": "upstream:p1-me-connection-token",
+      "baseline": [
+        {
+          "method": "GET",
+          "path": "/backend-api/me",
+          "headers": {
+            "accept-encoding": [
+              "identity"
+            ],
+            "x-conn-token": [
+              "drop-me"
+            ],
+            "x-keep": [
+              "keep-me"
+            ],
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "origin": [
+              "http://127.0.0.1"
+            ],
+            "referer": [
+              "http://127.0.0.1/"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "cookie": [
+              "cf_clearance=SYNTHETIC"
+            ],
+            "accept": [
+              "*/*"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        }
+      ],
+      "candidate": [
+        {
+          "method": "GET",
+          "path": "/backend-api/me",
+          "headers": {
+            "x-keep": [
+              "keep-me"
+            ],
+            "accept-encoding": [
+              "identity"
+            ],
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "accept": [
+              "*/*"
+            ],
+            "origin": [
+              "http://127.0.0.1"
+            ],
+            "referer": [
+              "http://127.0.0.1/"
+            ],
+            "cookie": [
+              "cf_clearance=SYNTHETIC"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        }
+      ]
+    },
+    {
+      "case": "upstream:p1-probe-chat",
+      "baseline": [
+        {
+          "method": "GET",
+          "path": "/backend-api/probe/headers",
+          "headers": {
+            "accept-encoding": [
+              "identity"
+            ],
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "origin": [
+              "http://127.0.0.1"
+            ],
+            "referer": [
+              "http://127.0.0.1/"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "cookie": [
+              "cf_clearance=SYNTHETIC"
+            ],
+            "accept": [
+              "*/*"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        }
+      ],
+      "candidate": null
+    },
+    {
+      "case": "upstream:p1-probe-html-chat",
+      "baseline": [
+        {
+          "method": "GET",
+          "path": "/backend-api/probe/html",
+          "headers": {
+            "accept-encoding": [
+              "identity"
+            ],
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "origin": [
+              "http://127.0.0.1"
+            ],
+            "referer": [
+              "http://127.0.0.1/"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "cookie": [
+              "cf_clearance=SYNTHETIC"
+            ],
+            "accept": [
+              "*/*"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        }
+      ],
+      "candidate": null
+    },
+    {
+      "case": "upstream:session:/api/auth/session",
+      "baseline": [
+        {
+          "method": "GET",
+          "path": "/backend-api/accounts/check/v4-2023-04-27",
+          "headers": {
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "accept": [
+              "application/json, text/plain, */*"
+            ],
+            "accept-encoding": [
+              "identity"
+            ],
+            "accept-language": [
+              "zh-CN,zh;q=0.9,en;q=0.8"
+            ],
+            "origin": [
+              "http://127.0.0.1:18090/"
+            ],
+            "referer": [
+              "http://127.0.0.1:18090/"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "cookie": [
+              "cf_clearance=SYNTHETIC"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "path": "/backend-api/me",
+          "headers": {
+            "user-agent": [
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            ],
+            "accept": [
+              "application/json, text/plain, */*"
+            ],
+            "accept-encoding": [
+              "identity"
+            ],
+            "accept-language": [
+              "zh-CN,zh;q=0.9,en;q=0.8"
+            ],
+            "origin": [
+              "http://127.0.0.1:18090/"
+            ],
+            "referer": [
+              "http://127.0.0.1:18090/"
+            ],
+            "authorization": [
+              "Bearer synthetic-access-token"
+            ],
+            "cookie": [
+              "cf_clearance=SYNTHETIC"
+            ],
+            "host": [
+              "127.0.0.1:18090"
+            ]
+          },
+          "body": ""
+        }
+      ],
+      "candidate": null
+    }
+  ]
+}

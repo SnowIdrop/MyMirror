@@ -1,0 +1,66 @@
+sandbox-initramfs manifest
+source image: D:\Project\MirrorNiXiang\image.tar
+output: D:\Project\MirrorNiXiang\reverse\tools\sandbox-initramfs.cpio.gz (62209343 bytes)
+sha256: 4d3b26f4712bc73f8cb0c7ec3159a0b44762a11a94d40ae327eb02b58e5e68d2
+cpio entries: 4049
+kernel release (modules): 6.18.52-0-virt
+
+-- sources --
+L1 debian-rootfs                   3261
+L2 ca-certificates                 532
+L5 libcurl closure                 45
+L9 app dir                         1
+L10 gateway                        1
+L16 entry script                   1
+L17 data dirs/symlinks             7
+L11 curl-impersonate(so)           6
+initramfs-virt modules+busybox     205
+
+-- L5 closure (45 entries, 10413112 bytes) --
+L3 usr/lib/x86_64-linux-gnu/libffi.so.8                                  0  <= libffi.so.8
+L3 usr/lib/x86_64-linux-gnu/libffi.so.8.1.4                          47576  <= libffi.so.8
+L5 usr/lib/x86_64-linux-gnu/libbrotlicommon.so.1                         0  <= libbrotlicommon.so.1
+L5 usr/lib/x86_64-linux-gnu/libbrotlicommon.so.1.1.0                141496  <= libbrotlicommon.so.1
+L5 usr/lib/x86_64-linux-gnu/libbrotlidec.so.1                            0  <= libbrotlidec.so.1
+L5 usr/lib/x86_64-linux-gnu/libbrotlidec.so.1.1.0                    51376  <= libbrotlidec.so.1
+L5 usr/lib/x86_64-linux-gnu/libcom_err.so.2                              0  <= libcom_err.so.2
+L5 usr/lib/x86_64-linux-gnu/libcom_err.so.2.1                        18344  <= libcom_err.so.2
+L5 usr/lib/x86_64-linux-gnu/libcurl.so.4                                 0  <= libcurl.so.4
+L5 usr/lib/x86_64-linux-gnu/libcurl.so.4.8.0                        983720  <= libcurl.so.4
+L5 usr/lib/x86_64-linux-gnu/libgnutls.so.30                              0  <= libgnutls.so.30
+L5 usr/lib/x86_64-linux-gnu/libgnutls.so.30.40.3                   2246712  <= libgnutls.so.30
+L5 usr/lib/x86_64-linux-gnu/libgssapi_krb5.so.2                          0  <= libgssapi_krb5.so.2
+L5 usr/lib/x86_64-linux-gnu/libgssapi_krb5.so.2.2                   346904  <= libgssapi_krb5.so.2
+L5 usr/lib/x86_64-linux-gnu/libidn2.so.0                                 0  <= libidn2.so.0
+L5 usr/lib/x86_64-linux-gnu/libidn2.so.0.4.0                        202872  <= libidn2.so.0
+L5 usr/lib/x86_64-linux-gnu/libk5crypto.so.3                             0  <= libk5crypto.so.3
+L5 usr/lib/x86_64-linux-gnu/libk5crypto.so.3.1                      187144  <= libk5crypto.so.3
+L5 usr/lib/x86_64-linux-gnu/libkeyutils.so.1                             0  <= libkeyutils.so.1
+L5 usr/lib/x86_64-linux-gnu/libkeyutils.so.1.10                      22448  <= libkeyutils.so.1
+L5 usr/lib/x86_64-linux-gnu/libkrb5.so.3                                 0  <= libkrb5.so.3
+L5 usr/lib/x86_64-linux-gnu/libkrb5.so.3.3                          883984  <= libkrb5.so.3
+L5 usr/lib/x86_64-linux-gnu/libkrb5support.so.0                          0  <= libkrb5support.so.0
+L5 usr/lib/x86_64-linux-gnu/libkrb5support.so.0.1                    52208  <= libkrb5support.so.0
+L5 usr/lib/x86_64-linux-gnu/liblber.so.2                                 0  <= liblber.so.2
+L5 usr/lib/x86_64-linux-gnu/liblber.so.2.0.200                       63824  <= liblber.so.2
+L5 usr/lib/x86_64-linux-gnu/libldap.so.2                                 0  <= libldap.so.2
+L5 usr/lib/x86_64-linux-gnu/libldap.so.2.0.200                      400912  <= libldap.so.2
+L5 usr/lib/x86_64-linux-gnu/libnghttp2.so.14                             0  <= libnghttp2.so.14
+L5 usr/lib/x86_64-linux-gnu/libnghttp2.so.14.28.3                   199152  <= libnghttp2.so.14
+L5 usr/lib/x86_64-linux-gnu/libnghttp3.so.9                              0  <= libnghttp3.so.9
+L5 usr/lib/x86_64-linux-gnu/libnghttp3.so.9.2.6                     173392  <= libnghttp3.so.9
+L5 usr/lib/x86_64-linux-gnu/libp11-kit.so.0                              0  <= libp11-kit.so.0
+L5 usr/lib/x86_64-linux-gnu/libp11-kit.so.0.4.1                    1705664  <= libp11-kit.so.0
+L5 usr/lib/x86_64-linux-gnu/libpsl.so.5                                  0  <= libpsl.so.5
+L5 usr/lib/x86_64-linux-gnu/libpsl.so.5.3.4                          75616  <= libpsl.so.5
+L5 usr/lib/x86_64-linux-gnu/librtmp.so.1                            122256  <= librtmp.so.1
+L5 usr/lib/x86_64-linux-gnu/libsasl2.so.2                                0  <= libsasl2.so.2
+L5 usr/lib/x86_64-linux-gnu/libsasl2.so.2.0.25                      109232  <= libsasl2.so.2
+L5 usr/lib/x86_64-linux-gnu/libssh2.so.1                                 0  <= libssh2.so.1
+L5 usr/lib/x86_64-linux-gnu/libssh2.so.1.0.1                        293376  <= libssh2.so.1
+L5 usr/lib/x86_64-linux-gnu/libtasn1.so.6                                0  <= libtasn1.so.6
+L5 usr/lib/x86_64-linux-gnu/libtasn1.so.6.6.4                        88064  <= libtasn1.so.6
+L5 usr/lib/x86_64-linux-gnu/libunistring.so.5                            0  <= libunistring.so.5
+L5 usr/lib/x86_64-linux-gnu/libunistring.so.5.2.0                  1996840  <= libunistring.so.5
+
+-- unresolved --

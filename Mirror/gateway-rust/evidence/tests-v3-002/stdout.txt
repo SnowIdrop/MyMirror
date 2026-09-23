@@ -1,0 +1,90 @@
+
+running 41 tests
+test crypto::tests::sha256_prefix_hash ... ok
+test crypto::tests::key_min_length_enforced ... ok
+test policy::tests::check_request_rejects_non_string_model ... ok
+test policy::tests::capability_allowlist_matches_id_and_alias ... ok
+test policy::tests::check_request_enforces_model_when_present ... ok
+test policy::tests::disabled_capability_isolation_allows_any_id ... ok
+test policy::tests::disabled_model_isolation_allows_any_model ... ok
+test policy::tests::config_type_errors_are_rejected_instead_of_silent_fallback ... ok
+test policy::tests::empty_model_allowlist_denies_every_model ... ok
+test policy::tests::empty_model_or_capability_id_is_rejected ... ok
+test policy::tests::delayed_revocation_does_not_hit_new_session ... ok
+test crypto::tests::wrong_key_and_bad_payload_fail ... ok
+test policy::tests::expired_revocation_matches_nothing ... ok
+test crypto::tests::roundtrip_and_prefix_rules ... ok
+test policy::tests::explicitly_empty_allowlist_denies_capability ... ok
+test policy::tests::login_defaults_version_and_expiry_when_absent ... ok
+test policy::tests::missing_capability_initialization_fails_closed ... ok
+test policy::tests::model_allowlist_rejects_unlisted_and_normalizes_case ... ok
+test policy::tests::login_requires_identity_and_non_negative_quota ... ok
+test policy::tests::revocation_from_json_parses_delivery_and_rejects_invalid ... ok
+test policy::tests::revocation_matches_exact_subject_and_version ... ok
+test policy::tests::revocation_visitor_prefix_is_strict ... ok
+test policy::tests::revocation_without_visitors_does_not_hit_visitor_session ... ok
+test server::compression::tests::negotiation_prefers_quality_then_encoding_order ... ok
+test server::compression::tests::predicate_uses_size_type_and_existing_encoding ... ok
+test server::management::tests::protocol_and_mode_whitelists_match_observed_rejections ... ok
+test server::proxy::tests::cf_clearance_prefers_named_cookie_and_joins ... ok
+test server::compression::tests::vary_detection_is_case_insensitive_substring ... ok
+test server::proxy::tests::conversations_without_items_fall_back_to_empty_envelope ... ok
+test server::proxy::tests::conversations_filter_keeps_scope_and_extra_keys ... ok
+test server::proxy::tests::chat_origin_drops_port_and_referer_appends_slash ... ok
+test server::proxy::tests::request_headers_drop_credentials_and_connection_named_headers ... ok
+test server::management::tests::base_url_rules_match_observed_messages ... ok
+test server::proxy::tests::cookie_header_order_and_extra_cookie_parsing ... ok
+test server::proxy::tests::response_headers_drop_transfer_encoding_and_mark_proxied ... ok
+test server::compression::tests::gzip_encodes_multiple_frames_and_propagates_stream_failure ... ok
+test storage::tests::schema_has_eight_tables_and_settings_roundtrip ... ok
+test storage::tests::open_backfills_legacy_columns_and_encrypts_rows ... ok
+test storage::tests::backup_roundtrip_rejects_bad_payload_and_rolls_back ... ok
+test storage::tests::migrate_wrong_source_key_stops_without_writes ... ok
+test storage::tests::migrate_reencrypts_and_clears_sessions ... ok
+
+test result: ok. 41 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.32s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 13 tests
+test http_restore_legacy_ignores_non_array_and_unknown_keys ... ok
+test http_restore_failure_rolls_back_every_table ... ok
+test http_restore_strict_requires_every_table ... ok
+test http_restore_empty_object_is_noop ... ok
+test http_restore_strict_requires_row_fields_with_observed_messages ... ok
+test restore_backup_keeps_strict_v2_contract ... ok
+test http_restore_stores_values_as_is_without_crypto ... ok
+test http_restore_strict_all_empty_arrays_clears_tables ... ok
+test http_restore_strict_defaults_match_observations ... ok
+test http_restore_legacy_settings_upsert_keeps_other_rows ... ok
+test http_restore_legacy_updates_existing_account_row ... ok
+test http_restore_non_v2_version_uses_legacy_upsert ... ok
+test runtime_validation_failure_rolls_back_the_complete_restore ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.43s
+
+
+running 3 tests
+test restore_wrong_key_leaves_existing_database_unchanged ... ok
+test unknown_source_column_stops_before_destination_creation ... ok
+test migration_preserves_source_and_refuses_repeated_destination ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.25s
+
+
+running 2 tests
+test offline_transport_rejects_external_and_ambiguous_targets ... ok
+test mirror_authority_revocation_and_relogin_are_enforced ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.16s
+
+
+running 1 test
+test decrypts_original_observed_session_credential ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

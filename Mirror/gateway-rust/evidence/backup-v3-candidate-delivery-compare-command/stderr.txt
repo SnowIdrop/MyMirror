@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "D:\Project\Mirror\gateway-rust\tools\compare_backup_v3.py", line 89, in <module>
+    if __name__=='__main__':sys.exit(main())
+                                     ^^^^^^
+  File "D:\Project\Mirror\gateway-rust\tools\compare_backup_v3.py", line 81, in main
+    right=canonical(candidate[name]) if name in candidate else None
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Project\Mirror\gateway-rust\tools\compare_backup_v3.py", line 74, in canonical
+    'responses':wire,'before':snapshot(case['before']),'after':snapshot(case['after'])}
+                                       ~~~~^^^^^^^^^^
+KeyError: 'before'

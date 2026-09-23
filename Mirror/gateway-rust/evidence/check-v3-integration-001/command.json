@@ -1,0 +1,13 @@
+{
+  "event": "command_execution",
+  "command": [
+    "cargo",
+    "check",
+    "--locked",
+    "--offline",
+    "--all-targets"
+  ],
+  "cwd": "D:\\Project\\Mirror\\gateway-rust",
+  "exit": 0,
+  "elapsed_seconds": 1.5950672626495361
+}

@@ -1,0 +1,1 @@
+{"output": "D:\\Project\\Mirror\\gateway-rust\\evidence\\provider-v3-original-003", "observations": 9, "guest_exit": 0}
