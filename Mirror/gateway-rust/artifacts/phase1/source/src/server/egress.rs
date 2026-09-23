@@ -5,6 +5,9 @@ use super::*;
 pub(super) struct Egress {
     pub binding: String,
     pub client: reqwest::Client,
+    /// 出口是否为已启用的代理：WebSocket 桥接在这种出口上 fail-closed
+    /// （见 server/chat_ws.rs），不允许静默改走直连。
+    pub proxied: bool,
 }
 
 pub(super) fn normalized(config: &Config, setting: &Value, node: Option<i64>) -> Result<Value> {
@@ -112,5 +115,6 @@ pub(super) fn load(db: &Database, config: &Config, node: Option<i64>) -> Result<
     Ok(Egress {
         binding: sha256_hex(&definition.to_string()),
         client: client(config, &definition["proxy"])?,
+        proxied: definition["proxy"]["enabled"] == json!(true),
     })
 }

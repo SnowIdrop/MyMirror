@@ -31,10 +31,10 @@
     "finalize.py",
     "validate.py"
   ],
-  "live_result": "Scoped S12 implementation saved at a03b3c4a; existing 121 tests/Clippy/30 config and 12-case three-state gate retained. User requested immediate convergence/no TDD; no new tests or runtime actions at closeout.",
+  "live_result": "缺口 1+2 实施完成并合成回环验证：cargo test 64 库内 + 107 集成全过、clippy -D warnings 过、Django 93 项回归过；真实账号/真实上游联调未执行。",
   "new_evidence": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\page-original-001\\summary.json",
-  "current_implementation": "Scoped S12 fix: me/list exact token + credential bundle binding; persisted normalized egress epoch, effective HTTP proxy or explicit failure, no redirect/retry; auth refresh retains its assertions. Account profile applies only to declared chat/login/diagnosis flows. Django/CDN/CF remain separately fixed direct; media/WS/voice and full browser identity remain gated.",
-  "interfaces": "Config includes cdn_upstream Option<Url>; static_assets and refresh_auth_session are private server helpers. Trusted resource identity/admin API adapters remain unimplemented; staged ACL is only compiled through its independent tests.",
+  "current_implementation": "本批新增：/backend-api/* 已登录读写与 SSE、会话归属登记与校验（server/owners.rs）、/ws-chatgpt 桥接（代理出口 fail-closed）、/realtime HTTP 与升级显式拒绝、公共前缀策略表（server/public_prefixes.rs）与改写表契约测试；新增可选 CHATGPT_AB_BASE_URL。项目/分支级 ACL、传输身份与语音仍未接线。",
+  "interfaces": "Config 新增 ws_upstream（configured 固定 wss://ws.chatgpt.com/，offline 用回环）、ab_upstream、public_prefix_base（仅离线回归）；egress::Egress 新增 proxied 标记；proxy::chat_auth/chat_origin/apply_chrome_146_identity/method_not_allowed 与 static_assets::forward_public 扩为 pub(super) 供新模块复用。",
   "delegable": [
     {
       "scope": "Current cycle: coordinator-assigned read-only/offline upstream-visible identity audits from immutable f95fc1 snapshot. No live product/source/STATUS/four-role writes or fingerprint/remote-browser implementation by audit lines."
@@ -75,7 +75,7 @@
     "binary": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-probe-targets\\modified\\debug\\mirror-gateway.exe",
     "binary_note": "Prefer immutable source snapshot; binary is current modified-only target output, may be rebuilt in later turns."
   },
-  "next_owner_work": "缺口 1/2/3/5 的实现（用户 2026-09-23 指令）— 暂停令解除；范围、现状证据与依赖顺序见 Mirror/gateway-rust/artifacts/phase1/source/NEXT_WORK.md。缺口 4（计量/配额/限流/审核/PoW）为显式非目标。不使用 TDD；每步先扩充原版观测或合成 fixture 再实现。",
+  "next_owner_work": "缺口 1 与缺口 2 已同批落地（见 source/COMPATIBILITY.md「缺口 1 + 2 同批落地」）；下一批为缺口 3 完整批次（项目/分支级归属与 resource_acl 产品接线）与缺口 5（传输身份与出口策略）。范围与遗留项见 Mirror/gateway-rust/artifacts/phase1/source/NEXT_WORK.md。缺口 4 为显式非目标。",
   "reviewed_identity_proposal": "user_id canonical decimal string; is_admin staff|superuser; wire version opaque authorization_version; principal_kind separates FREE_ACCOUNT visitor. New ACL visitors fail closed; existing login unchanged. Not yet product-wired.",
   "auth_contract_delta": "auth_session now snapshots credentials for exact mirror token, drops DB lock, sends accounts/check then me each request, revalidates session after network; account-lookup HTTP failure=>free with me still checked, me auth failure/account mismatch=>empty object. Login request chain unchanged (one me); malformed/transport refresh=>502.",
   "regression_handoff_ack": "Completed: reviewed boundary file integrated, accounts fixture added, old no-egress assumption replaced with ordered accounts/check -> me assertions per account. All 8 tests executed in the 109-test combined gate; credential/isolation assertions retained. Original and upgraded hashes are in integrations/manifest.json. Login still calls only me.",
@@ -365,7 +365,16 @@
       "date": "2026-09-23",
       "instruction": "先推进缺口1，缺口2，缺口3，缺口5；缺口4不实现（个人小团体共享账号，非商业收费分发）",
       "scope": "缺口 1/2/3/5 的实现与验证",
-      "record": "Mirror/gateway-rust/artifacts/phase1/source/NEXT_WORK.md"
+      "record": "Mirror/gateway-rust/artifacts/phase1/source/NEXT_WORK.md",
+      "implemented": [
+        "缺口 1（已登录业务面读写/SSE、/ws-chatgpt 桥接、/realtime HTTP）",
+        "缺口 2（公共前缀策略表 + 改写表契约测试）",
+        "缺口 3 最小核心（会话级归属登记与校验）"
+      ],
+      "not_implemented": [
+        "缺口 3 完整批次（项目/分支级归属、resource_acl 产品接线）",
+        "缺口 5（传输身份与出口策略）"
+      ]
     }
   }
 }

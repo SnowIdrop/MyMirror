@@ -146,7 +146,11 @@ impl Harness {
             key: "coord-fixture-encryption-key-00000001".into(),
             django: loopback_url(&django).unwrap(),
             upstream: loopback_url(&chat).unwrap(),
+            // 这些用例不经过 WS 桥接：给一个不会用到的回环 WS 基址即可。
+            ws_upstream: url::Url::parse("ws://127.0.0.1:1/").unwrap(),
             cdn_upstream: Some(loopback_url(&cdn).unwrap()),
+            ab_upstream: None,
+            public_prefix_base: None,
             cfbypass: None,
             timeout: Duration::from_secs(2),
             mirror_profile: true,
@@ -281,14 +285,11 @@ async fn coord_unknown_route_matrix_stays_closed() {
     // coord_page_and_anonymous_routes_are_open；这里只保留仍然关闭的路径。
     // Static assets are deliberately left to the owner's static_assets.rs.
     for path in [
-        "/external",
         "/external/unknown.js",
         "/external/http://127.0.0.1/unknown",
         "/internal-upstream",
         "/internal-upstream/backend-api/me",
         "/_next/data/coord-guessed-build/index.json",
-        "/backend-api/conversation/coord-guessed-resource",
-        "/backend-api/coord-unknown",
         "/api/coord-unknown",
     ] {
         for method in [reqwest::Method::GET, reqwest::Method::POST] {
@@ -319,6 +320,38 @@ async fn coord_unknown_route_matrix_stays_closed() {
                 no_credential_echo(&response, &[&token, ADMIN, ACCESS_A]);
             }
         }
+    }
+    // `/external` 恰好等于被拒绝的前缀本体：已登录时同样是 503 文案，
+    // 未登录时保持既有的 401 门禁顺序。
+    for method in [reqwest::Method::GET, reqwest::Method::POST] {
+        for authenticated in [false, true] {
+            let mut request = h
+                .client
+                .request(method.clone(), format!("{}/external", h.base));
+            if authenticated {
+                request = request.header("x-mirror-token", &token);
+            }
+            let response = h
+                .request(&format!("{method} /external authenticated={authenticated}"), request)
+                .await;
+            assert_eq!(
+                response.status,
+                if authenticated { 503 } else { 401 },
+                "{method} /external authenticated={authenticated}"
+            );
+            no_credential_echo(&response, &[&token, ADMIN, ACCESS_A]);
+        }
+    }
+    // `/backend-api/*` 与 `/realtime/*` 已按本批契约开放读写：状态码由上游决定，
+    // 但未登录仍然 401、且不产生任何上游调用。
+    for path in ["/backend-api/coord-unknown", "/realtime/coord-unknown"] {
+        let response = h
+            .request(
+                &format!("anonymous {path}"),
+                h.client.get(format!("{}{path}", h.base)),
+            )
+            .await;
+        assert_eq!(response.status, 401, "{path}");
     }
     assert_eq!(h.egress("chat").len(), chat_before);
     assert!(h.egress("cdn-unwired").is_empty());

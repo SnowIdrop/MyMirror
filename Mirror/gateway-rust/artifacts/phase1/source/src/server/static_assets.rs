@@ -101,7 +101,7 @@ pub(super) async fn media(app: &App, request: Request, target: url::Url) -> Resp
 
 /// 公共资源反代：固定 UA 与请求头白名单，拒绝重定向、非 2xx 与 HTML 正文，
 /// 响应只复制安全头并流式回传。凭据一律不转发。
-async fn forward_public<F>(
+pub(super) async fn forward_public<F>(
     app: &App,
     request: Request,
     target: url::Url,

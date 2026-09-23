@@ -1,10 +1,13 @@
 // Author: MingTea. Implemented contracts are listed in COMPATIBILITY.md; no original-binary fallback.
 mod anonymous;
+mod chat_ws;
 mod cloudflare;
 mod compression;
 mod egress;
 mod management;
+mod owners;
 mod proxy;
+mod public_prefixes;
 mod static_assets;
 use crate::{
     config::Config,
@@ -160,6 +163,10 @@ pub async fn router(config: Config) -> Result<Router> {
         .route("/api/auth/error", get(auth_error))
         .route("/api/user-blocked-paths", get(user_blocked))
         .route("/api/refresh-cfbypass", any(refresh_cfbypass))
+        // 注入脚本把浏览器 WebSocket 改写到本前缀；目标主机写死为
+        // ws.chatgpt.com，会话与凭据判定在 chat_ws::route 内完成。
+        .route("/ws-chatgpt", get(chat_ws::route))
+        .route("/ws-chatgpt/*path", get(chat_ws::route))
         .route("/0x/*path", any(proxy::django_proxy))
         .route("/admin", any(proxy::django_proxy))
         .route("/admin/*path", any(proxy::django_proxy))

@@ -2,8 +2,10 @@
 // Author  : MingTea
 // File    : server/proxy.rs
 // Created : 2026-09-22
-// Summary : 聊天/管理代理会话子模块：/0x/*（django 透传）与 /backend-api/me、
-//           /backend-api/conversations（会话列表归属隔离）三项差异实现。
+// Summary : 聊天/管理代理会话子模块：/0x/*（django 透传）、已登录业务面
+//           `/backend-api/*`（读写，含 me 与 conversations 的既有语义）、
+//           公共前缀策略（server/public_prefixes.rs）、会话归属
+//           （server/owners.rs）与 WebSocket 桥接（server/chat_ws.rs）。
 // 证据来源：QEMU 无网隔离 guest 的原版运行时观测
 //           evidence/proxy-v3-original-007（含 001-006 的早期轮次，
 //           001-002 为空态/范围探针、003-007 为请求构造探针）。
@@ -32,6 +34,9 @@
 //!   见 server/cloudflare.rs 的模块注释；chat 路径额外固定 origin/referer
 //!   （scheme://host 去端口）。
 //! - `/0x/*`：任意方法透传，流式响应（无 content-length，由 HTTP 栈分块）。
+//! - `/backend-api/*`：放行读写与 SSE，方法语义交给上游；会话作用域路径与
+//!   `POST …/conversation` 的续聊载荷在转发前做归属判定（server/owners.rs），
+//!   创建响应在把含会话 id 的块交给客户端前登记归属。
 //! - `/backend-api/me`：状态码、端到端响应头与原始字节透传（非重序列化），
 //!   上游 4xx/5xx 与畸形正文也原样回传。
 //! - `/backend-api/conversations`：仅 GET；offset/limit 等查询原样转发；成功 2xx 时
@@ -147,16 +152,28 @@ pub(super) async fn django_proxy(
 }
 
 /// chat 代理入口（父 `fallback` handler 替换点）：放行页面 `/`、`/c/*`，
-/// 匿名/公共接口前缀与白名单主机媒体代理，以及既有两条只读会话端点；
+/// 公共前缀策略（server/public_prefixes.rs）、匿名/公共接口前缀、白名单主机
+/// 媒体代理、已登录业务面读写与实时通道，以及既有两条只读会话端点；
 /// 其余路径继续以 503 门禁失败，不做整体直通。
 pub(super) async fn chat_proxy(State(app): State<Shared>, request: Request) -> Response {
-    if request.uri().path().starts_with("/assets/") || request.uri().path().starts_with("/cdn/") {
+    let path = request.uri().path().to_owned();
+    if path.starts_with("/assets/") || path.starts_with("/cdn/") {
         return super::static_assets::serve(&app, request).await;
     }
-    let path = request.uri().path().to_owned();
+    // 注入脚本改写出去的公共静态/媒体前缀：与 `/assets/`、`/cdn/` 同属同源公共
+    // 资源，不需要镜像会话，也一律不带账号凭据。
+    let route = public_prefixes::resolve(&app.config, &path, request.uri().query());
+    if let Some(route @ public_prefixes::Route::Proxy(_)) = route {
+        return public_prefixes::answer(&app, request, route).await;
+    }
+    // 有意不代理的前缀保留既有门禁顺序：未登录仍先 401，已登录才给 503 文案。
+    let refusal = match route {
+        Some(public_prefixes::Route::Refused(message)) => Some(message),
+        _ => None,
+    };
     // 缺失能力必须保持失败，不能用旧二进制回退或伪造成功响应。
     if path.starts_with("/api/") {
-        return StatusCode::NOT_FOUND.into_response();
+        return error(StatusCode::NOT_FOUND, "本地未实现的 /api 路径").into_response();
     }
     let Some(token) = token_from(request.headers()) else {
         return error(StatusCode::UNAUTHORIZED, "未登录").into_response();
@@ -169,6 +186,18 @@ pub(super) async fn chat_proxy(State(app): State<Shared>, request: Request) -> R
             return error(StatusCode::BAD_GATEWAY, &failure.to_string()).into_response()
         }
     };
+    if let Some(message) = refusal {
+        return error(StatusCode::SERVICE_UNAVAILABLE, message).into_response();
+    }
+    // 实时通道的 WebSocket 升级尚未实现：显式拒绝，而不是把升级请求当普通 GET 转发。
+    let upgrades = request
+        .headers()
+        .get("upgrade")
+        .and_then(|value| value.to_str().ok())
+        .is_some_and(|value| value.eq_ignore_ascii_case("websocket"));
+    if upgrades && (path == "/realtime" || path.starts_with("/realtime/")) {
+        return error(StatusCode::SERVICE_UNAVAILABLE, "实时通道升级未开放").into_response();
+    }
     let method = request.method().clone();
     let result = if method == Method::GET && path == ME_PATH {
         me_passthrough(&app, request, &session).await
@@ -179,10 +208,10 @@ pub(super) async fn chat_proxy(State(app): State<Shared>, request: Request) -> R
         if media_method_allowed(&method) {
             Ok(super::static_assets::media(&app, request, target).await)
         } else {
-            method_not_allowed(super::static_assets::MEDIA_ALLOW)
+            Ok(method_not_allowed(super::static_assets::MEDIA_ALLOW))
         }
     } else if open_path(&path, &method) {
-        chat_forward(&app, request, &session).await
+        chat_forward(app.clone(), request, &session).await
     } else {
         return error(
             StatusCode::SERVICE_UNAVAILABLE,
@@ -201,6 +230,11 @@ pub(super) async fn chat_proxy(State(app): State<Shared>, request: Request) -> R
 fn open_path(path: &str, method: &Method) -> bool {
     if path == "/" || path.starts_with("/c/") {
         return matches!(*method, Method::GET | Method::HEAD);
+    }
+    // 已登录业务面与实时通道：方法语义交给上游，会话作用域的归属判定由
+    // server/owners.rs 在转发前完成。
+    if path.starts_with("/backend-api/") || path == "/realtime" || path.starts_with("/realtime/") {
+        return true;
     }
     if GUEST_OPEN_PREFIXES
         .iter()
@@ -242,12 +276,13 @@ fn internal_upstream_host_allowed(host: &str, hosts: &std::collections::BTreeSet
             .any(|suffix| host.len() > suffix.len() && host.ends_with(suffix))
 }
 
-fn method_not_allowed(allow: &'static str) -> Result<Response> {
+/// 方法门禁响应：带 `allow` 头的 405（静态与内部媒体前缀共用）。
+pub(super) fn method_not_allowed(allow: &'static str) -> Response {
     let mut response = error(StatusCode::METHOD_NOT_ALLOWED, "该路径不支持此方法").into_response();
     response
         .headers_mut()
         .insert("allow", HeaderValue::from_static(allow));
-    Ok(response)
+    response
 }
 
 /// 内部上游媒体代理的方法门禁：GET/HEAD 读取，PUT 用于匿名上传的
@@ -259,21 +294,41 @@ fn media_method_allowed(method: &Method) -> bool {
 
 /// 页面与匿名/公共接口转发：带凭据会话用账号凭据，匿名会话用全局共享匿名身份；
 /// HTML 响应缓冲后注入同源客户端资源，其余响应（含 SSE/媒体）流式回传。
-async fn chat_forward(app: &App, request: Request, session: &Session) -> Result<Response> {
-    let Some(auth) = chat_auth(app, session).await? else {
+/// 已登录业务面的会话作用域请求先做归属判定，创建响应在交给客户端前登记归属。
+async fn chat_forward(app: Shared, request: Request, session: &Session) -> Result<Response> {
+    let Some(auth) = chat_auth(&app, session).await? else {
         return Ok(error(StatusCode::UNAUTHORIZED, "会话或出口绑定已失效").into_response());
     };
     let (parts, body) = request.into_parts();
+    let request_path = parts.uri.path().to_owned();
     let mut base = app.config.upstream.clone();
-    base.set_path(parts.uri.path());
+    base.set_path(&request_path);
     base.set_query(parts.uri.query());
     let data = to_bytes(body, MAX_BODY).await.context("请求体读取失败")?;
+    // 共享账号下唯一的内容级边界：会话作用域与续聊写路径必须命中本用户的登记行，
+    // 未知归属（含本批之前创建的会话）一律拒绝，且不接触上游。
+    let ownership = owners::classify(&request_path, &parts.method, &data);
+    if let owners::Ownership::Existing(conversation_id) = &ownership {
+        if !owners::owned_by(&app, session, conversation_id).await? {
+            return Ok(owners::refusal());
+        }
+    }
     // Cloudflare 挑战的刷新/重放与缓存失效统一在 [`send_chat`] 内处理；这里只分流响应形态。
     // 其它 4xx 是上游对具体请求的业务答复（实测 401 由客户端缺少 oai-* 头导致），
     // 重新获取身份并不能修复。
-    let upstream = send_chat(app, parts.method, parts.headers, base, data, &auth).await?;
+    let upstream = send_chat(&app, parts.method, parts.headers, base, data, &auth).await?;
     if is_html(&upstream) {
-        buffered_response(app, session, upstream).await
+        buffered_response(&app, session, upstream).await
+    } else if matches!(ownership, owners::Ownership::Creation) {
+        let (status, headers, body) = upstream_parts(upstream);
+        // 创建响应：先把正文里出现的会话 id 登记归属，再把该块交给客户端；
+        // 非 2xx 没有新会话可登记，按原样回传。
+        let body = if status.is_success() {
+            owners::creation_body(app, session, request_path, body)
+        } else {
+            body
+        };
+        Ok(stream_body(status, headers, body))
     } else {
         stream_response(upstream).await
     }
@@ -385,16 +440,16 @@ async fn conversations_response(
 /// 上游认证材料。带凭据会话用账号 access_token + extra_cookies；
 /// 匿名会话用全局共享匿名身份（server/anonymous.rs）。
 /// 镜像 token 本身绝不转发上游。
-struct ChatAuth {
-    access_token: Option<String>,
-    cookies: Vec<(String, String)>,
-    anonymous: bool,
+pub(super) struct ChatAuth {
+    pub(super) access_token: Option<String>,
+    pub(super) cookies: Vec<(String, String)>,
+    pub(super) anonymous: bool,
     client: reqwest::Client,
 }
 
 /// 会话对应的上游认证材料：匿名会话取共享匿名身份，其余取账号凭据。
 /// 匿名身份取不到时返回“无凭据匿名”材料，让上游给出真实答复而不是本地伪造。
-async fn chat_auth(app: &App, session: &Session) -> Result<Option<ChatAuth>> {
+pub(super) async fn chat_auth(app: &App, session: &Session) -> Result<Option<ChatAuth>> {
     if session.anonymous {
         // 匿名链路以 Cloudflare cookies 为唯一凭据：accessToken 只属于真实账号登录，
         // 实测匿名 `/api/auth/session` 返回 200 但不含该字段。
@@ -522,7 +577,7 @@ pub(super) fn parse_extra_cookies(raw: &str) -> Vec<(String, String)> {
 
 /// chat 上游的 origin 固定为 `scheme://host`（去端口；观测 http://127.0.0.1），
 /// referer 为其加 `/`；客户端自带的同名字段一律覆盖。
-fn chat_origin(base: &url::Url) -> Result<String> {
+pub(super) fn chat_origin(base: &url::Url) -> Result<String> {
     let host = base.host_str().context("上游地址缺少主机名")?;
     Ok(format!("{}://{}", base.scheme(), host))
 }
@@ -682,7 +737,7 @@ async fn send_chat_once(
 
 /// 原版 Chrome146 网络身份（报告 08 §8.1 已确证字面量）：只补齐缺失的头，
 /// 不覆盖客户端已发送的值（`apply_chrome_146_network_identity` 为 try_insert 链路）。
-fn apply_chrome_146_identity(headers: &mut HeaderMap) {
+pub(super) fn apply_chrome_146_identity(headers: &mut HeaderMap) {
     for (name, value) in [
         ("sec-ch-ua", "\"Chromium\";v=\"146\", \"Not_A Brand\";v=\"99\""),
         ("sec-ch-ua-full-version", "\"146.0.7680.177\""),
@@ -740,11 +795,16 @@ async fn send_upstream_with_headers(
 /// 流式回传（django 路径）：不复制 content-length，由 HTTP 栈分块。
 async fn stream_response(upstream: reqwest::Response) -> Result<Response> {
     let (status, headers, body) = upstream_parts(upstream);
+    Ok(stream_body(status, headers, body))
+}
+
+/// 流式响应组装：状态码与端到端头保留，正文由调用方提供（创建路径的归属包装）。
+fn stream_body(status: StatusCode, headers: HeaderMap, body: Body) -> Response {
     let mut response = Response::new(body);
     *response.status_mut() = status;
-    *response.headers_mut() = strip_response_hop_by_hop(&headers);
+    *response.headers_mut() = headers;
     mark_proxied(&mut response);
-    Ok(response)
+    response
 }
 
 /// 缓冲回传（chat 路径）：状态码与端到端头保留，正文按原始字节返回，

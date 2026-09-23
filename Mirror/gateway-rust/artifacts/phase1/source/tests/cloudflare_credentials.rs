@@ -169,7 +169,11 @@ impl Fixture {
             key: KEY.into(),
             django: loopback_url(&django_url.0).unwrap(),
             upstream: loopback_url(&chat_url.0).unwrap(),
+            // 这些用例不经过 WS 桥接：给一个不会用到的回环 WS 基址即可。
+            ws_upstream: url::Url::parse("ws://127.0.0.1:1/").unwrap(),
             cdn_upstream: None,
+            ab_upstream: None,
+            public_prefix_base: None,
             cfbypass: with_cfbypass.then(|| loopback_url(&cfbypass_url.0).unwrap()),
             timeout: Duration::from_secs(5),
             mirror_profile: true,

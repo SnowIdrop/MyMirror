@@ -30,7 +30,11 @@ async fn mirror_authority_revocation_and_relogin_are_enforced() {
         key: "fixture-encryption-key-000000000001".into(),
         django: loopback_url(&stub_url).unwrap(),
         upstream: loopback_url(&stub_url).unwrap(),
+        // 这些用例不经过 WS 桥接：给一个不会用到的回环 WS 基址即可。
+        ws_upstream: url::Url::parse("ws://127.0.0.1:1/").unwrap(),
         cdn_upstream: None,
+        ab_upstream: None,
+        public_prefix_base: None,
         cfbypass: None,
         timeout: Duration::from_secs(3),
         mirror_profile: true,
@@ -97,7 +101,7 @@ async fn mirror_authority_revocation_and_relogin_are_enforced() {
     );
     // 页面路由 `/` 已按本批契约放行（见 coord_boundary_regression 的
     // coord_page_and_anonymous_routes_are_open），这里只保留仍然关闭的路径。
-    for path in ["/backend-api/conversation", "/assets/unverified.js"] {
+    for path in ["/assets/unverified.js"] {
         assert_eq!(
             client
                 .get(format!("{base}{path}"))
@@ -109,6 +113,18 @@ async fn mirror_authority_revocation_and_relogin_are_enforced() {
             503
         );
     }
+    // `/backend-api/*` 已按本批契约开放读写（见 backend_api_surface 的用例）：
+    // 这里只确认它不再走 503 门禁，具体状态码由上游决定（fixture 桩为 404）。
+    assert_ne!(
+        client
+            .get(format!("{base}/backend-api/conversation"))
+            .header("x-mirror-token", token)
+            .send()
+            .await
+            .unwrap()
+            .status(),
+        503
+    );
     let event = json!({"subject":"alice","version":"v1","include_visitors":false,"expires_at":SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs()+3600});
     let response = client
         .post(format!("{base}/api/revoke-authorization"))

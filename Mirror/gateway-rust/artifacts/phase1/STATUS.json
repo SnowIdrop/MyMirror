@@ -1,8 +1,8 @@
 {
   "ACTIVE_OBJECT": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source",
   "LAST_CONFIRMED_RESULT": {
-    "implementation": "configuration, public JS/CSS, auth refresh and scoped credential-generation/egress binding implemented; ACL remains staged only; no product ACL/media/realtime or full identity acceptance",
-    "rust_tests": 121,
+    "implementation": "已登录业务面 /backend-api/* 读写与 SSE、会话归属登记最小核心、/ws-chatgpt 桥接、公共前缀策略表（缺口 1+2）已实现并合成回环验证；项目/分支级 ACL 与传输身份（缺口 3 完整批次、缺口 5）仍未接线",
+    "rust_tests": 171,
     "clippy": "passed --all-targets -- -D warnings",
     "configuration_cases": 30,
     "original_page_observations": 40,
@@ -12,9 +12,13 @@
     "integrated_boundary_tests": 8,
     "generation_egress_tests": 12,
     "real_environment_acceptance": "not run",
-    "full_replacement_complete": false
+    "full_replacement_complete": false,
+    "backend_api_surface_tests": 7,
+    "public_prefixes_tests": 7,
+    "ws_bridge_tests": 3,
+    "django_regression_tests": 93
   },
-  "NEXT_EXECUTABLE_ACTION": "缺口 1/2/3/5 的实现（用户 2026-09-23 指令）；范围、现状证据与依赖顺序见 artifacts/phase1/source/NEXT_WORK.md。缺口 4 为显式非目标，不再作为验收缺口。",
+  "NEXT_EXECUTABLE_ACTION": "缺口 3（项目/分支级归属与 ACL 接线）与缺口 5（传输身份与出口策略）；缺口 1+2 已落地，遗留项见 artifacts/phase1/source/NEXT_WORK.md。",
   "INPUT_PATHS": [
     "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\generation-egress\\HANDOFF.json",
     "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\generation-egress\\GATE_RESULTS.json",
@@ -31,10 +35,11 @@
   "phase": 1,
   "phase_complete": false,
   "remaining": [
-    "缺口 1：/backend-api/* 已登录读写、SSE、停止/重命名/删除，以及 /ws-chatgpt、/realtime 桥接；见 source/NEXT_WORK.md",
-    "缺口 2：注入脚本改写的 39 个同源前缀中仅 7 个被服务端接住，其余 32 个落 503；补齐静态/媒体/遥测前缀与 /external 语义；见 source/NEXT_WORK.md",
-    "缺口 3：归属登记（claim_conversation_owner 链）与 resource_acl 产品接线；必须与缺口 1 的读写同期落地；见 source/NEXT_WORK.md",
-    "缺口 5：传输身份（wreq/curl-impersonate 观测）、代理节点与出口 profile 绑定，补齐 MIRROR_API_PREFIX/ADMIN_UPSTREAM/CHATGPT_AB_BASE_URL/CF_BYPASS_PROXY_SERVER/TRUSTED_PROXY_IPS；见 source/NEXT_WORK.md",
+    "缺口 1：已登录读写/SSE/归属判定与登记、/ws-chatgpt 桥接、/realtime HTTP 已落地；仍未覆盖真实上游流式渲染与停止/重命名/删除端到端断言；见 source/NEXT_WORK.md",
+    "缺口 2：39 个同源前缀已按策略表逐条接管（反代或可行动文案），契约测试解析改写表；/external 主机白名单仍未还原；见 source/NEXT_WORK.md",
+    "缺口 3：会话级归属已接线（创建登记 + 转发前校验 + 未知归属拒绝）；项目/分支级归属与 resource_acl 产品接线仍待做；见 source/NEXT_WORK.md",
+    "缺口 5：传输身份（wreq/curl-impersonate 观测）、代理节点与出口 profile 绑定，补齐 MIRROR_API_PREFIX/ADMIN_UPSTREAM/CF_BYPASS_PROXY_SERVER/TRUSTED_PROXY_IPS；见 source/NEXT_WORK.md",
+    "本批新增遗留：未登记会话的管理端重新分配路径、/realtime 升级桥接、/api/livekit 语音、estuary 改写、/api/account-capabilities 定性",
     "保留差异：初次登录 accounts/check、管理非空库自增 ID 与上游序列、login extra_cookies 严格提取契约",
     "第六阶段：统一验收与 All-in-One 镜像交付（rebuild-reference/README.md 的六条交付步骤）",
     "显式非目标（不再作为验收缺口）：计量/配额/限流/审核 provider/PoW；见 source/COMPATIBILITY.md"
@@ -127,7 +132,16 @@
       "date": "2026-09-23",
       "instruction": "先推进缺口1，缺口2，缺口3，缺口5；缺口4不实现（个人小团体共享账号，非商业收费分发）",
       "scope": "缺口 1/2/3/5 的实现与验证",
-      "record": "Mirror/gateway-rust/artifacts/phase1/source/NEXT_WORK.md"
+      "record": "Mirror/gateway-rust/artifacts/phase1/source/NEXT_WORK.md",
+      "implemented": [
+        "缺口 1（已登录业务面读写/SSE、WS 桥接、realtime HTTP）",
+        "缺口 2（公共前缀策略表 + 改写表契约测试）",
+        "缺口 3 最小核心（会话级归属登记与校验）"
+      ],
+      "not_implemented": [
+        "缺口 3 完整批次（项目/分支级归属、resource_acl 产品接线）",
+        "缺口 5（传输身份与出口策略）"
+      ]
     }
   }
 }

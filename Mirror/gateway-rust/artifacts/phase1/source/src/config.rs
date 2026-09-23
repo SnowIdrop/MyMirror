@@ -12,8 +12,18 @@ pub struct Config {
     pub key: String,
     pub django: Url,
     pub upstream: Url,
+    /// WebSocket 上游基址。configured 模式固定为 `wss://ws.chatgpt.com/`（原版把
+    /// 目标校验为该主机，见报告 08 §6.2）；offline 模式跟随 `CHATGPT_BASE_URL`
+    /// 的回环主机，使合成回环回归能覆盖完整桥接路径。
+    pub ws_upstream: Url,
     /// Public static origin; routes remain gated until their contract is verified.
     pub cdn_upstream: Option<Url>,
+    /// A/B 统计基址（注入脚本改写目标 `/ab/*` 的上游）；未配置时该前缀按
+    /// 可行动文案拒绝，不静默丢弃统计请求。
+    pub ab_upstream: Option<Url>,
+    /// 公共前缀（缺口 2 策略表）的固定上游基址覆盖：只用于离线合成回环回归，
+    /// 生产装载（[`Config::from_env`]）保持 None，按策略表里的固定主机访问。
+    pub public_prefix_base: Option<Url>,
     pub cfbypass: Option<Url>,
     pub timeout: Duration,
     pub mirror_profile: bool,
@@ -106,6 +116,22 @@ impl Config {
             Err(env::VarError::NotPresent) if offline => None,
             Err(error) => return Err(error).context("CHATGPT_CDN_BASE_URL 未配置或无效"),
         };
+        // WS 上游：configured 模式固定原版观测主机；offline 模式沿用回环基址，
+        // 使合成回环回归能覆盖路由、鉴权与双向透传。
+        let ws_upstream = if offline {
+            let mut base = upstream.clone();
+            base.set_scheme("ws")
+                .map_err(|_| anyhow::anyhow!("WS 上游 scheme 无效"))?;
+            base
+        } else {
+            Url::parse("wss://ws.chatgpt.com/")?
+        };
+        // `/ab/*` 是可选前缀：未配置时该前缀返回可行动文案，不影响其它路由启动。
+        let ab_upstream = match env::var("CHATGPT_AB_BASE_URL") {
+            Ok(value) => Some(service_url(&value, offline).context("CHATGPT_AB_BASE_URL 无效")?),
+            Err(env::VarError::NotPresent) => None,
+            Err(error) => return Err(error).context("CHATGPT_AB_BASE_URL 无效"),
+        };
         let cfbypass = match env::var("CF_BYPASS_URL") {
             Ok(value) => Some(service_url(&value, offline).context("CF_BYPASS_URL 无效")?),
             Err(env::VarError::NotPresent) => None,
@@ -127,7 +153,10 @@ impl Config {
             key,
             django,
             upstream,
+            ws_upstream,
             cdn_upstream,
+            ab_upstream,
+            public_prefix_base: None,
             cfbypass,
             timeout: Duration::from_secs(
                 env::var("REQUEST_TIMEOUT_SECS")

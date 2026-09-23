@@ -91,7 +91,11 @@ impl Fixture {
             key: "generation-fixture-encryption-key-001".into(),
             django: loopback_url(&django).unwrap(),
             upstream: loopback_url(&chat).unwrap(),
+            // 这些用例不经过 WS 桥接：给一个不会用到的回环 WS 基址即可。
+            ws_upstream: url::Url::parse("ws://127.0.0.1:1/").unwrap(),
             cdn_upstream: None,
+            ab_upstream: None,
+            public_prefix_base: None,
             cfbypass: None,
             timeout: Duration::from_secs(2),
             mirror_profile: true,

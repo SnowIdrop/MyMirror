@@ -40,7 +40,8 @@ Header 压缩审计绑定原始字节长度、摘要、gzip 校验和及解码�
 - Connection 命名头按安全要求过滤，与原版泄漏行为显式不同
 - 两个未知 chat 探针路径继续 503；不为通过测试整体开放聊天路由
 - login extra_cookies 字符串/缺失/错误类型的严格原版提取契约仍需完善
-- 完整 SSE/WebSocket、指纹传输、MCP/Skills 请求侧与限额、会话/项目读写隔离独立门禁
+- SSE 与 `/ws-chatgpt` 桥接已按本批契约落地（见下节）；指纹传输、MCP/Skills 请求侧与限额、
+  项目/分支级归属（缺口 3 完整批次）、`/realtime` 升级桥接与 `/api/livekit/` 语音仍是独立门禁
 - Docker 未验证；真实账号/真实上游/浏览器联调未批准，本次未运行
 
 ## 本批新增的显式差异（匿名上游前端，2026-09-23 真实上游实测）
@@ -121,6 +122,55 @@ Django 健康检测据此把凭据标成不可用、可能发告警，刷新 cro
 （`conversation_owners`/`project_owners`、`claim_conversation_owner`）、撤权与凭据隔离。
 因此开放 `/backend-api/*` 读写时，归属登记链必须同时落地，否则同一共享账号下任何镜像用户
 都能看到他人创建的会话。
+
+## 缺口 1 + 2 同批落地（2026-09-23）
+
+本批把 `/backend-api/*` 从「两个只读端点 + 503 门禁」推进到可用的已登录读写，
+并同时落地归属登记最小核心（对应上面那条连带影响）。
+
+### 已登录业务面与会话归属
+
+| 项 | 原版 | 本候选 | 说明 |
+|---|---|---|---|
+| `/backend-api/*` | 已登录通道，方法语义交给上游 | 相同；会话作用域与续聊先做归属判定 | `server/proxy.rs` + `server/owners.rs` |
+| 会话归属登记 | `claim_conversation_owner` 等（报告 08 §3.1-C、§6.1） | 创建响应里出现 `"conversation_id":"<uuid>"` 即登记；跨块用尾窗重叠识别，**在把含该 id 的块交给客户端之前**写库 | 冲突不覆盖属主；2xx 创建响应认不出 id 时记 warn（只记路径） |
+| 未知归属 | 未确证 | 一律拒绝：`404 {"message":"会话不存在或不属于当前用户"}`，不接触上游 | 含本批之前创建、或直接在上游站点创建的会话；唯一恢复途径是管理员在后端重新分配（未实现，见 NEXT_WORK） |
+| 项目/分支级归属 | `enforce_project_owner` 等 | 未接线（缺口 3 完整批次） | `project_owners` 表与 ACL 模块保持现状 |
+| estuary 内容 URL 绝对化 | `absolutize_estuary_content_urls`（规则未证实，报告 08 §7.2） | 不做；`/backend-api/estuary/*` 按普通已登录路径转发 | 已知差异，规则只有符号名 |
+
+### WebSocket 与实时通道
+
+| 项 | 原版 | 本候选 | 说明 |
+|---|---|---|---|
+| `/ws-chatgpt[/…]` | `bridge_chatgpt_ws`，目标校验为 `wss://ws.chatgpt.com` | 同主机桥接，双向透传文本/二进制，任一侧关闭即转交关闭帧 | configured 模式固定 `wss://ws.chatgpt.com/`；offline 模式用回环基址（合成回归） |
+| WS 凭据 | 未见同环境观测 | 会话 `extra_cookies` 在前 + CF 白名单在后，`Authorization` 只用会话 access_token | 与 HTTP chat 路径同规则；镜像 token 与客户端 cookie 不转发 |
+| WS 出口 | 可按代理分流（符号证据） | 代理出口上 fail-closed：`503 {"message":"WebSocket 桥接尚未支持代理出口"}` | 不静默改走直连；缺口 5 的出口抽象之后再补分流 |
+| `/realtime/*` | 实时通道 | HTTP/SSE 按已登录业务面转发；`Upgrade: websocket` 显式 `503 {"message":"实时通道升级未开放"}` | 升级桥接与 `/api/livekit/` 语音不在本批 |
+
+### 公共前缀策略表（缺口 2）
+
+注入脚本的改写目标由一张服务端策略表逐条接管（`server/public_prefixes.rs`），
+不再出现「改写成功但服务端 503」的静默断裂。全部不带账号凭据、拒绝重定向与 HTML 正文，
+路径余段拒绝空段、`.`/`..`、反斜杠与编码分隔符，因此客户端不能借前缀选择任意目标。
+
+| 类别 | 前缀 | 方法 | 凭据 |
+|---|---|---|---|
+| 无凭据反代 | `/common/`（cdn.openai.com）、`/static-rsc-1/`、`/static-rsc-4/`、`/images-openai/`（images.openai.com）、`/images-app/`、`/persistent-deep-research/`（persistent.oaistatic.com）、`/files/`、`/files-southcentral/`、`/files-north/`（对应分片 oaiusercontent）、`/openai-files/`（files.openai.com）、`/connector-assets/`、`/mapbox/`、`/mapbox/styles/v1/oai-data/`（api.mapbox.com）、`/google-s2/`、`/google-avatar/a/`、`/gstatic-t0..t3/` | GET/HEAD | 无（与 `/assets/`、`/cdn/` 同边界） |
+| 配置驱动 | `/ab/` → `CHATGPT_AB_BASE_URL` | GET/HEAD | 无；未配置时 `503` + 可行动文案 |
+| 有意不代理 | `/external/*`（原版按 `is_allowed_external_proxy_host` 白名单转发，白名单未还原）、`/v1/*`、`/vendor-script/`、`/vendor-static`、`/cloudflare-insights/`、`/vendor-batch/collect`、`/ga/collect`、`/mapbox-events/events/`、`/connector-deep-research[/]` | — | 已登录 `503` + 按类别区分的文案；未登录保持既有 `401` 门禁顺序 |
+| 本地语义 | `/api/*` 未实现子路径 | — | `404 {"message":"本地未实现的 /api 路径"}`（含 `/api/livekit/`） |
+
+契约测试解析 `src/assets/gateway-client.html` 的两张改写表（2026-09-23 实测 63 条 pair、
+39 个去重目标前缀，加运行时拼出的 `/external/` 与 `/internal-upstream/` 共 41 个），
+断言每个前缀都有「已处理」或「显式拒绝」语义；将来新增或改名而不更新策略表即失败。
+
+### 本批验证
+
+`cargo test --locked --offline` 64 项库内单测 + 107 项集成用例全过（新增
+`tests/backend_api_surface.rs` 7 项、`tests/public_prefixes.rs` 7 项、`tests/ws_bridge.rs` 3 项），
+`cargo clippy --locked --offline --all-targets -- -D warnings` 通过；
+Django `DJANGO_ENV=LOCAL manage.py test` 93 项通过（本批未改 Django 代码，作为回归确认）。
+证据全部来自合成回环 fixture：真实账号、真实 chatgpt.com 与真实 WS 上游联调未执行。
 
 ## 证据
 
