@@ -1,8 +1,8 @@
 {
   "ACTIVE_OBJECT": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source",
   "LAST_CONFIRMED_RESULT": {
-    "implementation": "configuration, public JS/CSS, auth refresh and scoped credential-generation/egress binding implemented; ACL remains staged only; no product ACL/media/realtime or full identity acceptance",
-    "rust_tests": 121,
+    "implementation": "configuration, public JS/CSS and auth-session refresh implemented; reviewed independent ACL module and upgraded boundary tests integrated without product ACL wiring; original source unchanged",
+    "rust_tests": 109,
     "clippy": "passed --all-targets -- -D warnings",
     "configuration_cases": 30,
     "original_page_observations": 40,
@@ -10,18 +10,18 @@
     "auth_refresh_tests": 3,
     "independent_acl_tests": 28,
     "integrated_boundary_tests": 8,
-    "generation_egress_tests": 12,
     "real_environment_acceptance": "not run",
     "full_replacement_complete": false
   },
-  "NEXT_EXECUTABLE_ACTION": "NONE — paused by latest user request to converge. Preserve current code/evidence only; no next-stage task, repeated verification or real-token read.",
+  "NEXT_EXECUTABLE_ACTION": "Create and execute focused regressions for me/list credential-generation pinning and saved proxy/profile effective egress; then implement the smallest in-scope fix with no silent direct/identity fallback. This bounded development remains authorized. Keep pages/media/realtime gated; do not start remote-browser/fingerprint implementation or real-account tests.",
   "INPUT_PATHS": [
-    "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\generation-egress\\HANDOFF.json",
-    "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\generation-egress\\GATE_RESULTS.json",
-    "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\EGRESS_BINDING.md",
+    "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\section12-intake.json",
+    "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\integrations\\section12\\SECTION12_REPORT.md",
+    "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\src\\server.rs",
+    "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\src\\server\\proxy.rs",
     "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\COORDINATION.json"
   ],
-  "ACCEPTANCE_EVENT": "Current scoped changes and existing evidence saved; incomplete capabilities remain incomplete.",
+  "ACCEPTANCE_EVENT": "Focused tests prove ordinary reads never adopt a new credential generation after relogin, and actual approved egress/profile is used or fails closed without silent direct fallback. Recheck existing regressions; do not infer end-to-end browser identity acceptance.",
   "roles": {
     "MODIFIED_FILE": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\MODIFIED_FILE.zip",
     "DIFF_FILE": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\DIFF_FILE.patch",
@@ -31,7 +31,7 @@
   "phase": 1,
   "phase_complete": false,
   "remaining": [
-    "S12局部修复独立复验及安全入口；端到端浏览器/传输身份仍未验证",
+    "第12节：普通请求代次、实际出口绑定及浏览器/传输身份一致性门禁",
     "页面初始化隔离及同源改写，字体/图片/其他静态类型",
     "初次登录accounts检查、更多真实响应/失败协议",
     "第二阶段可信身份、账号映射、新库ACL/备份/后台/实时撤权接线；ACL仅独立暂存",
@@ -39,8 +39,6 @@
   ],
   "rollback_scope": "restore a disposable source archive; not databases or already-executed upstream operations",
   "legacy_evidence": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\STATUS.json",
-  "continuous_execution_policy": "E:\\M\\Project\\MiRebuild\\Mirror\\coordination\\20260922-team\\AUTONOMOUS_EXECUTION.json",
-  "continuation_coordinator": "01a0c9c9-4508-75d1-a709-20aa6dbb69f9",
   "upstream_visible_identity_acceptance": {
     "section": 12,
     "status": "尚未验证",
@@ -103,23 +101,6 @@
       "完整资源ACL路由/实时撤权仍未接线"
     ],
     "evidence_intake": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\section12-intake.json",
-    "scope_note": "Local audit checks have narrow scopes. Explained differences are not accepted or passed; unopened capabilities are not passed. Historical 109 Rust result remains unchanged.",
-    "scoped_fix": {
-      "snapshot_sha256": "a03b3c4af36cae5f59e8b6923bcd25ce9a3b331e75a8c33caeb8f48c6d8ce162",
-      "owner_checks": "121 Rust tests, all-target Clippy, 30 configuration cases already passed",
-      "same_input_previous_candidate_gate": "12 failed / 12 passed / 12 failed; rollback previous hash matches f95fc1",
-      "independent_review": "coordinator reported lifecycle review complete and egress42-case preliminary pass; final safe-adapter acceptance not received",
-      "end_to_end": "尚未验证"
-    }
-  },
-  "execution_control": {
-    "state": "paused_by_latest_user_instruction",
-    "instruction": "立刻收敛，禁止TDD；只保存现有改动与已有证据，不开启后续阶段/新任务/扩测试/循环验收",
-    "next_workflow_if_reauthorized": "源码定位 → 直接最小实现 → 必要既有检查；不采用TDD",
-    "real_token_read": false,
-    "real_requests_sent": false,
-    "owner_processes": "none; gateway/QEMU process inventory observed zero",
-    "automatic_continuation": "disabled by this newer user instruction; existing scheduler/coordinator must not dispatch next work from previous continuous policy",
-    "runtime_checks_this_closeout": "none; retained existing results only"
+    "scope_note": "Local audit checks have narrow scopes. Explained differences are not accepted or passed; unopened capabilities are not passed. Historical 109 Rust result remains unchanged."
   }
 }

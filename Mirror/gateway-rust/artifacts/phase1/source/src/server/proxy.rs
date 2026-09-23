@@ -177,13 +177,15 @@ async fn django_forward(
         );
     }
     let upstream =
-        send_upstream_with_headers(app, parts.method, headers, base, data, None, &[]).await?;
+        send_upstream_with_headers(app, parts.method, headers, base, data, None).await?;
     stream_response(upstream).await
 }
 
 /// `/backend-api/me`：会话解析后按原始字节回传，不做 JSON 重序列化。
 async fn me_passthrough(app: &App, request: Request, session: &Session) -> Result<Response> {
-    let credentials = load_credentials(app, session).await?;
+    let Some(credentials) = load_credentials(app, session).await? else {
+        return Ok(error(StatusCode::UNAUTHORIZED, "会话或出口绑定已失效").into_response());
+    };
     let (parts, body) = request.into_parts();
     let mut base = app.config.upstream.clone();
     base.set_path(parts.uri.path());
@@ -200,7 +202,9 @@ async fn conversations_response(
     request: Request,
     session: &Session,
 ) -> Result<Response> {
-    let credentials = load_credentials(app, session).await?;
+    let Some(credentials) = load_credentials(app, session).await? else {
+        return Ok(error(StatusCode::UNAUTHORIZED, "会话或出口绑定已失效").into_response());
+    };
     let (parts, body) = request.into_parts();
     let mut base = app.config.upstream.clone();
     base.set_path(parts.uri.path());
@@ -256,6 +260,7 @@ async fn conversations_response(
 struct SessionCredentials {
     access_token: String,
     cookies: Vec<(String, String)>,
+    client: reqwest::Client,
 }
 
 /// Observed auth/session refresh: accounts/check followed by me on every call.
@@ -275,9 +280,15 @@ pub(super) async fn refresh_auth_session(
         let Some((access, cookies, mode)) = row else {
             return Ok(None);
         };
+        let access_token = db.decrypt(&access)?;
+        let raw_cookies = db.decrypt(&cookies)?;
+        if sha256_hex(&json!([session.account,access_token,raw_cookies]).to_string()) != session.credential_binding {
+            return Ok(None);
+        }
         (SessionCredentials {
-            access_token: db.decrypt(&access)?,
-            cookies: parse_extra_cookies(&db.decrypt(&cookies)?),
+            access_token,
+            cookies: parse_extra_cookies(&raw_cookies),
+            client: session.outbound.client.clone(),
         }, mode)
     };
     let accounts = send_upstream(
@@ -310,19 +321,25 @@ pub(super) async fn refresh_auth_session(
     Ok(Some((mode, plan)))
 }
 
-async fn load_credentials(app: &App, session: &Session) -> Result<SessionCredentials> {
+async fn load_credentials(app: &App, session: &Session) -> Result<Option<SessionCredentials>> {
     let db = app.db.lock().await;
-    let (access_token, extra_cookies): (String, String) = db.conn.query_row(
-        "SELECT access_token, extra_cookies FROM gateway_sessions WHERE user_name=?1 AND chatgpt_username=?2",
-        params![session.user, session.account],
-        |row| Ok((row.get(0)?, row.get(1)?)),
-    )?;
+    let row: Option<(String, String, Option<i64>)> = db.conn.query_row(
+        "SELECT access_token, extra_cookies, proxy_node_id FROM gateway_sessions WHERE user_name=?1 AND chatgpt_username=?2 AND mirror_token=?3",
+        params![session.user, session.account, session.token_hash],
+        |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)),
+    ).optional()?;
+    let Some((access_token, extra_cookies, node)) = row else { return Ok(None); };
+    if egress::binding(&db,&app.config,node)? != session.outbound.binding { return Ok(None); }
     let access_token = db.decrypt(&access_token)?;
     let extra_cookies = db.decrypt(&extra_cookies)?;
-    Ok(SessionCredentials {
+    if sha256_hex(&json!([session.account,access_token,extra_cookies]).to_string()) != session.credential_binding {
+        return Ok(None);
+    }
+    Ok(Some(SessionCredentials {
         access_token,
         cookies: parse_extra_cookies(&extra_cookies),
-    })
+        client: session.outbound.client.clone(),
+    }))
 }
 
 /// 会话行 extra_cookies 解析：仅取 name/value 均为非空字符串的条目
@@ -469,8 +486,7 @@ async fn send_upstream(
         headers,
         base,
         body,
-        Some(&credentials.access_token),
-        &credentials.cookies,
+        Some(credentials),
     )
     .await
 }
@@ -482,24 +498,27 @@ async fn send_upstream_with_headers(
     mut headers: HeaderMap,
     base: url::Url,
     body: Bytes,
-    bearer: Option<&str>,
-    session_cookies: &[(String, String)],
+    credentials: Option<&SessionCredentials>,
 ) -> Result<reqwest::Response> {
     let cached = app.cf_cache.lock().await.clone();
     let cf_clearance = cached.as_ref().and_then(cf_clearance_from);
+    let session_cookies = credentials.map_or(&[][..], |value| value.cookies.as_slice());
     if let Some(cookie) = cookie_header(session_cookies, cf_clearance.as_deref()) {
         headers.insert(
             "cookie",
             HeaderValue::from_str(&cookie).context("Cookie 头无效")?,
         );
     }
-    if let Some(token) = bearer {
+    if let Some(credentials) = credentials {
         headers.insert(
             "authorization",
-            HeaderValue::from_str(&format!("Bearer {token}")).context("上游凭据头无效")?,
+            HeaderValue::from_str(&format!("Bearer {}", credentials.access_token)).context("上游凭据头无效")?,
         );
     }
-    app.client
+    // Only the Django forwarding caller lacks account credentials. Chat always
+    // uses the client captured with that exact token's egress binding.
+    let client = credentials.map_or(&app.client, |value| &value.client);
+    client
         .request(method, base)
         .headers(headers)
         .body(body)

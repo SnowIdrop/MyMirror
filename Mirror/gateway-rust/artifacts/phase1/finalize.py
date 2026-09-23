@@ -45,7 +45,7 @@ command = ["E:/T/Git2026_6/bin/bash.exe", "-c", "test -x artifacts/phase1/ROLLBA
 result = subprocess.run(command, cwd=root, capture_output=True)
 assert result.returncode == 0
 summary = {
-    "implementation": "configuration, public JS/CSS and auth-session refresh implemented; reviewed independent ACL module and upgraded boundary tests integrated without product ACL wiring; original source unchanged",
+    "implementation": "configuration, public JS/CSS, auth refresh and scoped credential-generation/egress binding implemented; ACL remains staged only; no product ACL/media/realtime or full identity acceptance",
     "rust_tests": rust_tests,
     "clippy": "passed --all-targets -- -D warnings",
     "configuration_cases": len(checks) - 3,
@@ -54,13 +54,14 @@ summary = {
     "auth_refresh_tests": 3,
     "independent_acl_tests": 28,
     "integrated_boundary_tests": 8,
+    "generation_egress_tests": 12,
     "real_environment_acceptance": "not run",
     "full_replacement_complete": False,
 }
 ledger = {
     "TARGET": str(root),
     "candidate_source": str(here / "source"),
-    "changed_symbols": ["Config::from_env", "Config.cdn_upstream", "service_url", "GATEWAY_UPSTREAM_MODE", "server::static_assets::serve", "server::static_assets::asset_path", "server::proxy::chat_proxy", "server::auth_session", "server::proxy::refresh_auth_session", "resource_acl (unexported independent module)"],
+    "changed_symbols": ["Config::from_env", "Config.cdn_upstream", "service_url", "GATEWAY_UPSTREAM_MODE", "server::static_assets::serve", "server::proxy::chat_proxy", "server::auth_session", "server::proxy::refresh_auth_session", "server::session/token_hash/credential_binding/outbound", "server::proxy::load_credentials", "server::egress", "server::save_proxy/test_proxy/login/restore_backup", "server::management::mirror_token", "resource_acl (unexported independent module)"],
     "roles": roles,
     "summary": summary,
     "metadata_followups": read("metadata-followups.json") if (here / "metadata-followups.json").exists() else [],
@@ -68,8 +69,12 @@ ledger = {
     "same_input_static_behaviors": static_behaviors,
     "same_input_auth_behaviors": auth_behaviors,
     "integrations": read("integrations/manifest.json"),
+    "generation_egress_gate": read("generation-egress/GATE_RESULTS.json"),
+    "generation_egress_commands": str(here / "generation-egress/gate-execution.json"),
+    "generation_egress_handoff": read("generation-egress/HANDOFF.json"),
+    "memory_diagnosis_synthetic": read("generation-egress/memory-probe.json"),
     "auth_test_development": {"before_exit":101,"before_combined_output":str(here / "auth-before.log"),"before_result":"0 passed; 3 failed on static implementation","after_exit":0,"after_combined_output":str(here / "auth-after.log"),"after_result":"3 passed; 0 failed","additional_verifier_failures":["E0560 in old shared target: Config source had cdn_upstream but stale baseline rlib did not; validate.py and all candidate tests moved to phase1-candidate-tests. Original failed output retained in auth-before-target-collision.log.","Auth runtime probe first cleanup failed exit1 WinError32: Python sqlite transaction context left connection open; fixed with contextlib.closing and reran successfully."]},
-    "history": [str(here / "history/config-b837ba2/VERIFICATION.txt"), str(here / "history/static-680aed1/VERIFICATION.txt")],
+    "history": [str(here / "history/config-b837ba2/VERIFICATION.txt"), str(here / "history/static-680aed1/VERIFICATION.txt"), str(here / "history/pre-generation-egress/VERIFICATION.txt")],
     "corrected_verifier_failure": {"evidence": str(here / "history/static-shared-target-failure/static-artifact-events.json"), "observed_exit": 1, "cause": "baseline and candidate Cargo packages shared output filenames; final MODIFIED probe ran the previously built rollback executable", "fix": "run_probe.py/static_probe.py use separate CARGO_TARGET_DIR per BASELINE/MODIFIED/ROLLBACK; rerun all same-input probes; product source was unchanged"},
     "commit_before_continuation": "b837ba2556bc3363570d247e61246e6b8f43421c",
     "new_original_observation": {"command": read("page-original-001/command.json"), "summary_path": str(here / "page-original-001/summary.json"), "results_sha256": hashlib.sha256((here / "page-original-001/results.json").read_bytes()).hexdigest(), "kind": "synthetic loopback only, QEMU -nic none; not live account validation"},
@@ -89,21 +94,26 @@ ledger = {
 status = {
     "ACTIVE_OBJECT": str(here / "source"),
     "LAST_CONFIRMED_RESULT": summary,
-    "NEXT_EXECUTABLE_ACTION": "Create and execute focused regressions for ordinary me/list credential-generation binding and saved proxy/profile effective egress, then make the smallest authorized local fix. No silent direct/identity fallback. Keep pages/media/realtime gated; architecture changes and real-account testing require separate confirmation.",
-    "INPUT_PATHS": [str(here / "section12-intake.json"), str(here / "integrations/section12/SECTION12_REPORT.md"), str(here / "source/src/server.rs"), str(here / "source/src/server/proxy.rs"), str(here / "COORDINATION.json")],
-    "ACCEPTANCE_EVENT": "Focused tests prove no adoption of new credentials by old in-flight requests and actual approved egress/profile selection or fail-closed behavior. Existing regressions retained; this does not imply end-to-end browser identity acceptance.",
+    "NEXT_EXECUTABLE_ACTION": "Receive and verify the two independent generation/egress reviews of the frozen snapshot and the safe token-intake adapter; fix any actual blocker under a new hash. Only after matching manifest/safety gates, perform the specifically authorized access-only read diagnosis with secret confined to the local runner. Continue authorized offline stages without awaiting a generic continue; no HTML/remote-browser expansion without its gates.",
+    "INPUT_PATHS": [str(here / "generation-egress/HANDOFF.json"), str(here / "generation-egress/GATE_RESULTS.json"), str(here / "source/EGRESS_BINDING.md"), str(here / "COORDINATION.json")],
+    "ACCEPTANCE_EVENT": "Independent reviews agree on the exact candidate hash and scoped state/egress semantics; approved owned-memory safe runner checks manifest before secret read and outputs sanitized access-token diagnosis only. No full login/handoff, ACL or end-to-end identity claim.",
     "roles": roles,
     "phase": 1,
     "phase_complete": False,
-    "remaining": ["第12节：普通请求代次、实际出口绑定及浏览器/传输身份一致性门禁", "页面初始化隔离及同源改写，字体/图片/其他静态类型", "初次登录accounts检查、更多真实响应/失败协议", "第二阶段可信身份、账号映射、新库ACL/备份/后台/实时撤权接线；ACL仅独立暂存", "第三至五阶段业务能力及第六阶段统一验收与部署交付"],
+    "remaining": ["S12局部修复独立复验及安全入口；端到端浏览器/传输身份仍未验证", "页面初始化隔离及同源改写，字体/图片/其他静态类型", "初次登录accounts检查、更多真实响应/失败协议", "第二阶段可信身份、账号映射、新库ACL/备份/后台/实时撤权接线；ACL仅独立暂存", "第三至五阶段业务能力及第六阶段统一验收与部署交付"],
     "rollback_scope": "restore a disposable source archive; not databases or already-executed upstream operations",
     "legacy_evidence": str(root / "STATUS.json"),
+    "continuous_execution_policy": str(root.parent / "coordination/20260922-team/AUTONOMOUS_EXECUTION.json"),
+    "continuation_coordinator": "01a0c9c9-4508-75d1-a709-20aa6dbb69f9",
 }
 # Source packaging must not silently drop the separately received identity gate.
 if (here / "STATUS.json").exists():
     previous = read("STATUS.json")
     if "upstream_visible_identity_acceptance" in previous:
         status["upstream_visible_identity_acceptance"] = previous["upstream_visible_identity_acceptance"]
+    if previous.get("execution_control", {}).get("state") == "paused_by_latest_user_instruction":
+        for field in ("execution_control", "NEXT_EXECUTABLE_ACTION", "ACCEPTANCE_EVENT"):
+            status[field] = previous[field]
 (here / "STATUS.json").write_text(json.dumps(status, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 print(json.dumps(summary, ensure_ascii=False))
 for role, path in roles.items():

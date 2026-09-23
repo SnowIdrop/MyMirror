@@ -31,9 +31,9 @@
     "finalize.py",
     "validate.py"
   ],
-  "live_result": "Combined current candidate passed 109 Rust tests + Clippy -D warnings + 30 config cases, after integrating all 3 reviewed files and upgrading auth boundary fixture. Config1/0/1; static401/200/401; auth free/plus/free and egress0/2/0; rollback hash matched. No processes running.",
+  "live_result": "Scoped S12 implementation saved at a03b3c4a; existing 121 tests/Clippy/30 config and 12-case three-state gate retained. User requested immediate convergence/no TDD; no new tests or runtime actions at closeout.",
   "new_evidence": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\page-original-001\\summary.json",
-  "current_implementation": "Configured Django/chat/CDN origins, restricted public JS/CSS proxy, and auth_session accounts/check -> me refresh are implemented. Refresh snapshots exact-token credentials, releases DB lock before network, and revalidates authorization before returning. Chat HTML, guessed /c IDs and private media remain gated. Reviewed resource_acl is staged only, with no lib export, product DB initialization or route wiring.",
+  "current_implementation": "Scoped S12 fix: me/list exact token + credential bundle binding; persisted normalized egress epoch, effective HTTP proxy or explicit failure, no redirect/retry; auth refresh retains its assertions. Account profile applies only to declared chat/login/diagnosis flows. Django/CDN/CF remain separately fixed direct; media/WS/voice and full browser identity remain gated.",
   "interfaces": "Config includes cdn_upstream Option<Url>; static_assets and refresh_auth_session are private server helpers. Trusted resource identity/admin API adapters remain unimplemented; staged ACL is only compiled through its independent tests.",
   "delegable": [
     {
@@ -75,7 +75,7 @@
     "binary": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-probe-targets\\modified\\debug\\mirror-gateway.exe",
     "binary_note": "Prefer immutable source snapshot; binary is current modified-only target output, may be rebuilt in later turns."
   },
-  "next_owner_work": "Create and execute focused regressions for me/list credential-generation pinning and saved proxy/profile effective egress; then implement the smallest in-scope fix with no silent direct/identity fallback. This bounded development remains authorized. Keep pages/media/realtime gated; do not start remote-browser/fingerprint implementation or real-account tests.",
+  "next_owner_work": "NONE — paused by latest user request to converge. Preserve current code/evidence only; no next-stage task, repeated verification or real-token read.",
   "reviewed_identity_proposal": "user_id canonical decimal string; is_admin staff|superuser; wire version opaque authorization_version; principal_kind separates FREE_ACCOUNT visitor. New ACL visitors fail closed; existing login unchanged. Not yet product-wired.",
   "auth_contract_delta": "auth_session now snapshots credentials for exact mirror token, drops DB lock, sends accounts/check then me each request, revalidates session after network; account-lookup HTTP failure=>free with me still checked, me auth failure/account mismatch=>empty object. Login request chain unchanged (one me); malformed/transport refresh=>502.",
   "regression_handoff_ack": "Completed: reviewed boundary file integrated, accounts fixture added, old no-egress assumption replaced with ordered accounts/check -> me assertions per account. All 8 tests executed in the 109-test combined gate; credential/isolation assertions retained. Original and upgraded hashes are in integrations/manifest.json. Login still calls only me.",
@@ -226,5 +226,140 @@
     "historical_109_unchanged": true,
     "runtime_tests_rerun_by_owner": false,
     "coordinator_handoff": "complete evidence received; ownership not transferred"
+  },
+  "current_implementation_work": {
+    "owner": "01a0c9af-fab7-7780-af7f-537dde662636",
+    "handoff": false,
+    "scope": "me/list exact token binding; persisted server-side egress generation; supported fixed HTTP proxy or explicit failure; no business route expansion",
+    "files": [
+      "source/src/server.rs",
+      "source/src/server/proxy.rs",
+      "source/src/server/egress.rs",
+      "source/src/server/management.rs (only if credential-producing path requires fail-closed binding)",
+      "source/tests/generation_egress.rs",
+      "source/PHASE1_CONTRACT.md",
+      "validation scripts/status/four-role artifacts"
+    ],
+    "outputs": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\generation-egress",
+    "processes": "none; stopped at user convergence boundary; source frozen",
+    "baseline_snapshot": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\coordination\\integrated-f95fc1eeb7d2.zip",
+    "saved_snapshot": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\coordination\\generation-egress-a03b3c4af36c.zip"
+  },
+  "live_token_authorization": {
+    "source": "app delegation from coordinator citing side thread 01a0ca26-162a-7ad1-b6ad-fba9ea8556b7; ephemeral original thread unreadable",
+    "scope": "real ChatGPT access-token login validation only, not password/browser login, generation, deletion, external writes or production switch",
+    "handling": "not read or requested this turn; use only secure local input/existing secure admin entry after synthetic binding/egress checks pass; never transcript/log/Git/evidence",
+    "architecture": "no remote browser or fingerprint impersonation"
+  },
+  "token_validation_handoff": {
+    "status": "NOT_READY_USER_STOP_NO_SECRET_READ_OR_REQUEST",
+    "scope": "Real access-token login validation only after S12 synthetic gates; no password/browser login, remote browser, generation, memory changes, resource deletion or production operations",
+    "forbidden_entry": "Existing Django add-account/refresh flow calls close-chatgpt-memory; do not use it.",
+    "candidate": "No repaired stable binary/source handoff yet; f95 is only baseline.",
+    "planned_memory_mode": "Verified native process DATABASE_PATH=:memory:, no working-directory files, zero session/account rows after access-only diagnose; one GET /backend-api/me. See generation-egress/memory-probe.json.",
+    "allowed_request_shape_proposal": "fresh loopback-only gateway process, in-memory SQLite, ephemeral admin/encryption keys, explicit fixed official chat origin and explicit tested egress; access-token /api/login followed only by approved read-only me/accounts paths; stdout/stderr and response secrets never persisted or printed. Final allowlist/hash/profile contract follows gates.",
+    "input_handling": "User supplied a local token-file path through coordinator; never inspect/cat/hash/stat/copy it with assistant tools. Only approved runner reads inside process after manifest gates; no token argv/env/log/Git/evidence. No file access performed.",
+    "preferred_entry": "POST /api/diagnose-chatgpt-auth with access_token only; no session_token. Output only allowed boolean/sanitized status; discard user_info/last_error. Not full login/handoff/ACL acceptance."
+  },
+  "generation_egress_handoff": {
+    "state": "SAVED_USER_STOP_NO_NEXT_STAGE_OR_LIVE_EXECUTION",
+    "snapshot": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\coordination\\generation-egress-a03b3c4af36c.zip",
+    "source_sha256": "a03b3c4af36cae5f59e8b6923bcd25ce9a3b331e75a8c33caeb8f48c6d8ce162",
+    "binary": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\generation-egress-reviewed.exe",
+    "binary_sha256": "2d44e9249d01cd8761c6eb936d644cdc66b826ba88ace92f0df88cfcb13723cd",
+    "base_snapshot_sha256": "f95fc1eeb7d239dfc5b5e6e999b7c2443dc082a63bc9f6f6f7007e6bc3c53c6e",
+    "tests": {
+      "combined_rust": 121,
+      "generation_egress": 12,
+      "clippy": "all-targets -D warnings passed",
+      "configuration_cases": 30
+    },
+    "memory_probe": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\generation-egress\\memory-probe.json",
+    "profile_contract": {
+      "supported": [
+        "explicit direct (disabled/default proxy, no selected node)",
+        "single HTTP numeric-loopback proxy origin, optional proxy Basic credentials"
+      ],
+      "nodes": "only absent/empty nodes; every proxy_node_id selection fails before chat egress; no node-resolution schema claimed",
+      "unimplemented": "non-reqwest transport; enabled proxy with CF_BYPASS_URL; proxy paths/query/fragment/userinfo; no silent fallback",
+      "scope": {
+        "selected_profile": [
+          "token exchange",
+          "login validation",
+          "access-token diagnose/user-info",
+          "me",
+          "conversations",
+          "auth-session refresh"
+        ],
+        "separate_fixed_direct": [
+          "Django",
+          "public CDN",
+          "CF sidecar"
+        ],
+        "unopened": [
+          "files/private media",
+          "successful WS",
+          "actual voice",
+          "generation"
+        ]
+      },
+      "transitions": "Effective config changes atomically rotate persisted epoch; old sessions 401, A-B-A remains invalid; concurrent login config change409; old in-flight read never selects new token/cookie/client, may finish on already captured old client; meaningful session/proxy backup restore rotates epoch; unchanged DB/key/profile restart retains binding",
+      "diagnostic": "explicit proxy test no redirect/retry; reports302; selected-profile access diagnose uses GET me only when only access_token is supplied",
+      "e2e_identity": "not accepted; browser/CH/TLS/CF/device and unopened paths remain separately gated"
+    },
+    "scope_document": "EGRESS_BINDING.md",
+    "real_token_read": false,
+    "safe_runner": "Not armed; awaiting independent reviewer results and owner-approved safe adapter/manifest. Token file is not read by these tests.",
+    "same_input_gate": {
+      "baseline_previous_sha256": "f95fc1eeb7d239dfc5b5e6e999b7c2443dc082a63bc9f6f6f7007e6bc3c53c6e",
+      "rollback_previous_hash_matches": true,
+      "same_input": true,
+      "results": [
+        {
+          "label": "BASELINE_PREVIOUS",
+          "source_archive_sha256": "f95fc1eeb7d239dfc5b5e6e999b7c2443dc082a63bc9f6f6f7007e6bc3c53c6e",
+          "same_test_sha256": "5d3b1d3887cfd58896a5b0af312a2c73a4c1bba4e18a57bef1c005f64536aabd",
+          "passed": 0,
+          "failed": 12,
+          "command_event": 1,
+          "exit_status": 101
+        },
+        {
+          "label": "MODIFIED",
+          "source_archive_sha256": "a03b3c4af36cae5f59e8b6923bcd25ce9a3b331e75a8c33caeb8f48c6d8ce162",
+          "same_test_sha256": "5d3b1d3887cfd58896a5b0af312a2c73a4c1bba4e18a57bef1c005f64536aabd",
+          "passed": 12,
+          "failed": 0,
+          "command_event": 2,
+          "exit_status": 0
+        },
+        {
+          "label": "ROLLBACK_PREVIOUS",
+          "source_archive_sha256": "f95fc1eeb7d239dfc5b5e6e999b7c2443dc082a63bc9f6f6f7007e6bc3c53c6e",
+          "same_test_sha256": "5d3b1d3887cfd58896a5b0af312a2c73a4c1bba4e18a57bef1c005f64536aabd",
+          "passed": 0,
+          "failed": 12,
+          "command_event": 3,
+          "exit_status": 101
+        }
+      ],
+      "scope": "synthetic 12-case library gate; rollback uses the same main ROLLBACK.sh optional previous-candidate mode; default original-source rollback remains separate",
+      "real_token_read": false
+    },
+    "roles_rebuilt": true,
+    "defensive_review": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\generation-egress\\REVIEW.md"
+  },
+  "continuous_execution_policy": "E:\\M\\Project\\MiRebuild\\Mirror\\coordination\\20260922-team\\AUTONOMOUS_EXECUTION.json",
+  "continuation_coordinator": "01a0c9c9-4508-75d1-a709-20aa6dbb69f9",
+  "continuation_automation_id": "mirror (existing; do not duplicate)",
+  "execution_control": {
+    "state": "paused_by_latest_user_instruction",
+    "instruction": "立刻收敛，禁止TDD；只保存现有改动与已有证据，不开启后续阶段/新任务/扩测试/循环验收",
+    "next_workflow_if_reauthorized": "源码定位 → 直接最小实现 → 必要既有检查；不采用TDD",
+    "real_token_read": false,
+    "real_requests_sent": false,
+    "owner_processes": "none; gateway/QEMU process inventory observed zero",
+    "automatic_continuation": "disabled by this newer user instruction; existing scheduler/coordinator must not dispatch next work from previous continuous policy",
+    "runtime_checks_this_closeout": "none; retained existing results only"
   }
 }

@@ -1,0 +1,19 @@
+[
+  {
+    "label": "rust-tests",
+    "command": [
+      "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo\\bin\\cargo.exe",
+      "test",
+      "--all-targets",
+      "--locked",
+      "--offline",
+      "--manifest-path",
+      "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\Cargo.toml"
+    ],
+    "stdout": "",
+    "stderr": "   Compiling mirror-gateway v0.1.0 (E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source)\nerror[E0502]: cannot borrow `payload` as mutable because it is also borrowed as immutable\n   --> src\\server.rs:364:5\n    |\n343 |     let mode = payload[\"login_mode\"].as_str().unwrap_or(\"api\");\n    |                ------- immutable borrow occurs here\n...\n364 |     payload[\"rust_credential_binding\"] = json!(sha256_hex(&json!([email, access, extra_cookies]).to_string()));\n    |     ^^^^^^^ mutable borrow occurs here\n...\n369 |         params![input.user_name,email,encrypted_acce...\"monthly_quota\"].as_i64().unwrap_or(0),time])?;\n    |         --------------------------------------------...-------------------------------------------- immutable borrow later used here\n\nFor more information about this error, try `rustc --explain E0502`.\nerror: could not compile `mirror-gateway` (lib) due to 1 previous error\nwarning: build failed, waiting for other jobs to finish...\nerror: could not compile `mirror-gateway` (lib test) due to 1 previous error\n",
+    "exit_status": 101,
+    "expected_exit": 0,
+    "passed": false
+  }
+]

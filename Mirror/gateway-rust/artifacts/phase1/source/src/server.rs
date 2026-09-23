@@ -1,5 +1,6 @@
 // Author: MingTea. Implemented contracts are listed in COMPATIBILITY.md; no original-binary fallback.
 mod compression;
+mod egress;
 mod management;
 mod proxy;
 mod static_assets;
@@ -76,6 +77,7 @@ pub async fn router(config: Config) -> Result<Router> {
     let client = reqwest::Client::builder()
         .no_proxy()
         .redirect(reqwest::redirect::Policy::none())
+        .retry(reqwest::retry::never())
         .timeout(config.timeout)
         .build()?;
     let app = Arc::new(App {
@@ -306,12 +308,21 @@ async fn login(
     let mut payload = Value::Object(input.options.clone());
     payload["user_name"] = json!(input.user_name);
     let expiry = authorize_login_payload(&app, &mut payload).await?;
+    let node = match payload.get("proxy_node_id") {
+        None | Some(Value::Null) => None,
+        Some(value) => Some(value.as_i64().context("proxy_node_id 必须是整数或 null")?),
+    };
+    let outbound = {
+        let db = app.db.lock().await;
+        egress::load(&db, &app.config, node)?
+    };
+    payload["rust_egress_binding"] = json!(outbound.binding);
     // 上游凭据必须经实际回环上游验证，不能以字符串非空代替验证。
     let access = if !input.access_token.is_empty() {
         input.access_token
     } else {
-        exchange_session(
-            &app,
+        exchange_session_with_client(
+            &app, &outbound.client,
             if !input.session_token.is_empty() {
                 &input.session_token
             } else {
@@ -320,7 +331,7 @@ async fn login(
         )
         .await?
     };
-    let info = fetch_user(&app, &access).await?;
+    let info = fetch_user_with_client(&app, &outbound.client, &access).await?;
     let email = info["email"]
         .as_str()
         .filter(|s| !s.is_empty())
@@ -329,9 +340,11 @@ async fn login(
     rand::rngs::OsRng.fill_bytes(&mut random);
     let token: String = random.iter().map(|b| format!("{b:02x}")).collect();
     let hash = sha256_hex(&token);
-    let mode = payload["login_mode"].as_str().unwrap_or("api");
     let time = now();
     let mut db = app.db.lock().await;
+    if egress::binding(&db, &app.config, node)? != outbound.binding {
+        return Err(error(StatusCode::CONFLICT, "登录期间出口配置已变化，请重新登录"));
+    }
     let encrypted_access = db.encrypt(&access)?;
     let session = if input.session_token.is_empty() {
         None
@@ -347,6 +360,8 @@ async fn login(
         _ => "[]".to_owned(),
     };
     let extra = db.encrypt(&extra_cookies)?;
+    payload["rust_credential_binding"] = json!(sha256_hex(&json!([email, access, extra_cookies]).to_string()));
+    let mode = payload["login_mode"].as_str().unwrap_or("api");
     let auth_payload = db.encrypt(&payload.to_string())?;
     let tx = db.conn.transaction()?;
     tx.execute("DELETE FROM rust_authorizations WHERE token_hash IN (SELECT mirror_token FROM gateway_sessions WHERE user_name=?1 AND chatgpt_username=?2)",params![input.user_name,email])?;
@@ -420,8 +435,11 @@ fn session_cookies(response: &mut Response, token: &str, secure: bool) -> Result
 }
 
 async fn fetch_user(app: &App, access: &str) -> Result<Value> {
-    let response = app
-        .client
+    let outbound = { let db = app.db.lock().await; egress::load(&db, &app.config, None)? };
+    fetch_user_with_client(app, &outbound.client, access).await
+}
+async fn fetch_user_with_client(app: &App, client: &reqwest::Client, access: &str) -> Result<Value> {
+    let response = client
         .get(app.config.upstream.join("/backend-api/me")?)
         .bearer_auth(access)
         .send()
@@ -430,8 +448,11 @@ async fn fetch_user(app: &App, access: &str) -> Result<Value> {
     Ok(response.json().await?)
 }
 async fn exchange_session(app: &App, session: &str) -> Result<String> {
-    let response = app
-        .client
+    let outbound = { let db = app.db.lock().await; egress::load(&db, &app.config, None)? };
+    exchange_session_with_client(app, &outbound.client, session).await
+}
+async fn exchange_session_with_client(app: &App, client: &reqwest::Client, session: &str) -> Result<String> {
+    let response = client
         .get(app.config.upstream.join("/api/auth/session")?)
         .header(
             "cookie",
@@ -565,7 +586,12 @@ async fn restore_backup(State(app): State<Shared>, Json(input): Json<Value>) -> 
     let mut db = app.db.lock().await;
     let result = db.restore_http_backup_validated(&input, |conn, crypto| {
         validate_restored_settings(conn, crypto)
-            .map_err(|cause| anyhow::Error::new(ReloadError(cause)))
+            .map_err(|cause| anyhow::Error::new(ReloadError(cause)))?;
+        let replaces_binding = input.get("gateway_sessions").is_some()
+            || input["settings"].as_array().is_some_and(|settings| settings.iter()
+                .any(|row| matches!(row["key"].as_str(),Some("mirror_proxy" | "rust_egress_epoch"))));
+        if replaces_binding { egress::rotate_epoch(conn)?; }
+        Ok(())
     });
     if let Err(cause) = result {
         if let Some(reload) = cause.downcast_ref::<ReloadError>() {
@@ -731,26 +757,30 @@ async fn save_proxy(State(app): State<Shared>, Json(input): Json<Value>) -> ApiR
             "指纹传输兼容尚未验证，不允许退化为普通 HTTP",
         ));
     }
-    let db = app.db.lock().await;
+    let mut db = app.db.lock().await;
     if v["password"].as_str().unwrap_or("").is_empty() {
         if let Some(old) = db.get_setting("mirror_proxy")? {
             v["password"] = old["password"].clone();
         }
     }
-    db.set_setting("mirror_proxy", &v)?;
+    let next_profile = egress::normalized(&app.config, &v, None)?;
+    let old = db.get_setting("mirror_proxy")?.unwrap_or_else(default_proxy);
+    let changed = egress::normalized(&app.config, &old, None).ok().as_ref() != Some(&next_profile);
+    let encoded = db.encrypt(&v.to_string())?;
+    let tx = db.conn.transaction()?;
+    tx.execute("INSERT INTO gateway_settings(key,value,updated_at) VALUES('mirror_proxy',?1,?2) ON CONFLICT(key) DO UPDATE SET value=excluded.value,updated_at=excluded.updated_at",params![encoded,now()])?;
+    if changed {
+        egress::rotate_epoch(&tx)?;
+    }
+    tx.commit()?;
     Ok(Json(sanitize_proxy(v, json!("代理配置已保存"))))
 }
 async fn test_proxy(State(app): State<Shared>, Json(input): Json<Value>) -> ApiResult {
     if input["enabled"] != true {
         return Err(error(StatusCode::BAD_REQUEST, "请先启用代理"));
     }
-    let target = crate::config::loopback_url(input["proxy_url"].as_str().context("缺少代理地址")?)?;
-    let client = reqwest::Client::builder()
-        .no_proxy()
-        .proxy(reqwest::Proxy::all(target.as_str()).context("代理地址无效")?)
-        .timeout(app.config.timeout)
-        .build()
-        .context("构建代理客户端失败")?;
+    let profile = egress::normalized(&app.config, &input, None)?;
+    let client = egress::client(&app.config, &profile)?;
     let response = client
         .get(app.config.upstream.clone())
         .send()
@@ -884,32 +914,30 @@ struct Session {
     user: String,
     account: String,
     policy: Option<Policy>,
+    token_hash: String,
+    credential_binding: String,
+    outbound: egress::Egress,
 }
 async fn session(app: &App, token: &str) -> Result<Option<Session>> {
     let hash = sha256_hex(token);
     let db = app.db.lock().await;
-    let record:Option<(String,String,String)>=db.conn.query_row("SELECT user_name,chatgpt_username,access_token FROM gateway_sessions WHERE mirror_token=?1",[&hash],|r|Ok((r.get(0)?,r.get(1)?,r.get(2)?))).optional()?;
-    let Some((user, account, encrypted)) = record else {
+    let record:Option<(String,String,String,String)>=db.conn.query_row("SELECT user_name,chatgpt_username,access_token,extra_cookies FROM gateway_sessions WHERE mirror_token=?1",[&hash],|r|Ok((r.get(0)?,r.get(1)?,r.get(2)?,r.get(3)?))).optional()?;
+    let Some((user, account, encrypted, cookies)) = record else {
         return Ok(None);
     };
+    let authorization: Option<(String,i64)> = db.conn.query_row(
+        "SELECT payload,expires_at FROM rust_authorizations WHERE token_hash=?1", [&hash],
+        |row|Ok((row.get(0)?,row.get(1)?))).optional()?;
+    let Some((authorization, expiry)) = authorization else { return Ok(None); };
+    if expiry <= now() { return Ok(None); }
+    let payload: Value = serde_json::from_str(&db.decrypt(&authorization)?)?;
+    let credential_binding = sha256_hex(&json!([account,db.decrypt(&encrypted)?,db.decrypt(&cookies)?]).to_string());
+    if payload["rust_credential_binding"].as_str()!=Some(credential_binding.as_str()) { return Ok(None); }
+    let node: Option<i64> = db.conn.query_row("SELECT proxy_node_id FROM gateway_sessions WHERE mirror_token=?1",[&hash],|row|row.get(0))?;
+    let outbound = egress::load(&db, &app.config, node)?;
+    if payload["rust_egress_binding"].as_str()!=Some(outbound.binding.as_str()) { return Ok(None); }
     let policy = if app.config.mirror_profile {
-        let record: Option<(String, i64)> = db
-            .conn
-            .query_row(
-                "SELECT payload,expires_at FROM rust_authorizations WHERE token_hash=?1",
-                [&hash],
-                |r| Ok((r.get(0)?, r.get(1)?)),
-            )
-            .optional()?;
-        let Some((encrypted, expiry)) = record else {
-            return Ok(None);
-        };
-        if expiry <= now() {
-            return Ok(None);
-        }
-        Some(Policy::from_login(&serde_json::from_str::<Value>(
-            &db.decrypt(&encrypted)?,
-        )?)?)
+        Some(Policy::from_login(&payload)?)
     } else {
         None
     };
@@ -917,8 +945,10 @@ async fn session(app: &App, token: &str) -> Result<Option<Session>> {
         user,
         account,
         policy,
+        token_hash: hash,
+        credential_binding,
+        outbound,
     };
-    db.decrypt(&encrypted)?;
     drop(db);
     if let Some(policy) = &value.policy {
         let res = app
@@ -939,7 +969,17 @@ async fn session(app: &App, token: &str) -> Result<Option<Session>> {
             return Ok(None);
         }
     }
+    if !session_binding_current(app, &value).await? { return Ok(None); }
     Ok(Some(value))
+}
+
+async fn session_binding_current(app: &App, session: &Session) -> Result<bool> {
+    let db = app.db.lock().await;
+    let node: Option<Option<i64>> = db.conn.query_row(
+        "SELECT proxy_node_id FROM gateway_sessions WHERE mirror_token=?1 AND user_name=?2 AND chatgpt_username=?3",
+        params![session.token_hash,session.user,session.account],|row|row.get(0)).optional()?;
+    let Some(node) = node else { return Ok(false); };
+    Ok(egress::binding(&db,&app.config,node)?==session.outbound.binding)
 }
 #[derive(Deserialize)]
 struct Handoff {

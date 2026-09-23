@@ -13,14 +13,14 @@
     ],
     "exit_status": 0,
     "stdout": "",
-    "stderr": "   Compiling mirror-gateway v0.1.0 (E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 6.96s\n"
+    "stderr": "    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.28s\n"
   },
   "build_environment": {
     "CARGO_HOME": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo",
     "RUSTUP_HOME": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\rustup",
     "CARGO_TARGET_DIR": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-probe-targets\\modified"
   },
-  "binary_sha256": "546ad680467adbbc47ad18bb12b3b76d8b031660ac52403176a4de9aaeb8097d",
+  "binary_sha256": "826982e14b1b13db625f59c42fa1aa378699bf358a11231d26922c13e99423f0",
   "command": [
     "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-probe-targets\\modified\\debug\\mirror-gateway.exe"
   ],
@@ -35,7 +35,7 @@
   },
   "login": {
     "status": 200,
-    "body": "{\"chatgpt_username\":\"fixture@example.invalid\",\"login_mode\":\"api\",\"login_url\":\"/api/not-login?user_gateway_token=cf7b9e0d261efb4061fb38937ab90b19f9dcad5b159d0fe6a584af34ec71867c\",\"message\":\"登录成功\"}",
+    "body": "{\"chatgpt_username\":\"fixture@example.invalid\",\"login_mode\":\"api\",\"login_url\":\"/api/not-login?user_gateway_token=e345f69de8cbb1de478ec61f7457f77a89f6c7832a1321efa8b0f5c8c6f89a13\",\"message\":\"登录成功\"}",
     "input": {
       "user_name": "alice",
       "access_token": "synthetic-access-token",
@@ -117,7 +117,7 @@
       ],
       [
         "date",
-        "Tue, 22 Sep 2026 16:11:28 GMT"
+        "Tue, 22 Sep 2026 18:13:26 GMT"
       ]
     ],
     "body": "{\"authProvider\":\"openai\",\"expires\":\"2099-12-31T23:59:59.000Z\",\"loginMode\":\"api\",\"planType\":\"plus\",\"user\":{\"email\":\"fixture@example.invalid\",\"id\":\"cc6d96611cffa9f02c3626f0b9ee897dc171e2d540a5cae349d4ec316104997b\",\"image\":null,\"name\":\"fixture@example.invalid\",\"picture\":null}}"
@@ -153,7 +153,7 @@
         ],
         [
           "host",
-          "127.0.0.1:62945"
+          "127.0.0.1:50727"
         ]
       ]
     },
@@ -187,13 +187,13 @@
         ],
         [
           "host",
-          "127.0.0.1:62945"
+          "127.0.0.1:50727"
         ]
       ]
     }
   ],
   "process": {
-    "stdout": "gateway listening on http://127.0.0.1:62946 (development candidate; release gate incomplete)\n",
+    "stdout": "gateway listening on http://127.0.0.1:50728 (development candidate; release gate incomplete)\n",
     "stderr": "",
     "exit_status": 1,
     "termination": "fixture teardown"

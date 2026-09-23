@@ -146,17 +146,27 @@
     "完整 SSE/WebSocket、指纹传输、MCP/Skills 请求侧与限额、会话/项目读写隔离独立门禁",
     "Docker 未验证；真实账号/真实上游/浏览器联调未批准，本次未运行"
   ],
-  "next_work": "第12节审计已收件：先做普通请求凭据代次/实际出口绑定最小回归与局部修复；既有开发授权仍有效。页面身份门禁未通过，不实施远程浏览器或指纹伪装。完整分类见development_checkpoint。",
+  "next_work": "NONE — paused by latest user request to converge. Preserve current code/evidence only; no next-stage task, repeated verification or real-token read.",
   "rollback_scope": "程序副本恢复；不回滚数据库；生产切换未执行",
   "history": "D:\\Project\\Mirror\\gateway-rust\\evidence\\verification-before-v3.txt",
   "development_checkpoint": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\STATUS.json",
   "legacy_status_snapshot": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\legacy-STATUS.json",
-  "development_note": "同一候选源码副本；原源码24文件哈希未变。109项组合Rust测试（含3刷新、28独立ACL、8边界回归）、Clippy、30配置用例通过；原版QEMU无网卡40条观测。三方配置退出1/0/1、静态HTTP401/200/401、刷新plan free/plus/free且调用0/2/0，回滚哈希一致。验证器构建目录已完全隔离。ACL未导出/未初始化产品库/未接路由；后台仅契约提案。页面、字体/图片、初次登录accounts检查及后续阶段未完成。上面的roles/hash/reports仍属旧v3二进制证据。",
+  "development_note": "S12普通读取代次及固定出口局部修复已保存；121项Rust/Clippy/30配置既有检查通过，独立全量收件和安全入口尚未完成。遵循最新用户立刻收敛禁止TDD，不继续后续阶段，不读真实token。旧v3二进制历史仍保留。",
   "section12_acceptance": {
     "status": "尚未验证",
     "page_opening_gate": "not cleared",
     "checkpoint": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\STATUS.json",
     "evidence_intake": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\section12-intake.json",
     "note": "7 targeted Rust checks, lifecycle/17-request egress probes and 15 pure-JS checks are independent audit evidence, not a new whole-product test total."
+  },
+  "execution_control": {
+    "state": "paused_by_latest_user_instruction",
+    "instruction": "立刻收敛，禁止TDD；只保存现有改动与已有证据，不开启后续阶段/新任务/扩测试/循环验收",
+    "next_workflow_if_reauthorized": "源码定位 → 直接最小实现 → 必要既有检查；不采用TDD",
+    "real_token_read": false,
+    "real_requests_sent": false,
+    "owner_processes": "none; gateway/QEMU process inventory observed zero",
+    "automatic_continuation": "disabled by this newer user instruction; existing scheduler/coordinator must not dispatch next work from previous continuous policy",
+    "runtime_checks_this_closeout": "none; retained existing results only"
   }
 }

@@ -1,0 +1,83 @@
+   Compiling mirror-gateway v0.1.0 (E:\M\Project\MiRebuild\Mirror\gateway-rust\artifacts\phase1\source)
+warning: unused imports: `http::StatusCode` and `response::IntoResponse`
+ --> tests\generation_egress.rs:3:5
+  |
+3 |     http::StatusCode,
+  |     ^^^^^^^^^^^^^^^^
+4 |     response::IntoResponse,
+  |     ^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `mirror-gateway` (test "generation_egress") generated 1 warning (run `cargo fix --test "generation_egress" -p mirror-gateway` to apply 1 suggestion)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.07s
+     Running tests\generation_egress.rs (.build\phase1-candidate-tests\debug\deps\generation_egress-dbd2f50e5fed9b64.exe)
+
+running 7 tests
+test unsupported_node_and_transport_fail_before_upstream ... FAILED
+test unavailable_proxy_does_not_fall_back_to_direct ... FAILED
+test old_me_and_list_requests_never_adopt_relogin_credentials ... FAILED
+test profile_change_during_authority_or_login_wait_is_not_silently_applied ... FAILED
+test profile_changes_and_aba_require_new_login_and_disabled_proxy_is_direct ... FAILED
+test enabled_proxy_is_used_by_login_reads_and_refresh ... FAILED
+test unchanged_profile_survives_restart_with_same_database_and_key ... FAILED
+
+failures:
+
+---- unsupported_node_and_transport_fail_before_upstream stdout ----
+
+thread 'unsupported_node_and_transport_fail_before_upstream' (41748) panicked at tests\generation_egress.rs:284:5:
+assertion failed: r.status().is_client_error() || r.status().is_server_error()
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- unavailable_proxy_does_not_fall_back_to_direct stdout ----
+
+thread 'unavailable_proxy_does_not_fall_back_to_direct' (44644) panicked at tests\generation_egress.rs:260:5:
+assertion `left == right` failed
+  left: 200
+ right: 502
+
+---- old_me_and_list_requests_never_adopt_relogin_credentials stdout ----
+
+thread 'old_me_and_list_requests_never_adopt_relogin_credentials' (42916) panicked at tests\generation_egress.rs:166:9:
+assertion `left == right` failed
+  left: 200
+ right: 401
+
+---- profile_change_during_authority_or_login_wait_is_not_silently_applied stdout ----
+
+thread 'profile_change_during_authority_or_login_wait_is_not_silently_applied' (42828) panicked at tests\generation_egress.rs:310:5:
+assertion `left == right` failed
+  left: 200
+ right: 401
+
+---- profile_changes_and_aba_require_new_login_and_disabled_proxy_is_direct stdout ----
+
+thread 'profile_changes_and_aba_require_new_login_and_disabled_proxy_is_direct' (43152) panicked at tests\generation_egress.rs:204:5:
+assertion `left == right` failed
+  left: 200
+ right: 401
+
+---- enabled_proxy_is_used_by_login_reads_and_refresh stdout ----
+
+thread 'enabled_proxy_is_used_by_login_reads_and_refresh' (42876) panicked at tests\generation_egress.rs:191:5:
+[Object {"authorization": String("Bearer synthetic-old"), "cookie": Null, "path": String("/backend-api/me"), "role": String("direct")}, Object {"authorization": String("Bearer synthetic-old"), "cookie": String("fixture_generation=synthetic-old"), "path": String("/backend-api/me"), "role": String("direct")}, Object {"authorization": String("Bearer synthetic-old"), "cookie": String("fixture_generation=synthetic-old"), "path": String("/backend-api/conversations"), "role": String("direct")}, Object {"authorization": String("Bearer synthetic-old"), "cookie": String("fixture_generation=synthetic-old"), "path": String("/backend-api/accounts/check/v4-2023-04-27"), "role": String("direct")}, Object {"authorization": String("Bearer synthetic-old"), "cookie": String("fixture_generation=synthetic-old"), "path": String("/backend-api/me"), "role": String("direct")}]
+
+---- unchanged_profile_survives_restart_with_same_database_and_key stdout ----
+
+thread 'unchanged_profile_survives_restart_with_same_database_and_key' (40308) panicked at tests\generation_egress.rs:345:5:
+assertion failed: f.state.calls.lock().await.iter().all(|call| call["role"] == "proxy-a")
+
+
+failures:
+    enabled_proxy_is_used_by_login_reads_and_refresh
+    old_me_and_list_requests_never_adopt_relogin_credentials
+    profile_change_during_authority_or_login_wait_is_not_silently_applied
+    profile_changes_and_aba_require_new_login_and_disabled_proxy_is_direct
+    unavailable_proxy_does_not_fall_back_to_direct
+    unchanged_profile_survives_restart_with_same_database_and_key
+    unsupported_node_and_transport_fail_before_upstream
+
+test result: FAILED. 0 passed; 7 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+error: test failed, to rerun pass `--test generation_egress`

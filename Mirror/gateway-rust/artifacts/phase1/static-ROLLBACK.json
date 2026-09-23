@@ -7,20 +7,20 @@
       "--locked",
       "--offline",
       "--manifest-path",
-      "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\static-rollback-afxo_iog\\Cargo.toml",
+      "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\static-rollback-geml5s0q\\Cargo.toml",
       "--bin",
       "mirror-gateway"
     ],
     "exit_status": 0,
     "stdout": "",
-    "stderr": "   Compiling mirror-gateway v0.1.0 (E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\static-rollback-afxo_iog)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.78s\n"
+    "stderr": "   Compiling mirror-gateway v0.1.0 (E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\static-rollback-geml5s0q)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 4.19s\n"
   },
   "build_environment": {
     "CARGO_HOME": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo",
     "RUSTUP_HOME": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\rustup",
     "CARGO_TARGET_DIR": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-probe-targets\\rollback"
   },
-  "binary_sha256": "7f5b9cb7b6757878e7bcd5e46d4d59f59976e3c768831133f0f857a5a538f87e",
+  "binary_sha256": "5b18a82281abc864a73f9fb2b9eeb4e3a2a7c4fd1f2901417911df18338c8eb8",
   "command": [
     "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-probe-targets\\rollback\\debug\\mirror-gateway.exe"
   ],
@@ -99,14 +99,14 @@
       ],
       [
         "date",
-        "Tue, 22 Sep 2026 16:24:42 GMT"
+        "Tue, 22 Sep 2026 18:13:41 GMT"
       ]
     ],
     "body": "{\"message\":\"未登录\"}"
   },
   "upstream": [],
   "process": {
-    "stdout": "gateway listening on http://127.0.0.1:58829 (offline candidate; release gate incomplete)\n",
+    "stdout": "gateway listening on http://127.0.0.1:50797 (offline candidate; release gate incomplete)\n",
     "stderr": "",
     "exit_status": 1,
     "termination": "fixture teardown"

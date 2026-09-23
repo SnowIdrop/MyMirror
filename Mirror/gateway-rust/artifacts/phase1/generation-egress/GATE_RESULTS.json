@@ -1,0 +1,36 @@
+{
+  "baseline_previous_sha256": "f95fc1eeb7d239dfc5b5e6e999b7c2443dc082a63bc9f6f6f7007e6bc3c53c6e",
+  "rollback_previous_hash_matches": true,
+  "same_input": true,
+  "results": [
+    {
+      "label": "BASELINE_PREVIOUS",
+      "source_archive_sha256": "f95fc1eeb7d239dfc5b5e6e999b7c2443dc082a63bc9f6f6f7007e6bc3c53c6e",
+      "same_test_sha256": "5d3b1d3887cfd58896a5b0af312a2c73a4c1bba4e18a57bef1c005f64536aabd",
+      "passed": 0,
+      "failed": 12,
+      "command_event": 1,
+      "exit_status": 101
+    },
+    {
+      "label": "MODIFIED",
+      "source_archive_sha256": "a03b3c4af36cae5f59e8b6923bcd25ce9a3b331e75a8c33caeb8f48c6d8ce162",
+      "same_test_sha256": "5d3b1d3887cfd58896a5b0af312a2c73a4c1bba4e18a57bef1c005f64536aabd",
+      "passed": 12,
+      "failed": 0,
+      "command_event": 2,
+      "exit_status": 0
+    },
+    {
+      "label": "ROLLBACK_PREVIOUS",
+      "source_archive_sha256": "f95fc1eeb7d239dfc5b5e6e999b7c2443dc082a63bc9f6f6f7007e6bc3c53c6e",
+      "same_test_sha256": "5d3b1d3887cfd58896a5b0af312a2c73a4c1bba4e18a57bef1c005f64536aabd",
+      "passed": 0,
+      "failed": 12,
+      "command_event": 3,
+      "exit_status": 101
+    }
+  ],
+  "scope": "synthetic 12-case library gate; rollback uses the same main ROLLBACK.sh optional previous-candidate mode; default original-source rollback remains separate",
+  "real_token_read": false
+}

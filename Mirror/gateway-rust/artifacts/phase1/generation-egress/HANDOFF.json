@@ -1,0 +1,50 @@
+{
+  "state": "READY_FOR_INDEPENDENT_OFFLINE_REVIEW_NOT_LIVE",
+  "snapshot": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\coordination\\generation-egress-a03b3c4af36c.zip",
+  "source_sha256": "a03b3c4af36cae5f59e8b6923bcd25ce9a3b331e75a8c33caeb8f48c6d8ce162",
+  "binary": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\generation-egress-reviewed.exe",
+  "binary_sha256": "2d44e9249d01cd8761c6eb936d644cdc66b826ba88ace92f0df88cfcb13723cd",
+  "base_snapshot_sha256": "f95fc1eeb7d239dfc5b5e6e999b7c2443dc082a63bc9f6f6f7007e6bc3c53c6e",
+  "tests": {
+    "combined_rust": 121,
+    "generation_egress": 12,
+    "clippy": "all-targets -D warnings passed",
+    "configuration_cases": 30
+  },
+  "memory_probe": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\generation-egress\\memory-probe.json",
+  "profile_contract": {
+    "supported": [
+      "explicit direct (disabled/default proxy, no selected node)",
+      "single HTTP numeric-loopback proxy origin, optional proxy Basic credentials"
+    ],
+    "nodes": "only absent/empty nodes; every proxy_node_id selection fails before chat egress; no node-resolution schema claimed",
+    "unimplemented": "non-reqwest transport; enabled proxy with CF_BYPASS_URL; proxy paths/query/fragment/userinfo; no silent fallback",
+    "scope": {
+      "selected_profile": [
+        "token exchange",
+        "login validation",
+        "access-token diagnose/user-info",
+        "me",
+        "conversations",
+        "auth-session refresh"
+      ],
+      "separate_fixed_direct": [
+        "Django",
+        "public CDN",
+        "CF sidecar"
+      ],
+      "unopened": [
+        "files/private media",
+        "successful WS",
+        "actual voice",
+        "generation"
+      ]
+    },
+    "transitions": "Effective config changes atomically rotate persisted epoch; old sessions 401, A-B-A remains invalid; concurrent login config change409; old in-flight read never selects new token/cookie/client, may finish on already captured old client; meaningful session/proxy backup restore rotates epoch; unchanged DB/key/profile restart retains binding",
+    "diagnostic": "explicit proxy test no redirect/retry; reports302; selected-profile access diagnose uses GET me only when only access_token is supplied",
+    "e2e_identity": "not accepted; browser/CH/TLS/CF/device and unopened paths remain separately gated"
+  },
+  "scope_document": "EGRESS_BINDING.md",
+  "real_token_read": false,
+  "safe_runner": "Not armed; awaiting independent reviewer results and owner-approved safe adapter/manifest. Token file is not read by these tests."
+}

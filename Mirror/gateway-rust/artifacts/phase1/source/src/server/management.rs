@@ -114,6 +114,7 @@ pub(super) async fn mirror_token(
     let limits = serde_json::to_string(&input.limits).context("序列化 limits 失败")?;
     let time = now();
     let mut db = app.db.lock().await;
+    let binding = egress::binding(&db, &app.config, None)?;
     let Database { conn, crypto } = &mut *db;
     let tx = conn.transaction()?;
     let mut issued = Vec::new();
@@ -135,6 +136,12 @@ pub(super) async fn mirror_token(
         let Some((access_raw, session_raw, cookies_raw)) = credentials else {
             continue;
         };
+        let existing_node: Option<Option<i64>> = tx.query_row(
+            "SELECT proxy_node_id FROM gateway_sessions WHERE user_name=?1 AND chatgpt_username=?2",
+            params![input.user_name,account],|row|row.get(0)).optional()?;
+        if existing_node.flatten().is_some() {
+            return Err(error(StatusCode::SERVICE_UNAVAILABLE, "已有会话的代理节点尚未实现，拒绝静默换出口"));
+        }
         // encrypt 对 enc:v1: 输入幂等、对存量明文行就地加密，与 login 写入同义。
         let access = crypto.encrypt(&access_raw)?;
         let session = match session_raw {
@@ -176,12 +183,13 @@ pub(super) async fn mirror_token(
                 time
             ],
         )?;
-        if let Some((payload, expiry)) = policies.get(account) {
-            tx.execute(
-                "INSERT INTO rust_authorizations(token_hash,payload,expires_at) VALUES(?1,?2,?3)",
-                params![hash, crypto.encrypt(&payload.to_string())?, expiry],
-            )?;
-        }
+        let (mut payload, expiry) = policies.get(account).cloned().unwrap_or((json!({}), i64::MAX));
+        payload["rust_egress_binding"] = json!(binding);
+        payload["rust_credential_binding"] = json!(sha256_hex(&json!([account,crypto.decrypt(&access)?,crypto.decrypt(&cookies)?]).to_string()));
+        tx.execute(
+            "INSERT INTO rust_authorizations(token_hash,payload,expires_at) VALUES(?1,?2,?3)",
+            params![hash, crypto.encrypt(&payload.to_string())?, expiry],
+        )?;
         // 观测：响应条目只有这三个键，login_mode 恒为刚写入的 'api'。
         issued.push(json!({
             "chatgpt_username": account,

@@ -7,20 +7,20 @@
       "--locked",
       "--offline",
       "--manifest-path",
-      "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\static-rollback-afxo_iog\\Cargo.toml",
+      "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\static-rollback-geml5s0q\\Cargo.toml",
       "--bin",
       "mirror-gateway"
     ],
     "exit_status": 0,
     "stdout": "",
-    "stderr": "    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.29s\n"
+    "stderr": "    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.27s\n"
   },
   "build_environment": {
     "CARGO_HOME": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\cargo",
     "RUSTUP_HOME": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-toolchain\\rustup",
     "CARGO_TARGET_DIR": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-probe-targets\\rollback"
   },
-  "binary_sha256": "7f5b9cb7b6757878e7bcd5e46d4d59f59976e3c768831133f0f857a5a538f87e",
+  "binary_sha256": "5b18a82281abc864a73f9fb2b9eeb4e3a2a7c4fd1f2901417911df18338c8eb8",
   "command": [
     "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-probe-targets\\rollback\\debug\\mirror-gateway.exe"
   ],
@@ -35,7 +35,7 @@
   },
   "login": {
     "status": 200,
-    "body": "{\"chatgpt_username\":\"fixture@example.invalid\",\"login_mode\":\"api\",\"login_url\":\"/api/not-login?user_gateway_token=290efa87927adb46bde7671af04e2e3c5faac2056678c704425a2667960ce721\",\"message\":\"登录成功\"}",
+    "body": "{\"chatgpt_username\":\"fixture@example.invalid\",\"login_mode\":\"api\",\"login_url\":\"/api/not-login?user_gateway_token=70a44543117f08a58f335ac802147fc8b2cb2e71a4c8a4956191a20b573abb69\",\"message\":\"登录成功\"}",
     "input": {
       "user_name": "alice",
       "access_token": "synthetic-access-token",
@@ -117,14 +117,14 @@
       ],
       [
         "date",
-        "Tue, 22 Sep 2026 16:24:44 GMT"
+        "Tue, 22 Sep 2026 18:13:42 GMT"
       ]
     ],
     "body": "{\"authProvider\":\"openai\",\"expires\":\"2099-12-31T23:59:59.000Z\",\"loginMode\":\"api\",\"planType\":\"free\",\"user\":{\"email\":\"fixture@example.invalid\",\"id\":\"cc6d96611cffa9f02c3626f0b9ee897dc171e2d540a5cae349d4ec316104997b\",\"image\":null,\"name\":\"fixture@example.invalid\",\"picture\":null}}"
   },
   "upstream": [],
   "process": {
-    "stdout": "gateway listening on http://127.0.0.1:61269 (offline candidate; release gate incomplete)\n",
+    "stdout": "gateway listening on http://127.0.0.1:50806 (offline candidate; release gate incomplete)\n",
     "stderr": "",
     "exit_status": 1,
     "termination": "fixture teardown"

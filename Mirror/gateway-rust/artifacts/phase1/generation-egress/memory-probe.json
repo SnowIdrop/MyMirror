@@ -1,0 +1,20 @@
+{
+  "scope": "synthetic native process, not live token validation",
+  "binary": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-candidate-tests\\debug\\mirror-gateway.exe",
+  "binary_sha256": "2d44e9249d01cd8761c6eb936d644cdc66b826ba88ace92f0df88cfcb13723cd",
+  "database": ":memory:",
+  "access_diagnosis": true,
+  "session_and_account_rows": 0,
+  "files_created_in_cwd": 0,
+  "upstream_calls": [
+    {
+      "method": "GET",
+      "path": "/backend-api/me"
+    }
+  ],
+  "token_file_read": false,
+  "process_exit": 1,
+  "termination": "owned fixture teardown",
+  "stdout": "gateway listening on http://127.0.0.1:58097 (development candidate; release gate incomplete)\n",
+  "stderr": ""
+}
