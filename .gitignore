@@ -15,3 +15,6 @@
 /MirrorNiXiang/image.tar
 /MirrorNiXiang/data/
 /Mirror/chatgpt-mirror-build/imageandvideo/
+# 真实上游探针：本地凭据草稿填好后仍不得进入版本库，原始证据也先留在本机。
+/Mirror/gateway-rust/artifacts/phase1/probe/access-token.txt
+/Mirror/gateway-rust/artifacts/phase1/probe/evidence/
