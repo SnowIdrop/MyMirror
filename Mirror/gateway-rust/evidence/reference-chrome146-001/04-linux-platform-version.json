@@ -1,0 +1,129 @@
+{
+  "probe": "reference-chrome146-linux-platform-version",
+  "kind": "source-verification",
+  "question": "Chrome 146 / Linux 在 Accept-CH 生效时，发给上游的 sec-ch-ua-platform-version 取值是什么（空串还是内核版本）？",
+  "collected_at": "2026-09-24T23:47:41+08:00",
+  "collected_by": "Chromium 源码核对：gitiles `?format=TEXT` 取回原文、本地 base64 解码后算 sha256；不启动任何浏览器",
+  "runtime_probe_unavailable": {
+    "reason": "本机没有可运行的 Linux 浏览器：WSL 未安装发行版（安装需要提权），无 Docker",
+    "consequence": "本文件不含 Linux 运行时实测；结论全部来自源码，行号与文件摘要可复核"
+  },
+  "refs": [
+    {
+      "name": "146.0.7680.165（Chrome for Testing 参照版本，与 00-run.json 同一版本）",
+      "ref": "refs/tags/146.0.7680.165",
+      "commit": "a5ffc1cc7d640401219c183a4dc116e487e952bb",
+      "url": "https://chromium.googlesource.com/chromium/src/+/refs/tags/146.0.7680.165/"
+    },
+    {
+      "name": "7680（候选声称的 146.0.7680.177 所属发布分支）",
+      "ref": "refs/branch-heads/7680",
+      "commit": "1538e3124a46847adf19303a8f57673dc4417ff8",
+      "url": "https://chromium.googlesource.com/chromium/src/+/refs/branch-heads/7680/"
+    }
+  ],
+  "sha256_convention": "文件内容的 sha256（UTF-8 字节），不是 git blob 摘要；用同一 ref + 同一路径重取即可复算",
+  "sources": [
+    {
+      "role": "功能开关的默认状态",
+      "path": "third_party/blink/renderer/platform/runtime_enabled_features.json5",
+      "ref": "refs/tags/146.0.7680.165",
+      "bytes": 196087,
+      "sha256": "dfdf04099dd105b9168d93ab53873094e02dc1788170a0c05ba2417d843f8036",
+      "lines": "4379-4384",
+      "quote": "// If enabled, the platform version in User-Agent Data will be removed.\n// This feature is limited to Linux only.\n{\n  name: \"ReduceUserAgentDataLinuxPlatformVersion\",\n  status: {\"Linux\": \"stable\"},\n},"
+    },
+    {
+      "role": "同一开关在候选声称的发布分支上的状态（与 tag 同值）",
+      "path": "third_party/blink/renderer/platform/runtime_enabled_features.json5",
+      "ref": "refs/branch-heads/7680",
+      "bytes": 196423,
+      "sha256": "68056f62bdd21906d132d19d7fd4d2c0e2d86b5150ec1c631816bd69a97e84e2",
+      "lines": "4388-4392",
+      "quote": "// If enabled, the platform version in User-Agent Data will be removed.\n// This feature is limited to Linux only.\n{\n  name: \"ReduceUserAgentDataLinuxPlatformVersion\",\n  status: {\"Linux\": \"stable\"},\n}"
+    },
+    {
+      "role": "`status: stable` 如何落成 base::Feature 默认状态",
+      "path": "third_party/blink/renderer/build/scripts/templates/features_generated.cc.tmpl",
+      "ref": "refs/tags/146.0.7680.165",
+      "bytes": 1237,
+      "sha256": "ae22c099fe01cd8d2c374feefc462aefe99add1256c71696a49635a6ab771c9f",
+      "lines": "13-24",
+      "quote": "BASE_FEATURE(k{{feature.base_feature}},\n    \"{{feature.base_feature}}\",\n{% if feature.base_feature_status %}\n    base::FEATURE_{{'ENABLED' if feature.base_feature_status == 'enabled' else 'DISABLED'}}_BY_DEFAULT\n{% else %}\n{% if feature.status_type == 'str' %}\n    base::FEATURE_{{'ENABLED' if feature.status == 'stable' else 'DISABLED'}}_BY_DEFAULT\n{% else %}\n{% for platform in platforms %}\n#if {{platform_buildflag(platform)}}\n    base::FEATURE_{{'ENABLED' if feature.status[platform] == 'stable' else 'DISABLED'}}_BY_DEFAULT\n#endif",
+      "note": "本开关用的是平台字典形态（status 为 dict），走 `status[platform] == 'stable'` 这一支；Linux 平台字典里是 stable ⇒ 生成 `base::FEATURE_ENABLED_BY_DEFAULT`"
+    },
+    {
+      "role": "平台版本值怎么算：Linux 上被开关短路成空串",
+      "path": "components/embedder_support/user_agent_utils.cc",
+      "ref": "refs/tags/146.0.7680.165",
+      "bytes": 33384,
+      "sha256": "fbcc70aa144b5ba31f40fc2212d87f3ecb3774bf69177776377b7a6b48c58220",
+      "lines": "581-588, 597-605, 673",
+      "quote": "std::string GetPlatformVersion() {\n#if BUILDFLAG(IS_LINUX)\n  // TODO(crbug.com/40245146): Remove this Blink feature\n  if (base::FeatureList::IsEnabled(\n          blink::features::kReduceUserAgentDataLinuxPlatformVersion)) {\n    return std::string();\n  }\n#endif\n...\n#if BUILDFLAG(IS_WIN)\n  return GetWindowsPlatformVersion();\n#elif BUILDFLAG(IS_FUCHSIA)\n  return std::string();\n#else\n  int32_t major, minor, bugfix = 0;\n  base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);\n  return base::StringPrintf(\"%d.%d.%d\", major, minor, bugfix);\n\n...\nmetadata.platform_version = GetPlatformVersion();",
+      "note": "只有「功能被关掉」时 Linux 才会走到 #else 报内核版本（如 `6.6.0`）；开关在 Linux 默认开启，所以取空串"
+    },
+    {
+      "role": "空串不会被丢头：HTTP 侧照发 `\"\"`",
+      "path": "content/browser/client_hints/client_hints.cc",
+      "ref": "refs/tags/146.0.7680.165",
+      "bytes": 47023,
+      "sha256": "ab68ee26b79020c7fb9d140c93e74c6c95e4cbfd5712ea679f636ac34c2f5186",
+      "lines": "226-231, 746-749",
+      "quote": "void SetHeaderToString(net::HttpRequestHeaders* headers,\n                       WebClientHintsType client_hint_type,\n                       const std::string& value) {\n  headers->SetHeader(network::GetClientHintToNameMap().at(client_hint_type),\n                     value);\n}\n\n...\n\nif (ShouldAddClientHint(data, WebClientHintsType::kUAPlatformVersion)) {\n  AddUAHeader(headers, WebClientHintsType::kUAPlatformVersion,\n              SerializeHeaderString(ua_metadata->platform_version));\n}",
+      "note": "`SerializeHeaderString(\"\")` 按 RFC 8941 产出 `\"\"`，随后无条件 `SetHeader`；这段代码里没有「空值就不发该头」的分支。branch-heads/7680 上该文件字节与 sha256 与 tag 完全相同"
+    },
+    {
+      "role": "JS 侧同一个字段：`navigator.userAgentData` 的 platformVersion",
+      "path": "third_party/blink/renderer/core/frame/navigator_ua.cc",
+      "ref": "refs/tags/146.0.7680.165",
+      "bytes": 1583,
+      "sha256": "17adf67a0df0d8b17f9af67be0e046b4b9d5867ba4142ca633c877da70ad0f25",
+      "lines": "18-22",
+      "quote": "UserAgentMetadata metadata = GetUserAgentMetadata();\nua_data->SetBrandVersionList(metadata.brand_version_list);\nua_data->SetMobile(metadata.mobile);\nua_data->SetPlatform(String::FromUTF8(metadata.platform),\nString::FromUTF8(metadata.platform_version));",
+      "supporting": [
+        {
+          "path": "third_party/blink/renderer/core/frame/navigator_ua_data.cc",
+          "sha256": "6957a5d66d7412716fc05a3e8a4d4c8122a827d3e10291a8137e3b14eaff29c6",
+          "lines": "64-67",
+          "quote": "void NavigatorUAData::SetPlatform(const String& brand, const String& version) {\n  platform_ = brand;\n  platform_version_ = version;\n}"
+        },
+        {
+          "path": "content/renderer/renderer_blink_platform_impl.cc",
+          "sha256": "928b8b993e63b1022ce211cc1813c22ebe47a1470c9efd8d84506517cef71b85",
+          "lines": "367",
+          "quote": "return render_thread->GetUserAgentMetadata();"
+        },
+        {
+          "path": "content/browser/renderer_host/render_process_host_impl.cc",
+          "sha256": "feba64a2f6c94f9d9e95333673dd3019bcd01f4a82501280b4003120a3d5bc3e",
+          "lines": "1879",
+          "quote": "GetContentClient()->browser()->GetUserAgentMetadata(),"
+        }
+      ],
+      "note": "渲染进程拿到的 UserAgentMetadata 由浏览器侧 `embedder_support::GetUserAgentMetadata()` 填出（`platform_version = GetPlatformVersion()`），因此 JS 的 platformVersion 与 HTTP 头的 `sec-ch-ua-platform-version` 同源、同为空串"
+    }
+  ],
+  "deduction": [
+    "开关 `ReduceUserAgentDataLinuxPlatformVersion` 在 Linux 上状态是 stable；生成模板把平台字典里的 stable 翻成 `base::FEATURE_ENABLED_BY_DEFAULT`，所以 Linux 构建里它默认启用。",
+    "`GetPlatformVersion()` 在 Linux 且开关启用时直接 `return std::string()`，不会去读内核版本；内核版本分支只在开关关闭时可达。",
+    "该函数是 `metadata.platform_version` 的唯一来源；HTTP 头侧无空值丢弃分支，序列化后就是 `\"\"`。",
+    "JS 侧 platformVersion 取同一个 `metadata.platform_version`，因此同样是空串。",
+    "非 Linux 平台该开关默认关闭（平台字典里没有 default/其他平台键 ⇒ 生成 DISABLED），但候选只声称 Linux，与本文件结论无关。"
+  ],
+  "conclusion": {
+    "sec_ch_ua_platform_version_linux": "\"\"",
+    "header_present_when_requested": true,
+    "kernel_version_used": false,
+    "linux_platform_version_is_machine_independent": true
+  },
+  "candidate_alignment": {
+    "identity_headers": "src/server/identity.rs 的 IDENTITY_HEADERS 里 `sec-ch-ua-platform-version` = `\"\"`（值表第 54 行）",
+    "js_identity": "同一常量生成的 @@IDENTITY_JSON@@ 里 platformVersion = \"\"（库内单测 identity.rs:298 断言）",
+    "verdict": "候选当前取值与源码推导的 Linux 真值一致，本轮不需要改代码；这条残余按「源码证据闭合」处理"
+  },
+  "residual": [
+    "本文件不是运行时实测：Linux 上的实测（含 Debian 构建的 chromium 146.0.7680.177）要等有 Docker/发行版的机器；cfbypass 容器内 probe_identity.py 会回报 `platformVersion`，届时可对照本结论。",
+    "仅核对了官方源码的开关默认值，未核对 Debian 打包是否改写该 feature 的默认（发行版可在启动参数里 enable/disable features）；打包批次用容器内探针复核。",
+    "`sec-ch-ua-model` 在 Windows 参照实测为 `\"\"`，与本文件同一条「空值仍发头」的代码路径，可互相印证。"
+  ]
+}

@@ -12,8 +12,11 @@
 H2 首帧（SETTINGS/窗口增量/伪头顺序）、同源 XHR 头顺序逐字段一致；`signature_algorithms`
 的 ML-DSA 差异确认为版本差并闭合。代理出口因 wreq 关闭 ALPN 而**停用**（fail-closed）。
 参照对照见 [COMPATIBILITY.md](COMPATIBILITY.md) 的「跨层身份一致性」与
-`evidence/reference-chrome146-001/`。**本批未完成**：Linux 侧 `platform-version` 采集
-（需 WSL）、cfbypass 镜像的构建与运行验证（本机无 Docker）、保留 ALPN 的代理出口。
+`evidence/reference-chrome146-001/`。**本批未完成**：cfbypass 镜像的构建与运行验证（本机无
+Docker）、保留 ALPN 的代理出口。Linux 侧 `platform-version` 一度列为待采，随后改由源码
+核对闭合（`evidence/reference-chrome146-001/04-linux-platform-version.json`：Linux 上该
+feature 默认 `stable` ⇒ `GetPlatformVersion()` 返回空串 ⇒ 头值 `""`）；本机没有 Linux
+浏览器，运行时复核留给打包批次。
 
 **2026-09-24 更新（二）：缺口 5 第一批已落地（传输身份统一）。** 出网传输层换成
 `wreq`/btls 的 `Profile::Chrome146` + Linux 画像，请求头由 `server/identity.rs` 一处强制整组给出，
@@ -308,18 +311,27 @@ sha256）。**本批仍不做**：代理节点与出口分流、`CF_BYPASS_PROXY
     握手，本轮没做；取值只来自 `wreq-util` 画像。
   - `signature_algorithms` 缺 ML-DSA（`0904/0905/0906`）：对照浏览器是 Chromium 151，
     候选按 Chrome146 画像；Chrome146 当时的真实取值未取得证据。
-  - `sec-ch-ua-platform-version` 在 Linux 真机上的取值未验证（本机只有 Windows Chromium），
-    当前按计划发空串。
+  - `sec-ch-ua-platform-version` 在 Linux 真机上的取值未验证（本机只有 Windows Chromium）；
+    **已闭合（2026-09-24 源码核对，非运行时）**：Linux 上该开关默认启用 ⇒
+    `GetPlatformVersion()` 返回空串 ⇒ 头值 `""`，证据
+    `evidence/reference-chrome146-001/04-linux-platform-version.json`。
   - HTTP/1.1 头顺序不受画像控制；上游走 h2，影响有限。
   - WS 握手头是子集：上游 WS 只发身份整组与协商必需头，真浏览器还会带
     `accept-encoding`/`cache-control`/`pragma`；**已收敛（2026-09-24 第二批）**：按真浏览器
     实录补齐，逐跳头与握手自有头不转发，证据 `evidence/ws-handshake-headers-001.json`。
   - **第二批新增遗留（2026-09-24）**：
-    - Linux `sec-ch-ua-platform-version` 未采集（本机 WSL 需重启后安装发行版）；Windows
-      参照实测 `"15.0.0"`，Linux 暂发空串，宁可空也不伪造。
+    - Linux `sec-ch-ua-platform-version`：**已由源码核对闭合**（本机 WSL 装不上发行版，
+      改用源码判定）——Linux 上该 feature 默认 `stable` ⇒ `GetPlatformVersion()` 返回空串 ⇒
+      头值 `""`；Windows 参照实测 `"15.0.0"`。证据
+      `evidence/reference-chrome146-001/04-linux-platform-version.json`；运行时复核留给打包
+      批次（cfbypass 容器内 `probe_identity.py` 会回报 `platformVersion`）。
     - cfbypass 镜像改动（Debian trixie + chromium 146.0.7680.177）与容器内 `probe_identity.py`
       **未经构建/运行验证**（本机无 Docker）；需在有 Docker 的机器上按
       `cfbypass/README.md` 的身份一致性一节的四步升级清单复跑。
+      网关的跨跳比对已把 `user_agent_data.platform_version` 纳入（2026-09-24），因此首次刷新
+      若出现「cfbypass 一跳的浏览器身份与网关声称值不一致」的 platform_version 告警，就是
+      镜像里 `ReduceUserAgentDataLinuxPlatformVersion` 被关掉的实证：先核对镜像 chromium
+      版本，再决定是否补 `--enable-features=ReduceUserAgentDataLinuxPlatformVersion`。
     - cfbypass 仍为 headless-only（原版 all-in-one 是 Xvfb + headful）；需要 headful 时补
       xvfb/xauth 与显示管理。
     - 代理出口停用（wreq 走代理关闭 ALPN）；恢复需要保留 ALPN 的代理实现或透明出口。

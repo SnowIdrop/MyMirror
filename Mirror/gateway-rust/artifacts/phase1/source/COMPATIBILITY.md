@@ -608,6 +608,12 @@ Python 侧确定性读取，页面内检查降级为旁证。
 画像升级而没人改表就会红）。高熵三项的**主版本**与预设绑定，完整版本号沿用原版二进制
 字面量与镜像内 chromium 包版本。
 
+`sec-ch-ua-platform-version: ""` 不是随手填的默认值：Chrome 146 在 Linux 上默认启用
+`ReduceUserAgentDataLinuxPlatformVersion`，`GetPlatformVersion()` 因此返回空串，头仍照发
+（值为 `""`）；这条由源码核对闭合，证据与文件哈希见
+`evidence/reference-chrome146-001/04-linux-platform-version.json`。Windows 上同一头是
+`"15.0.0"`，所以这张表只在「声称 Linux」时成立。
+
 公共 CDN/静态资源与内部媒体代理同样使用这张身份表；仍然只复制既有白名单中的资源
 请求头，且不带浏览器、账号或 CF 凭据。页面注入脚本在 `<head>` 开标签后执行，并把
 `navigator.userAgent/platform/userAgentData/languages`、时区与 `window.chrome` 固定为
@@ -667,7 +673,7 @@ full-version-list/model/platform-version`，491 条请求里 488 条带 `sec-ch-
 |---|---|
 | `signature_algorithms` 缺 ML-DSA | **已收敛（第二轮）**：Chrome for Testing 146.0.7680.165 实测同样只有 8 项、不含 ML-DSA，与候选逐项一致；此前的差异纯属 151 vs 146 的版本差 |
 | H2 首帧未复采 | **已收敛（第二轮）**：候选在本地自签 TLS 上完成握手抓到 H2 首帧，与 146 参照逐项一致（见下节） |
-| `sec-ch-ua-platform-version` | Windows 参照实测 `"15.0.0"`；候选声称 Linux，Linux 取值仍未采集（见下节待办）；宁可发空串也不伪造内核版本 |
+| `sec-ch-ua-platform-version` | **已闭合（2026-09-24，源码核对）**：Windows 参照实测 `"15.0.0"`；Linux 上 `ReduceUserAgentDataLinuxPlatformVersion` 默认启用 ⇒ `GetPlatformVersion()` 返回空串 ⇒ 照发 `""`（`evidence/reference-chrome146-001/04-linux-platform-version.json`）。候选锁 `""` 在声称 Linux 时成立 |
 | HTTP/1.1 头顺序 | **已收敛（第二轮）**：改用 wreq `orig_headers` 按录制顺序输出，网络层/应用层逐项对照见下节 |
 | cfbypass 一跳 | **已部分收敛（第二轮）**：镜像改为 Debian trixie + chromium 146.0.7680.177，响应新增实测 `identity`，网关比对不一致即 warn；代理与 headful 仍是残余 |
 | 出口 IP | 部署在 AWS 机房（用户判定：chatgpt.com 对 AWS 段是白名单，本轮不处理） |
@@ -710,13 +716,20 @@ full-version-list/model/platform-version`，491 条请求里 488 条带 `sec-ch-
 | H2 连接窗口增量 | `15663105` | 同 | 一致 |
 | H2 伪头顺序 | `:method → :authority → :scheme → :path` | 同 | 一致 |
 | 同源 XHR 头顺序 | 见 `03-request-headers.json` | `REQUEST_HEADER_ORDER` 逐项一致 | 一致 |
-| `sec-ch-ua-platform-version` | `"15.0.0"`（Windows） | 候选声称 Linux，发 `""` | **未闭合**：Linux 真机取值待采 |
+| `sec-ch-ua-platform-version` | `"15.0.0"`（Windows） | 候选声称 Linux，发 `""` | **已闭合（源码核对，非运行时）**：Linux 上该 feature 默认 `stable` ⇒ `GetPlatformVersion()` 返回空串 ⇒ 头值 `""`；证据 `04-linux-platform-version.json`（ref/commit/行号/sha256） |
 | `sec-ch-ua` 品牌表 | `"Not-A.Brand";v="24", "Chromium";v="146"`（两项） | `"Chromium";v="146", "Not-A.Brand";v="24", "Google Chrome";v="146"`（三项） | **构建差异**：CfT 是 Chromium 品牌构建，不含 `Google Chrome` 项；候选的品牌表与原版二进制实测字节逐字相同（`reverse/reports/06-sandbox-verification.md` §9.5 的代理链抓包），与自身「Google Chrome 146」的 UA 自洽 |
 
 `tests/identity_fingerprint.rs` 因此有三层断言：自锁常量（ClientHello×2 场景 + H2）、**与
 `evidence/reference-chrome146-001/` 逐字段对照**、以及身份相关 crate
 （`wreq`/`wreq-util`/`wreq-proto`/`btls`/`btls-sys`/`tokio-btls`/`http2`）的锁定版本。
 `cargo update` 或画像误换都会让其中至少一层变红。
+
+Linux 侧的 `sec-ch-ua-platform-version` 没有运行时复采（本机 WSL 无发行版、无 Docker），
+改由源码核对闭合：`third_party/blink/renderer/platform/runtime_enabled_features.json5` 里
+该开关在 Linux 是 `stable` ⇒ 生成 `FEATURE_ENABLED_BY_DEFAULT` ⇒ Linux 上
+`GetPlatformVersion()` 直接返回空串 ⇒ `content/browser/client_hints/client_hints.cc` 把它
+序列化成 `""` 并无条件发头（没有空值丢头分支）。结论与两个 ref 的文件摘要见
+`evidence/reference-chrome146-001/04-linux-platform-version.json`。
 
 ### 页面 JS 可见面（#1）
 
@@ -767,6 +780,11 @@ sec-websocket-extensions`（`evidence/ws-handshake-headers-001.json`，key 值�
 - 可核验：响应新增 `identity`（UA、UA-CH 高熵、语言、时区、Chromium 版本、是否走代理），
   全部取自**实际浏览器会话**；网关每次刷新比对并 warn，`/api/refresh-cfbypass` 把该身份
   回给调用方（`cfbypass_identity`，缺字段时为 null）。
+  比对字段（`src/server/cloudflare.rs::log_identity_mismatch`）：`user_agent`，以及
+  `user_agent_data` 下的 `full_version`/`platform`/`architecture`/`bitness`/`platform_version`。
+  其中 `platform_version` 是 2026-09-24 源码核对后才纳入的：Linux 上正确取值就是空串，报出
+  内核版本即说明镜像里的 `ReduceUserAgentDataLinuxPlatformVersion` 被关掉，属于必须处理的
+  错配（依据 `evidence/reference-chrome146-001/04-linux-platform-version.json`）。
 - `probe_identity.py`（容器内只读探针）用同一浏览器打容器内回环，产出该跳的 ClientHello/H2
   摘要，供有 Docker 的机器上与 wreq 仿真逐字段对照。
 

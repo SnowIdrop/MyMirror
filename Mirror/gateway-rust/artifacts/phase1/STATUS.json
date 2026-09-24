@@ -1,8 +1,8 @@
 {
   "ACTIVE_OBJECT": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source",
   "LAST_CONFIRMED_RESULT": {
-    "implementation": "资源 ACL v1 已从孤立模块接成产品判权层（缺口 3 完整批次）：六类资源分类与判权、创建登记、集合过滤、访客拒绝、身份每请求复验、稳定账号键、生成互斥、撤权中止、管理 API、旧归属一次性回填、网关备份 v3；缺口 1+2 仍有效；缺口 5 第一、二批已接线：出网传输身份统一（Chrome146/btls 画像 + 整组身份头 + 顺序锁定）、页面 JS 可见面同源、WS 握手按实录补齐、cfbypass 一跳对齐并可核验、与 Chrome for Testing 146 逐字段对照；代理出口停用（wreq 关 ALPN），Linux platform-version 与 cfbypass 构建验证未完成",
-    "rust_tests": 212,
+    "implementation": "资源 ACL v1 已从孤立模块接成产品判权层（缺口 3 完整批次）：六类资源分类与判权、创建登记、集合过滤、访客拒绝、身份每请求复验、稳定账号键、生成互斥、撤权中止、管理 API、旧归属一次性回填、网关备份 v3；缺口 1+2 仍有效；缺口 5 第一、二批已接线：出网传输身份统一（Chrome146/btls 画像 + 整组身份头 + 顺序锁定）、页面 JS 可见面同源、WS 握手按实录补齐、cfbypass 一跳对齐并可核验、与 Chrome for Testing 146 逐字段对照；代理出口停用（wreq 关 ALPN）；Linux platform-version 已由源码核对闭合（Linux 上该 feature 默认 stable ⇒ GetPlatformVersion() 返回空串），并纳入 cfbypass 跨跳比对；cfbypass 镜像构建验证仍未完成",
+    "rust_tests": 213,
     "rust_acl_wiring_tests": 6,
     "clippy": "passed --all-targets -- -D warnings",
     "configuration_cases": 30,
@@ -44,7 +44,7 @@
     "缺口 1：已登录读写/SSE/归属判定与登记、/ws-chatgpt 桥接、/realtime HTTP 已落地；仍未覆盖真实上游流式渲染与停止/重命名/删除端到端断言；见 source/NEXT_WORK.md",
     "缺口 2：39 个同源前缀已按策略表逐条接管（反代或可行动文案），契约测试解析改写表；/external 主机白名单仍未还原；见 source/NEXT_WORK.md",
     "缺口 3：已落地 ACL v1 产品接线（六类资源判权/登记/过滤、管理 API、身份复验、生成互斥、撤权中止、旧归属回填、备份 v3、管理员会话认领链路）；仍只做认领、不做共享/转移界面，连接器创建不自动登记、分支维度归属无协议证据，见 source/NEXT_WORK.md",
-    "缺口 5：第一批传输身份已落地（wreq/btls Profile::Chrome146 + 整组身份头 + WS，见 source/COMPATIBILITY.md 的「传输身份统一」）；仍缺 H2 首帧独立复采、代理节点与出口分流、CF_BYPASS_PROXY_SERVER/TRUSTED_PROXY_IPS/MIRROR_API_PREFIX/ADMIN_UPSTREAM、出口 IP 特征、Linux 制品与 All-in-One 打包",
+    "缺口 5：第一、二批已落地（wreq/btls Profile::Chrome146 + 整组身份头 + WS + JS 可见面 + cfbypass 一跳，见 source/COMPATIBILITY.md 的「传输身份统一」与「跨层身份一致性」）；H2 首帧、ML-DSA、Linux platform-version 均已并入 evidence/reference-chrome146-001/ 闭合；仍缺代理节点与出口分流、CF_BYPASS_PROXY_SERVER/TRUSTED_PROXY_IPS/MIRROR_API_PREFIX/ADMIN_UPSTREAM、出口 IP 特征、Linux 制品与 All-in-One 打包",
     "已判定不做（保留登记）：/external 主机白名单、语音与 /realtime 升级、estuary 改写、访客策略、观测类差异、模型隔离与 account-models/account-capabilities；见 source/COMPATIBILITY.md",
     "显式非目标（不再作为验收缺口）：计量/配额/限流/审核 provider/PoW；见 source/COMPATIBILITY.md"
   ],

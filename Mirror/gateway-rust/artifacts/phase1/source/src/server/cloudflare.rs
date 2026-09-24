@@ -179,15 +179,20 @@ fn log_identity_mismatch(payload: &Value) {
     };
     let unquoted = |name: &str| identity::hint(name).trim_matches('"').to_owned();
     // 字段路径与 cfbypass 的 `IdentityInfo`/`UserAgentDataInfo` 一一对应。
-    // `platform_version` 刻意不比对：Linux 真机取值尚未采集（候选固定发空串），
-    // 每次刷新都报同一处已知残余只会淹没真正的新错配；该值仍随
-    // `/api/refresh-cfbypass` 的 `cfbypass_identity` 回给运维，用来补齐这项证据。
+    // `platform_version` 也比对：Chrome 146 在 Linux 上默认启用
+    // `ReduceUserAgentDataLinuxPlatformVersion`，该跳应当报空串；报出内核版本说明镜像里
+    // 这个 feature 被关掉（或浏览器不是同一版），属于必须处理的错配。依据
+    // `evidence/reference-chrome146-001/04-linux-platform-version.json`。
     for (field, want) in [
         ("user_agent", identity::USER_AGENT.to_owned()),
         ("user_agent_data.full_version", identity::full_version()),
         ("user_agent_data.platform", unquoted("sec-ch-ua-platform")),
         ("user_agent_data.architecture", unquoted("sec-ch-ua-arch")),
         ("user_agent_data.bitness", unquoted("sec-ch-ua-bitness")),
+        (
+            "user_agent_data.platform_version",
+            unquoted("sec-ch-ua-platform-version"),
+        ),
     ] {
         let actual = identity
             .pointer(&format!("/{}", field.replace('.', "/")))

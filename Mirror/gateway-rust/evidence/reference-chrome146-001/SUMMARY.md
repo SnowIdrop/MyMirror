@@ -3,6 +3,10 @@
 采集日期：2026-09-24（Asia/Shanghai）。三段全部只打本机回环，不接触任何上游；四条请求的
 服务端记录里 `credential_headers_present` 全为空，证据不含任何 Cookie/令牌。
 
+本目录另有一份**非运行时**补充：`04-linux-platform-version.json`（Chromium 源码核对，
+回答「Linux 上 `sec-ch-ua-platform-version` 到底发什么」）。本机没有可运行的 Linux 浏览器，
+该文件的结论全部来自源码，附 ref/commit/行号/文件 sha256，可独立复算。
+
 - 参照浏览器：Chrome for Testing **146.0.7680.165** win64（`chrome.exe` 的 VersionInfo 与
   CDP `browser.version` 同值；`chrome_exe_sha256 = aa024f5f…`、`chrome_zip_sha256 = 65d1d4d9…`
   见 `00-run.json`）。
@@ -19,6 +23,7 @@
 | 该值与候选 `identity_fingerprint.rs::EXPECTED_FINGERPRINT_SHA256` | **逐位相同** |
 | ClientHello 归一化 sha256（`https://localhost:<port>/`，有 SNI） | `502b55cca23185a72501e8a77f40741e54b0af48a2c08dd59c50c987e24e40ec` |
 | `sec-ch-ua-platform-version`（Windows 真值） | `"15.0.0"` |
+| `sec-ch-ua-platform-version`（Linux 真值，源码核对） | `""`（见 `04-linux-platform-version.json`） |
 | H2 客户端 SETTINGS 顺序（id 与值） | `0001 HEADER_TABLE_SIZE=65536` → `0002 ENABLE_PUSH=0` → `0004 INITIAL_WINDOW_SIZE=6291456` → `0006 MAX_HEADER_LIST_SIZE=262144`（本次没有 GREASE 设置项） |
 | H2 `WINDOW_UPDATE` | 流 0，increment `15663105` |
 | H2 首条 HEADERS 伪头顺序 | `:method` → `:authority` → `:scheme` → `:path` |
@@ -142,6 +147,10 @@ Sec-Fetch-Dest, Accept-Encoding`。
 | `referer` / `origin` | GET 只有 `referer`；POST 两者都有（`origin` 只在写请求上） |
 | `cookie` / `authorization` | 四条请求都没有（`credential_headers_present` 均为空） |
 
+上表是 Windows 真值。Linux 侧这条头不是「实测缺失」而是「源码可判定」：Chrome 146 的
+`GetPlatformVersion()` 在 Linux 上被默认启用的 `ReduceUserAgentDataLinuxPlatformVersion`
+短路成空串，再原样序列化成 `""`（见 `04-linux-platform-version.json` 与本文附录）。
+
 ## 与候选的逐字段差异清单
 
 分类口径：**平台差异** = Windows 与 Linux 的平台取值不同；**版本或实现差异** = 版本号、
@@ -171,7 +180,7 @@ Chrome 的差别；**环境差异** = 本次夹具（headless、语言设置、�
 
 | 字段 | 真 Chrome146 win64 实测 | 候选（声称 146/Linux） | 分类 | 说明 |
 |---|---|---|---|---|
-| `sec-ch-ua-platform-version` | `"15.0.0"` | `""` | **平台差异** | Windows 真值已取得；Linux 真值仍缺（待 WSL 复采）。候选当前锁 `""` 在 Windows 上肯定是错的，在 Linux 上是否为 `""` 本批**未证** |
+| `sec-ch-ua-platform-version` | `"15.0.0"` | `""` | **平台差异（已闭合）** | Windows 真值实测；Linux 真值由源码核对判定为空串（`04-linux-platform-version.json`：Linux 上该 feature 默认启用 ⇒ `GetPlatformVersion()` 返回空串 ⇒ 头照发 `""`）。候选锁 `""` 在声称 Linux 时成立；同一张身份表用到 Windows 上就是错的 |
 | `sec-ch-ua-platform` | `"Windows"` | `"Linux"` | 平台差异 | 预期差异 |
 | `user-agent` | Windows + `HeadlessChrome/146.0.0.0` | Linux + `Chrome/146.0.0.0` | 平台差异 + 环境差异 | 平台部分预期不同；`HeadlessChrome` 是本次 headless 运行造成，非版本属性 |
 | `sec-ch-ua` | `"Not-A.Brand";v="24", "Chromium";v="146"` | `"Chromium";v="146", "Not-A.Brand";v="24", "Google Chrome";v="146"` | **构建差异** | Chrome for Testing 是 Chromium 品牌构建，不报 `Google Chrome`，且 GREASE 品牌在前；要判候选的品牌列表是否与真 Chrome 一致，需要品牌版 Chrome 146（本机没有） |
@@ -195,10 +204,33 @@ Chrome 的差别；**环境差异** = 本次夹具（headless、语言设置、�
 | `WINDOW_UPDATE` | 流 0，`15663105` | 未登记 | 未覆盖 | 同上 |
 | 伪头顺序 | `:method, :authority, :scheme, :path` | 未登记 | 未覆盖 | 同上 |
 
+## 附录：Linux `sec-ch-ua-platform-version`（源码核对，2026-09-24）
+
+本机没有可运行的 Linux 浏览器（WSL 无发行版、无 Docker），这条头改由源码判定，完整证据
+（ref/commit/行号/sha256/引用原文）见 `04-linux-platform-version.json`。链条四步：
+
+1. `third_party/blink/renderer/platform/runtime_enabled_features.json5`：tag
+   `146.0.7680.165` 行 4379-4384、分支 `refs/branch-heads/7680` 行 4388-4392 同值——
+   `name: "ReduceUserAgentDataLinuxPlatformVersion", status: {"Linux": "stable"}`。
+2. 生成模板 `third_party/blink/renderer/build/scripts/templates/features_generated.cc.tmpl`：
+   平台字典里的 `stable` 翻成 `base::FEATURE_ENABLED_BY_DEFAULT`，所以 Linux 构建默认启用。
+3. `components/embedder_support/user_agent_utils.cc:581-588`：Linux 且开关启用时
+   `GetPlatformVersion()` 直接 `return std::string()`；内核版本分支只在开关关闭时可达。
+4. `content/browser/client_hints/client_hints.cc:746-749` 与 `:226-231`：该值经
+   `SerializeHeaderString` 变成 `""` 后无条件 `SetHeader`，没有「空值就不发这个头」的分支。
+
+结论：Linux 上 `sec-ch-ua-platform-version: ""`，与主机内核版本无关（换机器不变）；
+`"15.0.0"`-这类非空值只出现在 Windows。JS 侧 `navigator.userAgentData.platformVersion`
+取同一个 `UserAgentMetadata::platform_version`（`navigator_ua.cc:18-22` →
+`navigator_ua_data.cc:64-67`），因此两个面同为 `""`。Windows 参照里
+`sec-ch-ua-model: ""` 也走同一条「空值仍发头」的路径，可互为旁证。
+
 ## 未覆盖与限制
 
-1. **Linux 列仍然缺**：UA、`sec-ch-ua-platform`、`sec-ch-ua-platform-version`、Linux 上的
-   brand 列表都需要在 Linux（WSL）上用同一探针复采；本机只有 Windows，没有伪造。
+1. **Linux 列仍未实采**：UA、`sec-ch-ua-platform` 与 Linux 上的 brand 列表需要在 Linux
+   （WSL）上用同一探针复采；本机只有 Windows，没有伪造。`sec-ch-ua-platform-version`
+   已按上节用源码核对判定为 `""`；若要运行时复核，用有 Docker/发行版的机器跑 cfbypass
+   容器内的 `probe_identity.py`（它回报 `platformVersion`）。
 2. **品牌构建待验**：本次用的是 Chrome for Testing（Chromium 品牌），拿不到 `Google Chrome`
    品牌项与它的品牌顺序；`sec-ch-ua`/`full-version-list` 与候选的差异因此归为「构建差异」，
    不能据此判定候选错。

@@ -146,6 +146,11 @@ FastAPI + Playwright，通过 `uvicorn app:app --host 0.0.0.0 --port 8000` 启�
 - **怎么读错配**：顶层 `user_agent` 是该跳的声称值，`identity.user_agent` 是浏览器实测 UA，
   `identity.browser_version` / `identity.user_agent_data.full_version` 是实测完整版本。
   它们与网关常量不一致，就说明这一跳和网关不是同一身份。
+  `identity.user_agent_data.platform_version` 同样是必比对项：Chrome 146 在 Linux 上默认启用
+  `ReduceUserAgentDataLinuxPlatformVersion`，正确取值是空串（依据
+  `Mirror/gateway-rust/evidence/reference-chrome146-001/04-linux-platform-version.json`）。
+  若这一跳报出内核版本（如 `6.6.0`），说明镜像里的 chromium 关掉了该 feature：先核对镜像
+  版本，再决定是否补启动参数 `--enable-features=ReduceUserAgentDataLinuxPlatformVersion`。
 
 `identity` 字段与浏览器来源一一对应（取值失败或浏览器不提供时为 `null`，
 同时写日志；日志与响应都不含 Cookie 与令牌）：
