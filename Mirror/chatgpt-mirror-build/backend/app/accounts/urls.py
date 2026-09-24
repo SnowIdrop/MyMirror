@@ -5,7 +5,8 @@ from app.accounts.views import UserAccountView, UserRelateGPTCarView, VisitLogVi
     UserChatGPTAccountList, GetMirrorToken, MirrorProxyConfigView, MirrorProxyTestView, CustomScriptConfigView
 from app.accounts.views import BatchUserActionView, CurrentUserView, ChangePasswordView, QuotaView, OperationsOverviewView
 from app.accounts.views import ConversationTitlePrivacyView, UserConversationStatisticsView, UserSessionRevokeView
-from app.accounts.views import UserCapabilityPolicyView, UserModelPolicyView
+from app.accounts.views import UserCapabilityPolicyView, UserModelPolicyView, \
+    UserUnassignedConversationsView, UserClaimConversationView
 from app.accounts.views.login import AccountLogin, AccountLogout, UserFreeLoginView, AccountRegister, ConfirmLogin
 from app.accounts.session_authority import GatewayAuthorizationView
 from app.accounts.acl_mapping import GatewayAclMappingView
@@ -43,6 +44,8 @@ urlpatterns = [
     path("revoke-sessions", UserSessionRevokeView.as_view()),
     path("<int:user_id>/mcp-skills", UserCapabilityPolicyView.as_view()),
     path("<int:user_id>/model-policy", UserModelPolicyView.as_view()),
+    path("<int:user_id>/unassigned-conversations", UserUnassignedConversationsView.as_view()),
+    path("<int:user_id>/claim-conversation", UserClaimConversationView.as_view()),
     path("batch", BatchUserActionView.as_view()),
     path("backup", UnifiedBackupView.as_view()),
     path("announcements", AnnouncementAdminView.as_view()),

@@ -17,8 +17,10 @@ from app.accounts.views import (
     CustomScriptConfigView,
     GetMirrorToken,
     UserAccountView,
+    UserClaimConversationView,
     UserConversationStatisticsView,
     UserSessionRevokeView,
+    UserUnassignedConversationsView,
     VisitLogView,
 )
 from app.accounts.authentication import AUTH_COOKIE_NAME, ExpiringCookieTokenAuthentication
@@ -45,7 +47,7 @@ from app.chatgpt.serializers import ShowChatgptTokenSerializer
 from app.chatgpt.views.chatgpt import ChatGPTLoginView, ChatGPTLoginCountResetView
 from app.chatgpt.views.gptcar import GptCarDetailView, GptCarUserAssignmentView
 from app.fields import decrypt_value, encrypt_value
-from app.settings import ADMIN_USERNAME, FREE_ACCOUNT_USERNAME
+from app.settings import ADMIN_USERNAME, CHATGPT_GATEWAY_URL, FREE_ACCOUNT_USERNAME
 from app.utils import get_client_ip, req_gateway
 
 
@@ -1095,3 +1097,183 @@ class AnnouncementTests(TestCase):
         force_authenticate(request, user=self.admin)
         response = AnnouncementAdminView.as_view()(request)
         self.assertEqual(response.status_code, 400)
+
+
+class UnassignedConversationClaimTests(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.admin = User.objects.create_superuser(
+            username="claim-admin",
+            password="Strong-password-123!",
+        )
+        self.user = User.objects.create_user(
+            username="claim-target",
+            password="Strong-password-123!",
+        )
+
+    def _bind_account(self, chatgpt_username="claim-upstream@example.com"):
+        account = ChatgptAccount.objects.create(
+            chatgpt_username=chatgpt_username,
+            plan_type="plus",
+            access_token="secret-access",
+            created_time=1,
+            updated_time=1,
+        )
+        car = ChatgptCar.objects.create(
+            car_name=f"claim-car-{account.id}",
+            gpt_account_list=[account.id],
+            created_time=1,
+            updated_time=1,
+        )
+        self.user.gptcar_list = [car.id]
+        self.user.save(update_fields=["gptcar_list"])
+        return account
+
+    @patch("app.accounts.views.req_gateway")
+    def test_non_admin_cannot_read_or_claim_unassigned_conversations(self, gateway):
+        self._bind_account()
+        list_request = self.factory.get(
+            f"/0x/user/{self.user.id}/unassigned-conversations"
+        )
+        force_authenticate(list_request, user=self.user)
+        list_response = UserUnassignedConversationsView.as_view()(
+            list_request, user_id=self.user.id
+        )
+        claim_request = self.factory.post(
+            f"/0x/user/{self.user.id}/claim-conversation",
+            {"account_id": 1, "upstream_id": "upstream-uuid"},
+            format="json",
+        )
+        force_authenticate(claim_request, user=self.user)
+        claim_response = UserClaimConversationView.as_view()(
+            claim_request, user_id=self.user.id
+        )
+        self.assertEqual(list_response.status_code, 403)
+        self.assertEqual(claim_response.status_code, 403)
+        gateway.assert_not_called()
+
+    @patch("app.utils.requests.request")
+    @patch("app.utils.GATEWAY_ADMIN_SECRET", "internal-test-secret")
+    def test_gateway_carries_service_secret_and_operator_identity_separately(self, request_call):
+        response = Mock(status_code=200)
+        response.json.return_value = {
+            "account_id": "1",
+            "page": 0,
+            "page_size": 50,
+            "upstream_total": 0,
+            "has_more": False,
+            "items": [],
+        }
+        request_call.return_value = response
+        account = self._bind_account()
+        request = self.factory.get(
+            f"/0x/user/{self.user.id}/unassigned-conversations"
+        )
+        force_authenticate(request, user=self.admin)
+
+        view_response = UserUnassignedConversationsView.as_view()(
+            request, user_id=self.user.id
+        )
+
+        self.assertEqual(view_response.status_code, 200)
+        self.assertEqual(request_call.call_args.args, (
+            "get", f"{CHATGPT_GATEWAY_URL}/api/acl/unclaimed-conversations",
+        ))
+        self.assertEqual(
+            request_call.call_args.kwargs["params"], {"account_id": account.id, "page": 0}
+        )
+        headers = request_call.call_args.kwargs["headers"]
+        self.assertEqual(headers["x-gateway-secret"], "internal-test-secret")
+        self.assertTrue(headers["authorization"])
+        self.assertEqual(headers["subject"], self.admin.username)
+        self.assertNotIn("Authorization", headers)
+
+    @patch("app.accounts.views.req_gateway")
+    def test_unassigned_conversations_without_account_pool_returns_empty_state(self, gateway):
+        request = self.factory.get(
+            f"/0x/user/{self.user.id}/unassigned-conversations"
+        )
+        force_authenticate(request, user=self.admin)
+        response = UserUnassignedConversationsView.as_view()(
+            request, user_id=self.user.id
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, {
+            "accounts": [],
+            "account_id": None,
+            "page": 0,
+            "page_size": 50,
+            "upstream_total": 0,
+            "has_more": False,
+            "items": [],
+        })
+        gateway.assert_not_called()
+
+    @patch("app.accounts.views.req_gateway", return_value={"claimed": True, "audit_id": 31})
+    def test_claim_conversation_pins_path_user_and_returns_audit_id(self, gateway):
+        account = self._bind_account()
+        request = self.factory.post(
+            f"/0x/user/{self.user.id}/claim-conversation",
+            {
+                "account_id": account.id,
+                "upstream_id": "upstream-uuid",
+                "owner_user_id": str(self.admin.id),
+            },
+            format="json",
+        )
+        force_authenticate(request, user=self.admin)
+        response = UserClaimConversationView.as_view()(request, user_id=self.user.id)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.data, {"message": "会话已分配给该用户", "audit_id": 31}
+        )
+        self.assertEqual(gateway.call_args.args, ("post", "/api/acl/claim"))
+        self.assertIs(gateway.call_args.kwargs["request"].user, self.admin)
+        self.assertEqual(gateway.call_args.kwargs["json"], {
+            "account_id": account.id,
+            "resource_type": "conversation",
+            "upstream_id": "upstream-uuid",
+            "owner_user_id": str(self.user.id),
+        })
+
+    @patch("app.accounts.views.req_gateway")
+    def test_claim_conversation_rejects_account_outside_user_pool(self, gateway):
+        self._bind_account()
+        outsider = ChatgptAccount.objects.create(
+            chatgpt_username="claim-outsider@example.com",
+            plan_type="plus",
+            access_token="secret-access",
+            created_time=1,
+            updated_time=1,
+        )
+        request = self.factory.post(
+            f"/0x/user/{self.user.id}/claim-conversation",
+            {"account_id": outsider.id, "upstream_id": "upstream-uuid"},
+            format="json",
+        )
+        force_authenticate(request, user=self.admin)
+        response = UserClaimConversationView.as_view()(request, user_id=self.user.id)
+        self.assertEqual(response.status_code, 400)
+        gateway.assert_not_called()
+
+    @patch(
+        "app.accounts.views.req_gateway",
+        side_effect=ValidationError([
+            {"message": "资源已有归属，认领不会覆盖", "code": "acl_already_registered"},
+        ]),
+    )
+    def test_claim_conversation_surfaces_gateway_refusal_unchanged(self, _gateway):
+        account = self._bind_account()
+        request = self.factory.post(
+            f"/0x/user/{self.user.id}/claim-conversation",
+            {"account_id": account.id, "upstream_id": "upstream-uuid"},
+            format="json",
+        )
+        force_authenticate(request, user=self.admin)
+        response = UserClaimConversationView.as_view()(request, user_id=self.user.id)
+        self.assertEqual(response.status_code, 400)
+        # 网关的错误码与文案原样透出，管理端据此判断「已被占用」而不是「分配成功」。
+        self.assertEqual(
+            response.data[0],
+            {"message": "资源已有归属，认领不会覆盖", "code": "acl_already_registered"},
+        )

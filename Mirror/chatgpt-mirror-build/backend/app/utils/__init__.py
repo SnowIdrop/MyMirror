@@ -87,10 +87,23 @@ def get_request_subject(request):
     return f"{FREE_ACCOUNT_USERNAME}:{sid}"
 
 def req_gateway(method, uri, *args, **kwargs):
+    """请求网关。
+
+    服务密钥与操作者身份必须分头携带：服务密钥放在 x-gateway-secret，只用来
+    证明调用方持有管理密钥，本身不代表管理员；需要管理员身份的操作再带上
+    authorization 与 subject，由网关核对请求方的实时管理员身份。
+    """
+    request = kwargs.pop("request", None)
     url = CHATGPT_GATEWAY_URL + uri
     headers = {
-        "Authorization": "Bearer {}".format(GATEWAY_ADMIN_SECRET),
+        "x-gateway-secret": GATEWAY_ADMIN_SECRET,
     }
+    if request is not None:
+        # 延迟导入，避免 app.accounts.session_authority 与本模块循环导入
+        from app.accounts.session_authority import gateway_authorization
+
+        headers["authorization"] = gateway_authorization(request)
+        headers["subject"] = get_request_subject(request)
     try:
         if kwargs.get("timeout") is None:
             kwargs["timeout"] = (

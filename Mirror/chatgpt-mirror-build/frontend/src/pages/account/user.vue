@@ -324,6 +324,57 @@
           </div>
           <t-empty v-else description="暂无对话统计" />
         </div>
+
+        <div class="statistics-section">
+          <div class="statistics-section__head">
+            <div class="statistics-section__title">未登记会话</div>
+            <t-space size="small" align="center">
+              <t-select
+                v-model="unassignedAccountId"
+                :loading="unassignedLoading"
+                :disabled="!unassignedAccounts.length"
+                placeholder="请选择绑定账号"
+                style="min-width: 220px"
+                @change="handleUnassignedAccountChange"
+              >
+                <t-option
+                  v-for="account in unassignedAccounts"
+                  :key="account.id"
+                  :value="account.id"
+                  :label="account.label"
+                />
+              </t-select>
+              <t-button size="small" variant="outline" :loading="unassignedLoading" @click="loadUnassignedConversations">刷新</t-button>
+            </t-space>
+          </div>
+          <t-alert
+            theme="info"
+            message="未登记会话指官网已存在、但还没有归属镜像用户的会话。"
+          />
+          <div v-if="unassignedItems.length" class="conversation-stat-list">
+            <div v-for="item in unassignedItems" :key="item.upstream_id" class="conversation-stat-row">
+              <div class="unassigned-conversation">
+                <div class="conversation-stat-title">{{ item.title || item.upstream_id }}</div>
+                <div class="conversation-stat-meta">{{ formatUnassignedTime(item.update_time) }} · {{ item.upstream_id }}</div>
+              </div>
+              <t-popconfirm content="确定把该会话分配给这个用户吗？" @confirm="claimUnassignedConversation(item)">
+                <t-button
+                  size="small"
+                  theme="primary"
+                  variant="outline"
+                  :loading="unassignedClaimingId === item.upstream_id"
+                >
+                  分配给该用户
+                </t-button>
+              </t-popconfirm>
+            </div>
+          </div>
+          <t-empty v-else :description="unassignedEmptyText" />
+          <div class="unassigned-pager">
+            <span class="conversation-stat-meta">第 {{ unassignedPage + 1 }} 页</span>
+            <t-button v-if="unassignedHasMore" size="small" variant="outline" @click="showNextUnassignedPage">下一页</t-button>
+          </div>
+        </div>
       </t-loading>
     </t-dialog>
   </div>
@@ -388,6 +439,20 @@ const statisticsData = reactive({
   }>,
   title_visible: false,
 })
+const unassignedAccounts = ref<Array<{ id: number; label: string }>>([])
+const unassignedAccountId = ref<number | null>(null)
+const unassignedItems = ref<Array<{
+  upstream_id: string
+  title: string
+  update_time: number
+}>>([])
+const unassignedPage = ref(0)
+const unassignedHasMore = ref(false)
+const unassignedLoading = ref(false)
+const unassignedClaimingId = ref('')
+const unassignedEmptyText = computed(() =>
+  unassignedAccounts.value.length ? '没有未登记的会话' : '该用户没有可用账号',
+)
 const modelStatisticsRows = computed(() =>
   Object.entries(statisticsData.model_message_counts)
     .map(([model, count]) => ({ model, count: Number(count) || 0 }))
@@ -724,8 +789,72 @@ const loadStatistics = async () => {
 const showStatisticsDialog = async (row: any) => {
   statisticsUser.id = Number(row.id)
   statisticsUser.username = row.username
+  unassignedAccounts.value = []
+  unassignedAccountId.value = null
+  unassignedItems.value = []
+  unassignedPage.value = 0
+  unassignedHasMore.value = false
   statisticsDialogVisible.value = true
-  await loadStatistics()
+  await Promise.all([loadStatistics(), loadUnassignedConversations()])
+}
+
+const formatUnassignedTime = (updateTime: number) => {
+  const seconds = Number(updateTime || 0)
+  if (!seconds) return '未知时间'
+  return new Date(seconds * 1000).toLocaleString()
+}
+
+const loadUnassignedConversations = async () => {
+  const params = new URLSearchParams({ page: String(unassignedPage.value) })
+  if (unassignedAccountId.value) params.set('account_id', String(unassignedAccountId.value))
+  unassignedLoading.value = true
+  try {
+    const data = await request(
+      `/0x/user/${statisticsUser.id}/unassigned-conversations?${params.toString()}`,
+    )
+    if (!data) {
+      MessagePlugin.error('未登记会话加载失败')
+      return
+    }
+    unassignedAccounts.value = data.accounts || []
+    unassignedAccountId.value = data.account_id ? Number(data.account_id) : null
+    unassignedItems.value = data.items || []
+    unassignedPage.value = Number(data.page || 0)
+    unassignedHasMore.value = Boolean(data.has_more)
+  } finally {
+    unassignedLoading.value = false
+  }
+}
+
+const handleUnassignedAccountChange = async () => {
+  unassignedPage.value = 0
+  unassignedHasMore.value = false
+  unassignedItems.value = []
+  await loadUnassignedConversations()
+}
+
+const showNextUnassignedPage = async () => {
+  unassignedPage.value += 1
+  await loadUnassignedConversations()
+}
+
+const claimUnassignedConversation = async (item: { upstream_id: string }) => {
+  if (!unassignedAccountId.value) return
+  unassignedClaimingId.value = item.upstream_id
+  try {
+    const data = await request(
+      `/0x/user/${statisticsUser.id}/claim-conversation`,
+      'POST',
+      { account_id: unassignedAccountId.value, upstream_id: item.upstream_id },
+    )
+    if (!data) return
+    unassignedItems.value = unassignedItems.value.filter(
+      (row) => row.upstream_id !== item.upstream_id,
+    )
+    MessagePlugin.success(data.message || '会话已分配给该用户')
+  } finally {
+    unassignedClaimingId.value = ''
+  }
 }
 
 const resetStatistics = async () => {
@@ -845,6 +974,17 @@ const batchAction = async (action: 'activate' | 'deactivate') => {
   font-size: 13px;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.unassigned-conversation {
+  min-width: 0;
+}
+
+.unassigned-pager {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 10px;
 }
 
 @media (max-width: 760px) {

@@ -528,6 +528,89 @@ class UserModelPolicyView(APIView):
         user.save(update_fields=["model_policies"])
         return Response({"message": "普通模型权限与频率限制已保存，用户现有会话已撤销"})
 
+
+class UserUnassignedConversationsView(APIView):
+    permission_classes = (IsAuthenticated, IsAdminUser)
+
+    def _user(self, user_id):
+        user = User.objects.filter(id=user_id).first()
+        if not user:
+            raise ValidationError({"user_id": "用户不存在"})
+        return user
+
+    def get(self, request, user_id):
+        user = self._user(user_id)
+        accounts = [
+            {"id": item.id, "label": f"{item.chatgpt_username} · {item.plan_type}"}
+            for item in ChatgptAccount.get_by_gptcar_list(user.gptcar_list)
+        ]
+        account_id = request.query_params.get("account_id") or next(
+            (item["id"] for item in accounts), None
+        )
+        page = request.query_params.get("page") or 0
+        if account_id is None:
+            # 用户没有任何可用账号时直接返回空态，不请求网关
+            return Response({
+                "accounts": [],
+                "account_id": None,
+                "page": 0,
+                "page_size": 50,
+                "upstream_total": 0,
+                "has_more": False,
+                "items": [],
+            })
+        result = req_gateway(
+            "get",
+            "/api/acl/unclaimed-conversations",
+            request=request,
+            params={"account_id": account_id, "page": page},
+        )
+        if not isinstance(result, dict):
+            raise ValidationError("网关返回的未登记会话清单无效")
+        result["accounts"] = accounts
+        return Response(result)
+
+
+class UserClaimConversationView(APIView):
+    permission_classes = (IsAuthenticated, IsAdminUser)
+
+    def _user(self, user_id):
+        user = User.objects.filter(id=user_id).first()
+        if not user:
+            raise ValidationError({"user_id": "用户不存在"})
+        return user
+
+    def post(self, request, user_id):
+        user = self._user(user_id)
+        try:
+            account = ChatgptAccount.get_by_gptcar_list(user.gptcar_list).filter(
+                id=int(request.data.get("account_id"))
+            ).first()
+        except (TypeError, ValueError):
+            account = None
+        if not account:
+            raise ValidationError({"message": "该上游账号不属于此用户当前绑定的账号池"})
+
+        upstream_id = request.data.get("upstream_id")
+        if not isinstance(upstream_id, str) or not upstream_id.strip():
+            raise ValidationError({"message": "会话 upstream_id 无效"})
+
+        result = req_gateway(
+            "post",
+            "/api/acl/claim",
+            request=request,
+            json={
+                "account_id": account.id,
+                "resource_type": "conversation",
+                "upstream_id": upstream_id.strip(),
+                "owner_user_id": str(user.id),
+            },
+        )
+        if not isinstance(result, dict):
+            raise ValidationError("网关返回的会话认领结果无效")
+        return Response({"message": "会话已分配给该用户", "audit_id": result.get("audit_id")})
+
+
 class UserSessionRevokeView(APIView):
     permission_classes = (IsAuthenticated, IsAdminUser)
 
