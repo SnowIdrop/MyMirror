@@ -49,6 +49,11 @@ CREATE TABLE IF NOT EXISTS gateway_sessions (
     monthly_quota INTEGER NOT NULL DEFAULT 0,
     -- 候选新增（原版无此列）：ACL 的稳定上游账号键，取值 Django ChatgptAccount.pk。
     chatgpt_account_id TEXT,
+    -- 候选新增（原版无此列）：上游 cookie jar（9 字段结构化条目，含设备 Cookie
+    -- `oai-did`）。原版把它并回 extra_cookies，但候选的会话凭据绑定绑定了
+    -- extra_cookies 的原文，改写会让会话立刻失效，因此 jar 单独存一列
+    -- （见 server/upstream_cookies.rs）。
+    upstream_cookies TEXT,
     created_at INTEGER,
     updated_at INTEGER,
     UNIQUE(user_name, chatgpt_username),

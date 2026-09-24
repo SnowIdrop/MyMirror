@@ -522,6 +522,15 @@ fn http_restore_strict_defaults_match_observations() {
         opt_text(&db, "SELECT created_at FROM gateway_sessions WHERE id = 1"),
         None
     );
+    // 上游 cookie jar 是本候选新增列：旧 v3 信封（行内没有该字段）按 NULL 恢复，
+    // 恢复后由上游响应或浏览器请求重新捕获，不阻断其余字段的严格校验。
+    assert_eq!(
+        opt_text(
+            &db,
+            "SELECT upstream_cookies FROM gateway_sessions WHERE id = 1"
+        ),
+        None
+    );
 
     // settings / owners / projects / visit_logs / statistics / model stats 时间戳缺省取当前时间
     let settings_updated = opt_int(

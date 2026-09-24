@@ -10,6 +10,7 @@ mod management;
 mod proxy;
 mod public_prefixes;
 mod static_assets;
+mod upstream_cookies;
 use crate::{
     config::Config,
     crypto::sha256_hex,

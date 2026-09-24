@@ -294,10 +294,14 @@ fn media_method_allowed(method: &Method) -> bool {
 /// HTML 响应缓冲后注入同源客户端资源，其余响应（含 SSE/媒体）流式回传。
 /// 已登录业务面的会话作用域请求先做归属判定，创建响应在交给客户端前登记归属。
 async fn chat_forward(app: Shared, request: Request, session: &Session) -> Result<Response> {
-    let Some(auth) = chat_auth(&app, session).await? else {
+    let (parts, body) = request.into_parts();
+    let Some(mut auth) = chat_auth(&app, session).await? else {
         return Ok(error(StatusCode::UNAUTHORIZED, "会话或出口绑定已失效").into_response());
     };
-    let (parts, body) = request.into_parts();
+    // 设备标识播种：jar 里还没有 `oai-did` 时用浏览器本次请求的值定型，
+    // 之后由恢复逻辑复用同一值（见 server/upstream_cookies.rs）。
+    upstream_cookies::adopt_device_from_request(&app, session, &mut auth.jar, &parts.headers)
+        .await;
     let request_path = parts.uri.path().to_owned();
     let mut base = app.config.upstream.clone();
     base.set_path(&request_path);
@@ -354,7 +358,16 @@ async fn chat_forward(app: Shared, request: Request, session: &Session) -> Resul
     // Cloudflare 挑战的刷新/重放与缓存失效统一在 [`send_chat`] 内处理；这里只分流响应形态。
     // 其它 4xx 是上游对具体请求的业务答复（实测 401 由客户端缺少 oai-* 头导致），
     // 重新获取身份并不能修复。
-    let upstream = send_chat(&app, parts.method, parts.headers, base, data, &auth).await?;
+    let upstream = send_chat(
+        &app,
+        session,
+        parts.method,
+        parts.headers,
+        base,
+        data,
+        &mut auth,
+    )
+    .await?;
     if is_html(&upstream) {
         buffered_response(&app, session, upstream).await
     } else if let Some(kind) = collection {
@@ -441,15 +454,16 @@ async fn django_forward(
 
 /// `/backend-api/me`：会话解析后按原始字节回传，不做 JSON 重序列化。
 async fn me_passthrough(app: &App, request: Request, session: &Session) -> Result<Response> {
-    let Some(auth) = chat_auth(app, session).await? else {
+    let (parts, body) = request.into_parts();
+    let Some(mut auth) = chat_auth(app, session).await? else {
         return Ok(error(StatusCode::UNAUTHORIZED, "会话或出口绑定已失效").into_response());
     };
-    let (parts, body) = request.into_parts();
+    upstream_cookies::adopt_device_from_request(app, session, &mut auth.jar, &parts.headers).await;
     let mut base = app.config.upstream.clone();
     base.set_path(parts.uri.path());
     base.set_query(parts.uri.query());
     let data = to_bytes(body, MAX_BODY).await.context("请求体读取失败")?;
-    let upstream = send_chat(app, parts.method, parts.headers, base, data, &auth).await?;
+    let upstream = send_chat(app, session, parts.method, parts.headers, base, data, &mut auth).await?;
     buffered_response(app, session, upstream).await
 }
 
@@ -458,7 +472,13 @@ async fn me_passthrough(app: &App, request: Request, session: &Session) -> Resul
 /// 镜像 token 本身绝不转发上游。
 pub(super) struct ChatAuth {
     pub(super) access_token: Option<String>,
+    /// 会话凭据 cookie（Django 下发的 name/value 结构），始终排在最前，
+    /// 与 `rust_credential_binding` 绑定的原文保持一致。
     pub(super) cookies: Vec<(String, String)>,
+    /// 上游 cookie jar（原版 `db::SupplementalCookie` 同形的 9 字段条目）：
+    /// 会话凭据 + 捕获到的上游 cookie（含设备标识 `oai-did`）。见
+    /// server/upstream_cookies.rs。匿名会话恒为空。
+    pub(super) jar: Vec<upstream_cookies::Cookie>,
     pub(super) anonymous: bool,
     client: reqwest::Client,
 }
@@ -476,6 +496,7 @@ pub(super) async fn chat_auth(app: &App, session: &Session) -> Result<Option<Cha
         return Ok(Some(ChatAuth {
             access_token: None,
             cookies,
+            jar: Vec::new(),
             anonymous: true,
             client: session.outbound.client.clone(),
         }));
@@ -490,7 +511,7 @@ pub(super) async fn refresh_auth_session(
     session: &Session,
     token: &str,
 ) -> Result<Option<(String, String)>> {
-    let (auth, mode) = {
+    let (mut auth, mode) = {
         let db = app.db.lock().await;
         let row: Option<(String, String, String)> = db.conn.query_row(
             "SELECT access_token,extra_cookies,login_mode FROM gateway_sessions WHERE user_name=?1 AND chatgpt_username=?2 AND mirror_token=?3",
@@ -505,18 +526,43 @@ pub(super) async fn refresh_auth_session(
         if sha256_hex(&json!([session.account,access_token,raw_cookies]).to_string()) != session.credential_binding {
             return Ok(None);
         }
-        (ChatAuth {
-            access_token: Some(access_token),
-            cookies: parse_extra_cookies(&raw_cookies),
-            anonymous: false,
-            client: session.outbound.client.clone(),
-        }, mode)
+        let cookies = parse_extra_cookies(&raw_cookies);
+        // jar = 会话凭据 + 会话列已捕获条目 + 号池账号补齐（原版两处存储的恢复）。
+        // 恢复失败只影响 cookie 面，不阻断凭据刷新。
+        let jar = upstream_cookies::restore(
+            &db,
+            &session.user,
+            &session.account,
+            &cookies,
+            &upstream_cookies::upstream_host(app),
+        )
+        .unwrap_or_else(|cause| {
+            tracing::error!(module = "gateway", error = %cause, "恢复上游 Cookie 失败");
+            Vec::new()
+        });
+        (
+            ChatAuth {
+                access_token: Some(access_token),
+                cookies,
+                jar,
+                anonymous: false,
+                client: session.outbound.client.clone(),
+            },
+            mode,
+        )
     };
     let accounts = send_chat(
-        app, Method::GET, HeaderMap::new(),
-        app.config.upstream.join("/backend-api/accounts/check/v4-2023-04-27")?,
-        Bytes::new(), &auth,
-    ).await?;
+        app,
+        session,
+        Method::GET,
+        HeaderMap::new(),
+        app.config
+            .upstream
+            .join("/backend-api/accounts/check/v4-2023-04-27")?,
+        Bytes::new(),
+        &mut auth,
+    )
+    .await?;
     // A failed plan lookup still refreshes me and displays free (observed fixture).
     let plan = if accounts.status().is_success() {
         let raw = to_bytes(upstream_parts(accounts).2, MAX_BODY).await?;
@@ -527,9 +573,15 @@ pub(super) async fn refresh_auth_session(
         "free".to_owned()
     };
     let user = send_chat(
-        app, Method::GET, HeaderMap::new(), app.config.upstream.join(ME_PATH)?,
-        Bytes::new(), &auth,
-    ).await?;
+        app,
+        session,
+        Method::GET,
+        HeaderMap::new(),
+        app.config.upstream.join(ME_PATH)?,
+        Bytes::new(),
+        &mut auth,
+    )
+    .await?;
     let answer = cloudflare::read(user).await?;
     if !answer.status.is_success() {
         // 被 Cloudflare 拦截不等于会话已登出：按上游故障上抛，
@@ -567,9 +619,25 @@ async fn load_credentials(app: &App, session: &Session) -> Result<Option<ChatAut
     if sha256_hex(&json!([session.account,access_token,extra_cookies]).to_string()) != session.credential_binding {
         return Ok(None);
     }
+    let cookies = parse_extra_cookies(&extra_cookies);
+    // jar = 会话凭据 + 会话列已捕获条目 + 号池账号补齐（原版
+    // restore_account_device_cookie_if_needed 的账号级恢复，对全部 cookie 生效）；
+    // 失败只记日志，不判定凭据失效。
+    let jar = upstream_cookies::restore(
+        &db,
+        &session.user,
+        &session.account,
+        &cookies,
+        &upstream_cookies::upstream_host(app),
+    )
+    .unwrap_or_else(|cause| {
+        tracing::error!(module = "gateway", error = %cause, "恢复上游 Cookie 失败");
+        Vec::new()
+    });
     Ok(Some(ChatAuth {
         access_token: Some(access_token),
-        cookies: parse_extra_cookies(&extra_cookies),
+        cookies,
+        jar,
         anonymous: false,
         client: session.outbound.client.clone(),
     }))
@@ -657,17 +725,21 @@ fn mark_proxied(response: &mut Response) {
 ///
 /// 命中实测 Cloudflare 挑战时：幂等 GET/HEAD 刷新一次 CF cookies 并重放一次；
 /// 生成、SSE、上传等请求一律不重放（遵循“断线不得重发”），只失效缓存交给下一次请求。
+/// 每次上游响应都交给 [`upstream_cookies::capture_response`] 合并 jar（原版
+/// `capture_upstream_cookies`），重放后的响应同样捕获。
 async fn send_chat(
     app: &App,
+    session: &Session,
     method: Method,
     client_headers: HeaderMap,
     base: url::Url,
     body: Bytes,
-    auth: &ChatAuth,
+    auth: &mut ChatAuth,
 ) -> Result<reqwest::Response> {
     let generation = app.cloudflare.generation().await;
     let response =
         send_chat_once(app, &method, &client_headers, &base, &body, auth, &auth.cookies).await?;
+    upstream_cookies::capture_response(app, session, &mut auth.jar, &base, &response).await;
     if !cloudflare::is_challenge(&response) {
         return Ok(response);
     }
@@ -686,6 +758,9 @@ async fn send_chat(
     ) {
         return Ok(response);
     }
+    // 刷新成功：先清掉 jar 里的旧 CF 条目，否则它们排在 CF 缓存之前，重放仍会带
+    // 失效的旧值，这次刷新就白做了（原版 `clear_stored_cloudflare_cookies`）。
+    upstream_cookies::forget_cloudflare(app, session, &mut auth.jar).await;
     // 匿名身份就是整组 Cloudflare cookies：刷新成功后用同一次结果重建身份再重放，
     // 不额外拉起第二次 cfbypass。
     let cookies = if auth.anonymous {
@@ -698,7 +773,10 @@ async fn send_chat(
     } else {
         auth.cookies.clone()
     };
-    send_chat_once(app, &method, &client_headers, &base, &body, auth, &cookies).await
+    let response =
+        send_chat_once(app, &method, &client_headers, &base, &body, auth, &cookies).await?;
+    upstream_cookies::capture_response(app, session, &mut auth.jar, &base, &response).await;
+    Ok(response)
 }
 
 /// 单次上游发送；挑战重放与缓存失效策略见 [`send_chat`]。
@@ -723,14 +801,24 @@ async fn send_chat_once(
         HeaderValue::from_str(&format!("{origin}/")).context("referer 头无效")?,
     );
     apply_chrome_146_identity(&mut headers);
+    // 设备身份：原版 `send_upstream_request` 与 `build_upstream_auth_cookie_header` 都
+    // 用服务端设备标识显式写 `oai-device-id` 头（该 cookie 本身也由 jar 回注，两者同值）。
+    if let Some(value) = upstream_cookies::device_value(&auth.jar) {
+        if let Some((name, value)) = upstream_cookies::device_header(&value) {
+            headers.insert(name, value);
+        }
+    }
     // 匿名身份自带完整 Cloudflare cookie 组，不再叠加进程内 CF 缓存；
-    // 带凭据会话按“会话 extra_cookies 在前、CF cookies 在后”合并。
+    // 带凭据会话按“会话凭据在前、jar 捕获项其次、CF cookies 最后”合并
+    // （jar 已按域/路径/安全位/过期做过作用域过滤，同名只保留最先出现的值）。
     let cf = if auth.anonymous {
         Vec::new()
     } else {
         app.cloudflare.cookies().await
     };
-    if let Some(cookie) = cloudflare::cookie_header(&[cookies, cf.as_slice()]) {
+    let jar_pairs = upstream_cookies::pairs_for(&auth.jar, base);
+    if let Some(cookie) = cloudflare::cookie_header(&[cookies, jar_pairs.as_slice(), cf.as_slice()])
+    {
         headers.insert(
             "cookie",
             HeaderValue::from_str(&cookie).context("Cookie 头无效")?,

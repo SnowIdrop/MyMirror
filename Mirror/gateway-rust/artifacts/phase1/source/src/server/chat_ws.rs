@@ -141,7 +141,7 @@ pub(super) fn upstream_url(base: &url::Url, path: &str, query: Option<&str>) -> 
     Ok(target)
 }
 
-/// 上游握手头：与会话绑定（extra_cookies 在前、CF 白名单在后），
+/// 上游握手头：与会话绑定（会话凭据在前、jar 捕获项其次、CF 白名单在后），
 /// origin/referer/UA 按 chat 规则固定，镜像 token 与客户端 cookie 一律不转发。
 async fn upstream_headers(
     app: &App,
@@ -177,12 +177,22 @@ async fn upstream_headers(
         HeaderValue::from_str(&format!("{origin}/")).context("referer 头无效")?,
     );
     proxy::apply_chrome_146_identity(&mut headers);
+    // 设备身份：原版 WS 桥显式写 `oai-device-id` 头（错误串 0xD3E785 邻域），
+    // 并与 HTTP 侧共用同一个 jar（见 server/upstream_cookies.rs）。
+    if let Some(value) = upstream_cookies::device_value(&auth.jar) {
+        if let Some((name, value)) = upstream_cookies::device_header(&value) {
+            headers.insert(name, value);
+        }
+    }
     let cf = if auth.anonymous {
         Vec::new()
     } else {
         app.cloudflare.cookies().await
     };
-    if let Some(cookie) = cloudflare::cookie_header(&[auth.cookies.as_slice(), cf.as_slice()]) {
+    let jar = upstream_cookies::pairs_for(&auth.jar, &app.config.ws_upstream);
+    if let Some(cookie) =
+        cloudflare::cookie_header(&[auth.cookies.as_slice(), jar.as_slice(), cf.as_slice()])
+    {
         headers.insert(
             "cookie",
             HeaderValue::from_str(&cookie).context("Cookie 头无效")?,

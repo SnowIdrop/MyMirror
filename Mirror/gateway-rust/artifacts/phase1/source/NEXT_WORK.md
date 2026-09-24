@@ -169,6 +169,33 @@ ACL 模块接入产品路径。
     必须先定义访客归属策略；本批按「访客不参与 ACL」的产品决定实施。
   - 真实上游写入的创建类路径（项目/文件/任务/图片）只有合成回环证据；无实测形状的写路径保持
     账号级放行但不自动登记，需在真实验收时逐条确认。
+- **上游 cookie 捕获/恢复的遗留（2026-09-24；本批已收敛主体）**：
+  - **已由真实探针回答**（证据 `evidence/device-cookie-real-001/`）：上游在 `GET /` 与
+    `/sentinel/20260423af3c/sdk.js` 上确实下发 `oai-did`，捕获与浏览器播种两条链路均成立。
+  - **已实现**：真实上游下发的 `oai-did`/`oai-sc`/`__oailb`/`__cf_bm`/`__cflb`/`_cfuvid`
+    整组捕获与按作用域回注，双存储（会话列 `upstream_cookies` + 号池行
+    `chatgpt_accounts.extra_cookies`），CF 刷新后定向清理旧 CF 条目；见
+    `server/upstream_cookies.rs` 与 COMPATIBILITY「上游 cookie 捕获与恢复」。
+  - **未定名**：`is_browser_preference_cookie_name`(0x1872F0) 里还有一条 12 字节内联比较
+    （解出 `oai-allow-ne…`），完整名字未还原，未纳入排除表；若实测发现它被跨会话搬迁，再按实测
+    名字补表。名称比较目前按大小写不敏感（更保守），原版常量比较是否如此未确证。
+  - **写路径仍未打通（不属于 cookie jar）**：三次真实新建尝试全部 JSON 403（无 CF 挑战、
+    非 HTML），其中一次携带的是上游自己下发的 `oai-did`。剩余原因指向浏览器侧材料
+    （`/backend-api/sentinel/chat-requirements` 的令牌、前端自身请求头）。要闭环必须做
+    **真实浏览器驱动**的镜像端到端流程（headless Chromium 经镜像登录真实账号、页面自行完成
+    sentinel/PoW、发起一次新建与删除）；本仓库目前没有可复用的浏览器驱动脚本。
+  - 真实上游 cookie 名已在证据里固化，可用于后续批次核对捕获名单。
+  - 登录/诊断链（`/api/login` 的 session_token 换取、`/api/get-user-info`、
+    `/api/diagnose-chatgpt-auth`）在会话建立前调用上游，不走会话通道，因此既不播种也不捕获；
+    捕获从第一个带会话的上游响应开始（`/api/auth/session` 的 `me`/`accounts/check` 刷新、
+    业务面读写、生成），账号级一致性因此可能晚一步。
+  - 直连登录（Django 直接下发凭据、账号未入 `chatgpt_accounts`）时捕获条目只落会话列，
+    跨镜像用户不共享；要账号级共享需先让账号入池。
+  - 浏览器 Cookie 兜底依赖上游 `set-cookie` 未带 `Domain=chatgpt.com`；带该属性时浏览器不会为
+    镜像源保存，此时只剩请求头来源可用。
+  - 无撤销/轮换入口：上游轮换 cookie 后，旧值只在下一次响应捕获点被覆盖（CF 条目另有刷新时的
+    定向清理）；上一版候选写的 `gateway_sessions.device_cookie` 列留在库里不再读写，
+    不做一次性搬运。
 - **本批新增遗留（缺口 1 + 2 实施产生）**：
   - 未登记会话（本批之前创建、或直接在上游站点创建）一律拒绝，**唯一恢复途径是管理员在
     后端重新分配**；缺口 3 批次已把该路径落实为 `/api/acl/claim`（管理界面仍未做）。

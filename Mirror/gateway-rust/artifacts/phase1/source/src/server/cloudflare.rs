@@ -24,7 +24,8 @@ use serde::de::DeserializeOwned;
 use std::time::{Duration, Instant};
 
 /// cfbypass 白名单（报告 02 §1.3：只透出这四个 Cloudflare cookie）。
-const CLOUDFLARE_COOKIE_NAMES: [&str; 4] = ["cf_clearance", "__cf_bm", "__cflb", "_cfuvid"];
+pub(super) const CLOUDFLARE_COOKIE_NAMES: [&str; 4] =
+    ["cf_clearance", "__cf_bm", "__cflb", "_cfuvid"];
 
 /// 挑战驱动刷新的冷却秒数：持续拦截时避免每次请求都拉起一次 cfbypass 浏览器。
 const REFRESH_COOLDOWN_SECS: u64 = 30;

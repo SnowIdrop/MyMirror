@@ -267,7 +267,127 @@ Django `DJANGO_ENV=LOCAL manage.py test` 101 项通过（新增身份字段、�
 探针证据只落状态码、内容类型、正文长度与 sha256、字段名、集合条数、本候选自己的错误码与
 文案；令牌、Cookie、镜像会话 token、上游正文与标题一律不落盘。
 
+## 上游 cookie 捕获与恢复（2026-09-24，静态实施 + 真实上游只读验证）
+
+共享账号下所有镜像会话必须呈现同一套上游 cookie 身份。原版有完整 jar，候选此前只补
+`cf_clearance`：本批按逆向证据把它补齐（`server/upstream_cookies.rs`），与「凭据换取路径的
+Cloudflare 加固」属同一类补强（原版有、候选原先没有）。
+
+| 项 | 原版（逆向证据） | 本候选 |
+|---|---|---|
+| 数据结构 | `db::SupplementalCookie` 9 字段（serde 名表 0xD914DD 起）：`domain`/`host_only`/`secure`/`http_only`/`expires`/`source`/`name`/`value`/`path` | 相同字段与序列化名（`upstream_cookies::Cookie` 的 `to_json`/`from_json`） |
+| 抓取范围 | 只排除两张名字表：`is_mirror_local`(0x248780) 与 `is_browser_preference_cookie_name`(0x1872F0) | 相同（`MIRROR_LOCAL_NAMES` 10 项 / `BROWSER_PREFERENCE_NAMES` 7 项，含 `__Secure-next-auth.session-token`）；比较大小写不敏感 |
+| 作用域 | `applies_to_url`(0x248E40) 按域（host_only 精确 / 否则后缀）+ 安全位 + 路径判定，`is_current_at`(0x2488E0) 判过期 | 相同（`Cookie::applies_to_url`；路径匹配与缺省路径按 RFC6265 §5.1.4） |
+| 来源标记 | `source` 字段（`browser` 等）；设备 cookie 按 `name == "oai-did"` + `source == browser` 筛（`server_oai_device_cookie` 0x187E40 闭包 0x188230） | 相同语义：浏览器播种记 `browser`，上游响应记 `upstream`，Django 原文记 `session`；只有前两类回写落库 |
+| 捕获 | `capture_upstream_cookies`（闭包 0x18C4C0），失败日志「保存上游 Cookie 失败」 | 每个带凭据上游响应的 `set-cookie` 条目录入 jar（含 `Max-Age`/`Expires` 与 `Max-Age<=0` 删除指令）；失败只记同名日志，不判定凭据失效 |
+| 双存储 | 账号池行 `chatgpt_accounts.extra_cookies` + 会话行 `gateway_sessions.extra_cookies`；`clear_stored_cloudflare_cookies`(0x24EEC0) 同时清两张表 | 账号级写号池行（逐条目就地更新、保留行内未知字段），会话级写**新列** `gateway_sessions.upstream_cookies`（加密） |
+| 恢复 | `restore_account_device_cookie_if_needed`（闭包 0x18BFF0/0x18C0A0）「if needed」：会话缺值才从号池补 | 相同优先级：会话凭据 → 会话列 → 号池行；后两级只补缺口（`fill_gaps`），同名以先到者为准 |
+| CF 冲突 | `clear_stored_cloudflare_cookies`(0x24EEC0) 定向清除陈旧 CF cookie，避免与 jar 同名冲突 | 相同：CF 刷新成功后 `forget_cloudflare` 清掉 jar 里的 `cf_clearance`/`__cf_bm`/`__cflb`/`_cfuvid` 并落库——jar 排在 CF 缓存之前，留着旧值会让重放继续被判挑战 |
+| 浏览器来源 | `browser_oai_device_id`(0x187D30) 读 13 字节头名 `oai-device-id`（字面量字节偏移 0xD64C07/0xD64C88）；2026-09-23 匿名链路实测浏览器确实发送该头（`evidence/anonymous-nextauth-001/mirror-run-007`） | 相同：先 `oai-device-id` 头，头缺失时看 Cookie 头里的 `oai-did`；jar 里已有 `oai-did` 时不覆盖（由首个请求定型） |
+| 上游请求 | `build_upstream_auth_cookie_header`(0x186100) 拼 Cookie 头（`oai-device-id` 字面量在其 +0x12D，函数内 0x186207 处取设备标识）；WS 桥显式写 `oai-device-id` 头（错误串 `写入 WebSocket oai-device-id 失败`，0xD64C77 邻区） | Cookie 顺序 = 会话凭据 → jar 作用域内条目 → CF 缓存（同名取先）；`oai-device-id` 头与 jar 里的 `oai-did` 同值；WS 握手同规则 |
+| 落点 | 设备值并入 `gateway_sessions.extra_cookies` | **有意偏离**：`rust_credential_binding` 绑定 `extra_cookies` 原文，改写会让会话立刻失效，故 jar 单独存加密列；号池一侧只改写实测捕获条目，Django 管理的既有条目原样保留 |
+| 号池行不存在 | 未确证 | 只写会话列，不凭一次业务响应创建账号池记录 |
+
+备份与迁移：`gateway_sessions.upstream_cookies`（加密列）随 v3 备份一起导出/恢复；本轮之前导出
+的 v3 备份缺该字段时按 NULL 恢复（其余列仍严格要求），恢复后由上游响应或浏览器请求重新捕获。
+存量库由 `ensure_legacy_columns` 的 `ALTER TABLE … ADD COLUMN upstream_cookies TEXT` 补列；
+上一版候选写过的 `device_cookie` 列（单个裸设备值）留在库里不再读写，设备身份由号池行或浏览器
+请求在下一个请求内重建，不做一次性搬运。
+
+跨组件契约：号池行 `extra_cookies` 是 Django 的 `EncryptedJSONField`，候选回写的是 9 字段条目；
+Django 侧只读 `name`/`value`（`chatgpt/models.py`），多余字段被忽略，不影响登录态或账号页。
+
+验证状态（2026-09-24，用户批准后执行）：`cargo test --locked --offline` **193 项全过**
+（71 项库内单测 + 122 项集成用例；本批 8 项库内单测、`tests/device_cookie.rs` 5 项、
+`tests/upstream_cookie_jar.rs` 4 项），`cargo clippy --locked --offline --all-targets -- -D warnings`
+通过。
+
+`tests/device_cookie.rs` 覆盖：浏览器 `oai-device-id` 播种后请求头与 Cookie 同值、且后续请求
+不再依赖该头即复用会话值（并断言落库为 `enc:v1:` 密文且不含明文设备值）；上游
+`set-cookie: oai-did=…` 捕获后下一请求即带上（fixture 上游是明文 http，真实形态带 `Secure`，
+故回注体现在 `oai-device-id` 头，Cookie 侧按 RFC6265 正确地不发）；号池行恢复对 alice/bob 两个
+镜像用户给出同一设备标识；上游轮换设备标识后覆盖号池，另一镜像用户随即跟上新值；生成路径
+（创建会话）同样捕获。`tests/upstream_cookie_jar.rs` 覆盖：名字表
+（`oai-did`/`oai-sc`/`__oailb`/`__cf_bm`/`__cflb`/`_cfuvid`）整组捕获并回注，镜像自有与浏览器
+偏好名字既不落库也不回注；回注侧的域（host_only / 后缀）、安全位、路径与 `Max-Age=0` 删除指令
+过滤，且捕获与回注分离（作用域外条目照样留库）；号池行与两个镜像用户共享账号级条目、会话凭据
+不写进号池也不串用、行内未知字段保留、无捕获时不凭空写会话列；CF 刷新后重放只带新
+`cf_clearance` 且旧条目已从落库 jar 清掉。库内单测覆盖两张排除表、作用域与路径匹配、
+`Set-Cookie` 属性解析（`Max-Age` 优先于 `Expires` 与 HTTP 日期）、upsert 与删除指令、同名取先、
+设备值白名单、9 字段 JSON 往返与历史 name/value 行缺省。另有 `backup_contract` 断言旧 v3 信封
+（行内无 `upstream_cookies`）按 NULL 恢复。
+
+强制防御性审查已执行（`$peropero-defensive-programming-review`）：删掉 `capturable()` 里由各
+构造点已保证的空名判断，并把「空域」从提前返回改为只豁免域判定（安全位与路径照旧生效，避免
+历史行绕过路径过滤）；保留的校验都对应可达边界（外部头 / Cookie 输入、号池列非 JSON 数组、
+旧备份缺列、上游 `set-cookie` 透传）。本轮未改动 Django，因此未重跑 Django 测试。
+
+### 真实上游验证（2026-09-24，用户批准真实写入后执行）
+
+探针 `artifacts/phase1/probe/probe_device_cookie.py`（文件库 + `set-cookie` 名字 + 每个上游
+请求之间随机停 8–12 秒），四个原始 JSON 与说明见
+[`evidence/device-cookie-real-001/`](../../evidence/device-cookie-real-001/SUMMARY.md)。
+
+| 结论 | 证据 |
+|---|---|
+| 逆向还原的 cookie 名正确：真实上游确实下发 `oai-did` | `GET /` 与 `GET /sentinel/20260423af3c/sdk.js` 的 `set-cookie` 名字里出现 `oai-did`（页面另含 `__Host-next-auth.csrf-token`/`__Secure-next-auth.callback-url`） |
+| 设备 cookie 出现在页面/SDK 路径，而非已登录 API 路径 | `GET /backend-api/me`、`sentinel/frame.html` 只有 `__oailb`/`__cf_bm`/`__cflb`/`_cfuvid`；`chat-requirements/prepare` 另发 `oai-sc` |
+| 捕获链路对真实上游成立 | 不发送任何浏览器设备标识时，会话设备列在 `sdk.js`（带 `oai-did`）响应之后由 0 变 1；`capture-first` 轮次在 `GET /` 之后同样由 0 变 1 |
+| 浏览器播种链路成立 | 不发送设备头时为 0，发送 `oai-device-id` 的下一跳之后为 1 |
+| 设备 cookie 不是写路径的阻塞点 | 三次真实新建尝试（含一次携带上游自己下发的 `oai-did`）全部返回 **JSON 403**（无 `cf-mitigated`、非 HTML、`conversation_id_found=false`），均未创建会话，账号无残留 |
+
+写路径仍被上游拒绝的剩余原因指向浏览器侧材料（`chat-requirements` 的 sentinel/PoW 令牌与
+前端自身请求头），合成客户端不产生这些材料；验证它需要真实浏览器驱动流程，已登记为残项。
+真实上游另外下发的 `__oailb`/`__cf_bm`/`__cflb`/`_cfuvid`/`oai-sc` 已随本批整组纳入捕获与
+回注，`oai-did` 只是其中一项。
+
 ## 证据
+
+## 原版的上游 cookie 模型（2026-09-24 二进制复核）
+
+原版不是「只补 `cf_clearance`」，而是一套**完整的账号级 cookie jar**。本节的偏移均为文件
+**字节**偏移（早期草稿里引用的 0xD42553/0xD3E785 等是 UTF-8 字符下标，已在上文更正）。
+
+1. **数据结构** `db::SupplementalCookie`：serde 字段名表（0xD914DD 起）逐字为
+   `domain`、`host_only`、`secure`、`http_only`、`expires`、`source`、`name`、`value`、`path`；
+   行为方法 `is_mirror_local`(0x248780)、`is_current_at`(0x2488E0)、`scope_identity`(0x248920)、
+   `applies_to_url`(0x248E40)。即原版按域/路径/安全位/过期时间做作用域判定，而不是只比名字。
+2. **两处存储**：账号池行 `chatgpt_accounts.extra_cookies`（账号级，同账号的镜像用户共享）与
+   会话行 `gateway_sessions.extra_cookies`（按 `mirror_token` 绑定）。证据：`clear_stored_cloudflare_cookies`
+   (0x24EEC0) 同时引用两张表与**动态表名** SQL `SELECT id, extra_cookies FROM ` /
+   `UPDATE  SET extra_cookies = ?1 WHERE id = ?2`（0xD8DBF9 邻区）；`update_gateway_session_extra_cookies`
+   (0x256D50) 为 `UPDATE gateway_sessions SET extra_cookies = ?2, … WHERE mirror_token = ?1`。
+3. **抓取只排除两类**：
+   - `is_mirror_local`(0x248780) 排除镜像自有 cookie：`mirror_api_session`(0xD54150)、
+     `login_mode`/`model_limits`/`next-auth.session-token`(0xD8C8BA 邻区)、`chatgpt_username`(0xD85FC0)、
+     `isolated_session`(0xD85FB0)、`trusted_cdn_sources`、`gateway_user_name`(0xD8BEB0)。
+   - `is_browser_preference_cookie_name`(0x1872F0) 排除浏览器偏好：`oai-mweb-route-desktop`/
+     `oai-mweb-route-dl-config`(0xD548F0)、`oai-default-mode_personalization`(0xD54910)、
+     `oai_consent_personalization`、`oai_consent_analytics`、`oai_consent_marketing`(0xD54930–0xD54980)、
+     `oai-last-model-config`(0xD54990)；另有 1 条 12 字节内联比较（解出 `oai-allow-ne…`，未定名）。
+   ⇒ `oai-did`、`oai-sc`、`__oailb`、`__cf_bm`、`__cflb`、`_cfuvid` **都不在排除名单里**，
+   原版会把它们整组写进 jar；真实上游下发这些名字的观测见
+   [`evidence/device-cookie-real-001/`](../../evidence/device-cookie-real-001/SUMMARY.md)。
+4. **注入**：`build_upstream_auth_cookie_header`(0x186100, size 0x11EE) 组装 Cookie 头
+   （`oai-device-id` 字面量在其 +0x12D，函数内 0x186207 处调用取设备标识）；
+   `applies_to_url`(0x248E40) 按域/路径/安全位/过期过滤（含对 `next-auth.session-token` 系的专门分支）；
+   `cookies_to_header`(0x188AE0)、`merge_cookie_headers`(0x185CB0)、`same_cookie_scope`(0x173690)、
+   `cookie_value`(0x185560) 负责合并多份 Cookie 头与同名去重。
+5. **cfbypass 是另一条通道**：`persist_cfbypass_cookies_for_request`、
+   `merge_extra_cookies_with_cfbypass`(0x1EB570)、`supplemental_has_cloudflare_cookie`(0x1EEEA0)、
+   `is_safe_cfbypass_cookie_name`(0x187CB0，白名单 `cf_clearance`/`__cf_bm`/`__cflb`/`_cfuvid`，
+   字面量在 0xD692A1 邻区)、`normalize_cfbypass_cookies`(0x187B60)、
+   `clear_stored_cloudflare_cookies`(0x24EEC0) 定向清除陈旧 CF cookie，避免与 jar 里的同名 cookie 冲突。
+6. **设备 cookie**：`browser_oai_device_id`(0x187D30) 读浏览器头 →
+   `server_oai_device_id`(0x188600) 供拼头 → `server_oai_device_cookie`(0x187E40，闭包 0x188230)
+   在 jar 内按 `name == "oai-did"` 与 `source` 字段（7 字节立即数 `browser`）筛选 →
+   `restore_account_device_cookie_if_needed` 在会话缺值时从账号池行补。
+
+本节即是本批（「完整上游 cookie 捕获与恢复」）的实施依据：9 字段 jar、两张排除表、域/路径/
+安全位/过期判定、双存储与 CF 冲突清理都落在 `server/upstream_cookies.rs`。与上表的已知差异有
+三条，均已登记 NEXT_WORK：`oai-allow-ne…`（12 字节内联立即数，未还原完整名字）未纳入排除表；
+名称比较按大小写不敏感（更保守），原版常量比较是否如此未确证；登录前的凭据换取/诊断链不走
+会话通道，因此不播种也不捕获，账号级一致性可能晚一步。
 
 - evidence/delivery-v3-runs.json：每个进程实际退出状态，比较有差异时 exit 1。
 - 备份首轮端口占用失败保留在 delivery；调整监听端口后的最终三方证据为 backup-v3-original-014、backup-v3-{candidate,rollback}-delivery-2 及对应 compare-command。

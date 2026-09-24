@@ -116,11 +116,17 @@ const TABLES: [TableSpec; 12] = [
             "daily_quota",
             "monthly_quota",
             "chatgpt_account_id",
+            "upstream_cookies",
             "created_at",
             "updated_at",
         ],
         conflict: "id",
-        encrypted_columns: &["access_token", "session_token", "extra_cookies"],
+        encrypted_columns: &[
+            "access_token",
+            "session_token",
+            "extra_cookies",
+            "upstream_cookies",
+        ],
     },
     TableSpec {
         name: "gateway_settings",
@@ -738,6 +744,8 @@ fn upsert_rows(tx: &Transaction<'_>, spec: &TableSpec, rows: &[Value]) -> Result
                 None => {
                     if is_default_time_column(column) {
                         values.push(SqlValue::Integer(now_ts()));
+                    } else if let Some(default) = optional_column_default(spec.name, column) {
+                        values.push(default);
                     } else {
                         bail!("备份 {} 缺少字段 {column}", spec.name);
                     }
@@ -809,6 +817,7 @@ fn http_row_values(spec: &TableSpec, row: &Value) -> Result<Vec<SqlValue>> {
             http_int_or(obj, "daily_quota", 0),
             http_int_or(obj, "monthly_quota", 0),
             http_opt_text(obj, "chatgpt_account_id"),
+            http_opt_text(obj, "upstream_cookies"),
             http_opt_int(obj, "created_at"),
             http_opt_int(obj, "updated_at"),
         ]),
@@ -1176,7 +1185,25 @@ fn ensure_legacy_columns(conn: &Connection) -> Result<()> {
         "chatgpt_account_id",
         "ALTER TABLE gateway_sessions ADD COLUMN chatgpt_account_id TEXT",
     )?;
+    // 上游 cookie jar（原版无此列）：存量行补为 NULL，首个带 `oai-device-id` 的
+    // 浏览器请求或上游 Set-Cookie 会把条目填上，见 server/upstream_cookies.rs。
+    ensure_column(
+        conn,
+        "gateway_sessions",
+        "upstream_cookies",
+        "ALTER TABLE gateway_sessions ADD COLUMN upstream_cookies TEXT",
+    )?;
     Ok(())
+}
+
+/// 旧备份缺列时的缺省值。`gateway_sessions.upstream_cookies` 是本候选新增列，本轮
+/// 之前导出的 v3 备份不含它；缺列按 NULL 恢复（上游 cookie 会由响应或浏览器请求重新
+/// 捕获），其余列仍严格要求，不静默丢权限。
+fn optional_column_default(table: &str, column: &str) -> Option<SqlValue> {
+    match (table, column) {
+        ("gateway_sessions", "upstream_cookies") => Some(SqlValue::Null),
+        _ => None,
+    }
 }
 
 /// 缺失列时执行 ALTER；`table` 只传入本文件内的常量名。
