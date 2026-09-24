@@ -141,9 +141,9 @@ async fn fetch_payload(app: &App) -> Result<Value> {
     let base = app.config.cfbypass.as_ref().context("CF_BYPASS_URL 未配置")?;
     let result: Value = app
         .client
-        .post(base.join("/cloudflare5s/bypass-v1")?)
+        .post(base.join("/cloudflare5s/bypass-v1")?.as_str())
         .bearer_auth(&app.config.secret)
-        .json(&json!({"url":app.config.upstream.as_str(), "user_agent":proxy::DEFAULT_USER_AGENT}))
+        .json(&json!({"url":app.config.upstream.as_str(), "user_agent":identity::USER_AGENT}))
         .send()
         .await
         .context("cfbypass 请求失败")?
@@ -177,7 +177,7 @@ fn whitelist_cookies(payload: &Value) -> Result<Vec<(String, String)>> {
 }
 
 /// 2026-09-23 实测的 Cloudflare 挑战：`403` + `cf-mitigated: challenge`。
-pub(super) fn is_challenge(response: &reqwest::Response) -> bool {
+pub(super) fn is_challenge(response: &wreq::Response) -> bool {
     response.status() == StatusCode::FORBIDDEN
         && response
             .headers()
@@ -191,6 +191,8 @@ pub(super) struct Answer {
     pub(super) status: StatusCode,
     challenged: bool,
     body: Bytes,
+    /// 上游可能按我们声明的 `accept-encoding` 压缩；`json()` 需要先解压。
+    content_encoding: Option<HeaderValue>,
 }
 
 impl Answer {
@@ -202,20 +204,28 @@ impl Answer {
     }
 
     pub(super) fn json<T: DeserializeOwned>(&self) -> Result<T> {
-        serde_json::from_slice(&self.body).context("上游响应不是有效 JSON")
+        let mut headers = HeaderMap::new();
+        if let Some(encoding) = &self.content_encoding {
+            headers.insert("content-encoding", encoding.clone());
+        }
+        let plain = crate::server::compression::decode_buffered(&headers, &self.body)
+            .context("上游响应解压失败")?;
+        serde_json::from_slice(&plain).context("上游响应不是有效 JSON")
     }
 }
 
 /// 读取应答正文；挑战标记必须在消费响应前采集。
 /// 凭据类应答都是小体积 JSON 或拦截页，来源只有配置的上游，因此整体读入用于本地判定。
-pub(super) async fn read(response: reqwest::Response) -> Result<Answer> {
+pub(super) async fn read(response: wreq::Response) -> Result<Answer> {
     let status = response.status();
     let challenged = is_challenge(&response);
+    let content_encoding = response.headers().get("content-encoding").cloned();
     let body = response.bytes().await.context("上游正文读取失败")?;
     Ok(Answer {
         status,
         challenged,
         body,
+        content_encoding,
     })
 }
 
@@ -224,10 +234,10 @@ pub(super) async fn read(response: reqwest::Response) -> Result<Answer> {
 pub(super) async fn get_with_challenge_retry<F, Fut>(
     app: &App,
     send: F,
-) -> Result<(reqwest::Response, Option<RefreshOutcome>)>
+) -> Result<(wreq::Response, Option<RefreshOutcome>)>
 where
     F: Fn(Vec<(String, String)>) -> Fut,
-    Fut: std::future::Future<Output = Result<reqwest::Response>>,
+    Fut: std::future::Future<Output = Result<wreq::Response>>,
 {
     let generation = app.cloudflare.generation().await;
     let first = send(app.cloudflare.cookies().await).await?;
@@ -337,24 +347,28 @@ mod tests {
             status: StatusCode::FORBIDDEN,
             challenged: true,
             body: Bytes::from_static(b"<html>Just a moment...</html>"),
+            content_encoding: None,
         };
         assert!(challenge.blocked());
         let html403 = Answer {
             status: StatusCode::FORBIDDEN,
             challenged: false,
             body: Bytes::from_static(b"<html>blocked</html>"),
+            content_encoding: None,
         };
         assert!(html403.blocked());
         let json403 = Answer {
             status: StatusCode::FORBIDDEN,
             challenged: false,
             body: Bytes::from_static(br#"{"detail":"account deactivated"}"#),
+            content_encoding: None,
         };
         assert!(!json403.blocked());
         let unauthorized = Answer {
             status: StatusCode::UNAUTHORIZED,
             challenged: false,
             body: Bytes::from_static(b"<html>nope</html>"),
+            content_encoding: None,
         };
         assert!(!unauthorized.blocked());
     }

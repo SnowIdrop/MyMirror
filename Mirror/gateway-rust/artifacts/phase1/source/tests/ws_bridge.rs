@@ -159,7 +159,7 @@ async fn ws_upstream(
             while let Some(message) = socket.next().await {
                 match message {
                     Ok(tungstenite::Message::Text(text)) => {
-                        events.lock().unwrap().push(json!({"text":text}));
+                        events.lock().unwrap().push(json!({"text":text.as_str()}));
                         let _ = socket.send(tungstenite::Message::Text(text)).await;
                     }
                     Ok(tungstenite::Message::Close(_)) | Err(_) => break,
@@ -199,7 +199,8 @@ impl Fixture {
             let handshakes = handshakes.clone();
             tokio::spawn(ws_upstream(events, handshakes.clone(), ws_listener))
         };
-        // HTTP 聊天上游：登录需要 `/backend-api/me`，与 WS 桩分开。
+        // HTTP 聊天上游：`/api/auth/session` 供 SessionToken 换取，`/backend-api/me`
+        // 供登录校验，与 WS 桩分开。
         let chat_url = {
             let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
             let url = format!("http://{}", listener.local_addr().unwrap());
@@ -207,6 +208,10 @@ impl Fixture {
                 axum::serve(
                     listener,
                     Router::new().fallback(|request: Request| async move {
+                        if request.uri().path() == "/api/auth/session" {
+                            return axum::Json(json!({"accessToken":"synthetic-exchange-alice"}))
+                                .into_response();
+                        }
                         if request.uri().path() == "/backend-api/me" {
                             return axum::Json(json!({"email":"fixture@example.invalid"}))
                                 .into_response();
@@ -337,30 +342,36 @@ impl Fixture {
         fixture
     }
 
-    async fn login(&self) -> String {
+    /// 登录载荷：`field` 决定提交 AccessToken（api）还是 SessionToken（web）登录。
+    fn login_payload(field: &str, value: &str, mode: &str) -> Value {
+        let mut payload = json!({
+            "user_name":"alice",
+            "authorization":"signature-v1",
+            "login_mode": mode,
+            "isolated_session":true,
+            "mcp_isolation":true,
+            "skills_isolation":true,
+            "model_isolation":true,
+            "daily_quota":20,
+            "monthly_quota":100,
+            "model_allowed_ids":["fixture-model"],
+            "model_rate_limits":{},
+            "limits":[],
+            "mcp_allowed_ids":[],
+            "skills_allowed_ids":[],
+            "chatgpt_account_id":"3",
+            "extra_cookies":[{"name":"probe_extra","value":"EV"}],
+        });
+        payload[field] = json!(value);
+        payload
+    }
+
+    async fn login_with(&self, payload: Value) -> String {
         let response = self
             .client
             .post(format!("{}/api/login", self.base))
             .bearer_auth(ADMIN)
-            .json(&json!({
-                "user_name":"alice",
-                "access_token":"synthetic-access-alice",
-                "authorization":"signature-v1",
-                "login_mode":"api",
-                "isolated_session":true,
-                "mcp_isolation":true,
-                "skills_isolation":true,
-                "model_isolation":true,
-                "daily_quota":20,
-                "monthly_quota":100,
-                "model_allowed_ids":["fixture-model"],
-                "model_rate_limits":{},
-                "limits":[],
-                "mcp_allowed_ids":[],
-                "skills_allowed_ids":[],
-                "chatgpt_account_id":"3",
-                "extra_cookies":[{"name":"probe_extra","value":"EV"}],
-            }))
+            .json(&payload)
             .send()
             .await
             .unwrap();
@@ -375,6 +386,25 @@ impl Fixture {
             .nth(1)
             .unwrap()
             .to_owned()
+    }
+
+    async fn login(&self) -> String {
+        self.login_with(Self::login_payload(
+            "access_token",
+            "synthetic-access-alice",
+            "api",
+        ))
+        .await
+    }
+
+    /// 只提交 SessionToken：上游访问令牌必须经 `/api/auth/session` 换取。
+    async fn login_with_session_token(&self) -> String {
+        self.login_with(Self::login_payload(
+            "session_token",
+            "synthetic-session-alice",
+            "web",
+        ))
+        .await
     }
 
     fn ws_url(&self, path: &str) -> String {
@@ -466,6 +496,49 @@ async fn websocket_bridges_messages_with_session_credentials() {
     );
     assert!(
         handshake["origin"].as_str().unwrap().starts_with("http://127.0.0.1"),
+        "{handshake}"
+    );
+}
+
+/// 只有 SessionToken 的会话：WS 握手必须与 HTTP 路径共用同一份会话 Cookie 合成，
+/// 并把换取得来的 AccessToken 作为自己的上游凭据。
+#[tokio::test]
+async fn websocket_synthesizes_the_session_cookie_for_session_token_logins() {
+    let f = Fixture::new(false).await;
+    let token = f.login_with_session_token().await;
+    let url = f.ws_url("/ws-chatgpt/v1/threads");
+    let request = url
+        .into_client_request_with_token(&token)
+        .expect("握手请求构造失败");
+    let (mut socket, _) = tokio_tungstenite::connect_async(request).await.unwrap();
+    use futures_util::{SinkExt, StreamExt};
+    socket
+        .send(tungstenite::Message::Text("hello".into()))
+        .await
+        .unwrap();
+    let echoed = tokio::time::timeout(Duration::from_secs(5), socket.next())
+        .await
+        .expect("回帧超时")
+        .unwrap()
+        .unwrap();
+    assert_eq!(echoed, tungstenite::Message::Text("hello".into()));
+    let events = f.events.lock().unwrap().clone();
+    let handshake = events
+        .iter()
+        .find(|event| event["event"] == "handshake")
+        .expect("上游必须收到握手");
+    assert_eq!(handshake["path"], "/v1/threads", "{handshake}");
+    // 提交凭据在前、合成的会话 Cookie 居中、CF cookies 在后。
+    let cookie = handshake["cookie"].as_str().unwrap();
+    assert!(cookie.starts_with("probe_extra=EV"), "{cookie}");
+    assert!(
+        cookie.contains("__Secure-next-auth.session-token=synthetic-session-alice"),
+        "{cookie}"
+    );
+    assert!(cookie.contains("cf_clearance=CF-FIXTURE"), "{cookie}");
+    assert_eq!(
+        handshake["authorization"],
+        "Bearer synthetic-exchange-alice",
         "{handshake}"
     );
 }

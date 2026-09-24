@@ -54,6 +54,9 @@ const UNOWNED: &[&str] = &[
     "calpico",
     "celsius",
     "chat",
+    // 2026-09-24 真实前端观测：每个已登录页面固定请求 4 次，属快照（2026-09-23）
+    // 之后新增的路由，与六类可归属资源无关，按账号级放行。
+    "checkout_pricing_config",
     "client",
     "client_applications",
     "cme",
@@ -921,7 +924,7 @@ pub(super) async fn backfill_legacy_ownership(app: &Arc<App>) -> Result<()> {
     // 映射端点不可用时既不写标记也不回填猜测值，交给下次启动重试。
     let value: Value = match app
         .client
-        .post(app.config.django.join("/0x/user/gateway-acl-mapping")?)
+        .post(app.config.django.join("/0x/user/gateway-acl-mapping")?.as_str())
         .bearer_auth(&app.config.secret)
         .send()
         .await
@@ -1434,6 +1437,9 @@ mod tests {
             "/backend-api/settings/user",
             "/backend-api/conversation/init",
             "/backend-api/f/conversation/prepare",
+            // 快照之后新增、由真实前端请求观测确认的账号级路径：不加这一条
+            // 每个已登录页面都会命中 4 次 503。
+            "/backend-api/checkout_pricing_config/configs/US",
         ] {
             assert!(
                 class(path, Method::GET).into_unscoped(),

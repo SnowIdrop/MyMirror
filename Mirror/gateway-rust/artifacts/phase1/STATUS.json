@@ -1,8 +1,8 @@
 {
   "ACTIVE_OBJECT": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source",
   "LAST_CONFIRMED_RESULT": {
-    "implementation": "资源 ACL v1 已从孤立模块接成产品判权层（缺口 3 完整批次）：六类资源分类与判权、创建登记、集合过滤、访客拒绝、身份每请求复验、稳定账号键、生成互斥、撤权中止、管理 API、旧归属一次性回填、网关备份 v3；缺口 1+2 仍有效，缺口 5（传输身份与出口策略）未接线",
-    "rust_tests": 176,
+    "implementation": "资源 ACL v1 已从孤立模块接成产品判权层（缺口 3 完整批次）：六类资源分类与判权、创建登记、集合过滤、访客拒绝、身份每请求复验、稳定账号键、生成互斥、撤权中止、管理 API、旧归属一次性回填、网关备份 v3；缺口 1+2 仍有效；缺口 5 第一批（传输身份统一，Chrome146/btls 画像 + 整组身份头 + WS）已接线，出口策略与分流仍未做",
+    "rust_tests": 205,
     "rust_acl_wiring_tests": 6,
     "clippy": "passed --all-targets -- -D warnings",
     "configuration_cases": 30,
@@ -12,14 +12,18 @@
     "independent_acl_tests": 28,
     "integrated_boundary_tests": 8,
     "generation_egress_tests": 12,
-    "real_environment_acceptance": "partial: 2026-09-24 real AccessToken probe passed credential exchange + /backend-api/me + accounts/check + conversations (evidence/gap3-real-probe-001); real conversation creation rejected by upstream 403, so cross-user isolation and real WS upstream remain unverified",
+    "real_environment_acceptance": "2026-09-24 浏览器端到端已通过（probe_browser_create / probe_browser_accept）：登录通道 /backend-api/* 畅通、真实新建 200 text/event-stream、流式渲染/停止/重命名/重载历史/跨用户隔离 404/删除 200 无残留、真实 WS 经桥接到 wss://ws.chatgpt.com；合成凭据直发新建仍被上游 403（缺 sentinel/PoW 材料），见 COMPATIBILITY 的会话 Cookie 与端到端章节",
     "full_replacement_complete": false,
     "backend_api_surface_tests": 7,
     "public_prefixes_tests": 7,
-    "ws_bridge_tests": 3,
-    "django_regression_tests": 101
+    "ws_bridge_tests": 4,
+    "acl_wiring_tests": 9,
+    "django_regression_tests": 107,
+    "identity_fingerprint_lock": "tests/identity_fingerprint.rs：本地裸 TCP 抓候选 ClientHello，归一化 sha256 01425d3f…，断言 GREASE/TLS1.3/h2 ALPN/密钥共享组",
+    "identity_reference_evidence": "evidence/tls-identity-reference.json：与真 Chromium 151.0.7922.34 的 ClientHello 逐字段对照，唯一实质差异为 ML-DSA 签名算法（版本差）",
+    "identity_real_acceptance": "只读（probe_browser_accept.py --no-write，2026-09-24）：真 Chromium 经候选加载真实 chatgpt.com 页面，427 条请求 = 418×200 / 4×202 / 1×201 / 1×302 / 1×503（未代理的 /external 前缀） / 2 条未完成，0 次 CF 挑战；/backend-api/* 42 条全部畅通；真实 WS 经 wreq 桥接到 wss://ws.chatgpt.com 双向各 1 帧且连接未关闭；未做真实写入"
   },
-  "NEXT_EXECUTABLE_ACTION": "缺口 5（传输身份与出口策略：wreq/curl-impersonate、代理节点分流、MIRROR_API_PREFIX/ADMIN_UPSTREAM/CF_BYPASS_PROXY_SERVER/TRUSTED_PROXY_IPS）；缺口 3 已落地，残项与访客策略见 artifacts/phase1/source/NEXT_WORK.md。",
+  "NEXT_EXECUTABLE_ACTION": "缺口 5 第一批（传输身份统一）已实现并本地验证；下一批是打包部署：Dockerfile 需从 FROM scratch 改为 Debian + glibc 基础镜像（BoringSSL 需要 cmake/clang 构建阶段），并在 Linux 内复跑 cargo test/clippy。缺口 5 其余项（代理节点与出口分流、CF_BYPASS_PROXY_SERVER、TRUSTED_PROXY_IPS、MIRROR_API_PREFIX、ADMIN_UPSTREAM、出口 IP）仍未做。",
   "INPUT_PATHS": [
     "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\generation-egress\\HANDOFF.json",
     "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\generation-egress\\GATE_RESULTS.json",
@@ -38,11 +42,9 @@
   "remaining": [
     "缺口 1：已登录读写/SSE/归属判定与登记、/ws-chatgpt 桥接、/realtime HTTP 已落地；仍未覆盖真实上游流式渲染与停止/重命名/删除端到端断言；见 source/NEXT_WORK.md",
     "缺口 2：39 个同源前缀已按策略表逐条接管（反代或可行动文案），契约测试解析改写表；/external 主机白名单仍未还原；见 source/NEXT_WORK.md",
-    "缺口 3：已落地 ACL v1 产品接线（六类资源判权/登记/过滤、管理 API、身份复验、生成互斥、撤权中止、旧归属回填、备份 v3）；残项为连接器创建不自动登记、分支维度归属、真实上游探针、Vue 管理界面、访客策略；见 source/NEXT_WORK.md",
-    "缺口 5：传输身份（wreq/curl-impersonate 观测）、代理节点与出口 profile 绑定，补齐 MIRROR_API_PREFIX/ADMIN_UPSTREAM/CF_BYPASS_PROXY_SERVER/TRUSTED_PROXY_IPS；见 source/NEXT_WORK.md",
-    "本批新增遗留：/realtime 升级桥接、/api/livekit 语音、estuary 改写、/api/account-capabilities 定性（未登记资源的认领路径已由缺口 3 的 /api/acl/claim 提供，界面仍未做）",
-    "保留差异：初次登录 accounts/check、管理非空库自增 ID 与上游序列、login extra_cookies 严格提取契约",
-    "第六阶段：统一验收与 All-in-One 镜像交付（rebuild-reference/README.md 的六条交付步骤）",
+    "缺口 3：已落地 ACL v1 产品接线（六类资源判权/登记/过滤、管理 API、身份复验、生成互斥、撤权中止、旧归属回填、备份 v3、管理员会话认领链路）；仍只做认领、不做共享/转移界面，连接器创建不自动登记、分支维度归属无协议证据，见 source/NEXT_WORK.md",
+    "缺口 5：第一批传输身份已落地（wreq/btls Profile::Chrome146 + 整组身份头 + WS，见 source/COMPATIBILITY.md 的「传输身份统一」）；仍缺 H2 首帧独立复采、代理节点与出口分流、CF_BYPASS_PROXY_SERVER/TRUSTED_PROXY_IPS/MIRROR_API_PREFIX/ADMIN_UPSTREAM、出口 IP 特征、Linux 制品与 All-in-One 打包",
+    "已判定不做（保留登记）：/external 主机白名单、语音与 /realtime 升级、estuary 改写、访客策略、观测类差异、模型隔离与 account-models/account-capabilities；见 source/COMPATIBILITY.md",
     "显式非目标（不再作为验收缺口）：计量/配额/限流/审核 provider/PoW；见 source/COMPATIBILITY.md"
   ],
   "rollback_scope": "restore a disposable source archive; not databases or already-executed upstream operations",
@@ -80,8 +82,8 @@
       {
         "id": "S12-D3",
         "finding": "登录/诊断与代理/刷新/静态头策略不同，固定UA不绑定CH或真实浏览器JS环境",
-        "status": "profile policy absent; not full fingerprint coherence",
-        "evidence": "server.rs:421-446,748-758; proxy.rs:393-415"
+        "status": "已收敛（2026-09-24 传输身份统一）：出网客户端统一由 identity 模块构造，UA + sec-ch-ua 整组强制覆盖，TLS 画像与请求头同源；前端状态头（oai-client-version 等）仍由浏览器提供、网关不合成",
+        "evidence": "server/identity.rs; evidence/tls-identity-reference.json; server.rs:421-446,748-758; proxy.rs:393-415"
       },
       {
         "id": "S12-D4",
@@ -103,8 +105,8 @@
       }
     ],
     "not_verified": [
-      "真实TLS/ALPN/HTTP2特征和公网IP/DNS/NAT出口",
-      "真实浏览器UA/Client Hints/平台/语言/时区/能力与完整请求瀑布",
+      "公网IP/DNS/NAT出口（AWS 机房 IP 特征未变）；HTTP/2 SETTINGS 顺序与伪头顺序未独立复采",
+      "真实浏览器JS环境（timezone/能力/请求瀑布）仍不等价；UA 与 Client Hints 已在传输层统一并对照验证",
       "文件/私有媒体、成功WebSocket、实际语音协议及其出口",
       "上游device/session/cookie续期与全局CF缓存的作用域/profile绑定",
       "重连/故障/重启全部组合，协议NACK重试与未来生成不自动重放",
@@ -137,11 +139,14 @@
       "implemented": [
         "缺口 1（已登录业务面读写/SSE、WS 桥接、realtime HTTP）",
         "缺口 2（公共前缀策略表 + 改写表契约测试）",
-        "缺口 3 最小核心（会话级归属登记与校验）"
+        "缺口 3 最小核心（会话级归属登记与校验）",
+        "缺口 3 完整批次（资源 ACL 产品接线、管理 API、旧归属回填、备份 v3）",
+        "残项收敛（checkout_pricing_config 账号级前缀、管理员会话认领链路）",
+        "缺口 5 第一批（传输身份统一：wreq/btls Chrome146 画像 + 整组身份头 + WS）"
       ],
       "not_implemented": [
-        "缺口 3 完整批次（项目/分支级归属、resource_acl 产品接线）",
-        "缺口 5（传输身份与出口策略）"
+        "缺口 5 其余（代理节点与出口分流、CF_BYPASS_PROXY_SERVER、TRUSTED_PROXY_IPS、MIRROR_API_PREFIX、ADMIN_UPSTREAM、出口 IP）",
+        "Linux 制品与 All-in-One 打包（Dockerfile 需改 glibc 基础镜像）"
       ]
     }
   }

@@ -542,6 +542,30 @@ pub fn list_resources(
     Ok(records)
 }
 
+/// 管理员用的「已登记 id 集合」：管理端把它与上游清单做差集，得到**未登记**
+/// 资源供认领。只读、无副作用；SQL 留在本模块内，调用方不直接碰 ACL 表。
+pub fn registered_ids(
+    conn: &Connection,
+    actor: &RequestIdentity,
+    account_id: &str,
+    kind: ResourceKind,
+) -> Result<BTreeSet<String>> {
+    if !actor.0.is_admin {
+        return Err(AclError::Forbidden);
+    }
+    let mut statement = conn.prepare(
+        "SELECT upstream_id FROM acl_resources WHERE account_id=?1 AND resource_type=?2",
+    )?;
+    let rows = statement.query_map(params![account_id, kind.as_str()], |row| {
+        row.get::<_, String>(0)
+    })?;
+    let mut ids = BTreeSet::new();
+    for row in rows {
+        ids.insert(row?);
+    }
+    Ok(ids)
+}
+
 /// Admin-only paginated audit read; a bounded page is not a backup export.
 pub fn audit_after(
     conn: &Connection,

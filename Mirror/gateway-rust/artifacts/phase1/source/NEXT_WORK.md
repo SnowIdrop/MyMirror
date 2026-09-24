@@ -4,7 +4,21 @@
 编号沿用《距离代替原网关还差什么》的分析结论；**缺口 4（计量 / 配额 / 限流 / 审核 / PoW）
 已由产品决定列为显式非目标**，见 [COMPATIBILITY.md](COMPATIBILITY.md) 的对应章节，本批不再开工。
 
-本文件只登记范围、现状证据、依赖与验收要点；**尚未开始实施**。
+本文件只登记范围、现状证据、依赖与验收要点。
+
+**2026-09-24 更新（二）：缺口 5 第一批已落地（传输身份统一）。** 出网传输层换成
+`wreq`/btls 的 `Profile::Chrome146` + Linux 画像，请求头由 `server/identity.rs` 一处强制整组给出，
+HTTP 与 WebSocket 同时覆盖；与真 Chromium 的 ClientHello 逐字段对照证据见
+[COMPATIBILITY.md](COMPATIBILITY.md) 的「传输身份统一」一节与
+[`evidence/tls-identity-reference.json`](../../evidence/tls-identity-reference.json)。
+本批**只做实现与本地验证**：Linux 制品、All-in-One 镜像、代理出口分流、
+`CF_BYPASS_PROXY_SERVER`/`TRUSTED_PROXY_IPS`/`MIRROR_API_PREFIX`/`ADMIN_UPSTREAM` 仍未做。
+
+**2026-09-24 更新（一）：残项收敛。** 缺口 3 的残项按「有真实观测证据 / 运营上必须有人做」逐条判定，
+落地两项并显式关闭一批：`checkout_pricing_config` 登记为账号级前缀（消掉每个已登录页面 4 次 503）、
+管理员会话认领链路（网关清单端点 + Django 转发 + 用户页入口）、WS 会话 Cookie 合成的独立用例。
+判定不做与保留登记的完整清单见 `COMPATIBILITY.md` 的「残项收敛与管理员会话认领」。下面各节的
+现状描述保留为当时的证据。
 
 **2026-09-23 更新：缺口 1 与缺口 2 已按同批实施落地**（提交见 `COMPATIBILITY.md`
 「缺口 1 + 2 同批落地」一节），本文件中这两节保留为当时的现状证据。剩余在办项：
@@ -126,6 +140,13 @@ ACL 模块接入产品路径。
 
 目标：把「固定 UA + 三个 sec-ch-ua 头」补齐为经过观测的传输身份与出口能力，并补齐缺失的配置面。
 
+**2026-09-24 第一批已完成（传输身份）**：出网客户端（`egress::client`、`server::App::client`、
+WS 桥接）统一由 `identity::client_builder()` 构造，画像与身份头同源，整组强制覆盖；
+网关自发请求带 `identity::api_baseline()` 并在 JSON 解析前解码响应；代理路径保持字节透传与
+「生成不重放」。指纹回归锁在 `tests/identity_fingerprint.rs`（本地裸 TCP 抓 ClientHello +
+sha256）。**本批仍不做**：代理节点与出口分流、`CF_BYPASS_PROXY_SERVER`、`TRUSTED_PROXY_IPS`、
+`MIRROR_API_PREFIX`、`ADMIN_UPSTREAM`；出口仍是 AWS 机房 IP。
+
 现状证据：
 
 - `src/server/egress.rs` 目前 fail-closed：`node.is_none()` 被强制要求（第 11 行）、
@@ -138,6 +159,8 @@ ACL 模块接入产品路径。
   报告 03 §8 列出原版全部变量）。
 - 未验证：真实 TLS/ALPN/HTTP2 特征、公网 IP/DNS/NAT 出口、上游 device/session/cookie 续期与
   CF 缓存的作用域/profile 绑定（`STATUS.json` 的 `not_verified` 列表）。
+  **部分收敛**：ClientHello 层已与真 Chromium 逐字段对照（唯一差异是 ML-DSA 签名算法的版本差）；
+  H2 SETTINGS 顺序与伪头顺序、公网出口、CF 缓存 profile 绑定仍未验证。
 
 依赖顺序：可并行；但 WS（缺口 1）与代理出口在选择逻辑上耦合，先定出口抽象再实现 WS 分流更省返工。
 
@@ -162,7 +185,9 @@ ACL 模块接入产品路径。
     - `GET /backend-api/projects` 在真实上游是 405（快照里该路径只有 `POST`）：项目集合的读取入口
       仍未知，需要用前端实际请求观测补齐。
     - `/backend-api/task_suggestions` 在该账号下是 404：上游是否按账号/版本开放待定。
-  - 管理界面未做：`/api/acl/{resources,claim,share,move,audit}` 只有 API，Vue 管理界面不在本批。
+  - 管理界面只做认领：「未登记会话 → 认领给指定镜像用户」已接通（网关 `GET /api/acl/
+    unclaimed-conversations`、Django `/0x/user/<id>/{unassigned-conversations,claim-conversation}`、
+    用户页对话统计弹窗内的区块）；`/api/acl/{resources,share,move,audit}` 仍只有 API。
   - 「分支」维度归属未做：原版 `enforce_project_owner` 的分支语义在逆向材料里只有符号名，
     本批按项目 ACL + 动态共享实现，未猜测分支协议。
   - 访客策略未定义：访客被拒绝在 ACL 路径之外（`acl_visitor_denied`），若要让免费访客参与会话，
@@ -236,14 +261,15 @@ ACL 模块接入产品路径。
     真实 WS 上游（`/ws-chatgpt/p4/ws/user/…` 经桥接到 `wss://ws.chatgpt.com`，双向各 1 帧，
     连接未关闭）、跨用户隔离（同账号第二个镜像用户 404 `acl_not_found`，未触上游）、
     删除 200 且账号 `total=0` 无残留。逐项证据见 COMPATIBILITY「端到端验收的第二轮」。
-  - **仍未覆盖**：WS 握手侧的会话 cookie 合成只有同一函数的合成回环覆盖，没有独立的
-    WS fixture 用例（HTTP 与真实 WS 均已在真机走通）；语音（`/api/livekit/`）与
-    `/realtime` 升级仍未开放。
+  - **已补齐**：WS 握手侧的会话 cookie 合成现有独立 fixture 用例
+    （`tests/ws_bridge.rs::websocket_synthesizes_the_session_cookie_for_session_token_logins`，
+    断言提交凭据在前、合成会话 Cookie 居中、CF cookies 在后，且拿换取得来的 AccessToken 作上游凭据）。
+    语音（`/api/livekit/`）与 `/realtime` 升级仍未开放，且已判定不做。
   - **新发现的上游路由（未分类，503）**：真实页面会请求
     `GET /backend-api/checkout_pricing_config/configs/US`，该路径**不在** 923 条路由快照里
     （快照冻结于 2026-09-23），因此按 ACL 设计返回
-    `503 {"code":"acl_unclassified_route"}`。它不是对话路径，但说明前端已有快照之后新增的
-    路由；要开放需先把它按账号级登记进 `UNOWNED` 并刷新快照。
+    `503 {"code":"acl_unclassified_route"}`。**已收敛**：按账号级前缀登记进 `UNOWNED`
+    （快照仍然只有 923 条模板，因此由库内单测直接断言这条路径，不靠快照用例覆盖）。
   - **页面加载不需要 cfbypass**：真实浏览器自带 `sec-ch-ua*` 客户端提示头即可 200；
     合成客户端缺这些头才会被挑战。cfbypass 仍是挑战刷新路径的依赖（`CF_BYPASS_URL`）。
   - 真实上游 cookie 名已在证据里固化，可用于后续批次核对捕获名单。
@@ -268,6 +294,20 @@ ACL 模块接入产品路径。
   - `/api/account-capabilities`、`/api/account-models`：Django 管理端会调用
     （`backend/app/accounts/views/__init__.py`），候选未注册，逆向路由清单里也没有这两个字面量，
     需实测定性。
+- **缺口 5 第一批实施产生的遗留（2026-09-24）**：
+  - H2 首帧（SETTINGS 顺序、伪头顺序）未独立复采：抓到它需要给回环监听配测试证书并完成
+    握手，本轮没做；取值只来自 `wreq-util` 画像。
+  - `signature_algorithms` 缺 ML-DSA（`0904/0905/0906`）：对照浏览器是 Chromium 151，
+    候选按 Chrome146 画像；Chrome146 当时的真实取值未取得证据。
+  - `sec-ch-ua-platform-version` 在 Linux 真机上的取值未验证（本机只有 Windows Chromium），
+    当前按计划发空串。
+  - HTTP/1.1 头顺序不受画像控制；上游走 h2，影响有限。
+  - WS 握手头是子集：上游 WS 只发身份整组与协商必需头，真浏览器还会带
+    `accept-encoding`/`cache-control`/`pragma`；本批按计划只统一身份，未扩表。
+  - 打包面：`Dockerfile` 的 `FROM scratch` 与 musl/zig 静态路线对 BoringSSL 不可行，
+    需改成 Debian + glibc 基础镜像，构建阶段要 cmake/clang（本批不改制品）。
+  - WSL 路径未打通（本机 WSL 需要重启后安装发行版），本批在本机 Windows 工具链完成
+    编译与回归；Linux 内编译留给制品批次。
 - 初次登录只调 `me`，原版登录同样先调 `accounts/check`（COMPATIBILITY「未完成/显式差异」）。
 - 管理非空库 `gateway_sessions` 自增 ID 偏移与上游调用序列差异、`login extra_cookies` 严格提取契约。
 - 审核 provider 的 5 个扩展响应用例（已列非目标，保留 503 门禁）。

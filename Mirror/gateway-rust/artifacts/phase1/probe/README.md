@@ -153,3 +153,44 @@ py -3 probe_browser_accept.py                # 真实验收：一次新建会话
   `probe_browser_accept.py` 保留页面内检查仅作旁证）。直连上游的对照组走 curl——纯 Python
   的 TLS 会被 Cloudflare 挑战，curl 不会。
 - 删除放在异常路径之外：任何一步失败都会执行清理，避免在真实账号里留下会话。
+
+## 请求头基线采集（`probe_browser_headers.py`，2026-09-24）
+
+`identity::api_baseline()` 的取值来源。起一个本机回环 HTTP 服务，用真 Chromium 发同源
+XHR，**在服务端**记录收到的原始头（页面里的 `request.headers` 不含浏览器自动头），并用
+`Accept-CH` 区分「默认只发低熵 hints」与「服务端声明后补发高熵 hints」两种形态。
+
+```powershell
+py -3 probe_browser_headers.py
+```
+
+结论：低熵 hints 默认就发；高熵 hints 只在**导航响应**带 `Accept-CH` 之后才补发（放在 XHR
+响应上无效，已实测）；XHR 的 `sec-fetch-*` 三元组是 `empty`/`cors`/`same-origin`，且没有
+`priority`。证据写 `evidence/browser-headers-<时间戳>.json`（该目录已 gitignore）。
+
+## 传输指纹采集（`probe_tls_identity.py`，2026-09-24）
+
+抓真 Chromium 的 ClientHello，与候选自己的归一化指纹逐字段对照（对照原文见
+`../../evidence/tls-identity-reference.json`）。监听端只收 ClientHello、**不完成握手**，
+因此不接触真实上游、不写 Cookie。
+
+```powershell
+py -3 probe_tls_identity.py
+```
+
+归一化规则与 `source/tests/identity_fingerprint.rs` 相同：去掉 random、会话 id、GREASE 值
+与扩展顺序。证据写 `evidence/tls-identity-<时间戳>.json`（已 gitignore）。
+
+## 直连 chatgpt.com 的请求头对照（`probe_browser_chatgpt_headers.py`，2026-09-24）
+
+用真 Chromium **直连** chatgpt.com 匿名加载首页，记录页面自发请求的完整头，用来判断
+「候选整组强制覆盖」是否等于「正常用户」。只读：不登录、不写入；只落头名与白名单头值，
+Cookie、Authorization 与正文一律不落盘。
+
+```powershell
+py -3 probe_browser_chatgpt_headers.py
+```
+
+本机结果：首页 403，只取到 Cloudflare 挑战页自身的请求（带 `priority: u=1, i`、
+`sec-fetch-dest: script/empty`），据此判断 `priority` 依请求的优先级类别而变，候选只在浏览器
+转发路径上原样透传。

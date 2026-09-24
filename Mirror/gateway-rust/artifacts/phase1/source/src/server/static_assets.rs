@@ -113,8 +113,8 @@ where
     let (parts, body) = request.into_parts();
     let mut upstream = app
         .client
-        .request(parts.method.clone(), target)
-        .header("user-agent", proxy::DEFAULT_USER_AGENT);
+        .request(parts.method.clone(), target.as_str())
+        .header("user-agent", identity::USER_AGENT);
     // Public CDN requests never receive browser, gateway, account or CF credentials.
     for name in [
         "accept",
@@ -133,7 +133,7 @@ where
     }
     // 读取类请求无正文；签名上传（PUT）按流透传，避免把文件整体缓存在网关内存里。
     if matches!(parts.method, Method::PUT) {
-        upstream = upstream.body(reqwest::Body::wrap_stream(body.into_data_stream()));
+        upstream = upstream.body(wreq::Body::wrap_stream(body.into_data_stream()));
     }
     let upstream = match upstream.send().await {
         Ok(value) => value,

@@ -11,84 +11,79 @@
 //! ACL 管理端点（挂载于 `server`，由父模块 `mod acl_admin;` +
 //! `require_admin` 中间件接线）。所有入口都先做一次 fresh 管理身份校验，
 //! 任何失败都明确拒绝，不用服务密钥补造管理员。
-// axum handler 的错误分支只能直接返回 `Response`：这里不为通过 lint 去装箱错误值，
-// 错误路径不承担额外堆分配，符合框架自身的惯例。
-#![allow(clippy::result_large_err)]
 
 use super::*;
 use crate::resource_acl::{AclError, ResourceKey, ResourceKind};
 use serde::Deserialize;
 
-/// 管理端返回类型：错误以 `Response` 表示，避免把 HTTP 响应再包进 `ApiError`。
-type AclResult = std::result::Result<Json<Value>, Response>;
+/// 管理端返回类型：错误统一走 [`ApiError`]，与文件外其它管理端点的形状一致。
+type AclResult = std::result::Result<Json<Value>, ApiError>;
 
 /// 管理端 JSON 错误：状态码稳定、正文只含本地文案。
-fn acl_error(cause: AclError) -> Response {
-    let (status, message, code) = match cause {
-        AclError::Unauthorized => (
+fn acl_error(cause: AclError) -> ApiError {
+    match cause {
+        AclError::Unauthorized => error_code(
             StatusCode::UNAUTHORIZED,
             "请求方身份无效或已失效",
             "acl_identity_invalid",
         ),
-        AclError::Forbidden => (
+        AclError::Forbidden => error_code(
             StatusCode::FORBIDDEN,
             "需要管理员身份才能执行该操作",
             "acl_admin_required",
         ),
-        AclError::UnknownResource => (
+        AclError::UnknownResource => error_code(
             StatusCode::NOT_FOUND,
             "资源不存在或不属于当前账号",
             "acl_not_found",
         ),
-        AclError::InvalidInput => (
+        AclError::InvalidInput => error_code(
             StatusCode::BAD_REQUEST,
             "请求参数无效",
             "acl_invalid_input",
         ),
-        AclError::InvalidOperation => (
+        AclError::InvalidOperation => error_code(
             StatusCode::BAD_REQUEST,
             "该资源不支持此操作",
             "acl_invalid_operation",
         ),
-        AclError::CrossAccount => (
+        AclError::CrossAccount => error_code(
             StatusCode::BAD_REQUEST,
             "资源与目标项目不属于同一上游账号",
             "acl_cross_account",
         ),
-        AclError::AlreadyRegistered => (
+        AclError::AlreadyRegistered => error_code(
             StatusCode::CONFLICT,
             "资源已有归属，认领不会覆盖",
             "acl_already_registered",
         ),
         AclError::Sqlite(cause) => {
             tracing::error!(module = "gateway", error = %cause, "ACL 管理操作失败");
-            (
+            error_code(
                 StatusCode::SERVICE_UNAVAILABLE,
                 "ACL 存储暂时不可用",
                 "acl_storage_unavailable",
             )
         }
-    };
-    error_code(status, message, code).into_response()
+    }
 }
 
 /// 管理入口的操作者：服务密钥（中间件已校验）+ 请求方 authorization/subject +
 /// 固定 Django 源 fresh 校验 + `is_admin`。
-async fn operator(app: &App, headers: &HeaderMap) -> std::result::Result<RequestIdentity, Response> {
+async fn operator(app: &App, headers: &HeaderMap) -> std::result::Result<RequestIdentity, ApiError> {
     match request_admin_identity(app, headers).await {
         Ok(Some(identity)) => Ok(identity),
         Ok(None) => Err(error_code(
             StatusCode::FORBIDDEN,
             "请求方不是管理员",
             "acl_admin_required",
-        )
-        .into_response()),
-        Err(cause) => Err(cause.into_response()),
+        )),
+        Err(cause) => Err(cause),
     }
 }
 
 /// 资源种类文本 → 枚举；未知取值按输入错误拒绝。
-fn parse_kind(value: &str) -> std::result::Result<ResourceKind, Response> {
+fn parse_kind(value: &str) -> std::result::Result<ResourceKind, ApiError> {
     Ok(match value {
         "conversation" => ResourceKind::Conversation,
         "project" => ResourceKind::Project,
@@ -101,14 +96,17 @@ fn parse_kind(value: &str) -> std::result::Result<ResourceKind, Response> {
                 StatusCode::BAD_REQUEST,
                 "资源类型无效",
                 "acl_invalid_input",
-            )
-            .into_response())
+            ))
         }
     })
 }
 
 /// 资源键：account_id + 类型 + 上游 id。缺任一字段都拒绝。
-fn parse_key(account_id: &str, kind: &str, upstream_id: &str) -> std::result::Result<ResourceKey, Response> {
+fn parse_key(
+    account_id: &str,
+    kind: &str,
+    upstream_id: &str,
+) -> std::result::Result<ResourceKey, ApiError> {
     let kind = parse_kind(kind)?;
     ResourceKey::new(account_id, kind, upstream_id).map_err(|cause| {
         tracing::warn!(module = "gateway", error = %cause, "ACL 资源键无效");
@@ -117,7 +115,6 @@ fn parse_key(account_id: &str, kind: &str, upstream_id: &str) -> std::result::Re
             "资源键无效",
             "acl_invalid_input",
         )
-        .into_response()
     })
 }
 
@@ -298,5 +295,247 @@ pub(super) async fn audit(
             "recipient_user_id": record.recipient_user_id,
             "project_id": record.project_id,
         })).collect::<Vec<_>>(),
+    })))
+}
+
+// ---------------------------------------------------------------------------
+// GET /api/acl/unclaimed-conversations —— 上游会话清单与 ACL 登记的差集
+// ---------------------------------------------------------------------------
+
+#[derive(Deserialize)]
+pub(super) struct UnclaimedQuery {
+    account_id: String,
+    #[serde(default)]
+    page: Option<u32>,
+}
+
+/// 上游清单一页的条数：管理端翻页，网关不一次拉完整个账号的会话。
+const UNCLAIMED_PAGE_SIZE: u32 = 50;
+/// 页数上限：20 页 = 1000 条；再往后翻说明该账号几乎无人认领，应改为人工排查。
+const UNCLAIMED_MAX_PAGE: u32 = 20;
+
+/// 通用上游失败：日志记本地原因，响应只给可行动文案，不含上游正文。
+fn upstream_unavailable(label: &str, cause: anyhow::Error) -> ApiError {
+    tracing::error!(module = "gateway", error = %cause, "ACL 管理端上游请求失败");
+    error_code(
+        StatusCode::BAD_GATEWAY,
+        &format!("{label}: 无法访问上游，请稍后重试"),
+        "acl_upstream_unavailable",
+    )
+}
+
+/// 未登记会话清单：读上游账号的会话列表，减去本账号已登记的会话 id。
+/// 只读上游，不改任何归属；登记仍由 [`claim`] 完成。
+pub(super) async fn unclaimed_conversations(
+    State(app): State<Shared>,
+    Query(query): Query<UnclaimedQuery>,
+    headers: HeaderMap,
+) -> AclResult {
+    let operator = operator(&app, &headers).await?;
+    let page = query.page.unwrap_or(0);
+    if page > UNCLAIMED_MAX_PAGE {
+        return Err(error_code(
+            StatusCode::BAD_REQUEST,
+            "页码超出允许范围",
+            "acl_invalid_input",
+        ));
+    }
+    let row_id: i64 = query
+        .account_id
+        .parse()
+        .map_err(|_| error_code(StatusCode::BAD_REQUEST, "账号 ID 无效", "acl_invalid_input"))?;
+    // 凭据解密、出口客户端与已登记集合都在同一次持锁内取出，之后按原版规则
+    // 不跨上游 IO 持锁；凭据解密失败说明导入材料与库密钥不匹配，按凭据问题上报。
+    let (client, access_token, session_token, extra_cookies, registered) = {
+        let db = app.db.lock().await;
+        let row: Option<(String, Option<String>, Option<String>)> = db
+            .conn
+            .query_row(
+                "SELECT access_token, session_token, extra_cookies FROM chatgpt_accounts WHERE id=?1",
+                [row_id],
+                |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)),
+            )
+            .optional()
+            .map_err(|cause| acl_error(AclError::Sqlite(cause)))?;
+        let Some((access_token, session_token, extra_cookies)) = row else {
+            return Err(error_code(StatusCode::NOT_FOUND, "账号不存在", "acl_not_found"));
+        };
+        let outbound = egress::load(&db, &app.config, None).map_err(|cause| {
+            tracing::error!(module = "gateway", error = %cause, "ACL 清单出口不可用");
+            error_code(
+                StatusCode::BAD_GATEWAY,
+                "网关出口配置不可用，无法访问上游",
+                "acl_upstream_unavailable",
+            )
+        })?;
+        let decrypt = |value: &str| {
+            db.decrypt(value).map_err(|cause| {
+                tracing::error!(module = "gateway", error = %cause, "ACL 清单账号凭据解密失败");
+                error_code(
+                    StatusCode::BAD_GATEWAY,
+                    "账号凭据无法解密，请重新导入该账号凭据",
+                    "acl_account_credentials_invalid",
+                )
+            })
+        };
+        let access_token = decrypt(&access_token)?;
+        let session_token = session_token
+            .as_deref()
+            .map(&decrypt)
+            .transpose()?;
+        let extra_cookies = decrypt(extra_cookies.as_deref().unwrap_or("[]"))?;
+        let registered = crate::resource_acl::registered_ids(
+            &db.conn,
+            &operator,
+            &query.account_id,
+            ResourceKind::Conversation,
+        )
+        .map_err(acl_error)?;
+        (
+            outbound.client,
+            access_token,
+            session_token,
+            extra_cookies,
+            registered,
+        )
+    };
+    let cookies = proxy::parse_extra_cookies(&extra_cookies);
+    // AccessToken 直接可用就不要再换取；只有 SessionToken 时按登录同一条链路换取一次。
+    let access_token = if access_token.is_empty() {
+        let Some(token) = session_token.as_deref().filter(|value| !value.is_empty()) else {
+            return Err(error_code(
+                StatusCode::BAD_GATEWAY,
+                "账号既没有可用的 AccessToken 也没有 SessionToken，请重新导入该账号凭据",
+                "acl_account_credentials_invalid",
+            ));
+        };
+        match exchange_session_with_client(&app, &client, token, &cookies).await {
+            Ok(exchanged) => exchanged,
+            Err(cause) => {
+                if let Some(blocked) = cause.downcast_ref::<cloudflare::UpstreamBlocked>() {
+                    return Err(error_code(
+                        StatusCode::BAD_GATEWAY,
+                        &blocked.to_string(),
+                        "upstream_blocked",
+                    ));
+                }
+                return Err(error_code(
+                    StatusCode::BAD_GATEWAY,
+                    &format!("账号 SessionToken 换取失败（{cause}），请重新导入该账号凭据"),
+                    "acl_account_credentials_invalid",
+                ));
+            }
+        }
+    } else {
+        access_token
+    };
+    let session = proxy::session_cookie_group(session_token.as_deref(), &cookies, &[]);
+    // 设备身份：原版所有服务端上游请求都显式写 `oai-device-id`（与 jar 里的 `oai-did`
+    // 同值），会话 chat 路径同样如此。清单走的是同一个上游端点，身份形状保持一致。
+    let device = cookies
+        .iter()
+        .rev()
+        .find(|(name, value)| name == upstream_cookies::DEVICE_COOKIE && !value.is_empty())
+        .map(|(_, value)| value.clone());
+    let url = app.config.upstream.join(&format!(
+        "/backend-api/conversations?offset={}&limit={UNCLAIMED_PAGE_SIZE}",
+        page * UNCLAIMED_PAGE_SIZE
+    ))?;
+    let (response, refresh) = cloudflare::get_with_challenge_retry(&app, |cf| {
+        let url = url.clone();
+        let client = client.clone();
+        let cookies = cookies.clone();
+        let session = session.clone();
+        let access_token = access_token.clone();
+        let device = device.clone();
+        async move {
+            let mut request = client
+                .get(url.as_str())
+                .headers(identity::api_baseline(&url, &Method::GET)?)
+                .bearer_auth(&access_token);
+            if let Some((name, value)) = device.as_deref().and_then(upstream_cookies::device_header) {
+                request = request.header(name, value);
+            }
+            if let Some(cookie) = cloudflare::cookie_header(&[
+                cookies.as_slice(),
+                session.as_slice(),
+                cf.as_slice(),
+            ]) {
+                request = request.header(
+                    "cookie",
+                    HeaderValue::from_str(&cookie).context("Cookie 头无效")?,
+                );
+            }
+            request.send().await.context("上游请求失败")
+        }
+    })
+    .await
+    .map_err(|cause| upstream_unavailable("读取会话清单失败", cause))?;
+    let answer = cloudflare::read(response)
+        .await
+        .map_err(|cause| upstream_unavailable("读取会话清单失败", cause))?;
+    if !answer.status.is_success() {
+        if answer.blocked() {
+            return Err(error_code(
+                StatusCode::BAD_GATEWAY,
+                &cloudflare::blocked_error(
+                    "会话清单读取失败",
+                    "backend-api/conversations",
+                    answer.status,
+                    refresh.as_ref(),
+                )
+                .to_string(),
+                "upstream_blocked",
+            ));
+        }
+        return Err(error_code(
+            StatusCode::BAD_GATEWAY,
+            &format!("上游返回状态 {}，未能取得会话清单", answer.status.as_u16()),
+            "acl_upstream_unavailable",
+        ));
+    }
+    let value = answer
+        .json::<Value>()
+        .map_err(|cause| upstream_unavailable("会话清单解析失败", cause))?;
+    // 两个键都是真实上游的既有形状（空账号也返回 `total: 0`）。缺任何一个都说明上游
+    // 变更了信封：这时不能回退成空清单或伪造页数，那会让管理员以为「没有未登记会话」。
+    let invalid = || {
+        error_code(
+            StatusCode::BAD_GATEWAY,
+            "上游返回的会话清单结构不符合预期，暂不能列出未登记会话",
+            "acl_upstream_unavailable",
+        )
+    };
+    let items = value["items"].as_array().cloned().ok_or_else(invalid)?;
+    let total = value["total"].as_u64().ok_or_else(invalid)?;
+    let offset = u64::from(page) * u64::from(UNCLAIMED_PAGE_SIZE);
+    let unclaimed: Vec<Value> = items
+        .iter()
+        .filter_map(|item| {
+            let upstream_id = item["conversation_id"]
+                .as_str()
+                .or_else(|| item["id"].as_str())
+                .filter(|value| !value.is_empty())?;
+            if registered.contains(upstream_id) {
+                return None;
+            }
+            Some(json!({
+                "upstream_id": upstream_id,
+                "title": item["title"]
+                    .as_str()
+                    .filter(|value| !value.is_empty())
+                    .unwrap_or(upstream_id),
+                "update_time": item["update_time"],
+            }))
+        })
+        .collect();
+    let has_more = offset + (items.len() as u64) < total;
+    Ok(Json(json!({
+        "account_id": query.account_id,
+        "page": page,
+        "page_size": UNCLAIMED_PAGE_SIZE,
+        "upstream_total": total,
+        "has_more": has_more,
+        "items": unclaimed,
     })))
 }

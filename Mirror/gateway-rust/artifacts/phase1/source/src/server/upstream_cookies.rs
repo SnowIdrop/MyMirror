@@ -704,7 +704,7 @@ pub(super) async fn capture_response(
     session: &Session,
     jar: &mut Vec<Cookie>,
     url: &url::Url,
-    response: &reqwest::Response,
+    response: &wreq::Response,
 ) {
     if session.anonymous {
         return;

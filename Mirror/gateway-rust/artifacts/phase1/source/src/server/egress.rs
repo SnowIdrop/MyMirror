@@ -4,7 +4,7 @@ use super::*;
 
 pub(super) struct Egress {
     pub binding: String,
-    pub client: reqwest::Client,
+    pub client: wreq::Client,
     /// 出口是否为已启用的代理：WebSocket 桥接在这种出口上 fail-closed
     /// （见 server/chat_ws.rs），不允许静默改走直连。
     pub proxied: bool,
@@ -74,7 +74,7 @@ fn definition(db: &Database, config: &Config, node: Option<i64>) -> Result<Value
     Ok(
         json!({"generation":generation,"proxy":profile,"upstream":config.upstream.as_str(),
         "cdn":config.cdn_upstream.as_ref().map(url::Url::as_str),"cf":config.cfbypass.as_ref().map(url::Url::as_str),
-        "transport_profile":"reqwest-read-v1-no-retry-no-redirect","user_agent":proxy::DEFAULT_USER_AGENT}),
+        "transport_profile":"wreq-chrome146-read-v1-no-retry-no-redirect","user_agent":identity::USER_AGENT}),
     )
 }
 
@@ -92,16 +92,11 @@ pub(super) fn rotate_epoch(conn: &rusqlite::Connection) -> Result<()> {
     Ok(())
 }
 
-pub(super) fn client(config: &Config, profile: &Value) -> Result<reqwest::Client> {
-    let mut builder = reqwest::Client::builder()
-        .no_proxy()
-        .redirect(reqwest::redirect::Policy::none())
-        .retry(reqwest::retry::never())
-        .user_agent(proxy::DEFAULT_USER_AGENT)
-        .timeout(config.timeout);
+pub(super) fn client(config: &Config, profile: &Value) -> Result<wreq::Client> {
+    let mut builder = identity::client_builder().timeout(config.timeout);
     if profile["enabled"] == true {
         let mut proxy =
-            reqwest::Proxy::all(profile["proxy_url"].as_str().context("缺少代理地址")?)?;
+            wreq::Proxy::all(profile["proxy_url"].as_str().context("缺少代理地址")?)?;
         if let Some(user) = profile["username"].as_str() {
             proxy = proxy.basic_auth(user, profile["password"].as_str().unwrap_or(""));
         }

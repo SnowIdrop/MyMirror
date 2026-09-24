@@ -232,7 +232,7 @@ Django `DJANGO_ENV=LOCAL manage.py test` 93 项通过（本批未改 Django 代�
 | 稳定账号键 | `chatgpt_account_id`（`ChatgptAccount.pk` 十进制串）随登录载荷与 `/api/get-mirror-token` 下发并存入 `gateway_sessions.chatgpt_account_id`；mirror profile 下缺失即拒绝签发登录态，不用用户名顶替 |
 | 生成互斥 | `(account_id, conversation_id)` 独占租约，同一会话已有在途生成时 `409 {"code":"generation_busy"}`；不排队、不重放；成功/失败/取消/断开随响应体 Drop 释放；重启不重建上游任务 |
 | 撤权屏障 | 活动 SSE/WS 按 subject 登记，`/api/revoke-authorization` 命中后中止匹配流；登出同样中止该用户在途流 |
-| 管理 API | `GET /api/acl/resources`、`POST /api/acl/claim|share|move`、`GET /api/acl/audit`：服务密钥由中间件校验，操作者身份另行从固定 Django 源 fresh 校验并要求 `is_admin`，服务密钥本身不代表管理员 |
+| 管理 API | `GET /api/acl/resources`、`POST /api/acl/claim|share|move`、`GET /api/acl/audit|unclaimed-conversations`：服务密钥由中间件校验（Django 侧走 `x-gateway-secret`），操作者身份另行从固定 Django 源 fresh 校验并要求 `is_admin`，服务密钥本身不代表管理员 |
 | 旧归属回填 | 启动时若未写过 `acl_backfill_v1` 标记，调用 `POST /0x/user/gateway-acl-mapping` 一次性把 `conversation_owners`/`project_owners` 搬进 `acl_resources`；只有能唯一映射的行才认领，访客主体（含 `:`）与无法映射的行保持未认领并记清单日志；幂等、不修改旧表 |
 | 备份 | 网关备份升 v3：新增 `acl_resources`/`acl_project_links`/`acl_shares`/`acl_audit` 四个集合；`version` 为 2 或更早（不含 ACL）以及更高版本一律显式拒绝并给出重新导出的行动指引，不按旧格式局部恢复 |
 
@@ -249,7 +249,9 @@ Django `DJANGO_ENV=LOCAL manage.py test` 93 项通过（本批未改 Django 代�
 - **真实上游探针只完成读路径**：2026-09-24 用真实 AccessToken 执行（见下方「真实上游探针」），
   凭据换取与四条读路径在真实上游通过；真实新建会话被上游以 JSON `403` 拒绝，因此跨用户隔离
   在真实会话上仍未验证，真实 WebSocket 上游也未联调。
-- **管理界面未做**：`/api/acl/*` 只有 API，Vue 管理界面不在本批。
+- **管理界面只做认领**：`/api/acl/{resources,share,move,audit}` 仍只有 API；Vue 只补了
+  「未登记会话 → 认领给某个镜像用户」这一条最常用的运营路径（见下方「残项收敛与
+  管理员会话认领」）。
 - **`GATEWAY_COMPAT_PROFILE=original` 下资源路径不判权**：该 profile 没有 Django 可信身份与
   `chatgpt_account_id`，六类资源路径按「无账号键」fail-closed（作用域/创建 403、集合空信封）。
   `original` 只用于原版契约观测，产品面使用默认的 `mirror` profile；若要在该 profile 下恢复
@@ -296,6 +298,71 @@ Django `DJANGO_ENV=LOCAL manage.py test` 101 项通过（新增身份字段、�
 
 探针证据只落状态码、内容类型、正文长度与 sha256、字段名、集合条数、本候选自己的错误码与
 文案；令牌、Cookie、镜像会话 token、上游正文与标题一律不落盘。
+
+## 残项收敛与管理员会话认领（2026-09-24）
+
+本轮从缺口 3 的残项清单里挑出「有真实观测证据」或「运营上必须有人做」的两项落地，
+其余显式判定为不做，不再作为待办悬挂。
+
+### 真实前端请求新增的账号级前缀
+
+真实页面的四份请求清单（`artifacts/phase1/probe/evidence/accept-*.json`，485 个不同请求键）
+里，每个已登录页面固定请求 4 次 `GET /backend-api/checkout_pricing_config/configs/US`。
+该路径**不在** 2026-09-23 冻结的 923 条路由快照里（属快照之后新增），按 `acl_unclassified_route`
+返回 503。它不是对话路径，与六类可归属资源无关，因此按账号级前缀登记进 `acl.rs` 的 `UNOWNED`，
+并由库内单测直接断言该路径判为账号级（它不会被快照用例覆盖，因为快照里没有它）。
+
+### 未登记会话的发现与认领
+
+同一上游账号下的旧会话（迁移前创建、或直接在上游站点创建）在 ACL 下不可见，此前唯一的恢复
+途径是管理员手工构造 `/api/acl/claim` 请求。本批把这条运营路径接通：
+
+| 层 | 契约 |
+|---|---|
+| 网关 | `GET /api/acl/unclaimed-conversations?account_id=<十进制账号 id>&page=<0..20>`：读号池账号凭据（AccessToken 优先，只有 SessionToken 时按登录同一条链路换取一次），带上号池 `extra_cookies`、合成的 `__Secure-next-auth.session-token`、与 `oai-did` 同值的 `oai-device-id` 头以及 CF 白名单请求上游 `GET /backend-api/conversations?offset=page*50&limit=50`，与 `acl_resources` 做差集后只返回**未登记**条目：`{"account_id","page","page_size":50,"upstream_total","has_more","items":[{"upstream_id","title","update_time"}]}` |
+| 网关错误 | CF 拦截 `502 upstream_blocked`；两极凭据都不可用 `502 acl_account_credentials_invalid`；上游其它失败 `502 acl_upstream_unavailable`；账号不存在 `404 acl_not_found`；页码越界/账号 id 非数字 `400 acl_invalid_input`；非管理员 `403 acl_admin_required` |
+| Django | `GET /0x/user/<user_id>/unassigned-conversations`（账号下拉限定该用户的可用账号，缺省取首个；无可用账号时直接返回空态且不请求网关）与 `POST /0x/user/<user_id>/claim-conversation`（`owner_user_id` 固定为路径上的 user_id，不接受请求体自报归属） |
+| 凭据携带 | 服务密钥改走 `x-gateway-secret`，`authorization` 留给 Django 签发的 `gateway_authorization(request)`，另带 `subject`；服务密钥本身仍不代表管理员，网关一律以固定 Django 源的 fresh 响应判定 `is_admin` |
+| 管理界面 | 「用户」页的对话统计弹窗内新增「未登记会话」区块：账号选择、刷新、逐条分配（二次确认）、分页与两种空态 |
+
+认领沿用既有 `POST /api/acl/claim`：已登记资源返回 `409 acl_already_registered`，**不覆盖**他人归属；
+每次认领仍写 `acl_audit`。清单本身只读上游，不改任何归属。
+
+上游信封缺 `items` 或 `total` 时按 `502 acl_upstream_unavailable` 上报，不回退成空清单、
+也不伪造页数：那会让管理员把「上游改了形状」误读成「没有未登记会话」。真实上游对空账号
+返回的也是 `total: 0`（见「真实上游探针」），因此这两个键属于既有契约。
+
+清单会展示上游会话标题。`allow_admin_view_conversation_titles` 约束的是**已登记**会话的统计视图；
+未登记会话没有归属用户，而管理员手里本来就持有该上游账号，判断一条会话该分给谁必须看标题，
+因此这里不额外加标题开关，作为有意决定记录在此。
+
+### 明确不做（保留登记，不再作为待办反复评估）
+
+- **缺口 5 整组**：wreq/curl-impersonate 指纹传输、代理节点分流、`CF_BYPASS_PROXY_SERVER`、
+  `TRUSTED_PROXY_IPS`、`MIRROR_API_PREFIX`、`ADMIN_UPSTREAM`。产品形态是单机直连 AWS 出口的
+  内部共享账号，`egress.rs` 现有的 fail-closed 已覆盖真实部署形态，补齐既没有可观测验收目标，
+  也会把未验证组合放进来。
+- **`/external/*` 主机白名单**：原版 `is_allowed_external_proxy_host` 内容未还原，补它只能靠实测；
+  账号密码登录路径不依赖它。
+- **语音 `/api/livekit/`、`/realtime` 升级桥接**：小团体共享账号不使用语音通话。
+- **estuary 内容 URL 绝对化、连接器创建自动登记、分支维度归属**：逆向材料只有符号名，没有协议证据。
+- **访客策略**：访客不参与 ACL 是既有产品决定。
+- **观测类差异**：初次登录不调 `accounts/check`、管理非空库自增 ID 偏移、`login extra_cookies`
+  严格提取契约、`gateway_sessions.device_cookie` 遗留列、`oai-allow-ne…` 未定名比较。
+- **All-in-One 打包与第六阶段交付**：需要时另行开工。
+- **模型隔离与 `/api/account-models`、`/api/account-capabilities`**：产品决定「上游有什么模型就
+  显示什么」，这两个端点不实现；Django 管理端对应的两个页面维持报错现状。
+
+### 本批验证
+
+`cargo test --locked --offline` 71 项库内单测 + 130 项集成用例全过（本批新增
+`tests/acl_product_wiring.rs` 3 项：清单差集与挑战重放一次、SessionToken 换取与合成会话 Cookie、
+管理端鉴权与输入边界；新增 `tests/ws_bridge.rs` 1 项：只有 SessionToken 的会话在 WS 握手时
+合成会话 Cookie 并持有换取得来的 AccessToken）。`cargo clippy --locked --offline --all-targets -- -D warnings` 通过。Django `DJANGO_ENV=LOCAL manage.py test` 107 项通过（新增 6 项：非管理员 403、
+服务密钥与操作者身份分头携带、无账号池空态、认领固定路径 user_id 并透出 audit_id、池外账号 400、
+网关拒绝的 code 与文案原样透出）。
+全部为合成回环 fixture：清单端点对真实上游的读取未在本轮执行（需要真实账号时另行批准）。
+前端仓库没有 `node_modules`，`user.vue` 的改动只做源码回读与 diff 检查，未做构建验证。
 
 ## 上游 cookie 捕获与恢复（2026-09-24，静态实施 + 真实上游只读验证）
 
@@ -503,3 +570,110 @@ Python 侧确定性读取，页面内检查降级为旁证。
 - evidence/*-delivery/command.json、serial.log、results.json：执行、原始输出和数据库/上游记录。
 - artifacts/VERIFICATION.txt：原版/候选/回滚 literal 命令与输出、退出、哈希。
 - evidence/verification-before-v3.txt：上一轮 ledger 原样保留。
+
+## 传输身份统一（缺口 5 第一批：Chrome146 指纹栈，2026-09-24）
+
+原版与上游之间只有一种浏览器身份：TLS/HTTP2 走 `libcurl-impersonate` 的
+`chrome146`（`LD_PRELOAD` + `CURL_IMPERSONATE`，见反编译报告 03 §5），请求头走
+`apply_chrome_146_network_identity`。候选此前用 `reqwest` + rustls，只补 3 个头，
+「UA 说 Chrome146」与「TLS 说 rustls」互相矛盾。本批把整条出网链路统一到同一个
+固定身份：传输层换 `wreq`（btls/BoringSSL）+ `wreq-util` 的 `Profile::Chrome146`，
+请求头由 `server/identity.rs` 一处给出。
+
+### 传输层
+
+| 项 | 取值 |
+|---|---|
+| 画像 | `Emulation::builder().profile(Profile::Chrome146).platform(Platform::Linux).build()` |
+| 画像预设头 | **关闭**（`.headers(false)`）。预设是导航形状（`sec-fetch-dest: document`、`accept: text/html,…`、`priority: u=0, i`），且 wreq 只在「缺省」时注入；浏览器没给值时发这些等于发错值 |
+| 覆盖语义 | **整组强制覆盖**（有意偏离原版的「缺失才补」）：浏览器带来的 `sec-ch-ua*` 一律被固定身份替换，否则 Windows 用户的提示头会与 Linux UA 同时出现 |
+| 环回服务 | Django / cfbypass 走 http，不受画像影响 |
+| 保留语义 | `no_proxy`/`proxy`、`redirect(none)`、`retry(never)`、超时、`egress` 的出口绑定与 fail-closed 全部不变 |
+
+### 身份整组（`identity::IDENTITY_HEADERS`）
+
+| 头 | 值 |
+|---|---|
+| `user-agent` | `Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36` |
+| `sec-ch-ua` | `"Chromium";v="146", "Not-A.Brand";v="24", "Google Chrome";v="146"` |
+| `sec-ch-ua-mobile` | `?0` |
+| `sec-ch-ua-platform` | `"Linux"` |
+| `sec-ch-ua-platform-version` | `""` |
+| `sec-ch-ua-arch` / `sec-ch-ua-bitness` | `"x86"` / `"64"` |
+| `sec-ch-ua-model` | `""` |
+| `sec-ch-ua-full-version` | `"146.0.7680.177"` |
+| `sec-ch-ua-full-version-list` | `"Chromium";v="146.0.7680.177", "Not-A.Brand";v="24.0.0.0", "Google Chrome";v="146.0.7680.177"` |
+
+`UA` 与低熵三项与 `wreq-util` 的 Chrome146/Linux 预设逐字一致（库内单测直接拿预设对照，
+画像升级而没人改表就会红）。高熵三项的**主版本**与预设绑定，完整版本号沿用原版二进制
+字面量与镜像内 chromium 包版本。
+
+### 网关自发请求的头基线（`identity::api_baseline`）
+
+取值来自 2026-09-24 真 Chromium 同源 XHR 的服务端实录
+（`probe/probe_browser_headers.py`）：`accept: application/json, text/plain, */*`、
+`accept-language: zh-CN,zh;q=0.9,en;q=0.8`、`accept-encoding: gzip, deflate, br, zstd`、
+`sec-fetch-dest: empty` / `sec-fetch-mode: cors` / `sec-fetch-site: same-origin`、
+`oai-language`、`referer`、非 GET 才补 `origin`。**不合成** `priority` 与
+`oai-client-version`/`-build-number`/`oai-session-id`/`x-openai-web-frontend`：前者在同源 XHR
+实录里不出现，后者是页面自己算的前端状态，宁可不发也不发错值。响应体在 JSON 解析前按
+`compression::decode_buffered` 解码（只有这条路径解码，代理路径保持字节透传）。
+
+### 传输指纹对照（真 Chromium vs 候选）
+
+采集：`probe/probe_tls_identity.py`（Playwright 直连本机回环，监听端不完成握手，归一化
+去掉 random、会话 id、GREASE 值与扩展顺序）；候选侧由
+[`tests/identity_fingerprint.rs`](../source/tests/identity_fingerprint.rs) 以同样规则抓自己的
+ClientHello 并锁 sha256。对照原文见
+[`evidence/tls-identity-reference.json`](../../evidence/tls-identity-reference.json)。
+
+| 字段 | 真 Chromium 151.0.7922.34 | 候选（声称 Chrome146/Linux） | 结论 |
+|---|---|---|---|
+| `legacy_version` / 会话 id | `0303` / 32 字节 | 同 | 一致 |
+| 密码套件（去 GREASE） | 15 项（`1301/1302/1303`、`c02b/c02c/c02f/c030`、`cca8/cca9`…） | 同 | 一致 |
+| 压缩方法 | `00` | 同 | 一致 |
+| 扩展集合（去 GREASE） | 15 项（`0005/000a/000b/000d/0010/0012/0017/001b/0023/002b/002d/0033/44cd/fe0d/ff01`） | 同 | 一致 |
+| ALPN | `h2, http/1.1` | 同 | 一致 |
+| 支持组 / 密钥共享组 | `11ec,001d,0017,0018` / `11ec,001d` | 同 | 一致 |
+| TLS1.3 与 GREASE | `0304` + 1 个 GREASE 套件 + 2 个 GREASE 扩展 | 同 | 一致 |
+| `signature_algorithms` | 11 项（含 `0904/0905/0906` ML-DSA） | 8 项（无 ML-DSA） | **唯一实质差异**，版本类：对照浏览器是 151，候选按 146 画像 |
+| SNI | IP 字面量不发；用 `localhost` 复采时为真 | IP 字面量不发 | 与输入同形，一致 |
+
+H2 层（SETTINGS 顺序、伪头顺序）本轮未独立复采：两侧监听端都没有完成 TLS 握手，没有
+产生 H2 首帧；该取值只来自 `wreq-util` 画像的 `http2_options`，登记为残余。
+
+### 真 Chrome 对 chatgpt.com 的请求头（只读证据）
+
+`probe_browser_accept.py`/`probe_browser_create.py` 的浏览器实录（浏览器经候选网关加载真实
+chatgpt.com 页面）显示，上游文档响应声明 `Accept-CH` 之后，真 Chrome 对
+`/backend-api/*` 的请求带**全量高熵 hints**（`sec-ch-ua-arch/bitness/full-version/
+full-version-list/model/platform-version`，491 条请求里 488 条带 `sec-ch-ua-arch`），
+且这些请求**没有** `priority` 头。结论：「整组强制覆盖」与真浏览器的实际形态一致，
+而 `api_baseline` 不补 `priority` 也与实录一致。
+
+对照组 `probe_browser_chatgpt_headers.py`（真 Chromium **直连** chatgpt.com）命中 Cloudflare
+挑战页，只取到 challenge 自身请求：它带 `priority: u=1, i`、`sec-fetch-dest: script/empty`。
+这说明 `priority` 取决于请求的优先级类别，不能一概而论；候选只在浏览器转发路径上原样
+透传浏览器给的值，不自造。
+
+### 有意差异与残余风险
+
+| 项 | 说明 |
+|---|---|
+| `signature_algorithms` 缺 ML-DSA | 见上表；与自身声称的 146 自洽，未取得 Chrome146 当时的实测 |
+| H2 首帧未复采 | 见上；需要测试证书才能完成握手，本轮不做 |
+| `sec-ch-ua-platform-version: ""` | Linux 真机取值本轮无法验证（本机只有 Windows Chromium）；按计划锁定值发，宁可用空串也不伪造内核版本 |
+| HTTP/1.1 头顺序 | 不受画像控制；上游走 h2，影响有限 |
+| cfbypass 一跳 | `CF_BYPASS_USER_AGENT` 覆盖是刻意的（`cf_clearance` 绑定 IP+UA），cfbypass 内部的 `sec-ch-ua` 与 UA 版本错配只影响取 clearance 的那一跳 |
+| 出口 IP | 候选部署在 AWS 机房，对照浏览器在家用网络；指纹统一不解决按 IP 段的风控 |
+| WS 握手头子集 | 上游 WS 只发身份整组 + `accept-language`/`origin`/`referer`/`oai-device-id`/cookie 与协议必需头；真浏览器 WS 握手还会带 `accept-encoding`/`cache-control`/`pragma` 等头。本批按「保留既有语义」只统一身份，未扩表；已登记 NEXT_WORK |
+
+### 契约与影响
+
+- 对外 HTTP 契约零变化：路由、状态码、错误码、Cookie 合成、ACL、CF 挑战策略都不动；**不新增环境变量**。
+- `egress` 的 `transport_profile` 变为 `wreq-chrome146-read-v1-no-retry-no-redirect`，参与
+  `binding` 哈希 ⇒ 部署后既有镜像会话按既有「凭据/出口变更即失效」规则 fail-closed（401），
+  需要重新登录；尚未部署过候选，因此没有存量会话需要迁移。
+- 数据库里代理节点的 `transport_mode` 取值仍是字符串 `reqwest`（存量配置的枚举值，代表
+  「直连客户端」这一类），本批不改这个字段，避免动存量配置与绑定以外的语义。
+- `wreq` 默认 feature 不含 `emulation-compression`，解压由网关按需做，代理路径保持字节透传。

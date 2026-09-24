@@ -6,6 +6,7 @@ mod chat_ws;
 mod cloudflare;
 mod compression;
 mod egress;
+pub mod identity;
 mod management;
 mod proxy;
 mod public_prefixes;
@@ -22,7 +23,7 @@ use anyhow::{bail, Context, Result};
 use axum::{
     body::{to_bytes, Body},
     extract::{Query, Request, State},
-    http::{HeaderMap, HeaderValue, StatusCode},
+    http::{HeaderMap, HeaderValue, Method, StatusCode},
     middleware::{self, Next},
     response::{IntoResponse, Response},
     routing::{any, get, post},
@@ -42,7 +43,7 @@ use tokio::sync::Mutex;
 pub struct App {
     config: Config,
     db: Mutex<Database>,
-    client: reqwest::Client,
+    client: wreq::Client,
     cloudflare: cloudflare::Cloudflare,
     /// ACL 运行时：生成互斥租约与撤权中止（进程内状态，重启即清空）。
     acl: Arc<acl::Runtime>,
@@ -125,12 +126,10 @@ fn identity_from_payload(payload: &Value) -> Result<Option<Identity>> {
 pub async fn router(config: Config) -> Result<Router> {
     let db = Database::open(&config.database, &config.key)?;
     db.conn.execute_batch("CREATE TABLE IF NOT EXISTS rust_authorizations(token_hash TEXT PRIMARY KEY, payload TEXT NOT NULL, expires_at INTEGER NOT NULL); PRAGMA user_version=1;")?;
-    let client = reqwest::Client::builder()
-        .no_proxy()
-        .redirect(reqwest::redirect::Policy::none())
-        .retry(reqwest::retry::never())
+    let client = identity::client_builder()
         .timeout(config.timeout)
-        .build()?;
+        .build()
+        .context("构建出网客户端失败")?;
     let app = Arc::new(App {
         config,
         db: Mutex::new(db),
@@ -175,6 +174,10 @@ pub async fn router(config: Config) -> Result<Router> {
         .route("/api/acl/share", post(acl_admin::share))
         .route("/api/acl/move", post(acl_admin::move_to_project))
         .route("/api/acl/audit", get(acl_admin::audit))
+        .route(
+            "/api/acl/unclaimed-conversations",
+            get(acl_admin::unclaimed_conversations),
+        )
         // 管理端点（server/management.rs）：restore 仍留在父文件，另行原子校验。
         .route("/api/get-mirror-token", any(management::mirror_token))
         .route("/api/get-user-use-count", any(management::user_use_count))
@@ -540,7 +543,7 @@ pub(super) async fn authority_details(
 ) -> std::result::Result<Value, ApiError> {
     let response = app
         .client
-        .post(app.config.django.join("/0x/user/gateway-authorization")?)
+        .post(app.config.django.join("/0x/user/gateway-authorization")?.as_str())
         .bearer_auth(&app.config.secret)
         .json(&json!({"authorization":authorization,"subject":subject}))
         .send()
@@ -619,9 +622,10 @@ async fn fetch_user(app: &App, access: &str, submitted: &[(String, String)]) -> 
 }
 /// `access_token` 校验：提交 cookies 在前、CF cookies 在后；被 Cloudflare 拦截时
 /// 刷新一次并重放一次，仍被拦截按 [`cloudflare::UpstreamBlocked`] 上报。
+/// 请求头走 [`identity::api_baseline`]：网关自发请求同样要像浏览器发出的 XHR。
 async fn fetch_user_with_client(
     app: &App,
-    client: &reqwest::Client,
+    client: &wreq::Client,
     access: &str,
     submitted: &[(String, String)],
 ) -> Result<Value> {
@@ -632,7 +636,10 @@ async fn fetch_user_with_client(
         let submitted = submitted.to_vec();
         let access = access.to_owned();
         async move {
-            let mut request = client.get(url).bearer_auth(access);
+            let mut request = client
+                .get(url.as_str())
+                .headers(identity::api_baseline(&url, &Method::GET)?)
+                .bearer_auth(access);
             if let Some(cookie) = cloudflare::cookie_header(&[&submitted, &cf]) {
                 request = request.header(
                     "cookie",
@@ -671,9 +678,10 @@ async fn exchange_session(
 }
 /// `session_token → access_token` 换取：会话 cookie 在前、提交 cookies 其次、
 /// CF cookies 最后；被 Cloudflare 拦截时刷新一次并重放一次。
+/// 请求头同 [`identity::api_baseline`]。
 async fn exchange_session_with_client(
     app: &App,
-    client: &reqwest::Client,
+    client: &wreq::Client,
     session: &str,
     submitted: &[(String, String)],
 ) -> Result<String> {
@@ -688,7 +696,9 @@ async fn exchange_session_with_client(
         let submitted = submitted.to_vec();
         let session_token = session_token.clone();
         async move {
-            let mut request = client.get(url);
+            let mut request = client
+                .get(url.as_str())
+                .headers(identity::api_baseline(&url, &Method::GET)?);
             if let Some(cookie) =
                 cloudflare::cookie_header(&[session_token.as_slice(), &submitted, &cf])
             {
@@ -1063,7 +1073,7 @@ async fn test_proxy(State(app): State<Shared>, Json(input): Json<Value>) -> ApiR
     let profile = egress::normalized(&app.config, &input, None)?;
     let client = egress::client(&app.config, &profile)?;
     let response = client
-        .get(app.config.upstream.clone())
+        .get(app.config.upstream.as_str())
         .send()
         .await
         .context("代理端口连接失败")?;
@@ -1269,7 +1279,7 @@ async fn session(app: &App, token: &str) -> Result<Option<Session>> {
     if let (Some(policy), Some(subject)) = (&value.policy, subject) {
         let res = app
             .client
-            .post(app.config.django.join("/0x/user/gateway-authorization")?)
+            .post(app.config.django.join("/0x/user/gateway-authorization")?.as_str())
             .bearer_auth(&app.config.secret)
             .json(&json!({"authorization":policy.authorization,"subject":policy.user_name}))
             .send()

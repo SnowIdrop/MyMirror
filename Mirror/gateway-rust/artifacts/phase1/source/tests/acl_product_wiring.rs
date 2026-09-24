@@ -18,7 +18,7 @@ use mirror_gateway::{
 use serde_json::{json, Value};
 use std::{
     sync::{
-        atomic::{AtomicUsize, Ordering},
+        atomic::{AtomicBool, AtomicUsize, Ordering},
         Arc, Mutex,
     },
     time::Duration,
@@ -28,6 +28,8 @@ use tokio::sync::Notify;
 const ADMIN: &str = "acl-wiring-admin-secret";
 const KEY: &str = "acl-wiring-encryption-key-0000001";
 const CONVERSATION: &str = "6ab350c7-5d3c-83ea-be1f-a87b536c1c6c";
+/// 上游清单里存在、但本账号从未登记的第二条会话（仅用于清单差集断言）。
+const UNREGISTERED: &str = "22222222-3333-4444-5555-666666666666";
 const PROJECT: &str = "proj-0001";
 const LEGACY_CONVERSATION: &str = "11111111-2222-3333-4444-555555555555";
 
@@ -39,6 +41,10 @@ struct Upstream {
     /// 慢速流：发出首块后等待放行，用于生成互斥与撤权中止。
     release: Arc<Notify>,
     held: AtomicUsize,
+    /// 剩余多少次 `/backend-api/conversations` 应答要先返回 CF 挑战。
+    challenge: AtomicUsize,
+    /// 为真时清单应答缺 `items`/`total`：模拟上游变更信封。
+    malformed_list: AtomicBool,
 }
 
 async fn serve(router: Router) -> (String, tokio::task::JoinHandle<()>) {
@@ -55,10 +61,26 @@ async fn chat_upstream(state: Arc<Upstream>, request: Request) -> Response {
         "method": parts.method.as_str(),
         "path": parts.uri.path(),
         "authorization": parts.headers.get("authorization").and_then(|v| v.to_str().ok()).unwrap_or(""),
+        "cookie": parts.headers.get("cookie").and_then(|v| v.to_str().ok()).unwrap_or(""),
+        "device": parts.headers.get("oai-device-id").and_then(|v| v.to_str().ok()).unwrap_or(""),
         "body": String::from_utf8_lossy(&body),
     }));
     let path = parts.uri.path();
     let post = parts.method == axum::http::Method::POST;
+    // Cloudflare 挑战：只对清单端点生效，首轮 403 + `cf-mitigated: challenge`。
+    if path == "/backend-api/conversations"
+        && state
+            .challenge
+            .fetch_update(Ordering::SeqCst, Ordering::SeqCst, |left| left.checked_sub(1))
+            .is_ok()
+    {
+        return (
+            StatusCode::FORBIDDEN,
+            [("cf-mitigated", "challenge")],
+            "<html>challenge</html>",
+        )
+            .into_response();
+    }
     // 慢速流：首块立即下发，第二块等 fixture 放行——租约与撤权中止都靠它观测。
     if path.starts_with("/realtime/") || (post && path == format!("/backend-api/conversation/{CONVERSATION}")) {
         state.held.fetch_add(1, Ordering::SeqCst);
@@ -103,6 +125,27 @@ async fn chat_upstream(state: Arc<Upstream>, request: Request) -> Response {
         }
         ("POST", "/backend-api/f/conversation") => {
             axum::Json(json!({"conversation_id":CONVERSATION})).into_response()
+        }
+        // SessionToken 换取：ACL 清单端点在号池账号没有 AccessToken 时走这一条。
+        ("GET", "/api/auth/session") => {
+            axum::Json(json!({"accessToken":"synthetic-exchange-alice"})).into_response()
+        }
+        // 上游会话清单：一条已登记、一条未登记，差集必须只留下未登记的。
+        ("GET", "/backend-api/conversations") => {
+            let envelope = if state.malformed_list.load(Ordering::SeqCst) {
+                json!({"limit": 50, "offset": 0})
+            } else {
+                json!({
+                    "items": [
+                        {"id": CONVERSATION, "title": "已登记会话", "update_time": 1_700_000_100.0},
+                        {"id": UNREGISTERED, "title": "未认领会话", "update_time": 1_700_000_200.0},
+                    ],
+                    "total": 2,
+                    "limit": 50,
+                    "offset": 0,
+                })
+            };
+            axum::Json(envelope).into_response()
         }
         _ => axum::Json(json!({"path":path})).into_response(),
     }
@@ -176,11 +219,12 @@ impl Drop for Fixture {
 
 impl Fixture {
     async fn new() -> Self {
-        Self::with_seed(None).await
+        Self::with_seed(None, false).await
     }
 
     /// `seed` 非空时先把旧归属行写进网关库，用于断言启动回填的结果。
-    async fn with_seed(seed: Option<&[(String, String, String)]>) -> Self {
+    /// `cfbypass` 为真时挂一个本地 cfbypass 桩，用于断言挑战刷新后只重放一次。
+    async fn with_seed(seed: Option<&[(String, String, String)]>, cfbypass: bool) -> Self {
         let upstream = Arc::new(Upstream::default());
         let chat_url = {
             let state = upstream.clone();
@@ -191,6 +235,33 @@ impl Fixture {
         };
         let mapping_calls = Arc::new(AtomicUsize::new(0));
         let django_url = serve(django_router(mapping_calls.clone(), seed.is_some())).await;
+        let cfbypass_url = {
+            let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+            let url = format!("http://{}", listener.local_addr().unwrap());
+            // 每次刷新返回不同值：这样才能证明重放用的是刷新后的 CF cookies，
+            // 而不是复用启动预热那一份。
+            let issued = Arc::new(AtomicUsize::new(0));
+            let task = tokio::spawn(async move {
+                axum::serve(
+                    listener,
+                    Router::new().fallback(move || {
+                        let value = format!(
+                            "CF-FIXTURE-{}",
+                            issued.fetch_add(1, Ordering::SeqCst) + 1
+                        );
+                        async move {
+                            axum::Json(json!({
+                                "user_agent": "fixture-agent",
+                                "cookies": [{"name":"cf_clearance","value":value}],
+                            }))
+                        }
+                    }),
+                )
+                .await
+                .unwrap()
+            });
+            (url, task)
+        };
         let dir = tempfile::tempdir().unwrap();
         let database = dir.path().join("db.sqlite");
         let django = loopback_url(&django_url.0).unwrap();
@@ -222,7 +293,7 @@ impl Fixture {
             cdn_upstream: None,
             ab_upstream: None,
             public_prefix_base: None,
-            cfbypass: None,
+            cfbypass: cfbypass.then(|| loopback_url(&cfbypass_url.0).unwrap()),
             timeout: Duration::from_secs(5),
             mirror_profile: true,
             cookie_secure: false,
@@ -235,7 +306,7 @@ impl Fixture {
         let gateway = tokio::spawn(async move { axum::serve(listener, app).await.unwrap() });
         Self {
             _dir: dir,
-            tasks: vec![django_url.1, chat_url.1, gateway],
+            tasks: vec![django_url.1, chat_url.1, cfbypass_url.1, gateway],
             base,
             client: reqwest::Client::builder()
                 .no_proxy()
@@ -349,6 +420,30 @@ impl Fixture {
             .send()
             .await
             .unwrap()
+    }
+
+    /// 管理端 ACL 只读查询：`subject` 决定 Django 桩返回的管理员身份。
+    async fn acl_get(&self, path: &str, subject: &str) -> reqwest::Response {
+        self.client
+            .get(format!("{}{path}", self.base))
+            .bearer_auth(ADMIN)
+            .header("authorization", "signature-v1")
+            .header("subject", subject)
+            .send()
+            .await
+            .unwrap()
+    }
+
+    /// 号池账号行：ACL 管理端清单的凭据来源（`chatgpt_accounts.id` = Django 侧 account_id）。
+    fn seed_pool_account(&self, id: i64, access: &str, session: Option<&str>, extra: &str) {
+        let db = mirror_gateway::storage::Database::open(&self.database, KEY).unwrap();
+        db.conn
+            .execute(
+                "INSERT INTO chatgpt_accounts(id, chatgpt_username, access_token, session_token, extra_cookies) \
+                 VALUES (?1,'fixture@example.invalid',?2,?3,?4)",
+                rusqlite::params![id, access, session, extra],
+            )
+            .unwrap();
     }
 
     async fn create_project(&self, token: &str) -> reqwest::Response {
@@ -638,7 +733,7 @@ async fn legacy_ownership_backfill_claims_mappable_rows_once() {
             "carol".to_owned(),
         ),
     ];
-    let f = Fixture::with_seed(Some(&rows)).await;
+    let f = Fixture::with_seed(Some(&rows), false).await;
     let alice = f.login("alice", "3").await;
 
     let scoped = format!("/backend-api/conversation/{LEGACY_CONVERSATION}");
@@ -688,4 +783,173 @@ async fn legacy_ownership_backfill_claims_mappable_rows_once() {
         .query_row("SELECT count(*) FROM acl_resources", [], |row| row.get(0))
         .unwrap();
     assert_eq!(claimed, 1);
+}
+
+/// 未登记会话清单：上游清单减去已登记 id；凭据按 chat 路径注入；
+/// 首轮命中 CF 挑战时刷新一次并只重放一次（上游计数严格为 2）。
+#[tokio::test]
+async fn unclaimed_conversation_list_subtracts_registered_ids_and_retries_once() {
+    let f = Fixture::with_seed(None, true).await;
+    f.seed_pool_account(
+        3,
+        "synthetic-pool-access",
+        None,
+        r#"[{"name":"pool_cookie","value":"PV"},{"name":"oai-did","value":"device-fixture"}]"#,
+    );
+    let _alice = f.login("alice", "3").await;
+    let claimed = f
+        .acl(
+            "/api/acl/claim",
+            json!({
+                "account_id":"3",
+                "resource_type":"conversation",
+                "upstream_id":CONVERSATION,
+                "owner_user_id":"11",
+            }),
+        )
+        .await;
+    assert_eq!(claimed.status(), StatusCode::OK);
+    f.clear_calls();
+    f.upstream.challenge.store(1, Ordering::SeqCst);
+
+    let response = f
+        .acl_get("/api/acl/unclaimed-conversations?account_id=3", "root")
+        .await;
+    let status = response.status();
+    let body = response.text().await.unwrap();
+    assert_eq!(status, StatusCode::OK, "{body}");
+    let body: Value = serde_json::from_str(&body).unwrap();
+    assert_eq!(body["account_id"], "3");
+    assert_eq!(body["page"], 0);
+    assert_eq!(body["page_size"], 50);
+    assert_eq!(body["upstream_total"], 2);
+    assert_eq!(body["has_more"], false);
+    let items = body["items"].as_array().unwrap();
+    assert_eq!(items.len(), 1, "已登记的会话必须被差集掉: {body}");
+    assert_eq!(items[0]["upstream_id"], UNREGISTERED);
+    assert_eq!(items[0]["title"], "未认领会话");
+
+    let calls = f.calls("/backend-api/conversations");
+    assert_eq!(calls.len(), 2, "挑战后必须只重放一次: {calls:?}");
+    assert_eq!(calls[0]["authorization"], "Bearer synthetic-pool-access");
+    let first = calls[0]["cookie"].as_str().unwrap();
+    let retried = calls[1]["cookie"].as_str().unwrap();
+    assert!(retried.contains("pool_cookie=PV"), "{retried}");
+    assert!(first.contains("pool_cookie=PV"), "{first}");
+    // 设备身份与会话 chat 路径同形：cookie 与请求头都带同一个 oai-did。
+    assert!(retried.contains("oai-did=device-fixture"), "{retried}");
+    assert_eq!(calls[0]["device"], "device-fixture", "{}", calls[0]);
+    assert_eq!(calls[1]["device"], "device-fixture", "{}", calls[1]);
+    // 启动预热下发 CF-FIXTURE-1；挑战后的重放必须换成 cfbypass 新发的那一份。
+    assert!(
+        first.contains("cf_clearance=CF-FIXTURE-1"),
+        "{first}"
+    );
+    assert!(
+        retried.contains("cf_clearance=CF-FIXTURE-2"),
+        "重放必须使用刷新后的 CF cookies: {retried}"
+    );
+}
+
+/// 号池账号只有 SessionToken 时按登录同一条链路换取一次，
+/// 并把合成的会话 Cookie 同时发给换取与清单两个上游请求。
+#[tokio::test]
+async fn unclaimed_conversation_list_exchanges_the_session_token_once() {
+    let f = Fixture::with_seed(None, false).await;
+    f.seed_pool_account(3, "", Some("synthetic-pool-session"), "[]");
+
+    let response = f
+        .acl_get("/api/acl/unclaimed-conversations?account_id=3", "root")
+        .await;
+    let status = response.status();
+    let body = response.text().await.unwrap();
+    assert_eq!(status, StatusCode::OK, "{body}");
+
+    let exchanges = f.calls("/api/auth/session");
+    assert_eq!(exchanges.len(), 1, "换取只做一次: {exchanges:?}");
+    assert!(
+        exchanges[0]["cookie"]
+            .as_str()
+            .unwrap()
+            .contains("__Secure-next-auth.session-token=synthetic-pool-session"),
+        "{exchanges:?}"
+    );
+    let calls = f.calls("/backend-api/conversations");
+    assert_eq!(calls.len(), 1, "{calls:?}");
+    assert_eq!(calls[0]["authorization"], "Bearer synthetic-exchange-alice");
+    assert!(
+        calls[0]["cookie"]
+            .as_str()
+            .unwrap()
+            .contains("__Secure-next-auth.session-token=synthetic-pool-session"),
+        "{calls:?}"
+    );
+}
+
+/// 管理端鉴权与输入边界：服务密钥本身不是管理员，越界与未知账号都在本地拒绝，
+/// 且这些失败路径一律不接触上游。
+#[tokio::test]
+async fn unclaimed_conversation_list_is_admin_only_and_bounded() {
+    let f = Fixture::with_seed(None, false).await;
+    f.seed_pool_account(3, "synthetic-pool-access", None, "[]");
+    f.clear_calls();
+    let path = "/api/acl/unclaimed-conversations?account_id=3";
+    // 服务密钥 + 无操作者身份：中间件放行，管理员判定必须拒绝。
+    let anonymous = f
+        .client
+        .get(format!("{}{path}", f.base))
+        .bearer_auth(ADMIN)
+        .send()
+        .await
+        .unwrap();
+    assert_eq!(anonymous.status(), StatusCode::FORBIDDEN);
+    // 非管理员主体（Django 桩里只有 root 是管理员）。
+    let denied = f.acl_get(path, "alice").await;
+    assert_eq!(denied.status(), StatusCode::FORBIDDEN);
+    assert_eq!(denied.json::<Value>().await.unwrap()["code"], "acl_admin_required");
+
+    for (query, status, code) in [
+        ("account_id=3&page=21", StatusCode::BAD_REQUEST, "acl_invalid_input"),
+        ("account_id=abc", StatusCode::BAD_REQUEST, "acl_invalid_input"),
+        ("account_id=99", StatusCode::NOT_FOUND, "acl_not_found"),
+    ] {
+        let response = f
+            .acl_get(&format!("/api/acl/unclaimed-conversations?{query}"), "root")
+            .await;
+        assert_eq!(response.status(), status, "{query}");
+        assert_eq!(response.json::<Value>().await.unwrap()["code"], code, "{query}");
+    }
+
+    // 上游信封变更（缺 items/total）：必须报错，不能当成「没有未登记会话」。
+    f.upstream.malformed_list.store(true, Ordering::SeqCst);
+    let response = f.acl_get(path, "root").await;
+    assert_eq!(response.status(), StatusCode::BAD_GATEWAY);
+    assert_eq!(
+        response.json::<Value>().await.unwrap()["code"],
+        "acl_upstream_unavailable"
+    );
+    f.upstream.malformed_list.store(false, Ordering::SeqCst);
+    // 上面这一例是唯一会真的接触上游的失败路径，清空计数再验证凭据缺失分支。
+    f.clear_calls();
+
+    // 账号行存在但两种凭据都为空：不得用空凭据去撞上游。
+    {
+        let db = mirror_gateway::storage::Database::open(&f.database, KEY).unwrap();
+        db.conn
+            .execute(
+                "UPDATE chatgpt_accounts SET access_token='', session_token=NULL WHERE id=3",
+                [],
+            )
+            .unwrap();
+    }
+    let response = f.acl_get(path, "root").await;
+    assert_eq!(response.status(), StatusCode::BAD_GATEWAY);
+    assert_eq!(
+        response.json::<Value>().await.unwrap()["code"],
+        "acl_account_credentials_invalid"
+    );
+    assert!(
+        f.calls("/backend-api/conversations").is_empty(),
+        "所有拒绝路径都不得接触上游"
+    );
 }

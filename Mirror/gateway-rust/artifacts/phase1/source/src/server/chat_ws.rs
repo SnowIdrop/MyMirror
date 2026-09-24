@@ -22,7 +22,7 @@ use futures_util::{
     stream::{SplitSink, SplitStream},
     SinkExt, StreamExt,
 };
-use tokio_tungstenite::tungstenite;
+use wreq::ws::message::{CloseFrame as WsCloseFrame, Message as WsMessage};
 
 /// 关闭握手的收尾等待：对端不回关闭帧时不能让桥接任务悬住。
 const CLOSE_GRACE: std::time::Duration = std::time::Duration::from_secs(5);
@@ -74,7 +74,8 @@ pub(super) async fn route(
             return error(StatusCode::BAD_GATEWAY, &failure.to_string()).into_response()
         }
     };
-    let (upstream, response) = match connect(&target, request_headers).await {
+    let (upstream, response) =
+        match connect(&session.outbound.client, &target, request_headers).await {
         Ok(value) => value,
         Err(failure) => {
             // 握手被 Cloudflare 拒绝时失效缓存，交给下一次请求重新走 cfbypass；
@@ -150,23 +151,12 @@ async fn upstream_headers(
 ) -> Result<HeaderMap> {
     let mut headers = HeaderMap::new();
     // 浏览器握手自带的协商字段按需透传；凭据类头一律由本模块重建。
-    for name in [
-        "accept-language",
-        "sec-websocket-protocol",
-        "sec-ch-ua",
-        "sec-ch-ua-mobile",
-        "sec-ch-ua-platform",
-        "sec-ch-ua-full-version",
-        "sec-ch-ua-full-version-list",
-    ] {
+    // client hints 不在透传名单里：身份整组由 [`identity::apply_identity`] 强制覆盖。
+    for name in ["accept-language", "sec-websocket-protocol"] {
         if let Some(value) = client.get(name) {
             headers.insert(name, value.clone());
         }
     }
-    headers.insert(
-        "user-agent",
-        HeaderValue::from_static(proxy::DEFAULT_USER_AGENT),
-    );
     let origin = proxy::chat_origin(&app.config.upstream)?;
     headers.insert(
         "origin",
@@ -176,7 +166,8 @@ async fn upstream_headers(
         "referer",
         HeaderValue::from_str(&format!("{origin}/")).context("referer 头无效")?,
     );
-    proxy::apply_chrome_146_identity(&mut headers);
+    // 上游 WS 是独立连接，必须与 HTTP 侧声称同一个浏览器身份。
+    identity::apply_identity(&mut headers);
     // 设备身份：原版 WS 桥显式写 `oai-device-id` 头（错误串 0xD3E785 邻域），
     // 并与 HTTP 侧共用同一个 jar（见 server/upstream_cookies.rs）。
     if let Some(value) = upstream_cookies::device_value(&auth.jar) {
@@ -191,7 +182,11 @@ async fn upstream_headers(
     };
     let jar = upstream_cookies::pairs_for(&auth.jar, &app.config.ws_upstream);
     // 与 HTTP 侧同规则：账号只有 SessionToken 时合成会话 Cookie 再发上游。
-    let session = proxy::session_cookie_group(auth, auth.cookies.as_slice(), jar.as_slice());
+    let session = proxy::session_cookie_group(
+        auth.session_token.as_deref(),
+        auth.cookies.as_slice(),
+        jar.as_slice(),
+    );
     if let Some(cookie) = cloudflare::cookie_header(&[
         auth.cookies.as_slice(),
         session.as_slice(),
@@ -220,48 +215,37 @@ pub(super) struct ConnectFailure {
 
 /// 连接上游并返回会话与握手响应头（子协议在响应头里）。目标地址由调用方决定，
 /// 合成回环回归因此可以直接指向本机 `ws://` fixture。
+/// 传输走 [`identity`] 画像化的客户端：WS 握手与 HTTP 必须声称同一个浏览器。
 pub(super) async fn connect(
+    client: &wreq::Client,
     target: &url::Url,
     headers: HeaderMap,
-) -> std::result::Result<
-    (
-        tokio_tungstenite::WebSocketStream<
-            tokio_tungstenite::MaybeTlsStream<tokio::net::TcpStream>,
-        >,
-        HeaderMap,
-    ),
-    ConnectFailure,
-> {
-    use tokio_tungstenite::tungstenite::client::IntoClientRequest;
-
-    let mut request = target
-        .as_str()
-        .into_client_request()
+) -> std::result::Result<(wreq::ws::WebSocket, HeaderMap), ConnectFailure> {
+    let response = client
+        .websocket(target.as_str())
+        .headers(headers)
+        .send()
+        .await
+        .map_err(|cause| ConnectFailure {
+            status: cause.status(),
+            cause: anyhow::Error::from(cause),
+        })?;
+    let headers = response.headers().clone();
+    let socket = response
+        .into_websocket()
+        .await
         .map_err(|cause| ConnectFailure {
             status: None,
             cause: anyhow::Error::from(cause),
         })?;
-    for (name, value) in headers.iter() {
-        request.headers_mut().insert(name.clone(), value.clone());
-    }
-    match tokio_tungstenite::connect_async(request).await {
-        Ok((socket, response)) => Ok((socket, response.headers().clone())),
-        Err(tungstenite::Error::Http(response)) => Err(ConnectFailure {
-            status: Some(response.status()),
-            cause: anyhow::anyhow!("上游 WebSocket 握手被拒绝"),
-        }),
-        Err(cause) => Err(ConnectFailure {
-            status: None,
-            cause: anyhow::Error::from(cause),
-        }),
-    }
+    Ok((socket, headers))
 }
 
 /// 桥接本体：双向透传，任一侧结束即把关闭帧转交另一侧后收尾。
 /// `abort` 非空时，撤权/登出会写通道使本次桥接立即结束（不再转发剩余消息）。
 pub(super) async fn pump(
     client: WebSocket,
-    upstream: UpstreamStream,
+    upstream: wreq::ws::WebSocket,
     abort: Option<acl::AbortWatch>,
 ) -> Result<()> {
     let (mut abort, _guard) = match abort {
@@ -328,10 +312,6 @@ pub(super) async fn pump(
     Ok(())
 }
 
-type UpstreamStream = tokio_tungstenite::WebSocketStream<
-    tokio_tungstenite::MaybeTlsStream<tokio::net::TcpStream>,
->;
-
 /// 桥接状态：两侧是否仍在读取。结束的一侧不再被 `select!` 轮询，
 /// 因此关闭后不会空转重发关闭帧。
 struct Relay {
@@ -350,8 +330,8 @@ impl Relay {
         &mut self,
         client_stream: &mut SplitStream<WebSocket>,
         client_sink: &mut SplitSink<WebSocket, Message>,
-        upstream_stream: &mut SplitStream<UpstreamStream>,
-        upstream_sink: &mut SplitSink<UpstreamStream, tungstenite::Message>,
+        upstream_stream: &mut SplitStream<wreq::ws::WebSocket>,
+        upstream_sink: &mut SplitSink<wreq::ws::WebSocket, WsMessage>,
     ) -> Result<()> {
         tokio::select! {
             message = client_stream.next(), if self.client_open => match message {
@@ -369,14 +349,14 @@ impl Relay {
                     // 客户端连接直接消失：补一个关闭帧给上游，避免上游悬住。
                     self.client_open = false;
                     upstream_sink
-                        .send(tungstenite::Message::Close(None))
+                        .send(WsMessage::Close(None))
                         .await
                         .context("上游 WebSocket 发送失败")?;
                 }
             },
             message = upstream_stream.next(), if self.upstream_open => match message {
                 Some(Ok(message)) => {
-                    let closing = matches!(message, tungstenite::Message::Close(_));
+                    let closing = matches!(message, WsMessage::Close(_));
                     if let Some(message) = to_client(message) {
                         client_sink.send(message).await.context("客户端 WebSocket 发送失败")?;
                     }
@@ -400,34 +380,30 @@ impl Relay {
 }
 
 /// 客户端消息转上游：Ping/Pong 由协议层自动应答，不再由应用层转发。
-fn to_upstream(message: Message) -> Option<tungstenite::Message> {
+fn to_upstream(message: Message) -> Option<WsMessage> {
     match message {
-        Message::Text(text) => Some(tungstenite::Message::Text(text)),
-        Message::Binary(bytes) => Some(tungstenite::Message::Binary(bytes)),
-        Message::Close(frame) => Some(tungstenite::Message::Close(frame.map(|frame| {
-            tungstenite::protocol::CloseFrame {
-                code: tungstenite::protocol::frame::coding::CloseCode::from(frame.code),
-                reason: frame.reason,
-            }
+        Message::Text(text) => Some(WsMessage::text(text)),
+        Message::Binary(bytes) => Some(WsMessage::binary(bytes)),
+        Message::Close(frame) => Some(WsMessage::Close(frame.map(|frame| WsCloseFrame {
+            code: wreq::ws::message::CloseCode::from(frame.code),
+            reason: frame.reason.to_string().into(),
         }))),
         Message::Ping(_) | Message::Pong(_) => None,
     }
 }
 
-/// 上游消息转客户端：`Frame` 按 tungstenite 建议忽略。
-fn to_client(message: tungstenite::Message) -> Option<Message> {
+/// 上游消息转客户端：控制帧由协议层处理，不进应用层转发。
+fn to_client(message: WsMessage) -> Option<Message> {
     match message {
-        tungstenite::Message::Text(text) => Some(Message::Text(text)),
-        tungstenite::Message::Binary(bytes) => Some(Message::Binary(bytes)),
-        tungstenite::Message::Close(frame) => Some(Message::Close(frame.map(|frame| {
+        WsMessage::Text(text) => Some(Message::Text(text.to_string())),
+        WsMessage::Binary(bytes) => Some(Message::Binary(bytes.to_vec())),
+        WsMessage::Close(frame) => Some(Message::Close(frame.map(|frame| {
             axum::extract::ws::CloseFrame {
                 code: frame.code.into(),
-                reason: frame.reason,
+                reason: frame.reason.to_string().into(),
             }
         }))),
-        tungstenite::Message::Ping(_)
-        | tungstenite::Message::Pong(_)
-        | tungstenite::Message::Frame(_) => None,
+        WsMessage::Ping(_) | WsMessage::Pong(_) => None,
     }
 }
 
@@ -464,21 +440,24 @@ mod tests {
             let mut socket = tokio_tungstenite::accept_async(stream).await.unwrap();
             while let Some(message) = socket.next().await {
                 let message = message.unwrap();
-                let closing = matches!(message, tungstenite::Message::Close(_));
+                let closing = matches!(message, tokio_tungstenite::tungstenite::Message::Close(_));
                 match message {
-                    tungstenite::Message::Text(text) => {
+                    tokio_tungstenite::tungstenite::Message::Text(text) => {
                         seen.lock().unwrap().push(format!("text:{text}"));
-                        socket.send(tungstenite::Message::Text(text)).await.unwrap();
+                        socket
+                            .send(tokio_tungstenite::tungstenite::Message::Text(text))
+                            .await
+                            .unwrap();
                     }
-                    tungstenite::Message::Binary(bytes) => {
+                    tokio_tungstenite::tungstenite::Message::Binary(bytes) => {
                         seen.lock().unwrap().push(format!("binary:{}", bytes.len()));
                         socket
-                            .send(tungstenite::Message::Binary(bytes))
+                            .send(tokio_tungstenite::tungstenite::Message::Binary(bytes))
                             .await
                             .unwrap();
                     }
                     // 关闭帧由协议层自动回帧，这里记录后 flush 出去即可。
-                    tungstenite::Message::Close(_) => {}
+                    tokio_tungstenite::tungstenite::Message::Close(_) => {}
                     _ => {}
                 }
                 if closing {
@@ -493,13 +472,15 @@ mod tests {
 
     /// 桥接侧：只做升级，桥接本体指向给定的回环目标。
     async fn bridge_endpoint(target: url::Url) -> (String, tokio::task::JoinHandle<()>) {
+        let client = identity::client_builder().build().unwrap();
         let router = Router::new().route(
             "/bridge",
             get(move |ws: WebSocketUpgrade| {
                 let target = target.clone();
+                let client = client.clone();
                 async move {
                     let headers = HeaderMap::new();
-                    match connect(&target, headers).await {
+                    match connect(&client, &target, headers).await {
                         Ok((upstream, _)) => ws
                             .on_upgrade(move |client| async move {
                                 let _ = pump(client, upstream, None).await;
@@ -532,19 +513,23 @@ mod tests {
                 .await
                 .unwrap();
         client
-            .send(tungstenite::Message::Text("hello".into()))
+            .send(tokio_tungstenite::tungstenite::Message::Text("hello".into()))
             .await
             .unwrap();
         assert_eq!(
             client.next().await.unwrap().unwrap(),
-            tungstenite::Message::Text("hello".into())
+            tokio_tungstenite::tungstenite::Message::Text("hello".into())
         );
         client
-            .send(tungstenite::Message::Binary(vec![1, 2, 3]))
+            .send(tokio_tungstenite::tungstenite::Message::Binary(
+                vec![1, 2, 3].into(),
+            ))
             .await
             .unwrap();
         match client.next().await.unwrap().unwrap() {
-            tungstenite::Message::Binary(bytes) => assert_eq!(bytes, vec![1, 2, 3]),
+            tokio_tungstenite::tungstenite::Message::Binary(bytes) => {
+                assert_eq!(&bytes[..], &[1, 2, 3])
+            }
             other => panic!("二进制必须原样回显：{other:?}"),
         }
         // 客户端关闭帧必须转交上游，上游的关闭回帧也要回到客户端。

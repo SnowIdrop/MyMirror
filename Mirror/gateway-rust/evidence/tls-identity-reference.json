@@ -1,0 +1,97 @@
+{
+  "probe": "tls-identity-reference",
+  "date": "2026-09-24",
+  "purpose": "缺口 5 传输身份统一：把候选自己的 ClientHello 归一化指纹与真 Chromium 直连采集的指纹逐字段对照。",
+  "candidate": {
+    "source": "source/tests/identity_fingerprint.rs（本地裸 TCP 监听抓 wreq/btls 出网 ClientHello）",
+    "profile": "wreq_util Profile::Chrome146 + Platform::Linux，headers(false)，声称版本 146.0.7680.177",
+    "capture_target": "https://127.0.0.1:{port}/（IP 字面量，因此不发 SNI）",
+    "normalized_sha256": "01425d3fe0c24e404839d678bca29b881e52bcd05b37efdc795aac02f703c3cb",
+    "fingerprint": {
+      "legacy_version": "0303",
+      "session_id_bytes": 32,
+      "cipher_suites_sorted": [
+        "002f", "0035", "009c", "009d", "1301", "1302", "1303",
+        "c013", "c014", "c02b", "c02c", "c02f", "c030", "cca8", "cca9"
+      ],
+      "grease_cipher_suites": 1,
+      "grease_extensions": 2,
+      "compression_methods": ["00"],
+      "extension_types_sorted": [
+        "0005", "000a", "000b", "000d", "0010", "0012", "0017", "001b",
+        "0023", "002b", "002d", "0033", "44cd", "fe0d", "ff01"
+      ],
+      "alpn": ["h2", "http/1.1"],
+      "supported_groups": ["11ec", "001d", "0017", "0018"],
+      "key_share_groups": ["11ec", "001d"],
+      "signature_algorithms": ["0403", "0804", "0401", "0503", "0805", "0501", "0806", "0601"],
+      "supported_versions": ["0304", "0303"],
+      "has_sni": false,
+      "has_status_request": true,
+      "has_sct": true,
+      "has_certificate_compression": true,
+      "has_alps": true,
+      "has_encrypted_client_hello": true
+    }
+  },
+  "reference": {
+    "source": "probe/probe_tls_identity.py（Playwright channel=chromium 直连本机回环监听，未完成握手）",
+    "browser_version": "151.0.7922.34",
+    "local_evidence": "probe/evidence/tls-identity-20260924-150907.json（该目录已 gitignore）",
+    "capture_target": "https://127.0.0.1:{port}/（与候选同形，IP 字面量不发 SNI）",
+    "fingerprint": {
+      "legacy_version": "0303",
+      "session_id_bytes": 32,
+      "cipher_suites_sorted": [
+        "002f", "0035", "009c", "009d", "1301", "1302", "1303",
+        "c013", "c014", "c02b", "c02c", "c02f", "c030", "cca8", "cca9"
+      ],
+      "grease_cipher_suites": 1,
+      "grease_extensions": 2,
+      "compression_methods": ["00"],
+      "extension_types_sorted": [
+        "0005", "000a", "000b", "000d", "0010", "0012", "0017", "001b",
+        "0023", "002b", "002d", "0033", "44cd", "fe0d", "ff01"
+      ],
+      "alpn": ["h2", "http/1.1"],
+      "supported_groups": ["11ec", "001d", "0017", "0018"],
+      "key_share_groups": ["11ec", "001d"],
+      "signature_algorithms": [
+        "0904", "0905", "0906", "0403", "0804", "0401", "0503", "0805", "0501", "0806", "0601"
+      ],
+      "supported_versions": ["0304", "0303"],
+      "has_sni": false,
+      "has_status_request": true,
+      "has_sct": true,
+      "has_certificate_compression": true,
+      "has_alps": true,
+      "has_encrypted_client_hello": true
+    },
+    "hostname_capture": {
+      "note": "同一探针用 https://localhost:{port}/ 复采一次；除 SNI 出现外，其余字段与 IP 采集一致。",
+      "has_sni": true
+    }
+  },
+  "diff": [
+    {
+      "field": "signature_algorithms",
+      "candidate": "缺少 0904/0905/0906（ML-DSA-44/65/87）",
+      "reference": "前三个签名算法为 0904/0905/0906",
+      "classification": "版本差异：对照浏览器为 Chromium 151，候选按 wreq-util 的 Chrome146 画像；Chrome 146 当时是否发送 ML-DSA 未取得证据",
+      "impact": "签名算法集合是 JA3/JA4 类指纹的组成部分；候选与 151 不同，但与自身声称的 146 自洽"
+    }
+  ],
+  "not_compared": [
+    {
+      "item": "HTTP/2 SETTINGS 顺序与伪头顺序",
+      "reason": "两侧监听端都没有完成 TLS 握手（无测试证书），因此都没有产生 H2 首帧；H2 层取值来自 wreq-util 画像的 http2_options，本轮未独立复采",
+      "status": "残余差异，登记在 COMPATIBILITY.md"
+    },
+    {
+      "item": "SSH/TLS 之外的出口 IP",
+      "reason": "候选部署在 AWS 机房，对照浏览器在本机家用网络",
+      "status": "残余风险，指纹统一不解决按 IP 段的风控"
+    }
+  ],
+  "conclusion": "除签名算法里的 ML-DSA 三项（版本差异）与本轮未复采的 H2 首帧外，候选 ClientHello 在 legacy_version、会话 id 长度、密码套件、压缩方法、扩展集合、ALPN、支持组、密钥共享组、TLS1.3、GREASE 位置上与真 Chromium 完全一致。"
+}

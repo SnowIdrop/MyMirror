@@ -68,10 +68,6 @@ use std::net::{IpAddr, SocketAddr};
 /// 请求体上限（与父 `forward` 一致）。
 const MAX_BODY: usize = 16 * 1024 * 1024;
 
-/// 上游默认 User-Agent（原版对 django 与 chat 上游一致强制覆盖，见 p1-me-client-headers、
-/// p1-cfg-client-cookie-ua：客户端 UA 均被替换）。
-pub(super) const DEFAULT_USER_AGENT: &str = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36";
-
 /// 已取得原版成功观测、允许放行的 chat 读取路径（`/backend-api/conversations`
 /// 与其余 `/backend-api/*` 一样走 ACL 集合过滤，不再是独立分支）。
 const ME_PATH: &str = "/backend-api/me";
@@ -421,7 +417,7 @@ async fn chat_forward(app: Shared, request: Request, session: &Session) -> Resul
     })
 }
 
-fn is_html(upstream: &reqwest::Response) -> bool {
+fn is_html(upstream: &wreq::Response) -> bool {
     upstream
         .headers()
         .get("content-type")
@@ -441,6 +437,9 @@ async fn django_forward(
     base.set_query(parts.uri.query());
     let data = to_bytes(body, MAX_BODY).await.context("请求体读取失败")?;
     let mut headers = strip_request_hop_by_hop(&parts.headers)?;
+    // Django 侧保留原版观测的固定 UA（`p1-me-client-headers`：上游 Django 见到的
+    // UA 与 chat 上游一致），但不叠加 chat 身份组——这是自己的服务，不是指纹面。
+    headers.insert("user-agent", HeaderValue::from_static(identity::USER_AGENT));
     if let Some(ip) = client_ip {
         headers.insert(
             "x-chatgpt-mirror-client-ip",
@@ -496,30 +495,27 @@ pub(super) struct ChatAuth {
     /// 与 `rust_credential_binding` 绑定的原文保持一致。
     pub(super) cookies: Vec<(String, String)>,
     /// 账号的 SessionToken（`gateway_sessions.session_token`）：上游要的是
-    /// [`SESSION_COOKIE`]，由 [`session_cookie_group`] 合成。匿名会话恒为 None。
+    /// [`SESSION_COOKIE`]，由 [`session_cookie_group`] 按同一规则合成
+    /// （管理端的无会话调用传入号池行的同名值）。匿名会话恒为 None。
     pub(super) session_token: Option<String>,
     /// 上游 cookie jar（原版 `db::SupplementalCookie` 同形的 9 字段条目）：
     /// 会话凭据 + 捕获到的上游 cookie（含设备标识 `oai-did`）。见
     /// server/upstream_cookies.rs。匿名会话恒为空。
     pub(super) jar: Vec<upstream_cookies::Cookie>,
     pub(super) anonymous: bool,
-    client: reqwest::Client,
+    client: wreq::Client,
 }
 
 /// 合成会话 Cookie 组（原版 `append_session_cookies` + `supplemental_has_next_auth_cookie`）：
 /// 只在本次请求**确实不会**发出同名 Cookie 时才补。`cookies` 与 `jar` 覆盖发送侧的
 /// 全部来源，因此管理员导入过会话态（`extra_cookies` 或号池行里已有该 Cookie）时
-/// 不会被合成的值顶掉。
+/// 不会被合成的值顶掉。HTTP 会话、WS 握手与 ACL 管理端清单共用这一份合成规则。
 pub(super) fn session_cookie_group(
-    auth: &ChatAuth,
+    session_token: Option<&str>,
     cookies: &[(String, String)],
     jar: &[(String, String)],
 ) -> Vec<(String, String)> {
-    let Some(token) = auth
-        .session_token
-        .as_deref()
-        .filter(|value| !value.is_empty())
-    else {
+    let Some(token) = session_token.filter(|value| !value.is_empty()) else {
         return Vec::new();
     };
     let already_sent = cookies
@@ -612,33 +608,40 @@ pub(super) async fn refresh_auth_session(
             mode,
         )
     };
+    // 网关自发的刷新链：同样按浏览器 XHR 形状发头（API 基线），
+    // 因此上游可能压缩应答，解析前必须按 content-encoding 解压。
+    let accounts_url = app
+        .config
+        .upstream
+        .join("/backend-api/accounts/check/v4-2023-04-27")?;
     let accounts = send_chat(
         app,
         session,
         Method::GET,
-        HeaderMap::new(),
-        app.config
-            .upstream
-            .join("/backend-api/accounts/check/v4-2023-04-27")?,
+        identity::api_baseline(&accounts_url, &Method::GET)?,
+        accounts_url,
         Bytes::new(),
         &mut auth,
     )
     .await?;
     // A failed plan lookup still refreshes me and displays free (observed fixture).
     let plan = if accounts.status().is_success() {
-        let raw = to_bytes(upstream_parts(accounts).2, MAX_BODY).await?;
-        let value: Value = serde_json::from_slice(&raw)?;
+        let (_, headers, body) = upstream_parts(accounts);
+        let raw = to_bytes(body, MAX_BODY).await?;
+        let plain = compression::decode_buffered(&headers, &raw)?;
+        let value: Value = serde_json::from_slice(&plain)?;
         value["accounts"]["default"]["account"]["plan_type"]
             .as_str().filter(|plan| !plan.is_empty()).unwrap_or("free").to_owned()
     } else {
         "free".to_owned()
     };
+    let me_url = app.config.upstream.join(ME_PATH)?;
     let user = send_chat(
         app,
         session,
         Method::GET,
-        HeaderMap::new(),
-        app.config.upstream.join(ME_PATH)?,
+        identity::api_baseline(&me_url, &Method::GET)?,
+        me_url,
         Bytes::new(),
         &mut auth,
     )
@@ -738,8 +741,8 @@ pub(super) fn chat_origin(base: &url::Url) -> Result<String> {
     Ok(format!("{}://{}", base.scheme(), host))
 }
 
-/// 请求头预处理：逐跳头 + `connection` 命名头 + 凭据头 + 客户端代理链 IP 头移除，
-/// UA/accept 按观测补齐。
+/// 请求头预处理：逐跳头 + `connection` 命名头 + 凭据头 + 客户端代理链 IP 头移除。
+/// 身份整组覆盖由调用方在转发前用 [`identity::apply_identity`] 完成。
 fn strip_request_hop_by_hop(headers: &HeaderMap) -> Result<HeaderMap> {
     let connection_tokens: Vec<String> = headers
         .get_all("connection")
@@ -757,10 +760,6 @@ fn strip_request_hop_by_hop(headers: &HeaderMap) -> Result<HeaderMap> {
     }
     for token in connection_tokens {
         headers.remove(token.as_str());
-    }
-    headers.insert("user-agent", HeaderValue::from_static(DEFAULT_USER_AGENT));
-    if !headers.contains_key("accept") {
-        headers.insert("accept", HeaderValue::from_static("*/*"));
     }
     Ok(headers)
 }
@@ -807,7 +806,7 @@ async fn send_chat(
     base: url::Url,
     body: Bytes,
     auth: &mut ChatAuth,
-) -> Result<reqwest::Response> {
+) -> Result<wreq::Response> {
     let generation = app.cloudflare.generation().await;
     let response =
         send_chat_once(app, &method, &client_headers, &base, &body, auth, &auth.cookies).await?;
@@ -860,7 +859,7 @@ async fn send_chat_once(
     body: &Bytes,
     auth: &ChatAuth,
     cookies: &[(String, String)],
-) -> Result<reqwest::Response> {
+) -> Result<wreq::Response> {
     let mut headers = strip_request_hop_by_hop(client_headers)?;
     headers.remove("authorization");
     let origin = chat_origin(base)?;
@@ -872,7 +871,9 @@ async fn send_chat_once(
         "referer",
         HeaderValue::from_str(&format!("{origin}/")).context("referer 头无效")?,
     );
-    apply_chrome_146_identity(&mut headers);
+    // 身份整组覆盖：浏览器自带的 client hints 一律被固定身份替换，
+    // 避免上游同时看到「UA 说 Linux」与「提示说 Windows」。
+    identity::apply_identity(&mut headers);
     // 设备身份：原版 `send_upstream_request` 与 `build_upstream_auth_cookie_header` 都
     // 用服务端设备标识显式写 `oai-device-id` 头（该 cookie 本身也由 jar 回注，两者同值）。
     if let Some(value) = upstream_cookies::device_value(&auth.jar) {
@@ -889,7 +890,7 @@ async fn send_chat_once(
         app.cloudflare.cookies().await
     };
     let jar_pairs = upstream_cookies::pairs_for(&auth.jar, base);
-    let session = session_cookie_group(auth, cookies, jar_pairs.as_slice());
+    let session = session_cookie_group(auth.session_token.as_deref(), cookies, jar_pairs.as_slice());
     if let Some(cookie) = cloudflare::cookie_header(&[
         cookies,
         session.as_slice(),
@@ -908,32 +909,12 @@ async fn send_chat_once(
         );
     }
     auth.client
-        .request(method.clone(), base.clone())
+        .request(method.clone(), base.as_str())
         .headers(headers)
         .body(body.clone())
         .send()
         .await
         .context("上游请求失败")
-}
-
-/// 原版 Chrome146 网络身份（报告 08 §8.1 已确证字面量）：只补齐缺失的头，
-/// 不覆盖客户端已发送的值（`apply_chrome_146_network_identity` 为 try_insert 链路）。
-pub(super) fn apply_chrome_146_identity(headers: &mut HeaderMap) {
-    for (name, value) in [
-        ("sec-ch-ua", "\"Chromium\";v=\"146\", \"Not_A Brand\";v=\"99\""),
-        ("sec-ch-ua-full-version", "\"146.0.7680.177\""),
-        (
-            "sec-ch-ua-full-version-list",
-            "\"Chromium\";v=\"146.0.7680.177\", \"Not_A Brand\";v=\"99.0.0.0\"",
-        ),
-    ] {
-        if !headers.contains_key(name) {
-            headers.insert(
-                name,
-                HeaderValue::from_static(value),
-            );
-        }
-    }
 }
 
 /// 头处理完成后的 Django 转发发送步骤：附加 CF cookie（无账号凭据）。
@@ -944,7 +925,7 @@ async fn send_upstream_with_headers(
     base: url::Url,
     body: Bytes,
     credentials: Option<&ChatAuth>,
-) -> Result<reqwest::Response> {
+) -> Result<wreq::Response> {
     let cf = app.cloudflare.cookies().await;
     let session_cookies = credentials.map_or(&[][..], |value| value.cookies.as_slice());
     if let Some(cookie) = cloudflare::cookie_header(&[session_cookies, cf.as_slice()]) {
@@ -965,7 +946,7 @@ async fn send_upstream_with_headers(
     // uses the client captured with that exact token's egress binding.
     let client = credentials.map_or(&app.client, |value| &value.client);
     client
-        .request(method, base)
+        .request(method, base.as_str())
         .headers(headers)
         .body(body)
         .send()
@@ -974,7 +955,7 @@ async fn send_upstream_with_headers(
 }
 
 /// 流式回传（django 路径）：不复制 content-length，由 HTTP 栈分块。
-async fn stream_response(upstream: reqwest::Response) -> Result<Response> {
+async fn stream_response(upstream: wreq::Response) -> Result<Response> {
     let (status, headers, body) = upstream_parts(upstream);
     Ok(stream_body(status, headers, body))
 }
@@ -1004,7 +985,7 @@ fn empty_collection_response() -> Response {
 async fn buffered_response(
     app: &App,
     session: &Session,
-    upstream: reqwest::Response,
+    upstream: wreq::Response,
 ) -> Result<Response> {
     let (status, headers, body) = upstream_parts(upstream);
     let data = to_bytes(body, usize::MAX)
@@ -1097,7 +1078,7 @@ async fn inject_client_resource(
     Ok((insert_before_head_end(body, resource.as_bytes()), headers))
 }
 
-fn upstream_parts(upstream: reqwest::Response) -> (StatusCode, HeaderMap, Body) {
+fn upstream_parts(upstream: wreq::Response) -> (StatusCode, HeaderMap, Body) {
     let status = upstream.status();
     let mut headers = strip_response_hop_by_hop(upstream.headers());
     let body = Body::from_stream(upstream.bytes_stream().map_err(std::io::Error::other));
@@ -1235,6 +1216,7 @@ mod tests {
         );
         headers.insert("x-mirror-token", HeaderValue::from_static("secret"));
         headers.insert("accept-language", HeaderValue::from_static("zh-CN"));
+        headers.insert("user-agent", HeaderValue::from_static("foreign/1.0"));
         let filtered = strip_request_hop_by_hop(&headers).expect("过滤失败");
         assert!(!filtered.contains_key("x-conn-token"));
         assert!(!filtered.contains_key("cookie"));
@@ -1245,14 +1227,15 @@ mod tests {
             filtered.get("accept-language").map(|v| v.to_str().unwrap()),
             Some("zh-CN")
         );
+        // 过滤只负责去掉凭据与逐跳头；身份整组覆盖在 `send_chat_once` 里由
+        // [`identity::apply_identity`] 完成（该覆盖行为由 identity 的库内单测锁定）。
         assert_eq!(
             filtered.get("user-agent").map(|v| v.to_str().unwrap()),
-            Some(DEFAULT_USER_AGENT)
+            Some("foreign/1.0")
         );
-        assert_eq!(
-            filtered.get("accept").map(|v| v.to_str().unwrap()),
-            Some("*/*")
-        );
+        // 过滤是纯透传：不合成 `accept` 之类的默认头，缺省值由调用方决定
+        // （chat 路径转发浏览器真值，网关自发请求走 `identity::api_baseline`）。
+        assert!(!filtered.contains_key("accept"));
     }
 
     #[test]
