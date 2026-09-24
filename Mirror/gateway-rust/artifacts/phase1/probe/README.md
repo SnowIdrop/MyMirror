@@ -82,3 +82,27 @@ py -3 probe.py --allow-real-write   # 再补：恰好一次真实新建会话 + 
 
 另注意：`conversations` 的 `items`/`total` 是 ACL 过滤后的视图，**不能**用来判断账号里
 原本有多少会话。
+
+## 设备 Cookie 真实探针（`probe_device_cookie.py`，2026-09-24）
+
+验证「上游是否下发 `oai-did`」与「候选的捕获/播种是否对真实上游成立」。相对 `probe.py`：
+
+```powershell
+cd D:\Project\ReMirror\MiRebuild\Mirror\gateway-rust\artifacts\phase1\probe
+py -3 probe_device_cookie.py --scan-only            # 只读：页面/SDK/sentinel 引导扫描
+py -3 probe_device_cookie.py --scan-only --skip-seed # 只读：不播种，单独验证捕获
+py -3 probe_device_cookie.py --capture-first --allow-real-write  # 生产顺序 + 一次真实写入
+```
+
+差异与要点：
+
+- 用**文件**数据库，跑完以标准库 sqlite3 只读检查 `gateway_sessions.upstream_cookies` 的非空
+  行数（不解密、不取值），因此能直接观测「捕获是否发生」；探针记录该列的存在性与非空行数，
+  不改写数据库。
+- 记录每一跳响应 `set-cookie` 的**名字**（值不落盘），用于判断上游是否下发 `oai-did`。
+- 每个触及上游的请求之间随机停 8–12 秒，实际秒数记入证据的 `pauses`；
+  `--no-pause` 只用于本地调试（需自行保证不触真实上游）。
+- `--capture-first` 复现生产顺序：先让上游在页面/SDK 下发布设备 cookie，再发起写请求，
+  不发送伪造的设备标识。其余写边界与 `probe.py` 相同（恰好一次新建 + 一次删除）。
+
+结果见 [`../../evidence/device-cookie-real-001/SUMMARY.md`](../../evidence/device-cookie-real-001/SUMMARY.md)。

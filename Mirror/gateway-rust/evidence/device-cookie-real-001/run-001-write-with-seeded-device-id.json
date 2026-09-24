@@ -1,0 +1,220 @@
+{
+  "probe": "device-cookie-real-upstream",
+  "started_at": "2026-09-24T01:52:07.718546+00:00",
+  "token_file": "D:\\Project\\ReMirror\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\probe\\access-token.txt",
+  "access_token_sha256": "6d53634b405a1da638cb71bbc4b28dbb38c4638ac011fe29349b9ccdb21d2120",
+  "browser_device_id_sha256": "249d5bb40b0503e05472baf97e8c82fe90a2f6b49bd24e0be975a3f6294b00aa",
+  "gateway": {
+    "mode": "configured",
+    "binary": "D:\\Project\\ReMirror\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\target\\debug\\mirror-gateway.exe",
+    "database": "temp-file",
+    "chatgpt_base": "https://chatgpt.com",
+    "cdn_base": "https://cdn.oaistatic.com",
+    "cf_bypass_configured": false,
+    "request_timeout_secs": 60.0,
+    "real_write_allowed": true,
+    "pause_seconds_range": [
+      8.0,
+      12.0
+    ]
+  },
+  "steps": [
+    {
+      "status": 200,
+      "content_type": "application/json",
+      "body_bytes": 203,
+      "body_sha256": "370730f23063856a627627a96302ba7e4f3b43d1e6e29527190fabad8b3a3338",
+      "body_truncated": false,
+      "elapsed_ms": 993,
+      "html_like": false,
+      "upstream_blocked": false,
+      "json_top_keys": [
+        "chatgpt_username",
+        "login_mode",
+        "login_url",
+        "message"
+      ],
+      "set_cookie_names": [
+        "mirror_token",
+        "access_token",
+        "session_token",
+        "next-auth.session-token"
+      ],
+      "oai_did_set_cookie": false,
+      "label": "login:probe-alice",
+      "route": "/api/login",
+      "method": "POST"
+    },
+    {
+      "status": 200,
+      "content_type": "application/json",
+      "body_bytes": 1150,
+      "body_sha256": "c02fa0b6e0f780958004cbe3298f67da2fe887d4639db3523fad2fe511524256",
+      "body_truncated": false,
+      "elapsed_ms": 816,
+      "html_like": false,
+      "upstream_blocked": false,
+      "json_top_keys": [
+        "ads_segment_id",
+        "amr",
+        "chatgpt_eval_data",
+        "claimed_domain_org_id",
+        "client_id",
+        "country",
+        "created",
+        "email",
+        "email_domain_type",
+        "first_name",
+        "groups",
+        "has_payg_project_spend_limit",
+        "id",
+        "is_test_user",
+        "mfa_flag_enabled",
+        "name",
+        "object",
+        "orgs",
+        "phone_number",
+        "picture",
+        "region",
+        "region_code",
+        "signup_attribution",
+        "tenants"
+      ],
+      "set_cookie_names": [
+        "__oailb",
+        "__cf_bm",
+        "__cflb",
+        "_cfuvid"
+      ],
+      "oai_did_set_cookie": false,
+      "label": "me_without_device_id",
+      "route": "/backend-api/me",
+      "method": "GET"
+    },
+    {
+      "status": 200,
+      "content_type": "application/json",
+      "body_bytes": 1150,
+      "body_sha256": "c02fa0b6e0f780958004cbe3298f67da2fe887d4639db3523fad2fe511524256",
+      "body_truncated": false,
+      "elapsed_ms": 1376,
+      "html_like": false,
+      "upstream_blocked": false,
+      "json_top_keys": [
+        "ads_segment_id",
+        "amr",
+        "chatgpt_eval_data",
+        "claimed_domain_org_id",
+        "client_id",
+        "country",
+        "created",
+        "email",
+        "email_domain_type",
+        "first_name",
+        "groups",
+        "has_payg_project_spend_limit",
+        "id",
+        "is_test_user",
+        "mfa_flag_enabled",
+        "name",
+        "object",
+        "orgs",
+        "phone_number",
+        "picture",
+        "region",
+        "region_code",
+        "signup_attribution",
+        "tenants"
+      ],
+      "set_cookie_names": [
+        "__oailb",
+        "__cf_bm",
+        "__cflb",
+        "_cfuvid"
+      ],
+      "oai_did_set_cookie": false,
+      "label": "me_with_browser_device_id",
+      "route": "/backend-api/me",
+      "method": "GET",
+      "device_header_sent_sha256": "249d5bb40b0503e05472baf97e8c82fe90a2f6b49bd24e0be975a3f6294b00aa"
+    },
+    {
+      "status": 403,
+      "content_type": "application/json",
+      "body_bytes": 121,
+      "body_sha256": "6b915f10e5f96c176fe4f17ea52172b1c2f5f4cedea78400bd29a78e84f53c9a",
+      "body_truncated": false,
+      "elapsed_ms": 843,
+      "html_like": false,
+      "upstream_blocked": false,
+      "json_top_keys": [
+        "detail"
+      ],
+      "set_cookie_names": [
+        "__oailb",
+        "__cf_bm",
+        "__cflb",
+        "_cfuvid"
+      ],
+      "oai_did_set_cookie": false,
+      "label": "create_conversation",
+      "route": "/backend-api/f/conversation",
+      "method": "POST",
+      "request_field_names": [
+        "action",
+        "conversation_mode",
+        "history_and_training_disabled",
+        "messages",
+        "model",
+        "parent_message_id",
+        "timezone_offset_min"
+      ],
+      "conversation_id_found": false,
+      "device_header_sent_sha256": "249d5bb40b0503e05472baf97e8c82fe90a2f6b49bd24e0be975a3f6294b00aa"
+    }
+  ],
+  "pauses": [
+    {
+      "after": "login",
+      "seconds": 9.1
+    },
+    {
+      "after": "me_without_device_id",
+      "seconds": 10.6
+    },
+    {
+      "after": "me_with_browser_device_id",
+      "seconds": 10.1
+    }
+  ],
+  "db_snapshots": [
+    {
+      "readable": true,
+      "device_cookie_column": true,
+      "sessions": 1,
+      "sessions_with_device_cookie": 0,
+      "label": "after_me_without_device_id"
+    },
+    {
+      "readable": true,
+      "device_cookie_column": true,
+      "sessions": 1,
+      "sessions_with_device_cookie": 1,
+      "label": "after_browser_device_id"
+    },
+    {
+      "readable": true,
+      "device_cookie_column": true,
+      "sessions": 1,
+      "sessions_with_device_cookie": 1,
+      "label": "after_create_conversation"
+    }
+  ],
+  "notes": [
+    "上游未在该响应下发 oai-did：设备标识只能来自浏览器请求头。",
+    "新建会话未返回会话 id：不猜第二个端点、不重试；若上游已在账号里留下会话，请在网页端手动删除。"
+  ],
+  "authority_calls": 5,
+  "gateway_log_lines": 1,
+  "finished_at": "2026-09-24T01:52:42.470151+00:00"
+}

@@ -1,0 +1,242 @@
+{
+  "probe": "device-cookie-real-upstream",
+  "started_at": "2026-09-24T01:55:01.928035+00:00",
+  "token_file": "D:\\Project\\ReMirror\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\probe\\access-token.txt",
+  "access_token_sha256": "6d53634b405a1da638cb71bbc4b28dbb38c4638ac011fe29349b9ccdb21d2120",
+  "browser_device_id_sha256": "1e14e641284d2d4846d01d254ef3640efe9e131146feceece667e360d7660b42",
+  "gateway": {
+    "mode": "configured",
+    "binary": "D:\\Project\\ReMirror\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\target\\debug\\mirror-gateway.exe",
+    "database": "temp-file",
+    "chatgpt_base": "https://chatgpt.com",
+    "cdn_base": "https://cdn.oaistatic.com",
+    "cf_bypass_configured": false,
+    "request_timeout_secs": 60.0,
+    "real_write_allowed": false,
+    "pause_seconds_range": [
+      8.0,
+      12.0
+    ]
+  },
+  "steps": [
+    {
+      "status": 200,
+      "content_type": "application/json",
+      "body_bytes": 203,
+      "body_sha256": "1be148297374a662ce6e6aa377066307fa9cefaf01bba9d0ad1f8ff1ac527bc2",
+      "body_truncated": false,
+      "elapsed_ms": 715,
+      "html_like": false,
+      "upstream_blocked": false,
+      "json_top_keys": [
+        "chatgpt_username",
+        "login_mode",
+        "login_url",
+        "message"
+      ],
+      "set_cookie_names": [
+        "mirror_token",
+        "access_token",
+        "session_token",
+        "next-auth.session-token"
+      ],
+      "oai_did_set_cookie": false,
+      "label": "login:probe-alice",
+      "route": "/api/login",
+      "method": "POST"
+    },
+    {
+      "status": 200,
+      "content_type": "application/json",
+      "body_bytes": 1150,
+      "body_sha256": "c02fa0b6e0f780958004cbe3298f67da2fe887d4639db3523fad2fe511524256",
+      "body_truncated": false,
+      "elapsed_ms": 736,
+      "html_like": false,
+      "upstream_blocked": false,
+      "json_top_keys": [
+        "ads_segment_id",
+        "amr",
+        "chatgpt_eval_data",
+        "claimed_domain_org_id",
+        "client_id",
+        "country",
+        "created",
+        "email",
+        "email_domain_type",
+        "first_name",
+        "groups",
+        "has_payg_project_spend_limit",
+        "id",
+        "is_test_user",
+        "mfa_flag_enabled",
+        "name",
+        "object",
+        "orgs",
+        "phone_number",
+        "picture",
+        "region",
+        "region_code",
+        "signup_attribution",
+        "tenants"
+      ],
+      "set_cookie_names": [
+        "__oailb",
+        "__cf_bm",
+        "__cflb",
+        "_cfuvid"
+      ],
+      "oai_did_set_cookie": false,
+      "label": "me_without_device_id",
+      "route": "/backend-api/me",
+      "method": "GET"
+    },
+    {
+      "status": 502,
+      "content_type": "application/json",
+      "body_bytes": 32,
+      "body_sha256": "aecaa1935678e1f30512e1d71dd3079cfca867c5f5cec4c016e4948c30360a5c",
+      "body_truncated": false,
+      "elapsed_ms": 21040,
+      "html_like": false,
+      "upstream_blocked": false,
+      "json_top_keys": [
+        "message"
+      ],
+      "local_message": "上游请求失败",
+      "set_cookie_names": [],
+      "oai_did_set_cookie": false,
+      "label": "page_root",
+      "route": "/",
+      "method": "GET"
+    },
+    {
+      "status": 200,
+      "content_type": "text/html",
+      "body_bytes": 65536,
+      "body_sha256": "b2faba949fe9f2eee7395367cf6feeefe0a8dc2705ab10d237c038872249807f",
+      "body_truncated": true,
+      "elapsed_ms": 723,
+      "html_like": true,
+      "upstream_blocked": false,
+      "set_cookie_names": [
+        "__oailb",
+        "__cf_bm",
+        "__cflb"
+      ],
+      "oai_did_set_cookie": false,
+      "label": "sentinel_frame",
+      "route": "/backend-api/sentinel/frame.html",
+      "method": "GET"
+    },
+    {
+      "status": 200,
+      "content_type": "application/javascript",
+      "body_bytes": 33807,
+      "body_sha256": "2f71056be57b05df756862f594d22ae730a38e98885441f987a8fe64faffafae",
+      "body_truncated": false,
+      "elapsed_ms": 956,
+      "html_like": false,
+      "upstream_blocked": false,
+      "set_cookie_names": [
+        "oai-did",
+        "__oailb",
+        "__cf_bm",
+        "__cflb"
+      ],
+      "oai_did_set_cookie": true,
+      "label": "sentinel_sdk",
+      "route": "/sentinel/20260423af3c/sdk.js",
+      "method": "GET"
+    },
+    {
+      "status": 200,
+      "content_type": "application/json",
+      "body_bytes": 65536,
+      "body_sha256": "2852b670dc5085ac4617606e970f1cc0a588c9cc0c126a7924241d714d29a4bc",
+      "body_truncated": true,
+      "elapsed_ms": 954,
+      "html_like": false,
+      "upstream_blocked": false,
+      "set_cookie_names": [
+        "oai-sc",
+        "__oailb",
+        "__cf_bm",
+        "__cflb",
+        "_cfuvid"
+      ],
+      "oai_did_set_cookie": false,
+      "label": "chat_requirements_prepare",
+      "route": "/backend-api/sentinel/chat-requirements/prepare",
+      "method": "POST"
+    }
+  ],
+  "pauses": [
+    {
+      "after": "login",
+      "seconds": 9.2
+    },
+    {
+      "after": "scan:page_root",
+      "seconds": 10.7
+    },
+    {
+      "after": "scan:sentinel_frame",
+      "seconds": 9.2
+    },
+    {
+      "after": "scan:sentinel_sdk",
+      "seconds": 8.3
+    },
+    {
+      "after": "scan:chat_requirements_prepare",
+      "seconds": 9.2
+    }
+  ],
+  "db_snapshots": [
+    {
+      "readable": true,
+      "device_cookie_column": true,
+      "sessions": 1,
+      "sessions_with_device_cookie": 0,
+      "label": "after_me_without_device_id"
+    },
+    {
+      "readable": true,
+      "device_cookie_column": true,
+      "sessions": 1,
+      "sessions_with_device_cookie": 0,
+      "label": "after_scan:page_root"
+    },
+    {
+      "readable": true,
+      "device_cookie_column": true,
+      "sessions": 1,
+      "sessions_with_device_cookie": 0,
+      "label": "after_scan:sentinel_frame"
+    },
+    {
+      "readable": true,
+      "device_cookie_column": true,
+      "sessions": 1,
+      "sessions_with_device_cookie": 1,
+      "label": "after_scan:sentinel_sdk"
+    },
+    {
+      "readable": true,
+      "device_cookie_column": true,
+      "sessions": 1,
+      "sessions_with_device_cookie": 1,
+      "label": "after_scan:chat_requirements_prepare"
+    }
+  ],
+  "notes": [
+    "上游未在该响应下发 oai-did：设备标识只能来自浏览器请求头。",
+    "--skip-seed：未发送浏览器设备标识，设备 cookie 只能来自上游响应。",
+    "只读扫描命中 oai-did：真实上游确实下发该设备 cookie。",
+    "--scan-only：扫描完成，未发出任何写请求。"
+  ],
+  "authority_calls": 7,
+  "gateway_log_lines": 1,
+  "finished_at": "2026-09-24T01:56:14.529416+00:00"
+}
