@@ -106,3 +106,28 @@ py -3 probe_device_cookie.py --capture-first --allow-real-write  # 生产顺序 
   不发送伪造的设备标识。其余写边界与 `probe.py` 相同（恰好一次新建 + 一次删除）。
 
 结果见 [`../../evidence/device-cookie-real-001/SUMMARY.md`](../../evidence/device-cookie-real-001/SUMMARY.md)。
+
+## 浏览器驱动验收（`probe_browser_create.py`，2026-09-24）
+
+用真实 Chromium 经候选网关打开真实 chatgpt.com 页面，验证「页面能否进入登录态」与
+「浏览器能否完成一次真实新建会话」。需要一个本机 Playwright（本机为系统 Python 3.13
+的 Playwright 1.62 + `chromium-1234`；探针用 `channel="chromium"` 走完整 Chromium 的
+new headless，而不是 headless shell）。
+
+```powershell
+cd D:\Project\ReMirror\MiRebuild\Mirror\gateway-rust\artifacts\phase1\probe
+# 凭据草稿（本文件不入库）：access-token.txt 或 session-token.txt
+py -3 probe_browser_create.py --use-session-token            # 只读：加载页面并逐跳记录
+py -3 probe_browser_create.py --use-session-token --allow-real-write   # 真实新建一次并删除
+```
+
+差异与要点：
+
+- 复用 `probe.py` 的授权桩、网关进程管理与登录流程；网关库为 `:memory:`，无常驻改动。
+- 证据只落 method/路径/资源类型/头名/状态/content-type，以及 `content-type`、`accept`、
+  `accept-language`、`sec-ch-ua*` 这类不含凭据的头值；Cookie、`Authorization`、令牌、
+  响应正文与消息内容一律不落盘。会话 id 只落 sha256。
+- 登录交接（`/api/not-login`）会**轮换** mirror_token：删除步骤用交接后从浏览器
+  cookie 里取到的 token，用交接前的值会被判未登录（这正是首轮删除 401 的原因）。
+- 页面加载不需要 cfbypass：真实浏览器自带 `sec-ch-ua*`，`GET /` 直接 200。
+  `--session-token-as-extra-cookie` 可复现「管理面导入过会话 cookie」的账号形态。
