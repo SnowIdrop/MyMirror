@@ -1,0 +1,38 @@
+{
+  "probe": "reference-chrome146-identity",
+  "started_at": "2026-09-24T17:56:38+0800",
+  "script": "D:\\Project\\ReMirror\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\probe\\probe_reference_identity.py",
+  "stages": [
+    "clienthello",
+    "h2",
+    "headers"
+  ],
+  "evidence_directory": "D:\\Project\\ReMirror\\MiRebuild\\Mirror\\gateway-rust\\evidence\\reference-chrome146-001",
+  "chrome_executable": "C:\\Users\\peropero\\AppData\\Local\\Temp\\cft-146\\chrome-win64\\chrome.exe",
+  "chrome_file_version": "146.0.7680.165",
+  "chrome_exe_sha256": "aa024f5fe5d1f4b0bd860c452d68fa3aa719a791380387bd2edbdc4261fe6d67",
+  "chrome_zip_sha256": "65d1d4d993da8b24fc871f59f7c8100ffc3719afd58cbf843d81d6ada9bc9880",
+  "temp_directory": "C:\\Users\\peropero\\AppData\\Local\\Temp\\cft-146",
+  "notes": [
+    "三段全部只打本机回环，不接触任何上游。",
+    "浏览器是 Chrome for Testing 146（与候选声称的版本同版本），不是 Playwright 自带的 Chromium。",
+    "脚本不写死期望值：所有字段都是本次实测。",
+    "Windows 版 chrome.exe 的 `--version` 不回显版本，本脚本为此不启动该命令（实测见证据目录 SUMMARY.md）；版本以 VersionInfo 与 CDP Browser.getVersion 为准。"
+  ],
+  "browser_version": "146.0.7680.165",
+  "launch_args": [
+    "--ignore-certificate-errors"
+  ],
+  "context_options": {
+    "locale": "zh-CN",
+    "ignore_https_errors": true
+  },
+  "certificate": {
+    "openssl": "C:\\Program Files\\Git\\usr\\bin\\openssl.exe",
+    "command": null,
+    "reused_existing": true,
+    "fingerprint_sha256": "sha256 Fingerprint=57:4A:CD:8F:F9:CD:FB:F0:BC:E9:48:21:CD:E0:A6:FF:3D:50:AC:7E:99:55:A3:4E:AD:4A:E1:5C:5B:45:F3:7E",
+    "note": "证书与私钥只落临时目录，不入库、不进 evidence。"
+  },
+  "finished_at": "2026-09-24T17:56:47+0800"
+}

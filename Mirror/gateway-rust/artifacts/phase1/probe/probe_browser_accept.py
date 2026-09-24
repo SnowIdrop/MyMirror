@@ -57,6 +57,8 @@ def run_acceptance(
         "handoff_status": None,
         "page_title": None,
         "html_mentions_access_token": None,
+        # 页面 JS 可见面：必须与网络层声称的 Chrome146/Linux 一致（注入脚本负责）。
+        "identity": None,
         "composer_found": False,
         "create": None,
         "reply": None,
@@ -66,6 +68,7 @@ def run_acceptance(
         "delete": None,
         "websockets": [],
         "console_errors": 0,
+        "console_error_samples": [],
         "notes": [],
     }
     conversation_id: str | None = None
@@ -112,6 +115,15 @@ def run_acceptance(
         def on_console(message) -> None:
             if message.type == "error":
                 result["console_errors"] += 1
+                # 采样前几条，用于判断错误是否由注入的身份覆盖脚本引入；
+                # 只留消息文本（URL/资源名可能含会话 id，截断处理）。
+                if len(result["console_error_samples"]) < 10:
+                    text = (message.text or "")[:300]
+                    location = getattr(message, "location", None) or {}
+                    result["console_error_samples"].append({
+                        "text": text,
+                        "url": (location.get("url") or "")[:200],
+                    })
 
         def on_websocket(socket) -> None:
             entry = {
@@ -182,6 +194,37 @@ def run_acceptance(
             result["html_mentions_access_token"] = "accessToken" in page.content()
         except Exception as cause:
             result["notes"].append(f"读取页面 HTML 失败：{type(cause).__name__}")
+        # 页面 JS 身份：与网关固定的 Chrome146/Linux 对照。只读值，不含凭据。
+        try:
+            result["identity"] = page.evaluate(
+                """async () => {
+                    const data = navigator.userAgentData;
+                    const high = data && data.getHighEntropyValues
+                        ? await data.getHighEntropyValues([
+                            'architecture', 'bitness', 'fullVersion', 'fullVersionList',
+                            'model', 'platformVersion'])
+                        : {};
+                    return {
+                        user_agent: navigator.userAgent,
+                        platform: navigator.platform,
+                        language: navigator.language,
+                        languages: navigator.languages,
+                        brands: data ? data.brands : null,
+                        mobile: data ? data.mobile : null,
+                        ua_data_platform: data ? data.platform : null,
+                        architecture: high.architecture ?? null,
+                        bitness: high.bitness ?? null,
+                        full_version: high.fullVersion ?? null,
+                        full_version_list: high.fullVersionList ?? null,
+                        model: high.model ?? null,
+                        platform_version: high.platformVersion ?? null,
+                        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                        timezone_offset: new Date().getTimezoneOffset(),
+                    };
+                }"""
+            )
+        except Exception as cause:
+            result["notes"].append(f"读取页面 JS 身份失败：{type(cause).__name__}")
 
         composer = page.locator("#prompt-textarea, div[contenteditable='true']").first
         result["composer_found"] = composer.count() > 0
@@ -575,6 +618,18 @@ def finish(evidence: dict, args: argparse.Namespace) -> int:
     network = evidence.get("network") or {}
     print("\n真实浏览器验收结果")
     print(f"  页面标题={network.get('page_title')!r} 首屏含 accessToken={network.get('html_mentions_access_token')}")
+    identity = network.get("identity") or {}
+    brand_text = ",".join(
+        f"{item.get('brand')}/{item.get('version')}" for item in (identity.get("brands") or [])
+    )
+    print(
+        "  页面 JS 身份="
+        f"UA={identity.get('user_agent')!r} platform={identity.get('platform')!r} "
+        f"brands=[{brand_text}] arch={identity.get('architecture')!r} "
+        f"bitness={identity.get('bitness')!r} fullVersion={identity.get('full_version')!r} "
+        f"platformVersion={identity.get('platform_version')!r} "
+        f"timezone={identity.get('timezone')!r}"
+    )
     print(f"  创建={json.dumps(network.get('create'), ensure_ascii=False)}")
     print(f"  流式回复={json.dumps(network.get('reply'), ensure_ascii=False)}")
     print(f"  停止生成={json.dumps(network.get('stop'), ensure_ascii=False)}")

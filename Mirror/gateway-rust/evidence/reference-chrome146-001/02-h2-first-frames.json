@@ -1,0 +1,362 @@
+{
+  "stage": "h2",
+  "browser_version": "146.0.7680.165",
+  "capture": {
+    "url": "https://localhost:61650/",
+    "navigation_error": "Page.goto: net::ERR_CONNECTION_RESET at https://localhost:61650/",
+    "port": 61650,
+    "alpn": "h2",
+    "tls_version": "TLSv1.3",
+    "cipher": "TLS_AES_256_GCM_SHA384",
+    "bytes_received": 513,
+    "preface_ok": true,
+    "preface_text": "PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n",
+    "trailing_bytes_hex": "",
+    "frames": [
+      {
+        "type": "SETTINGS",
+        "type_hex": "04",
+        "flags": "00",
+        "flags_names": [],
+        "stream_id": 0,
+        "length": 24,
+        "payload_hex": "000100010000000200000000000400600000000600040000",
+        "settings": [
+          {
+            "id": "0001",
+            "name": "HEADER_TABLE_SIZE",
+            "value": 65536
+          },
+          {
+            "id": "0002",
+            "name": "ENABLE_PUSH",
+            "value": 0
+          },
+          {
+            "id": "0004",
+            "name": "INITIAL_WINDOW_SIZE",
+            "value": 6291456
+          },
+          {
+            "id": "0006",
+            "name": "MAX_HEADER_LIST_SIZE",
+            "value": 262144
+          }
+        ]
+      },
+      {
+        "type": "WINDOW_UPDATE",
+        "type_hex": "08",
+        "flags": "00",
+        "flags_names": [],
+        "stream_id": 0,
+        "length": 4,
+        "increment": 15663105
+      },
+      {
+        "type": "HEADERS",
+        "type_hex": "01",
+        "flags": "25",
+        "flags_names": [
+          "END_STREAM",
+          "END_HEADERS",
+          "PRIORITY"
+        ],
+        "stream_id": 1,
+        "length": 434,
+        "priority": {
+          "exclusive": true,
+          "stream_dependency": 0,
+          "weight": 255
+        },
+        "continuation_lengths": [],
+        "header_block_hex": "82418ba0e41d139d09b8e05c6c1f878440874148b1275ad1ffa3fe749d2b42bddb07549fcfdf783f9135fcfd29fcde9ec3d26b69fe7efbc1fc85a73f9f408b4148b1275ad1ad49e33505023f30408d4148b1275ad1ad5d034ca7b29f88fe791aa90fe11fcf4092b6b9ac1c8558d520a4b6c2ad617b5a54251f01317adbd07f66a281b0dae053fae46aa43f8429a77a8102e0fb5391aa71afb53cb8d7f6a435d74179163cc64b0db2eaecb8a7f59b1efd19fe94a0dd4aa62293a9ffb5319472505422f4f61e92b0169c5c0b817029b8728ec330db2eaecb9f51057a682d434e53e5497ca589d34d1f43aeba0c41a4c7a98f33a69a3fdf9a68fa1d75d0620d263d4c79a68fbed00177fe8d48e62b03ee697e8d48e62b1e0b1d7f46a4731581d754df5f2c7cfdf6800bbdf43aeba0c41a4c7a9841a6a8b22c5f249c754c5fbef046cfdf6800bbbf408a4148b4a549275906497f83a8f517408a4148b4a549275a93c85f86a87dcd30d25f408a4148b4a549275ad416cf023f31408a4148b4a549275a42a13f8690e4b692d49f50929bd9abfa5242cb40d25fa523b3e94f684c9f4086aec31ec327d785b6007d286f",
+        "hpack": {
+          "fields": [
+            {
+              "ordinal": 1,
+              "mode": "indexed",
+              "name_index": 2,
+              "name": ":method",
+              "name_note": null,
+              "value": "GET",
+              "value_decoded": true
+            },
+            {
+              "ordinal": 2,
+              "mode": "literal_incremental_indexing",
+              "name_index": 1,
+              "name": ":authority",
+              "name_note": null,
+              "name_raw_hex": null,
+              "value": null,
+              "value_raw_hex": "a0e41d139d09b8e05c6c1f",
+              "value_decoded": false
+            },
+            {
+              "ordinal": 3,
+              "mode": "indexed",
+              "name_index": 7,
+              "name": ":scheme",
+              "name_note": null,
+              "value": "https",
+              "value_decoded": true
+            },
+            {
+              "ordinal": 4,
+              "mode": "indexed",
+              "name_index": 4,
+              "name": ":path",
+              "name_note": null,
+              "value": "/",
+              "value_decoded": true
+            },
+            {
+              "ordinal": 5,
+              "mode": "literal_incremental_indexing",
+              "name_index": 0,
+              "name": null,
+              "name_note": "未解码（字面名 4148b1275ad1ff）",
+              "name_raw_hex": "4148b1275ad1ff",
+              "value": null,
+              "value_raw_hex": "fe749d2b42bddb07549fcfdf783f9135fcfd29fcde9ec3d26b69fe7efbc1fc85a73f9f",
+              "value_decoded": false
+            },
+            {
+              "ordinal": 6,
+              "mode": "literal_incremental_indexing",
+              "name_index": 0,
+              "name": null,
+              "name_note": "未解码（字面名 4148b1275ad1ad49e33505）",
+              "name_raw_hex": "4148b1275ad1ad49e33505",
+              "value": "?0",
+              "value_raw_hex": "3f30",
+              "value_decoded": true
+            },
+            {
+              "ordinal": 7,
+              "mode": "literal_incremental_indexing",
+              "name_index": 0,
+              "name": null,
+              "name_note": "未解码（字面名 4148b1275ad1ad5d034ca7b29f）",
+              "name_raw_hex": "4148b1275ad1ad5d034ca7b29f",
+              "value": null,
+              "value_raw_hex": "fe791aa90fe11fcf",
+              "value_decoded": false
+            },
+            {
+              "ordinal": 8,
+              "mode": "literal_incremental_indexing",
+              "name_index": 0,
+              "name": null,
+              "name_note": "未解码（字面名 b6b9ac1c8558d520a4b6c2ad617b5a54251f）",
+              "name_raw_hex": "b6b9ac1c8558d520a4b6c2ad617b5a54251f",
+              "value": "1",
+              "value_raw_hex": "31",
+              "value_decoded": true
+            },
+            {
+              "ordinal": 9,
+              "mode": "literal_incremental_indexing",
+              "name_index": 58,
+              "name": "user-agent",
+              "name_note": null,
+              "name_raw_hex": null,
+              "value": null,
+              "value_raw_hex": "d07f66a281b0dae053fae46aa43f8429a77a8102e0fb5391aa71afb53cb8d7f6a435d74179163cc64b0db2eaecb8a7f59b1efd19fe94a0dd4aa62293a9ffb5319472505422f4f61e92b0169c5c0b817029b8728ec330db2eaecb9f",
+              "value_decoded": false
+            },
+            {
+              "ordinal": 10,
+              "mode": "literal_incremental_indexing",
+              "name_index": 17,
+              "name": "accept-language",
+              "name_note": null,
+              "name_raw_hex": null,
+              "value": "zh-CN",
+              "value_raw_hex": "7a682d434e",
+              "value_decoded": true
+            },
+            {
+              "ordinal": 11,
+              "mode": "literal_incremental_indexing",
+              "name_index": 19,
+              "name": "accept",
+              "name_note": null,
+              "name_raw_hex": null,
+              "value": null,
+              "value_raw_hex": "497ca589d34d1f43aeba0c41a4c7a98f33a69a3fdf9a68fa1d75d0620d263d4c79a68fbed00177fe8d48e62b03ee697e8d48e62b1e0b1d7f46a4731581d754df5f2c7cfdf6800bbdf43aeba0c41a4c7a9841a6a8b22c5f249c754c5fbef046cfdf6800bbbf",
+              "value_decoded": false
+            },
+            {
+              "ordinal": 12,
+              "mode": "literal_incremental_indexing",
+              "name_index": 0,
+              "name": null,
+              "name_note": "未解码（字面名 4148b4a549275906497f）",
+              "name_raw_hex": "4148b4a549275906497f",
+              "value": null,
+              "value_raw_hex": "a8f517",
+              "value_decoded": false
+            },
+            {
+              "ordinal": 13,
+              "mode": "literal_incremental_indexing",
+              "name_index": 0,
+              "name": null,
+              "name_note": "未解码（字面名 4148b4a549275a93c85f）",
+              "name_raw_hex": "4148b4a549275a93c85f",
+              "value": null,
+              "value_raw_hex": "a87dcd30d25f",
+              "value_decoded": false
+            },
+            {
+              "ordinal": 14,
+              "mode": "literal_incremental_indexing",
+              "name_index": 0,
+              "name": null,
+              "name_note": "未解码（字面名 4148b4a549275ad416cf）",
+              "name_raw_hex": "4148b4a549275ad416cf",
+              "value": "?1",
+              "value_raw_hex": "3f31",
+              "value_decoded": true
+            },
+            {
+              "ordinal": 15,
+              "mode": "literal_incremental_indexing",
+              "name_index": 0,
+              "name": null,
+              "name_note": "未解码（字面名 4148b4a549275a42a13f）",
+              "name_raw_hex": "4148b4a549275a42a13f",
+              "value": null,
+              "value_raw_hex": "90e4b692d49f",
+              "value_decoded": false
+            },
+            {
+              "ordinal": 16,
+              "mode": "literal_incremental_indexing",
+              "name_index": 16,
+              "name": "accept-encoding",
+              "name_note": null,
+              "name_raw_hex": null,
+              "value": null,
+              "value_raw_hex": "9bd9abfa5242cb40d25fa523b3e94f684c9f",
+              "value_decoded": false
+            },
+            {
+              "ordinal": 17,
+              "mode": "literal_incremental_indexing",
+              "name_index": 0,
+              "name": null,
+              "name_note": "未解码（字面名 aec31ec327d7）",
+              "name_raw_hex": "aec31ec327d7",
+              "value": null,
+              "value_raw_hex": "b6007d286f",
+              "value_decoded": false
+            }
+          ],
+          "events": []
+        },
+        "header_name_order": [
+          ":method",
+          ":authority",
+          ":scheme",
+          ":path",
+          "未解码",
+          "未解码",
+          "未解码",
+          "未解码",
+          "user-agent",
+          "accept-language",
+          "accept",
+          "未解码",
+          "未解码",
+          "未解码",
+          "未解码",
+          "accept-encoding",
+          "未解码"
+        ],
+        "pseudo_header_order": [
+          ":method",
+          ":authority",
+          ":scheme",
+          ":path"
+        ]
+      }
+    ],
+    "frame_type_sequence": [
+      "SETTINGS",
+      "WINDOW_UPDATE",
+      "HEADERS"
+    ],
+    "settings_id_sequence": [
+      "0001",
+      "0002",
+      "0004",
+      "0006"
+    ],
+    "settings_pairs": [
+      {
+        "id": "0001",
+        "name": "HEADER_TABLE_SIZE",
+        "value": 65536
+      },
+      {
+        "id": "0002",
+        "name": "ENABLE_PUSH",
+        "value": 0
+      },
+      {
+        "id": "0004",
+        "name": "INITIAL_WINDOW_SIZE",
+        "value": 6291456
+      },
+      {
+        "id": "0006",
+        "name": "MAX_HEADER_LIST_SIZE",
+        "value": 262144
+      }
+    ],
+    "window_update": {
+      "stream_id": 0,
+      "increment": 15663105
+    },
+    "first_headers": {
+      "stream_id": 1,
+      "flags_names": [
+        "END_STREAM",
+        "END_HEADERS",
+        "PRIORITY"
+      ],
+      "pseudo_header_order": [
+        ":method",
+        ":authority",
+        ":scheme",
+        ":path"
+      ],
+      "header_name_order": [
+        ":method",
+        ":authority",
+        ":scheme",
+        ":path",
+        "未解码",
+        "未解码",
+        "未解码",
+        "未解码",
+        "user-agent",
+        "accept-language",
+        "accept",
+        "未解码",
+        "未解码",
+        "未解码",
+        "未解码",
+        "accept-encoding",
+        "未解码"
+      ]
+    }
+  },
+  "notes": [
+    "本地 TLS 服务只协商 h2，完成握手后读客户端首批帧，随后主动关闭连接。",
+    "HPACK 只按静态表索引判名字；Huffman 编码的值与字面名如实标注未解码，不猜。"
+  ]
+}

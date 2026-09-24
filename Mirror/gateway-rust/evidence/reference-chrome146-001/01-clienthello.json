@@ -1,0 +1,493 @@
+{
+  "stage": "clienthello",
+  "browser_version": "146.0.7680.165",
+  "captures": [
+    {
+      "hostname": "127.0.0.1",
+      "url": "https://127.0.0.1:57037/",
+      "navigation_error": "Page.goto: net::ERR_CONNECTION_REFUSED at https://127.0.0.1:57037/",
+      "handshake_bytes": 1696,
+      "raw": {
+        "legacy_version": "0303",
+        "session_id_hex": "037398aab21047e7067ea38f6825bf114887361cc7f5bf1eed59354b0369ed7e",
+        "session_id_bytes": 32,
+        "cipher_suites": [
+          "6a6a",
+          "1301",
+          "1302",
+          "1303",
+          "c02b",
+          "c02f",
+          "c02c",
+          "c030",
+          "cca9",
+          "cca8",
+          "c013",
+          "c014",
+          "009c",
+          "009d",
+          "002f",
+          "0035"
+        ],
+        "grease_cipher_suites": 1,
+        "compression_methods": [
+          "00"
+        ],
+        "extensions": [
+          {
+            "type": "2a2a",
+            "length": 0,
+            "grease": true
+          },
+          {
+            "type": "0010",
+            "length": 14,
+            "grease": false
+          },
+          {
+            "type": "0012",
+            "length": 0,
+            "grease": false
+          },
+          {
+            "type": "0005",
+            "length": 5,
+            "grease": false
+          },
+          {
+            "type": "0017",
+            "length": 0,
+            "grease": false
+          },
+          {
+            "type": "001b",
+            "length": 3,
+            "grease": false
+          },
+          {
+            "type": "ff01",
+            "length": 1,
+            "grease": false
+          },
+          {
+            "type": "fe0d",
+            "length": 186,
+            "grease": false
+          },
+          {
+            "type": "000a",
+            "length": 12,
+            "grease": false
+          },
+          {
+            "type": "000d",
+            "length": 18,
+            "grease": false
+          },
+          {
+            "type": "0023",
+            "length": 0,
+            "grease": false
+          },
+          {
+            "type": "0033",
+            "length": 1263,
+            "grease": false
+          },
+          {
+            "type": "000b",
+            "length": 2,
+            "grease": false
+          },
+          {
+            "type": "002d",
+            "length": 2,
+            "grease": false
+          },
+          {
+            "type": "002b",
+            "length": 7,
+            "grease": false
+          },
+          {
+            "type": "44cd",
+            "length": 5,
+            "grease": false
+          },
+          {
+            "type": "fafa",
+            "length": 1,
+            "grease": true
+          }
+        ],
+        "grease_extensions": 2,
+        "alpn": [
+          "h2",
+          "http/1.1"
+        ],
+        "supported_groups": [
+          "fafa",
+          "11ec",
+          "001d",
+          "0017",
+          "0018"
+        ],
+        "key_share_groups": [
+          "fafa",
+          "11ec",
+          "001d"
+        ],
+        "signature_algorithms": [
+          "0403",
+          "0804",
+          "0401",
+          "0503",
+          "0805",
+          "0501",
+          "0806",
+          "0601"
+        ],
+        "supported_versions": [
+          "9a9a",
+          "0304",
+          "0303"
+        ],
+        "sni_host": null,
+        "has_sni": false,
+        "has_status_request": true,
+        "has_sct": true,
+        "has_certificate_compression": true,
+        "has_alps": true,
+        "has_encrypted_client_hello": true
+      },
+      "rust_normalized": {
+        "legacy_version": "0303",
+        "session_id_bytes": 32,
+        "cipher_suites_sorted": [
+          "002f",
+          "0035",
+          "009c",
+          "009d",
+          "1301",
+          "1302",
+          "1303",
+          "c013",
+          "c014",
+          "c02b",
+          "c02c",
+          "c02f",
+          "c030",
+          "cca8",
+          "cca9"
+        ],
+        "grease_cipher_suites": 1,
+        "grease_extensions": 2,
+        "compression_methods": [
+          "00"
+        ],
+        "extension_types_sorted": [
+          "0005",
+          "000a",
+          "000b",
+          "000d",
+          "0010",
+          "0012",
+          "0017",
+          "001b",
+          "0023",
+          "002b",
+          "002d",
+          "0033",
+          "44cd",
+          "fe0d",
+          "ff01"
+        ],
+        "alpn": [
+          "h2",
+          "http/1.1"
+        ],
+        "supported_groups": [
+          "11ec",
+          "001d",
+          "0017",
+          "0018"
+        ],
+        "key_share_groups": [
+          "11ec",
+          "001d"
+        ],
+        "signature_algorithms": [
+          "0403",
+          "0804",
+          "0401",
+          "0503",
+          "0805",
+          "0501",
+          "0806",
+          "0601"
+        ],
+        "supported_versions": [
+          "0304",
+          "0303"
+        ],
+        "has_sni": false,
+        "has_status_request": true,
+        "has_sct": true,
+        "has_certificate_compression": true,
+        "has_alps": true,
+        "has_encrypted_client_hello": true
+      },
+      "rust_normalized_sha256": "01425d3fe0c24e404839d678bca29b881e52bcd05b37efdc795aac02f703c3cb",
+      "rust_normalized_json": "{\"alpn\":[\"h2\",\"http/1.1\"],\"cipher_suites_sorted\":[\"002f\",\"0035\",\"009c\",\"009d\",\"1301\",\"1302\",\"1303\",\"c013\",\"c014\",\"c02b\",\"c02c\",\"c02f\",\"c030\",\"cca8\",\"cca9\"],\"compression_methods\":[\"00\"],\"extension_types_sorted\":[\"0005\",\"000a\",\"000b\",\"000d\",\"0010\",\"0012\",\"0017\",\"001b\",\"0023\",\"002b\",\"002d\",\"0033\",\"44cd\",\"fe0d\",\"ff01\"],\"grease_cipher_suites\":1,\"grease_extensions\":2,\"has_alps\":true,\"has_certificate_compression\":true,\"has_encrypted_client_hello\":true,\"has_sct\":true,\"has_sni\":false,\"has_status_request\":true,\"key_share_groups\":[\"11ec\",\"001d\"],\"legacy_version\":\"0303\",\"session_id_bytes\":32,\"signature_algorithms\":[\"0403\",\"0804\",\"0401\",\"0503\",\"0805\",\"0501\",\"0806\",\"0601\"],\"supported_groups\":[\"11ec\",\"001d\",\"0017\",\"0018\"],\"supported_versions\":[\"0304\",\"0303\"]}"
+    },
+    {
+      "hostname": "localhost",
+      "url": "https://localhost:50250/",
+      "navigation_error": "Page.goto: net::ERR_CONNECTION_REFUSED at https://localhost:50250/",
+      "handshake_bytes": 1810,
+      "raw": {
+        "legacy_version": "0303",
+        "session_id_hex": "afb2b9e69470c5b36915af80a986ee9beffa89a3efd8edfc52b36dc41fa8dc9c",
+        "session_id_bytes": 32,
+        "cipher_suites": [
+          "0a0a",
+          "1301",
+          "1302",
+          "1303",
+          "c02b",
+          "c02f",
+          "c02c",
+          "c030",
+          "cca9",
+          "cca8",
+          "c013",
+          "c014",
+          "009c",
+          "009d",
+          "002f",
+          "0035"
+        ],
+        "grease_cipher_suites": 1,
+        "compression_methods": [
+          "00"
+        ],
+        "extensions": [
+          {
+            "type": "4a4a",
+            "length": 0,
+            "grease": true
+          },
+          {
+            "type": "000b",
+            "length": 2,
+            "grease": false
+          },
+          {
+            "type": "002b",
+            "length": 7,
+            "grease": false
+          },
+          {
+            "type": "0005",
+            "length": 5,
+            "grease": false
+          },
+          {
+            "type": "fe0d",
+            "length": 282,
+            "grease": false
+          },
+          {
+            "type": "001b",
+            "length": 3,
+            "grease": false
+          },
+          {
+            "type": "0017",
+            "length": 0,
+            "grease": false
+          },
+          {
+            "type": "000a",
+            "length": 12,
+            "grease": false
+          },
+          {
+            "type": "0012",
+            "length": 0,
+            "grease": false
+          },
+          {
+            "type": "0010",
+            "length": 14,
+            "grease": false
+          },
+          {
+            "type": "0023",
+            "length": 0,
+            "grease": false
+          },
+          {
+            "type": "0000",
+            "length": 14,
+            "grease": false
+          },
+          {
+            "type": "0033",
+            "length": 1263,
+            "grease": false
+          },
+          {
+            "type": "000d",
+            "length": 18,
+            "grease": false
+          },
+          {
+            "type": "002d",
+            "length": 2,
+            "grease": false
+          },
+          {
+            "type": "ff01",
+            "length": 1,
+            "grease": false
+          },
+          {
+            "type": "44cd",
+            "length": 5,
+            "grease": false
+          },
+          {
+            "type": "3a3a",
+            "length": 1,
+            "grease": true
+          }
+        ],
+        "grease_extensions": 2,
+        "alpn": [
+          "h2",
+          "http/1.1"
+        ],
+        "supported_groups": [
+          "dada",
+          "11ec",
+          "001d",
+          "0017",
+          "0018"
+        ],
+        "key_share_groups": [
+          "dada",
+          "11ec",
+          "001d"
+        ],
+        "signature_algorithms": [
+          "0403",
+          "0804",
+          "0401",
+          "0503",
+          "0805",
+          "0501",
+          "0806",
+          "0601"
+        ],
+        "supported_versions": [
+          "baba",
+          "0304",
+          "0303"
+        ],
+        "sni_host": "localhost",
+        "has_sni": true,
+        "has_status_request": true,
+        "has_sct": true,
+        "has_certificate_compression": true,
+        "has_alps": true,
+        "has_encrypted_client_hello": true
+      },
+      "rust_normalized": {
+        "legacy_version": "0303",
+        "session_id_bytes": 32,
+        "cipher_suites_sorted": [
+          "002f",
+          "0035",
+          "009c",
+          "009d",
+          "1301",
+          "1302",
+          "1303",
+          "c013",
+          "c014",
+          "c02b",
+          "c02c",
+          "c02f",
+          "c030",
+          "cca8",
+          "cca9"
+        ],
+        "grease_cipher_suites": 1,
+        "grease_extensions": 2,
+        "compression_methods": [
+          "00"
+        ],
+        "extension_types_sorted": [
+          "0000",
+          "0005",
+          "000a",
+          "000b",
+          "000d",
+          "0010",
+          "0012",
+          "0017",
+          "001b",
+          "0023",
+          "002b",
+          "002d",
+          "0033",
+          "44cd",
+          "fe0d",
+          "ff01"
+        ],
+        "alpn": [
+          "h2",
+          "http/1.1"
+        ],
+        "supported_groups": [
+          "11ec",
+          "001d",
+          "0017",
+          "0018"
+        ],
+        "key_share_groups": [
+          "11ec",
+          "001d"
+        ],
+        "signature_algorithms": [
+          "0403",
+          "0804",
+          "0401",
+          "0503",
+          "0805",
+          "0501",
+          "0806",
+          "0601"
+        ],
+        "supported_versions": [
+          "0304",
+          "0303"
+        ],
+        "has_sni": true,
+        "has_status_request": true,
+        "has_sct": true,
+        "has_certificate_compression": true,
+        "has_alps": true,
+        "has_encrypted_client_hello": true
+      },
+      "rust_normalized_sha256": "502b55cca23185a72501e8a77f40741e54b0af48a2c08dd59c50c987e24e40ec",
+      "rust_normalized_json": "{\"alpn\":[\"h2\",\"http/1.1\"],\"cipher_suites_sorted\":[\"002f\",\"0035\",\"009c\",\"009d\",\"1301\",\"1302\",\"1303\",\"c013\",\"c014\",\"c02b\",\"c02c\",\"c02f\",\"c030\",\"cca8\",\"cca9\"],\"compression_methods\":[\"00\"],\"extension_types_sorted\":[\"0000\",\"0005\",\"000a\",\"000b\",\"000d\",\"0010\",\"0012\",\"0017\",\"001b\",\"0023\",\"002b\",\"002d\",\"0033\",\"44cd\",\"fe0d\",\"ff01\"],\"grease_cipher_suites\":1,\"grease_extensions\":2,\"has_alps\":true,\"has_certificate_compression\":true,\"has_encrypted_client_hello\":true,\"has_sct\":true,\"has_sni\":true,\"has_status_request\":true,\"key_share_groups\":[\"11ec\",\"001d\"],\"legacy_version\":\"0303\",\"session_id_bytes\":32,\"signature_algorithms\":[\"0403\",\"0804\",\"0401\",\"0503\",\"0805\",\"0501\",\"0806\",\"0601\"],\"supported_groups\":[\"11ec\",\"001d\",\"0017\",\"0018\"],\"supported_versions\":[\"0304\",\"0303\"]}"
+    }
+  ],
+  "notes": [
+    "监听端只读 ClientHello、不完成握手：不接触上游、不产生 HTTP 层数据。",
+    "raw 段保留密码套件与扩展的原始顺序（含 GREASE 位置）；rust_normalized 段与 source/tests/identity_fingerprint.rs 的归一化逐字段一致。",
+    "rust_normalized_sha256 是对 rust_normalized 按 serde_json 的键名排序紧凑序列化后的 sha256，可与该测试的 EXPECTED_FINGERPRINT_SHA256 直接对照。"
+  ]
+}

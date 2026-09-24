@@ -1,0 +1,81 @@
+{
+  "probe": "browser-websocket-handshake-headers",
+  "date": "2026-09-24",
+  "browser": "Playwright 自带 Chromium（channel=chromium）",
+  "capture": "本机回环 ws:// 服务端记录的握手头（值经脱敏）",
+  "source_evidence": "ws-headers-20260924-174908.json",
+  "requests": [
+    {
+      "request_line": "GET /ws HTTP/1.1",
+      "header_names": [
+        "host",
+        "connection",
+        "pragma",
+        "cache-control",
+        "user-agent",
+        "accept-language",
+        "upgrade",
+        "origin",
+        "sec-websocket-version",
+        "accept-encoding",
+        "sec-websocket-key",
+        "sec-websocket-extensions"
+      ],
+      "headers": [
+        [
+          "host",
+          "127.0.0.1:58301"
+        ],
+        [
+          "connection",
+          "Upgrade"
+        ],
+        [
+          "pragma",
+          "no-cache"
+        ],
+        [
+          "cache-control",
+          "no-cache"
+        ],
+        [
+          "user-agent",
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36"
+        ],
+        [
+          "accept-language",
+          "zh-CN"
+        ],
+        [
+          "upgrade",
+          "websocket"
+        ],
+        [
+          "origin",
+          "http://127.0.0.1:58301"
+        ],
+        [
+          "sec-websocket-version",
+          "13"
+        ],
+        [
+          "accept-encoding",
+          "gzip, deflate, br, zstd"
+        ],
+        [
+          "sec-websocket-key",
+          "<per-connection-random>"
+        ],
+        [
+          "sec-websocket-extensions",
+          "permessage-deflate; client_max_window_bits"
+        ]
+      ]
+    }
+  ],
+  "notes": [
+    "服务端在 101 之前记录浏览器真实发出的握手头，顺序为收到的原始顺序。",
+    "`sec-websocket-key` 是每次握手随机的一次性值，已替换为占位符；其余值原样保留。",
+    "空白页 + 同源 new WebSocket 触发，无登录、无 Cookie、无真实上游。"
+  ]
+}

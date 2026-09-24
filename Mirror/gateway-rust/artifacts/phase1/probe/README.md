@@ -194,3 +194,39 @@ py -3 probe_browser_chatgpt_headers.py
 本机结果：首页 403，只取到 Cloudflare 挑战页自身的请求（带 `priority: u=1, i`、
 `sec-fetch-dest: script/empty`），据此判断 `priority` 依请求的优先级类别而变，候选只在浏览器
 转发路径上原样透传。
+
+## Chrome146 版本匹配参照（`probe_reference_identity.py`，2026-09-24）
+
+用 Chrome for Testing **146.0.7680.165**（与本候选声称的 146 同大版本）做三段采集：裸 TCP 抓
+ClientHello（无 SNI/有 SNI 各一条，保留套件与扩展的**原始顺序**）、本地自签 TLS + ALPN `h2`
+抓 HTTP/2 首帧（SETTINGS 顺序、窗口增量、伪头顺序）、本地 HTTP + `Accept-CH` 抓同源 XHR 的
+完整头顺序。全部只打本机回环。
+
+```powershell
+$tmp = "$env:TEMP\cft-146"
+curl.exe -L --fail -o "$tmp\chrome-win64.zip" `
+  "https://storage.googleapis.com/chrome-for-testing-public/146.0.7680.165/win64/chrome-win64.zip"
+Expand-Archive -LiteralPath "$tmp\chrome-win64.zip" -DestinationPath $tmp -Force
+py -3 probe_reference_identity.py --chrome "$tmp\chrome-win64\chrome.exe" `
+  --openssl "C:\Program Files\Git\usr\bin\openssl.exe" `
+  --evidence ..\..\evidence\reference-chrome146-001
+```
+
+结果与结论见 [`evidence/reference-chrome146-001/SUMMARY.md`](../../evidence/reference-chrome146-001/SUMMARY.md)：
+ClientHello 归一化 sha256 与候选逐位相同、H2 SETTINGS/窗口/伪头顺序一致、同源 XHR 头顺序与
+`identity::REQUEST_HEADER_ORDER` 逐项一致。Windows 实测 `sec-ch-ua-platform-version = "15.0.0"`；
+Linux 侧取值待 WSL 复采。二进制不入库。
+
+## WebSocket 握手头采集（`probe_browser_ws_headers.py`，2026-09-24）
+
+起一个本机回环 WS 服务（只读 ClientHello 级的握手头，回一帧关闭帧即断开），用真 Chromium 发起
+同源 `new WebSocket`，在**服务端**记录浏览器实际发送的握手头与顺序。
+
+```powershell
+py -3 probe_browser_ws_headers.py
+```
+
+实测顺序：`host, connection, pragma, cache-control, user-agent, accept-language, upgrade,
+origin, sec-websocket-version, accept-encoding, sec-websocket-key, sec-websocket-extensions`。
+入库副本见 [`evidence/ws-handshake-headers-001.json`](../../evidence/ws-handshake-headers-001.json)
+（一次性 `sec-websocket-key` 已占位），`chat_ws` 的转发名单由库内单测对照该文件锁定。

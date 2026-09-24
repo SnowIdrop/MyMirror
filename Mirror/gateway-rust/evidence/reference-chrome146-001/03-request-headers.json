@@ -1,0 +1,615 @@
+{
+  "stage": "headers",
+  "browser_version": "146.0.7680.165",
+  "accept_ch": "sec-ch-ua-arch, sec-ch-ua-bitness, sec-ch-ua-full-version, sec-ch-ua-full-version-list, sec-ch-ua-model, sec-ch-ua-platform-version",
+  "variants": [
+    {
+      "url": "http://localhost:57135/",
+      "scheme": "http",
+      "page_result": {
+        "get": 200,
+        "post": 200
+      },
+      "page_error": null,
+      "fallback_reason": null,
+      "requests": [
+        {
+          "request_line": "GET / HTTP/1.1",
+          "method": "GET",
+          "target": "/",
+          "http_version": "HTTP/1.1",
+          "headers": [
+            {
+              "name": "Host",
+              "value": "localhost:57135"
+            },
+            {
+              "name": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "name": "sec-ch-ua",
+              "value": "\"Not-A.Brand\";v=\"24\", \"Chromium\";v=\"146\""
+            },
+            {
+              "name": "sec-ch-ua-mobile",
+              "value": "?0"
+            },
+            {
+              "name": "sec-ch-ua-platform",
+              "value": "\"Windows\""
+            },
+            {
+              "name": "Upgrade-Insecure-Requests",
+              "value": "1"
+            },
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/146.0.0.0 Safari/537.36"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "zh-CN"
+            },
+            {
+              "name": "Accept",
+              "value": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
+            },
+            {
+              "name": "Sec-Fetch-Site",
+              "value": "none"
+            },
+            {
+              "name": "Sec-Fetch-Mode",
+              "value": "navigate"
+            },
+            {
+              "name": "Sec-Fetch-User",
+              "value": "?1"
+            },
+            {
+              "name": "Sec-Fetch-Dest",
+              "value": "document"
+            },
+            {
+              "name": "Accept-Encoding",
+              "value": "gzip, deflate, br, zstd"
+            }
+          ],
+          "header_name_order": [
+            "Host",
+            "Connection",
+            "sec-ch-ua",
+            "sec-ch-ua-mobile",
+            "sec-ch-ua-platform",
+            "Upgrade-Insecure-Requests",
+            "User-Agent",
+            "Accept-Language",
+            "Accept",
+            "Sec-Fetch-Site",
+            "Sec-Fetch-Mode",
+            "Sec-Fetch-User",
+            "Sec-Fetch-Dest",
+            "Accept-Encoding"
+          ],
+          "credential_headers_present": [],
+          "body_bytes": 0,
+          "scheme": "http"
+        },
+        {
+          "request_line": "GET /favicon.ico HTTP/1.1",
+          "method": "GET",
+          "target": "/favicon.ico",
+          "http_version": "HTTP/1.1",
+          "headers": [
+            {
+              "name": "Host",
+              "value": "localhost:57135"
+            },
+            {
+              "name": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "name": "sec-ch-ua-full-version-list",
+              "value": "\"Not-A.Brand\";v=\"24.0.0.0\", \"Chromium\";v=\"146.0.7680.165\""
+            },
+            {
+              "name": "sec-ch-ua-platform",
+              "value": "\"Windows\""
+            },
+            {
+              "name": "Accept-Language",
+              "value": "zh-CN"
+            },
+            {
+              "name": "sec-ch-ua",
+              "value": "\"Not-A.Brand\";v=\"24\", \"Chromium\";v=\"146\""
+            },
+            {
+              "name": "sec-ch-ua-bitness",
+              "value": "\"64\""
+            },
+            {
+              "name": "sec-ch-ua-model",
+              "value": "\"\""
+            },
+            {
+              "name": "sec-ch-ua-mobile",
+              "value": "?0"
+            },
+            {
+              "name": "sec-ch-ua-arch",
+              "value": "\"x86\""
+            },
+            {
+              "name": "sec-ch-ua-full-version",
+              "value": "\"146.0.7680.165\""
+            },
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/146.0.0.0 Safari/537.36"
+            },
+            {
+              "name": "sec-ch-ua-platform-version",
+              "value": "\"15.0.0\""
+            },
+            {
+              "name": "Accept",
+              "value": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8"
+            },
+            {
+              "name": "Sec-Fetch-Site",
+              "value": "same-origin"
+            },
+            {
+              "name": "Sec-Fetch-Mode",
+              "value": "no-cors"
+            },
+            {
+              "name": "Sec-Fetch-Dest",
+              "value": "image"
+            },
+            {
+              "name": "Referer",
+              "value": "http://localhost:57135/"
+            },
+            {
+              "name": "Accept-Encoding",
+              "value": "gzip, deflate, br, zstd"
+            }
+          ],
+          "header_name_order": [
+            "Host",
+            "Connection",
+            "sec-ch-ua-full-version-list",
+            "sec-ch-ua-platform",
+            "Accept-Language",
+            "sec-ch-ua",
+            "sec-ch-ua-bitness",
+            "sec-ch-ua-model",
+            "sec-ch-ua-mobile",
+            "sec-ch-ua-arch",
+            "sec-ch-ua-full-version",
+            "User-Agent",
+            "sec-ch-ua-platform-version",
+            "Accept",
+            "Sec-Fetch-Site",
+            "Sec-Fetch-Mode",
+            "Sec-Fetch-Dest",
+            "Referer",
+            "Accept-Encoding"
+          ],
+          "credential_headers_present": [],
+          "body_bytes": 0,
+          "scheme": "http"
+        },
+        {
+          "request_line": "GET /probe-get HTTP/1.1",
+          "method": "GET",
+          "target": "/probe-get",
+          "http_version": "HTTP/1.1",
+          "headers": [
+            {
+              "name": "Host",
+              "value": "localhost:57135"
+            },
+            {
+              "name": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "name": "sec-ch-ua-full-version-list",
+              "value": "\"Not-A.Brand\";v=\"24.0.0.0\", \"Chromium\";v=\"146.0.7680.165\""
+            },
+            {
+              "name": "sec-ch-ua-platform",
+              "value": "\"Windows\""
+            },
+            {
+              "name": "Accept-Language",
+              "value": "zh-CN"
+            },
+            {
+              "name": "sec-ch-ua",
+              "value": "\"Not-A.Brand\";v=\"24\", \"Chromium\";v=\"146\""
+            },
+            {
+              "name": "sec-ch-ua-bitness",
+              "value": "\"64\""
+            },
+            {
+              "name": "sec-ch-ua-model",
+              "value": "\"\""
+            },
+            {
+              "name": "sec-ch-ua-mobile",
+              "value": "?0"
+            },
+            {
+              "name": "sec-ch-ua-arch",
+              "value": "\"x86\""
+            },
+            {
+              "name": "sec-ch-ua-full-version",
+              "value": "\"146.0.7680.165\""
+            },
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/146.0.0.0 Safari/537.36"
+            },
+            {
+              "name": "sec-ch-ua-platform-version",
+              "value": "\"15.0.0\""
+            },
+            {
+              "name": "Accept",
+              "value": "*/*"
+            },
+            {
+              "name": "Sec-Fetch-Site",
+              "value": "same-origin"
+            },
+            {
+              "name": "Sec-Fetch-Mode",
+              "value": "cors"
+            },
+            {
+              "name": "Sec-Fetch-Dest",
+              "value": "empty"
+            },
+            {
+              "name": "Referer",
+              "value": "http://localhost:57135/"
+            },
+            {
+              "name": "Accept-Encoding",
+              "value": "gzip, deflate, br, zstd"
+            }
+          ],
+          "header_name_order": [
+            "Host",
+            "Connection",
+            "sec-ch-ua-full-version-list",
+            "sec-ch-ua-platform",
+            "Accept-Language",
+            "sec-ch-ua",
+            "sec-ch-ua-bitness",
+            "sec-ch-ua-model",
+            "sec-ch-ua-mobile",
+            "sec-ch-ua-arch",
+            "sec-ch-ua-full-version",
+            "User-Agent",
+            "sec-ch-ua-platform-version",
+            "Accept",
+            "Sec-Fetch-Site",
+            "Sec-Fetch-Mode",
+            "Sec-Fetch-Dest",
+            "Referer",
+            "Accept-Encoding"
+          ],
+          "credential_headers_present": [],
+          "body_bytes": 0,
+          "scheme": "http"
+        },
+        {
+          "request_line": "POST /probe-post HTTP/1.1",
+          "method": "POST",
+          "target": "/probe-post",
+          "http_version": "HTTP/1.1",
+          "headers": [
+            {
+              "name": "Host",
+              "value": "localhost:57135"
+            },
+            {
+              "name": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "name": "Content-Length",
+              "value": "21"
+            },
+            {
+              "name": "sec-ch-ua-full-version-list",
+              "value": "\"Not-A.Brand\";v=\"24.0.0.0\", \"Chromium\";v=\"146.0.7680.165\""
+            },
+            {
+              "name": "sec-ch-ua-platform",
+              "value": "\"Windows\""
+            },
+            {
+              "name": "Accept-Language",
+              "value": "zh-CN"
+            },
+            {
+              "name": "sec-ch-ua",
+              "value": "\"Not-A.Brand\";v=\"24\", \"Chromium\";v=\"146\""
+            },
+            {
+              "name": "sec-ch-ua-bitness",
+              "value": "\"64\""
+            },
+            {
+              "name": "sec-ch-ua-model",
+              "value": "\"\""
+            },
+            {
+              "name": "sec-ch-ua-mobile",
+              "value": "?0"
+            },
+            {
+              "name": "sec-ch-ua-arch",
+              "value": "\"x86\""
+            },
+            {
+              "name": "sec-ch-ua-full-version",
+              "value": "\"146.0.7680.165\""
+            },
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/146.0.0.0 Safari/537.36"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "sec-ch-ua-platform-version",
+              "value": "\"15.0.0\""
+            },
+            {
+              "name": "Accept",
+              "value": "*/*"
+            },
+            {
+              "name": "Origin",
+              "value": "http://localhost:57135"
+            },
+            {
+              "name": "Sec-Fetch-Site",
+              "value": "same-origin"
+            },
+            {
+              "name": "Sec-Fetch-Mode",
+              "value": "cors"
+            },
+            {
+              "name": "Sec-Fetch-Dest",
+              "value": "empty"
+            },
+            {
+              "name": "Referer",
+              "value": "http://localhost:57135/"
+            },
+            {
+              "name": "Accept-Encoding",
+              "value": "gzip, deflate, br, zstd"
+            }
+          ],
+          "header_name_order": [
+            "Host",
+            "Connection",
+            "Content-Length",
+            "sec-ch-ua-full-version-list",
+            "sec-ch-ua-platform",
+            "Accept-Language",
+            "sec-ch-ua",
+            "sec-ch-ua-bitness",
+            "sec-ch-ua-model",
+            "sec-ch-ua-mobile",
+            "sec-ch-ua-arch",
+            "sec-ch-ua-full-version",
+            "User-Agent",
+            "content-type",
+            "sec-ch-ua-platform-version",
+            "Accept",
+            "Origin",
+            "Sec-Fetch-Site",
+            "Sec-Fetch-Mode",
+            "Sec-Fetch-Dest",
+            "Referer",
+            "Accept-Encoding"
+          ],
+          "credential_headers_present": [],
+          "body_bytes": 21,
+          "scheme": "http"
+        }
+      ],
+      "digest": [
+        {
+          "method": "GET",
+          "target": "/",
+          "header_name_order": [
+            "Host",
+            "Connection",
+            "sec-ch-ua",
+            "sec-ch-ua-mobile",
+            "sec-ch-ua-platform",
+            "Upgrade-Insecure-Requests",
+            "User-Agent",
+            "Accept-Language",
+            "Accept",
+            "Sec-Fetch-Site",
+            "Sec-Fetch-Mode",
+            "Sec-Fetch-User",
+            "Sec-Fetch-Dest",
+            "Accept-Encoding"
+          ],
+          "high_entropy_hints": {
+            "sec-ch-ua-platform-version": null,
+            "sec-ch-ua-arch": null,
+            "sec-ch-ua-bitness": null,
+            "sec-ch-ua-full-version": null,
+            "sec-ch-ua-full-version-list": null,
+            "sec-ch-ua-model": null
+          },
+          "client_hint_names": [
+            "sec-ch-ua",
+            "sec-ch-ua-mobile",
+            "sec-ch-ua-platform"
+          ]
+        },
+        {
+          "method": "GET",
+          "target": "/favicon.ico",
+          "header_name_order": [
+            "Host",
+            "Connection",
+            "sec-ch-ua-full-version-list",
+            "sec-ch-ua-platform",
+            "Accept-Language",
+            "sec-ch-ua",
+            "sec-ch-ua-bitness",
+            "sec-ch-ua-model",
+            "sec-ch-ua-mobile",
+            "sec-ch-ua-arch",
+            "sec-ch-ua-full-version",
+            "User-Agent",
+            "sec-ch-ua-platform-version",
+            "Accept",
+            "Sec-Fetch-Site",
+            "Sec-Fetch-Mode",
+            "Sec-Fetch-Dest",
+            "Referer",
+            "Accept-Encoding"
+          ],
+          "high_entropy_hints": {
+            "sec-ch-ua-platform-version": "\"15.0.0\"",
+            "sec-ch-ua-arch": "\"x86\"",
+            "sec-ch-ua-bitness": "\"64\"",
+            "sec-ch-ua-full-version": "\"146.0.7680.165\"",
+            "sec-ch-ua-full-version-list": "\"Not-A.Brand\";v=\"24.0.0.0\", \"Chromium\";v=\"146.0.7680.165\"",
+            "sec-ch-ua-model": "\"\""
+          },
+          "client_hint_names": [
+            "sec-ch-ua-full-version-list",
+            "sec-ch-ua-platform",
+            "sec-ch-ua",
+            "sec-ch-ua-bitness",
+            "sec-ch-ua-model",
+            "sec-ch-ua-mobile",
+            "sec-ch-ua-arch",
+            "sec-ch-ua-full-version",
+            "sec-ch-ua-platform-version"
+          ]
+        },
+        {
+          "method": "GET",
+          "target": "/probe-get",
+          "header_name_order": [
+            "Host",
+            "Connection",
+            "sec-ch-ua-full-version-list",
+            "sec-ch-ua-platform",
+            "Accept-Language",
+            "sec-ch-ua",
+            "sec-ch-ua-bitness",
+            "sec-ch-ua-model",
+            "sec-ch-ua-mobile",
+            "sec-ch-ua-arch",
+            "sec-ch-ua-full-version",
+            "User-Agent",
+            "sec-ch-ua-platform-version",
+            "Accept",
+            "Sec-Fetch-Site",
+            "Sec-Fetch-Mode",
+            "Sec-Fetch-Dest",
+            "Referer",
+            "Accept-Encoding"
+          ],
+          "high_entropy_hints": {
+            "sec-ch-ua-platform-version": "\"15.0.0\"",
+            "sec-ch-ua-arch": "\"x86\"",
+            "sec-ch-ua-bitness": "\"64\"",
+            "sec-ch-ua-full-version": "\"146.0.7680.165\"",
+            "sec-ch-ua-full-version-list": "\"Not-A.Brand\";v=\"24.0.0.0\", \"Chromium\";v=\"146.0.7680.165\"",
+            "sec-ch-ua-model": "\"\""
+          },
+          "client_hint_names": [
+            "sec-ch-ua-full-version-list",
+            "sec-ch-ua-platform",
+            "sec-ch-ua",
+            "sec-ch-ua-bitness",
+            "sec-ch-ua-model",
+            "sec-ch-ua-mobile",
+            "sec-ch-ua-arch",
+            "sec-ch-ua-full-version",
+            "sec-ch-ua-platform-version"
+          ]
+        },
+        {
+          "method": "POST",
+          "target": "/probe-post",
+          "header_name_order": [
+            "Host",
+            "Connection",
+            "Content-Length",
+            "sec-ch-ua-full-version-list",
+            "sec-ch-ua-platform",
+            "Accept-Language",
+            "sec-ch-ua",
+            "sec-ch-ua-bitness",
+            "sec-ch-ua-model",
+            "sec-ch-ua-mobile",
+            "sec-ch-ua-arch",
+            "sec-ch-ua-full-version",
+            "User-Agent",
+            "content-type",
+            "sec-ch-ua-platform-version",
+            "Accept",
+            "Origin",
+            "Sec-Fetch-Site",
+            "Sec-Fetch-Mode",
+            "Sec-Fetch-Dest",
+            "Referer",
+            "Accept-Encoding"
+          ],
+          "high_entropy_hints": {
+            "sec-ch-ua-platform-version": "\"15.0.0\"",
+            "sec-ch-ua-arch": "\"x86\"",
+            "sec-ch-ua-bitness": "\"64\"",
+            "sec-ch-ua-full-version": "\"146.0.7680.165\"",
+            "sec-ch-ua-full-version-list": "\"Not-A.Brand\";v=\"24.0.0.0\", \"Chromium\";v=\"146.0.7680.165\"",
+            "sec-ch-ua-model": "\"\""
+          },
+          "client_hint_names": [
+            "sec-ch-ua-full-version-list",
+            "sec-ch-ua-platform",
+            "sec-ch-ua",
+            "sec-ch-ua-bitness",
+            "sec-ch-ua-model",
+            "sec-ch-ua-mobile",
+            "sec-ch-ua-arch",
+            "sec-ch-ua-full-version",
+            "sec-ch-ua-platform-version"
+          ]
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "页面只做同源 fetch（GET 一次、POST 一次，POST 由页面显式设 content-type: application/json）。",
+    "头顺序是服务端按收到的原始字节记录的；证据里 Cookie/Authorization 只记名字不记值。"
+  ]
+}
