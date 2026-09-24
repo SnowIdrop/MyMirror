@@ -6,6 +6,15 @@
 
 本文件只登记范围、现状证据、依赖与验收要点。
 
+**2026-09-24 更新（三）：缺口 5 第二批已落地（跨层身份一致性）。** 在第一批「网关内部自洽」
+之上，把 JS 可见面、WS 握手、cfbypass 一跳纳入同一身份，并用 Chrome for Testing
+**146.0.7680.165** 做同版本参照：ClientHello（含扩展集合与逐连接重排行为）、
+H2 首帧（SETTINGS/窗口增量/伪头顺序）、同源 XHR 头顺序逐字段一致；`signature_algorithms`
+的 ML-DSA 差异确认为版本差并闭合。代理出口因 wreq 关闭 ALPN 而**停用**（fail-closed）。
+参照对照见 [COMPATIBILITY.md](COMPATIBILITY.md) 的「跨层身份一致性」与
+`evidence/reference-chrome146-001/`。**本批未完成**：Linux 侧 `platform-version` 采集
+（需 WSL）、cfbypass 镜像的构建与运行验证（本机无 Docker）、保留 ALPN 的代理出口。
+
 **2026-09-24 更新（二）：缺口 5 第一批已落地（传输身份统一）。** 出网传输层换成
 `wreq`/btls 的 `Profile::Chrome146` + Linux 画像，请求头由 `server/identity.rs` 一处强制整组给出，
 HTTP 与 WebSocket 同时覆盖；与真 Chromium 的 ClientHello 逐字段对照证据见
@@ -303,7 +312,18 @@ sha256）。**本批仍不做**：代理节点与出口分流、`CF_BYPASS_PROXY
     当前按计划发空串。
   - HTTP/1.1 头顺序不受画像控制；上游走 h2，影响有限。
   - WS 握手头是子集：上游 WS 只发身份整组与协商必需头，真浏览器还会带
-    `accept-encoding`/`cache-control`/`pragma`；本批按计划只统一身份，未扩表。
+    `accept-encoding`/`cache-control`/`pragma`；**已收敛（2026-09-24 第二批）**：按真浏览器
+    实录补齐，逐跳头与握手自有头不转发，证据 `evidence/ws-handshake-headers-001.json`。
+  - **第二批新增遗留（2026-09-24）**：
+    - Linux `sec-ch-ua-platform-version` 未采集（本机 WSL 需重启后安装发行版）；Windows
+      参照实测 `"15.0.0"`，Linux 暂发空串，宁可空也不伪造。
+    - cfbypass 镜像改动（Debian trixie + chromium 146.0.7680.177）与容器内 `probe_identity.py`
+      **未经构建/运行验证**（本机无 Docker）；需在有 Docker 的机器上按
+      `cfbypass/README.md` 的身份一致性一节的四步升级清单复跑。
+    - cfbypass 仍为 headless-only（原版 all-in-one 是 Xvfb + headful）；需要 headful 时补
+      xvfb/xauth 与显示管理。
+    - 代理出口停用（wreq 走代理关闭 ALPN）；恢复需要保留 ALPN 的代理实现或透明出口。
+    - JS 覆盖不涉及语言/时区/字体/WebGL/Canvas/Worker/子框架：这些保持宿主真值，属已知边界。
   - 打包面：`Dockerfile` 的 `FROM scratch` 与 musl/zig 静态路线对 BoringSSL 不可行，
     需改成 Debian + glibc 基础镜像，构建阶段要 cmake/clang（本批不改制品）。
   - WSL 路径未打通（本机 WSL 需要重启后安装发行版），本批在本机 Windows 工具链完成

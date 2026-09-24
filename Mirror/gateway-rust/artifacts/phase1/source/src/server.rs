@@ -1055,6 +1055,12 @@ async fn save_proxy(State(app): State<Shared>, Json(input): Json<Value>) -> ApiR
         }
     }
     let next_profile = egress::normalized(&app.config, &v, None)?;
+    // 出口可用性由 [`egress::client`] 统一裁决（当前会拒绝 HTTPS/WSS 目标，
+    // 因为 wreq 走代理时关闭 ALPN）。保存前先构造一次，配置问题在这里暴露，
+    // 而不是等到业务请求已经打到上游才发现。
+    if next_profile["enabled"] == json!(true) {
+        egress::client(&app.config, &next_profile)?;
+    }
     let old = db.get_setting("mirror_proxy")?.unwrap_or_else(default_proxy);
     let changed = egress::normalized(&app.config, &old, None).ok().as_ref() != Some(&next_profile);
     let encoded = db.encrypt(&v.to_string())?;
@@ -1072,8 +1078,11 @@ async fn test_proxy(State(app): State<Shared>, Json(input): Json<Value>) -> ApiR
     }
     let profile = egress::normalized(&app.config, &input, None)?;
     let client = egress::client(&app.config, &profile)?;
+    let url = app.config.upstream.clone();
+    let headers = identity::api_baseline(&url, &Method::GET)?;
     let response = client
-        .get(app.config.upstream.as_str())
+        .get(url.as_str())
+        .headers(headers)
         .send()
         .await
         .context("代理端口连接失败")?;
@@ -1465,5 +1474,9 @@ async fn refresh_cfbypass(State(app): State<Shared>, headers: HeaderMap) -> ApiR
         return Err(error(StatusCode::UNAUTHORIZED, "未登录"));
     }
     app.cloudflare.force(&app).await?;
-    Ok(Json(json!({"message":"cookies 已更新"})))
+    // `cfbypass_identity` 是该跳浏览器的实测身份，供运维核对错配（旧版 cfbypass 为 null）。
+    Ok(Json(json!({
+        "message":"cookies 已更新",
+        "cfbypass_identity": app.cloudflare.identity().await,
+    })))
 }

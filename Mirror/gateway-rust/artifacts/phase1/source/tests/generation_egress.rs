@@ -59,7 +59,24 @@ async fn upstream(role: &'static str, state: Arc<Seen>) -> (String, tokio::task:
     bind(Router::new().fallback(move |request: Request| {
         let s = state.clone();
         async move {
-            s.calls.lock().await.push(json!({"role":role,"method":request.method().as_str(),"path":request.uri().path(),"authorization":request.headers().get("authorization").and_then(|h|h.to_str().ok()),"cookie":request.headers().get("cookie").and_then(|h|h.to_str().ok())}));
+            let headers: std::collections::BTreeMap<&str, &str> = [
+                "authorization",
+                "cookie",
+                "user-agent",
+                "sec-ch-ua",
+                "sec-ch-ua-platform",
+                "sec-fetch-mode",
+            ]
+            .into_iter()
+            .filter_map(|name| {
+                request
+                    .headers()
+                    .get(name)
+                    .and_then(|value| value.to_str().ok())
+                    .map(|value| (name, value))
+            })
+            .collect();
+            s.calls.lock().await.push(json!({"role":role,"method":request.method().as_str(),"path":request.uri().path(),"headers":headers}));
             if s.redirect.load(Ordering::SeqCst) {
                 return (StatusCode::FOUND, [("location", "/next"), ("connection", "close")]).into_response();
             }
@@ -180,8 +197,8 @@ async fn old_me_and_list_requests_never_adopt_relogin_credentials() {
         assert_eq!(f.read(&new, path).send().await.unwrap().status(), 200);
         let calls = f.state.calls.lock().await;
         assert_eq!(calls.len(), 1);
-        assert_eq!(calls[0]["authorization"], "Bearer synthetic-new");
-        assert_eq!(calls[0]["cookie"], "fixture_generation=synthetic-new");
+        assert_eq!(calls[0]["headers"]["authorization"], "Bearer synthetic-new");
+        assert_eq!(calls[0]["headers"]["cookie"], "fixture_generation=synthetic-new");
     }
 }
 
@@ -381,6 +398,13 @@ async fn proxy_diagnostic_does_not_follow_redirects() {
         .unwrap();
     assert_eq!(value["upstream_status"], 302);
     assert_eq!(f.state.calls.lock().await.len(), 1);
+    let call = f.state.calls.lock().await[0].clone();
+    assert_eq!(
+        call["headers"]["user-agent"],
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+    );
+    assert_eq!(call["headers"]["sec-ch-ua-platform"], "\"Linux\"");
+    assert_eq!(call["headers"]["sec-fetch-mode"], "cors");
 }
 
 #[tokio::test]
@@ -462,6 +486,42 @@ async fn proxy_with_unbound_cf_clearance_is_explicitly_rejected() {
         .await
         .unwrap();
     assert_eq!(response.status(), 400);
+    assert!(f.state.calls.lock().await.is_empty());
+}
+
+/// 代理出口 + HTTPS 上游：wreq 走代理时会关闭 TLS ALPN，指纹与直连画像不同形，
+/// 因此「保存配置」与「试用配置」两条路径都必须拒绝，且不得接触上游。
+/// wss 目标由同一条断言覆盖（`ws_upstream` 的检查与 `upstream` 并列）。
+#[tokio::test]
+async fn proxy_for_https_upstream_is_rejected_on_save_and_on_test() {
+    let mut f = Fixture::new().await;
+    let task = f.tasks.pop().unwrap();
+    task.abort();
+    let _ = task.await;
+    f.config.upstream = url::Url::parse("https://chatgpt.example.invalid/").unwrap();
+    let (base, task) = bind(server::router(f.config.clone()).await.unwrap()).await;
+    f.base = base;
+    f.tasks.push(task);
+    for path in ["/api/mirror-proxy-config", "/api/test-mirror-proxy-config"] {
+        let response = f
+            .client
+            .post(format!("{}{path}", f.base))
+            .bearer_auth(SECRET)
+            .json(&json!({
+                "enabled": true,
+                "proxy_url": f.proxy_a,
+                "transport_mode": "reqwest"
+            }))
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(response.status(), StatusCode::BAD_REQUEST, "{path}");
+        let body: Value = response.json().await.unwrap();
+        assert!(
+            body["message"].as_str().unwrap().contains("ALPN"),
+            "{path} 的可行动文案必须点明 ALPN：{body}"
+        );
+    }
     assert!(f.state.calls.lock().await.is_empty());
 }
 

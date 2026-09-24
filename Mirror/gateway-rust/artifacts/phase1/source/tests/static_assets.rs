@@ -109,6 +109,12 @@ async fn routes_public_assets_without_any_credentials_or_response_cookies() {
             }
             assert_eq!(request.headers()["if-none-match"], "fixture-etag");
             assert_eq!(
+                request.headers()["user-agent"],
+                "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            );
+            assert_eq!(request.headers()["sec-ch-ua-platform"], "\"Linux\"");
+            assert!(!request.headers().contains_key("sec-ch-ua-form-factors"));
+            assert_eq!(
                 request.uri().query(),
                 Some("v=1&url=https://example.invalid")
             );
@@ -146,6 +152,9 @@ async fn routes_public_assets_without_any_credentials_or_response_cookies() {
             .header("origin", "https://example.invalid")
             .header("referer", "https://example.invalid/private")
             .header("if-none-match", "fixture-etag")
+            .header("user-agent", "foreign/1.0")
+            .header("sec-ch-ua-platform", "\"Windows\"")
+            .header("sec-ch-ua-form-factors", "\"Desktop\"")
             .send()
             .await
             .unwrap();

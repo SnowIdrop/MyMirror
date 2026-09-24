@@ -999,25 +999,48 @@ async fn buffered_response(
     Ok(response)
 }
 
-/// 注入点（证据：artifacts/phase1/page-original-001 的 authenticated-root：
-/// 原版把客户端资源插在最后一个 head 元素之后、`</head>` 之前；fixture 正文为
-/// `<html><head><script src=...></script><注入></script></head><body>`）。
-/// 无 `</head>` 时追加到正文末尾（证据：evidence/proxy-v3-original-010 的
-/// p1-me-html，fixture 为 `<html><body>probe-page</body></html>`，注入在 `</html>` 之后）。
-fn insert_before_head_end(mut body: Vec<u8>, resource: &[u8]) -> Vec<u8> {
-    const MARKER: &[u8] = b"</head>";
-    let found = body
-        .windows(MARKER.len())
-        .position(|window| window.eq_ignore_ascii_case(MARKER));
-    match found {
+/// 注入点：插在第一个 `<head …>` 之后，让身份覆盖先于页面脚本执行。
+/// 返回 `(正文, 是否命中锚点)`；未命中时调用方追加到正文末尾并记 warn
+/// （证据：evidence/proxy-v3-original-010 的 p1-me-html，fixture 为
+/// `<html><body>probe-page</body></html>`，注入在 `</html>` 之后）。
+fn insert_after_head_open(mut body: Vec<u8>, resource: &[u8]) -> (Vec<u8>, bool) {
+    match head_end(&body) {
         Some(index) => {
-            let tail = body.split_off(index);
+            let mut tail = body.split_off(index);
             body.extend_from_slice(resource);
-            body.extend_from_slice(&tail);
+            body.append(&mut tail);
+            (body, true)
         }
-        None => body.extend_from_slice(resource),
+        None => {
+            body.extend_from_slice(resource);
+            (body, false)
+        }
     }
-    body
+}
+
+/// 第一个 `<head …>` 的结束位置：大小写不敏感、容忍属性与换行。
+/// `<header>` 这类同前缀标签不算命中——`head` 之后必须是空白或 `>`。
+fn head_end(body: &[u8]) -> Option<usize> {
+    const MARKER: &[u8] = b"<head";
+    let mut offset = 0;
+    while let Some(index) = body[offset..]
+        .windows(MARKER.len())
+        .position(|window| window.eq_ignore_ascii_case(MARKER))
+    {
+        let after = offset + index + MARKER.len();
+        match body.get(after) {
+            Some(b'>') => return Some(after + 1),
+            Some(byte) if byte.is_ascii_whitespace() => {
+                return body[after..]
+                    .iter()
+                    .position(|byte| *byte == b'>')
+                    .map(|close| after + close + 1);
+            }
+            // 同前缀但不是 head 标签（例如 `<header …>`）：继续往后找。
+            _ => offset = after,
+        }
+    }
+    None
 }
 
 async fn inject_client_resource(
@@ -1065,9 +1088,11 @@ async fn inject_client_resource(
     let blocked = serde_json::to_string(&blocked["paths"])?;
     let hosts = serde_json::to_string(&hosts)?;
     let suffixes = serde_json::to_string(&INTERNAL_UPSTREAM_SUFFIXES)?;
+    let identity = identity::js_identity().to_string();
     // 管理员配置字符串不能结束 script 元素；数值/布尔不经字符串拼接构造脚本。
     let resource = include_str!("../assets/gateway-client.html")
         .replacen("@@FORCE_CHAT@@", if force { "true" } else { "false" }, 1)
+        .replacen("@@IDENTITY_JSON@@", &identity.replace('<', "\\u003c"), 1)
         .replacen("@@INTERNAL_HOSTS@@", &hosts.replace('<', "\\u003c"), 1)
         .replacen(
             "@@INTERNAL_HOST_SUFFIXES@@",
@@ -1075,7 +1100,13 @@ async fn inject_client_resource(
             1,
         )
         .replacen("@@BLOCKED_PATHS@@", &blocked.replace('<', "\\u003c"), 1);
-    Ok((insert_before_head_end(body, resource.as_bytes()), headers))
+    let (body, anchored) = insert_after_head_open(body, resource.as_bytes());
+    if !anchored {
+        // 缺锚点时身份覆盖会晚于页面脚本：调用方拿到的是可运行但保护变弱的页面，
+        // 因此这里必须留痕而不是静默继续。
+        tracing::warn!(module = "gateway", "上游 HTML 缺少 <head>，身份覆盖追加到正文末尾");
+    }
+    Ok((body, headers))
 }
 
 fn upstream_parts(upstream: wreq::Response) -> (StatusCode, HeaderMap, Body) {
@@ -1090,25 +1121,43 @@ fn upstream_parts(upstream: wreq::Response) -> (StatusCode, HeaderMap, Body) {
 mod tests {
     use super::*;
 
-    /// 注入点必须命中第一个 `</head>`（大小写不敏感），缺失时退化为追加。
+    /// 注入点必须命中第一个 `<head …>`（大小写不敏感、容忍属性与换行），
+    /// 缺失时退化为追加并回传 `false` 供调用方留痕。
     #[test]
-    fn injection_uses_head_end_and_falls_back_to_append() {
+    fn injection_uses_head_open_and_falls_back_to_append() {
         let resource = b"<script id=\"gateway-user-logout-button\"></script>";
-        assert_eq!(
-            insert_before_head_end(
-                b"<html><head><script src=\"/a.js\"></script></head><body>x</body></html>".to_vec(),
-                resource
+        let injected = b"<script id=\"gateway-user-logout-button\"></script>";
+        for (input, expected) in [
+            (
+                &b"<html><head><script src=\"/a.js\"></script></head><body>x</body></html>"[..],
+                &b"<html><head><script id=\"gateway-user-logout-button\"></script><script src=\"/a.js\"></script></head><body>x</body></html>"[..],
             ),
-            b"<html><head><script src=\"/a.js\"></script><script id=\"gateway-user-logout-button\"></script></head><body>x</body></html>".to_vec()
-        );
+            (
+                &b"<HTML><HEAD></HEAD></HTML>"[..],
+                &b"<HTML><HEAD><script id=\"gateway-user-logout-button\"></script></HEAD></HTML>"[..],
+            ),
+            (
+                &b"<html><head lang=\"zh\" data-x=\"1\">\n<body>x</body></html>"[..],
+                &b"<html><head lang=\"zh\" data-x=\"1\"><script id=\"gateway-user-logout-button\"></script>\n<body>x</body></html>"[..],
+            ),
+        ] {
+            let (body, anchored) = insert_after_head_open(input.to_vec(), resource);
+            assert_eq!(body, expected, "{}", String::from_utf8_lossy(input));
+            assert!(anchored, "必须命中锚点");
+        }
+        let (body, anchored) =
+            insert_after_head_open(b"<html><body>probe-page</body></html>".to_vec(), resource);
         assert_eq!(
-            insert_before_head_end(b"<HTML><HEAD></HEAD></HTML>".to_vec(), resource),
-            b"<HTML><HEAD><script id=\"gateway-user-logout-button\"></script></HEAD></HTML>".to_vec()
-        );
-        assert_eq!(
-            insert_before_head_end(b"<html><body>probe-page</body></html>".to_vec(), resource),
+            body,
             b"<html><body>probe-page</body></html><script id=\"gateway-user-logout-button\"></script>".to_vec()
         );
+        assert!(!anchored, "缺锚点必须回传 false");
+        // `<header>` 是同前缀但不同标签，不能被当成注入锚点。
+        let (body, anchored) =
+            insert_after_head_open(b"<html><header>t</header><body>x</body></html>".to_vec(), resource);
+        assert!(body.starts_with(b"<html><header>t</header>"));
+        assert!(body.ends_with(injected));
+        assert!(!anchored);
     }
 
     /// 媒体代理前缀只接受 https + 内置主机表；其它一律在接触上游前拒绝。

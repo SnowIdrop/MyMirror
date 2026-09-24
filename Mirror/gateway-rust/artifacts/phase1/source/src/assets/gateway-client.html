@@ -1,6 +1,56 @@
 <script id="gateway-user-logout-button">(function() {
   if (window.__gatewayUserLogoutMounted) return;
   window.__gatewayUserLogoutMounted = true;
+  // 传输层与请求头声称的身份（Chrome146/Linux）。值由服务端的身份表在注入时生成，
+  // 页面 JS 与网络层因此共用同一份取值，不会各自漂移。
+  // 只覆盖与「网络层声称的平台/版本」直接冲突的可见值；语言、时区、字体、
+  // WebGL/Canvas 等一律保持宿主真实取值，不合成。
+  var gatewayIdentity = @@IDENTITY_JSON@@;
+  if (typeof navigator !== 'undefined') {
+    var gatewayDefine = function(name, value) {
+      Object.defineProperty(navigator, name, {
+        configurable: true,
+        get: function() { return value; }
+      });
+    };
+    gatewayDefine('userAgent', gatewayIdentity.userAgent);
+    gatewayDefine('appVersion', gatewayIdentity.appVersion);
+    gatewayDefine('platform', gatewayIdentity.platform);
+    var gatewayBrands = gatewayIdentity.brands;
+    var gatewayFullVersionList = gatewayIdentity.fullVersionList;
+    var gatewayUserAgentData = {
+      brands: gatewayBrands,
+      mobile: gatewayIdentity.mobile,
+      platform: gatewayIdentity.platformName,
+      getHighEntropyValues: function(hints) {
+        // 只回答真 Linux Chrome 会返回的键：`wow64` 是 Windows 专有，
+        // 表外的提示一律不合成。
+        var known = {
+          architecture: gatewayIdentity.architecture,
+          bitness: gatewayIdentity.bitness,
+          brands: gatewayBrands,
+          fullVersion: gatewayIdentity.fullVersion,
+          fullVersionList: gatewayFullVersionList,
+          mobile: gatewayIdentity.mobile,
+          model: gatewayIdentity.model,
+          platform: gatewayIdentity.platformName,
+          platformVersion: gatewayIdentity.platformVersion,
+          uaFullVersion: gatewayIdentity.fullVersion
+        };
+        var result = {};
+        for (var index = 0; index < hints.length; index++) {
+          if (Object.prototype.hasOwnProperty.call(known, hints[index])) {
+            result[hints[index]] = known[hints[index]];
+          }
+        }
+        // 实测：无论请求哪些提示，真 Chrome 都会回 brands 与 mobile。
+        result.brands = gatewayBrands;
+        result.mobile = gatewayIdentity.mobile;
+        return Promise.resolve(result);
+      }
+    };
+    gatewayDefine('userAgentData', gatewayUserAgentData);
+  }
   var enableUserControls = true;
   var forceChatMode = @@FORCE_CHAT@@;
   var _gwBlockedPaths = @@BLOCKED_PATHS@@;

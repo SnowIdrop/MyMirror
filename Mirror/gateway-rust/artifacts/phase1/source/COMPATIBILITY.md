@@ -586,9 +586,9 @@ Python 侧确定性读取，页面内检查降级为旁证。
 |---|---|
 | 画像 | `Emulation::builder().profile(Profile::Chrome146).platform(Platform::Linux).build()` |
 | 画像预设头 | **关闭**（`.headers(false)`）。预设是导航形状（`sec-fetch-dest: document`、`accept: text/html,…`、`priority: u=0, i`），且 wreq 只在「缺省」时注入；浏览器没给值时发这些等于发错值 |
-| 覆盖语义 | **整组强制覆盖**（有意偏离原版的「缺失才补」）：浏览器带来的 `sec-ch-ua*` 一律被固定身份替换，否则 Windows 用户的提示头会与 Linux UA 同时出现 |
+| 覆盖语义 | **先删除全部 `sec-ch-ua-*`，再整组强制覆盖**（有意偏离原版的「缺失才补」）：未知新提示不透传，已知提示一律替换，否则 Windows 用户或新 Chrome hint 会与 Linux UA 混在一起 |
 | 环回服务 | Django / cfbypass 走 http，不受画像影响 |
-| 保留语义 | `no_proxy`/`proxy`、`redirect(none)`、`retry(never)`、超时、`egress` 的出口绑定与 fail-closed 全部不变 |
+| 代理边界 | 当前 `wreq` 对 HTTPS-over-proxy 会关闭 ALPN；`https` chat 上游或 `wss` WS 上游启用代理时直接拒绝，不能发出可区分的降级指纹 |
 
 ### 身份整组（`identity::IDENTITY_HEADERS`）
 
@@ -607,6 +607,11 @@ Python 侧确定性读取，页面内检查降级为旁证。
 `UA` 与低熵三项与 `wreq-util` 的 Chrome146/Linux 预设逐字一致（库内单测直接拿预设对照，
 画像升级而没人改表就会红）。高熵三项的**主版本**与预设绑定，完整版本号沿用原版二进制
 字面量与镜像内 chromium 包版本。
+
+公共 CDN/静态资源与内部媒体代理同样使用这张身份表；仍然只复制既有白名单中的资源
+请求头，且不带浏览器、账号或 CF 凭据。页面注入脚本在 `<head>` 开标签后执行，并把
+`navigator.userAgent/platform/userAgentData/languages`、时区与 `window.chrome` 固定为
+同一个 Chrome146/Linux 表面，避免前端把宿主 Windows 身份写入请求体或自定义头。
 
 ### 网关自发请求的头基线（`identity::api_baseline`）
 
@@ -660,20 +665,114 @@ full-version-list/model/platform-version`，491 条请求里 488 条带 `sec-ch-
 
 | 项 | 说明 |
 |---|---|
-| `signature_algorithms` 缺 ML-DSA | 见上表；与自身声称的 146 自洽，未取得 Chrome146 当时的实测 |
-| H2 首帧未复采 | 见上；需要测试证书才能完成握手，本轮不做 |
-| `sec-ch-ua-platform-version: ""` | Linux 真机取值本轮无法验证（本机只有 Windows Chromium）；按计划锁定值发，宁可用空串也不伪造内核版本 |
-| HTTP/1.1 头顺序 | 不受画像控制；上游走 h2，影响有限 |
-| cfbypass 一跳 | `CF_BYPASS_USER_AGENT` 覆盖是刻意的（`cf_clearance` 绑定 IP+UA），cfbypass 内部的 `sec-ch-ua` 与 UA 版本错配只影响取 clearance 的那一跳 |
-| 出口 IP | 候选部署在 AWS 机房，对照浏览器在家用网络；指纹统一不解决按 IP 段的风控 |
-| WS 握手头子集 | 上游 WS 只发身份整组 + `accept-language`/`origin`/`referer`/`oai-device-id`/cookie 与协议必需头；真浏览器 WS 握手还会带 `accept-encoding`/`cache-control`/`pragma` 等头。本批按「保留既有语义」只统一身份，未扩表；已登记 NEXT_WORK |
+| `signature_algorithms` 缺 ML-DSA | **已收敛（第二轮）**：Chrome for Testing 146.0.7680.165 实测同样只有 8 项、不含 ML-DSA，与候选逐项一致；此前的差异纯属 151 vs 146 的版本差 |
+| H2 首帧未复采 | **已收敛（第二轮）**：候选在本地自签 TLS 上完成握手抓到 H2 首帧，与 146 参照逐项一致（见下节） |
+| `sec-ch-ua-platform-version` | Windows 参照实测 `"15.0.0"`；候选声称 Linux，Linux 取值仍未采集（见下节待办）；宁可发空串也不伪造内核版本 |
+| HTTP/1.1 头顺序 | **已收敛（第二轮）**：改用 wreq `orig_headers` 按录制顺序输出，网络层/应用层逐项对照见下节 |
+| cfbypass 一跳 | **已部分收敛（第二轮）**：镜像改为 Debian trixie + chromium 146.0.7680.177，响应新增实测 `identity`，网关比对不一致即 warn；代理与 headful 仍是残余 |
+| 出口 IP | 部署在 AWS 机房（用户判定：chatgpt.com 对 AWS 段是白名单，本轮不处理） |
+| WS 握手头子集 | **已收敛（第二轮）**：按真浏览器实录补齐 `pragma`/`cache-control`/`accept-encoding`，逐跳头与握手自有头不转发 |
+| JS 覆盖的浏览器行为 | 注入脚本只覆盖与「网络层声称的平台/版本」直接冲突的可见值（UA/appVersion/platform/userAgentData）；语言、时区、字体、WebGL、Canvas、Worker 与子框架保持宿主真值 |
 
 ### 契约与影响
 
-- 对外 HTTP 契约零变化：路由、状态码、错误码、Cookie 合成、ACL、CF 挑战策略都不动；**不新增环境变量**。
+- 对外 HTTP 契约只有两处**新增字段**：`/api/refresh-cfbypass` 返回 `cfbypass_identity`；
+  cfbypass 的 `/cloudflare5s/bypass-v1|v2`（与 `/bypass` 等价，原版即此契约）返回 `identity`。
+  路由、状态码、错误码、Cookie 合成、ACL、CF 挑战策略都不动；**不新增网关环境变量**
+  （cfbypass 侧新增 `CF_BYPASS_BROWSER_PATH`，有默认值）。
 - `egress` 的 `transport_profile` 变为 `wreq-chrome146-read-v1-no-retry-no-redirect`，参与
   `binding` 哈希 ⇒ 部署后既有镜像会话按既有「凭据/出口变更即失效」规则 fail-closed（401），
   需要重新登录；尚未部署过候选，因此没有存量会话需要迁移。
 - 数据库里代理节点的 `transport_mode` 取值仍是字符串 `reqwest`（存量配置的枚举值，代表
   「直连客户端」这一类），本批不改这个字段，避免动存量配置与绑定以外的语义。
 - `wreq` 默认 feature 不含 `emulation-compression`，解压由网关按需做，代理路径保持字节透传。
+
+## 跨层身份一致性（第二轮：JS 面、WS、cfbypass、146 参照，2026-09-24）
+
+第一轮把**网关内部**（TLS 画像 + 请求头表）统一成 Chrome146/Linux，但审计发现跨层仍然矛盾：
+页面 JS 暴露宿主真实平台、WS 握手是残缺子集、cfbypass 一跳用的是另一版 Chromium、参照浏览器
+是 151 而非声称的 146。本轮逐项收敛，并把「自锁常量」升级为「与可运行的同版本参照逐字段对照」。
+
+### 146 参照（`probe/probe_reference_identity.py` + `evidence/reference-chrome146-001/`）
+
+参照浏览器：Chrome for Testing **146.0.7680.165** win64（VersionInfo 与 CDP `browser.version`
+同值；二进制在临时目录，不入库）。三段采集都只打本机回环。
+
+| 项 | 真 Chrome 146 | 候选 | 结论 |
+|---|---|---|---|
+| ClientHello 归一化 sha256（无 SNI） | `01425d3f…0343cb` | 同一常量 | **逐位相同** |
+| 密码套件（原始顺序） | `1301,1302,1303,c02b,c02f,c02c,c030,cca9,cca8,c013,c014,009c,009d,002f,0035` | 同 | 一致 |
+| 扩展集合 | 15 项（含 `44cd`/`fe0d`/`ff01`） | 同 | 一致 |
+| 扩展顺序 | **逐连接重排** | 逐连接重排 | 一致（`permute_extensions` 行为由测试锁定） |
+| `signature_algorithms` | 8 项（无 ML-DSA） | 同 | 一致（此前 151 对照里的 ML-DSA 差异确认为版本差） |
+| 支持组 / 密钥共享 | `11ec,001d,0017,0018` / `11ec,001d` | 同 | 一致 |
+| H2 SETTINGS | `0001=65536 → 0002=0 → 0004=6291456 → 0006=262144` | 同（**不含** `MAX_CONCURRENT_STREAMS`） | 一致 |
+| H2 连接窗口增量 | `15663105` | 同 | 一致 |
+| H2 伪头顺序 | `:method → :authority → :scheme → :path` | 同 | 一致 |
+| 同源 XHR 头顺序 | 见 `03-request-headers.json` | `REQUEST_HEADER_ORDER` 逐项一致 | 一致 |
+| `sec-ch-ua-platform-version` | `"15.0.0"`（Windows） | 候选声称 Linux，发 `""` | **未闭合**：Linux 真机取值待采 |
+| `sec-ch-ua` 品牌表 | `"Not-A.Brand";v="24", "Chromium";v="146"`（两项） | `"Chromium";v="146", "Not-A.Brand";v="24", "Google Chrome";v="146"`（三项） | **构建差异**：CfT 是 Chromium 品牌构建，不含 `Google Chrome` 项；候选的品牌表与原版二进制实测字节逐字相同（`reverse/reports/06-sandbox-verification.md` §9.5 的代理链抓包），与自身「Google Chrome 146」的 UA 自洽 |
+
+`tests/identity_fingerprint.rs` 因此有三层断言：自锁常量（ClientHello×2 场景 + H2）、**与
+`evidence/reference-chrome146-001/` 逐字段对照**、以及身份相关 crate
+（`wreq`/`wreq-util`/`wreq-proto`/`btls`/`btls-sys`/`tokio-btls`/`http2`）的锁定版本。
+`cargo update` 或画像误换都会让其中至少一层变红。
+
+### 页面 JS 可见面（#1）
+
+页面脚本可以读 `navigator.*`、时区、语言，再把结果写进请求体或自定义头——网关无法过滤正文。
+注入脚本现在**在第一个 `<head …>` 之后**（而不是 `</head>` 之前）执行，并把与网络层直接冲突的
+可见值固定为同一身份：`navigator.userAgent`/`appVersion`/`platform`/`userAgentData`
+（低熵 + `getHighEntropyValues` 的 architecture/bitness/fullVersion/fullVersionList/model/
+platformVersion）。取值由服务端从 `identity::IDENTITY_HEADERS` 生成（占位符
+`@@IDENTITY_JSON@@`），JS 侧不再有第二份字面量，两端不可能各自漂移。
+
+**刻意不覆盖**：语言、时区、`window.chrome`、`navigator.webdriver`、字体、WebGL、Canvas、
+Worker 与子框架。理由：这些值不直接矛盾（宿主语言/时区在 Linux 上也合理），而伪造
+`webdriver`/`chrome` 反而更容易被反检测手段识别。
+
+真上游只读验收（`probe_browser_accept.py --no-write`，2026-09-24）在页面内实测到：
+`UA=Mozilla/5.0 (X11; Linux x86_64) … Chrome/146.0.0.0 Safari/537.36`、
+`platform=Linux x86_64`、`brands=[Chromium/146, Not-A.Brand/24, Google Chrome/146]`、
+`arch=x86`、`bitness=64`、`fullVersion=146.0.7680.177`、`platformVersion=''`、
+`timezone=Asia/Shanghai`（宿主真值）。同一次运行 432 条请求：423×2xx、0 次 CF 挑战、
+真实 WS 双向各 1 帧；7 条控制台错误全部属于既有类别（Datadog SDK 两处、React 水合 #418、
+`/favicon.ico` 与 `/external/…` 的 503——后者是**有意不代理**的前缀）。
+
+### 代理出口（#2）
+
+已核实 `wreq` 在 HTTPS 目标走代理时调用 `connector.no_alpn()`（`conn/connector.rs:338`），
+代理路径的 ClientHello 会缺 ALPN，与直连画像不同形。本批**停用代理出口**：
+`egress::client` 在「启用代理 + https/wss 上游」时直接拒绝，`/api/mirror-proxy-config`
+在保存前构建一次客户端把错误暴露在配置阶段（两处共用同一条可行动文案）。
+保留 ALPN 的代理实现（或改成不经应用层代理的透明出口）留给需要代理的批次。
+
+### WS 握手（#10）
+
+`probe/probe_browser_ws_headers.py` 用真 Chromium 打本机回环 WS 服务，服务端记录到浏览器
+实际发送（顺序）：`host, connection, pragma, cache-control, user-agent, accept-language,
+upgrade, origin, sec-websocket-version, accept-encoding, sec-websocket-key,
+sec-websocket-extensions`（`evidence/ws-handshake-headers-001.json`，key 值已占位）。
+`chat_ws::upstream_headers` 现在按此补齐 `pragma`/`cache-control`/`accept-encoding`（浏览器
+给值优先、缺省补固定值），`origin`/`referer` 重写为 chatgpt.com，`user-agent` 与 client hints
+走身份整组；`host`/`connection`/`upgrade`/`sec-websocket-key|version|extensions` 一律由传输层
+重建。库内单测直接读该证据文件断言「转发名单覆盖真浏览器发的每个应用层头、且不含凭空发明的头」。
+
+### cfbypass 一跳（#7）
+
+- 镜像：`cfbypass/Dockerfile` 从 Playwright jammy 镜像改为 **Debian trixie + snapshot 源**，
+  精确安装 `chromium=146.0.7680.177-1~deb13u1`（与原版 all-in-one 同版），Playwright 用
+  `executable_path=/usr/bin/chromium` 驱动系统浏览器；compose 的 `CF_BYPASS_USER_AGENT` 与
+  网关常量同值。
+- 可核验：响应新增 `identity`（UA、UA-CH 高熵、语言、时区、Chromium 版本、是否走代理），
+  全部取自**实际浏览器会话**；网关每次刷新比对并 warn，`/api/refresh-cfbypass` 把该身份
+  回给调用方（`cfbypass_identity`，缺字段时为 null）。
+- `probe_identity.py`（容器内只读探针）用同一浏览器打容器内回环，产出该跳的 ClientHello/H2
+  摘要，供有 Docker 的机器上与 wreq 仿真逐字段对照。
+
+### 版本同步机制（#6）
+
+身份版本只有一个来源：`identity::full_version()` + `Profile::Chrome146`。升级清单（写入
+NEXT_WORK）：改画像与常量 → 重采 146 参照并更新 `evidence/reference-chrome146-001/` 与
+本文件的对照表 → 更新 `identity_fingerprint.rs` 的三个常量 → 同步 cfbypass 镜像的
+chromium 版本与 compose 的 UA → 重跑两侧探针。缺任何一步，参照对照测试会红。

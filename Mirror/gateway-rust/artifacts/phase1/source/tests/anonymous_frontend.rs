@@ -313,8 +313,8 @@ async fn anonymous_session_shares_one_upstream_identity_and_injects_before_head(
     let injected = html.find("gateway-user-logout-button").expect("必须注入客户端资源");
     let head_end = html.find("</head>").expect("fixture 含 </head>");
     assert!(injected < head_end, "注入必须位于 </head> 之前");
-    // 原站 head 内容在前、注入紧随其后（原版 page-original-001 的顺序）。
-    assert!(html.find("/assets/app.js").unwrap() < injected);
+    // 注入必须位于页面脚本之前，身份覆盖才能先执行。
+    assert!(injected < html.find("/assets/app.js").unwrap());
 
     let upstream = &f.chat_calls("/")[0];
     // 匿名链路以 cookies 为唯一凭据：不发 Authorization，也不转发镜像令牌。
@@ -487,8 +487,9 @@ async fn injection_handles_missing_or_uppercase_head() {
     let html = response.text().await.unwrap();
     assert!(html.ends_with("</head><body>anon-page</body></html>"));
     assert!(
-        html.starts_with("<html><head><script src=\"/assets/app.js\"></script><script id=\"gateway-user-logout-button\">")
+        html.starts_with("<html><head><script id=\"gateway-user-logout-button\">")
     );
+    assert!(html.contains("<script src=\"/assets/app.js\"></script>"));
     assert!(
         !f.upstream_paths().iter().any(|path| path.starts_with("/assets/")),
         "页面静态资源必须走 CDN，不是 chat 上游"

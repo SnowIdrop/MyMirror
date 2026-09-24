@@ -99,7 +99,7 @@ pub(super) async fn media(app: &App, request: Request, target: url::Url) -> Resp
     .await
 }
 
-/// 公共资源反代：固定 UA 与请求头白名单，拒绝重定向、非 2xx 与 HTML 正文，
+/// 公共资源反代：请求头白名单 + 完整身份组，拒绝重定向、非 2xx 与 HTML 正文，
 /// 响应只复制安全头并流式回传。凭据一律不转发。
 pub(super) async fn forward_public<F>(
     app: &App,
@@ -111,10 +111,7 @@ where
     F: Fn(&str) -> bool,
 {
     let (parts, body) = request.into_parts();
-    let mut upstream = app
-        .client
-        .request(parts.method.clone(), target.as_str())
-        .header("user-agent", identity::USER_AGENT);
+    let mut headers = HeaderMap::new();
     // Public CDN requests never receive browser, gateway, account or CF credentials.
     for name in [
         "accept",
@@ -128,13 +125,29 @@ where
         "x-ms-blob-type",
     ] {
         if let Some(value) = parts.headers.get(name) {
-            upstream = upstream.header(name, value);
+            headers.insert(name, value.clone());
         }
     }
+    identity::apply_identity(&mut headers);
+    let upstream = app
+        .client
+        .request(parts.method.clone(), target.as_str())
+        .headers(headers);
     // 读取类请求无正文；签名上传（PUT）按流透传，避免把文件整体缓存在网关内存里。
     if matches!(parts.method, Method::PUT) {
-        upstream = upstream.body(wreq::Body::wrap_stream(body.into_data_stream()));
+        let request = upstream.body(wreq::Body::wrap_stream(body.into_data_stream()));
+        return send_public_request(request, accepted).await;
     }
+    send_public_request(upstream, accepted).await
+}
+
+async fn send_public_request<F>(
+    upstream: wreq::RequestBuilder,
+    accepted: F,
+) -> Response
+where
+    F: Fn(&str) -> bool,
+{
     let upstream = match upstream.send().await {
         Ok(value) => value,
         Err(cause) => {

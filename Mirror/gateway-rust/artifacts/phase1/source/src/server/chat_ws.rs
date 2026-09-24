@@ -150,11 +150,20 @@ async fn upstream_headers(
     client: &HeaderMap,
 ) -> Result<HeaderMap> {
     let mut headers = HeaderMap::new();
-    // 浏览器握手自带的协商字段按需透传；凭据类头一律由本模块重建。
-    // client hints 不在透传名单里：身份整组由 [`identity::apply_identity`] 强制覆盖。
-    for name in ["accept-language", "sec-websocket-protocol"] {
-        if let Some(value) = client.get(name) {
-            headers.insert(name, value.clone());
+    // 真 Chromium 的 WS 握手头（2026-09-24 服务端实录，顺序 pragma → cache-control →
+    // user-agent → accept-language → origin → accept-encoding）：浏览器给的值优先，
+    // 缺省时补真实 Chrome 的固定值，这样非浏览器调用方也不会发出残缺握手。
+    // 逐跳头（host/connection/upgrade）与 `sec-websocket-key/version/extensions`
+    // 一律不转发：由传输层按自己的握手重建。client hints 同理交给身份整组覆盖。
+    for (name, fallback) in WS_FORWARDED_HEADERS {
+        match (client.get(name), fallback) {
+            (Some(value), _) => {
+                headers.insert(name, value.clone());
+            }
+            (None, Some(value)) => {
+                headers.insert(name, HeaderValue::from_static(value));
+            }
+            (None, None) => {}
         }
     }
     let origin = proxy::chat_origin(&app.config.upstream)?;
@@ -240,6 +249,18 @@ pub(super) async fn connect(
         })?;
     Ok((socket, headers))
 }
+
+/// 转发的浏览器头：真 Chromium 实录里的应用层头加上子协议（由调用方决定）。
+/// 逐跳头与握手自有头不在此表内，`origin` 与 `user-agent` 分别由重写与身份组提供。
+/// 与证据的绑定由库内单测锁定。
+const WS_FORWARDED_HEADERS: [(&str, Option<&str>); 5] = [
+    ("pragma", Some("no-cache")),
+    ("cache-control", Some("no-cache")),
+    ("accept-language", Some("zh-CN,zh;q=0.9,en;q=0.8")),
+    ("accept-encoding", Some("gzip, deflate, br, zstd")),
+    // 子协议由调用方决定，上游没被要求时不能凭空声明。
+    ("sec-websocket-protocol", None),
+];
 
 /// 桥接本体：双向透传，任一侧结束即把关闭帧转交另一侧后收尾。
 /// `abort` 非空时，撤权/登出会写通道使本次桥接立即结束（不再转发剩余消息）。
@@ -412,6 +433,53 @@ mod tests {
     use super::*;
     use axum::routing::get;
     use std::sync::{Arc as StdArc, Mutex};
+
+    /// 真 Chromium 的 WS 握手头实录（`evidence/ws-handshake-headers-001.json`）。
+    const WS_HANDSHAKE_EVIDENCE: &str =
+        include_str!("../../../../../evidence/ws-handshake-headers-001.json");
+
+    /// 转发名单必须覆盖真浏览器发的每个应用层头：漏一个就是可区分的残缺握手，
+    /// 将来 Chromium 新增握手头时这条会红。
+    #[test]
+    fn forwarded_headers_cover_the_recorded_browser_handshake() {
+        let evidence: serde_json::Value =
+            serde_json::from_str(WS_HANDSHAKE_EVIDENCE).expect("WS 证据 JSON 无效");
+        let recorded = evidence["requests"][0]["header_names"]
+            .as_array()
+            .expect("证据缺少 header_names");
+        // 逐跳头与握手自有头由传输层重建；`origin`/`user-agent` 分别由重写与身份组提供。
+        let transport_owned = [
+            "host",
+            "connection",
+            "upgrade",
+            "sec-websocket-key",
+            "sec-websocket-version",
+            "sec-websocket-extensions",
+        ];
+        let rewritten = ["origin", "user-agent"];
+        let covered: Vec<&str> = WS_FORWARDED_HEADERS
+            .iter()
+            .map(|(name, _)| *name)
+            .chain(rewritten)
+            .collect();
+        for name in recorded {
+            let name = name.as_str().expect("头名必须是字符串");
+            assert!(
+                transport_owned.contains(&name) || covered.contains(&name),
+                "{name} 既不由传输层重建、也不在转发名单里：浏览器会看到残缺握手"
+            );
+        }
+        // 反向：名单里的代理层头必须在实录里出现过，否则就是凭空发明的头。
+        for (name, _) in WS_FORWARDED_HEADERS {
+            if name == "sec-websocket-protocol" {
+                continue; // 探针没有请求子协议，因此实录里不会出现。
+            }
+            assert!(
+                recorded.iter().any(|value| value.as_str() == Some(name)),
+                "{name} 不在浏览器实录里，不应凭猜测发送"
+            );
+        }
+    }
 
     /// 目标地址只由配置基址与路径决定，客户端不能改主机。
     #[test]

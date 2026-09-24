@@ -136,6 +136,18 @@ async fn ws_upstream(
                         "authorization": header("authorization"),
                         "origin": header("origin"),
                         "user_agent": header("user-agent"),
+                        "sec_ch_ua_platform": header("sec-ch-ua-platform"),
+                        "sec_ch_ua_full_version": header("sec-ch-ua-full-version"),
+                        "pragma": header("pragma"),
+                        "cache_control": header("cache-control"),
+                        "accept_language": header("accept-language"),
+                        "accept_encoding": header("accept-encoding"),
+                        // 握手自有头由传输层重建：上游必须拿到**它自己**的 key，
+                        // 而不是客户端那一个（测试会比对两者不同）。
+                        "upstream_key": header("sec-websocket-key"),
+                        "upstream_version": header("sec-websocket-version"),
+                        "upstream_upgrade": header("upgrade"),
+                        "upstream_extensions": header("sec-websocket-extensions"),
                     }));
                     Ok(response)
                 },
@@ -461,6 +473,12 @@ async fn websocket_bridges_messages_with_session_credentials() {
     let request = url
         .into_client_request_with_token(&token)
         .expect("握手请求构造失败");
+    let client_key = request
+        .headers()
+        .get("sec-websocket-key")
+        .and_then(|value| value.to_str().ok())
+        .expect("客户端握手必须带自己的 key")
+        .to_owned();
     let (mut socket, _) = tokio_tungstenite::connect_async(request).await.unwrap();
     use futures_util::SinkExt;
     socket
@@ -494,6 +512,19 @@ async fn websocket_bridges_messages_with_session_credentials() {
         handshake["user_agent"],
         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
     );
+    assert_eq!(handshake["sec_ch_ua_platform"], "\"Linux\"");
+    assert_eq!(handshake["sec_ch_ua_full_version"], "\"146.0.7680.177\"");
+    // 真 Chrome 的 WS 握手头（2026-09-24 实录）：调用方没给时按固定值补齐。
+    assert_eq!(handshake["pragma"], "no-cache");
+    assert_eq!(handshake["cache_control"], "no-cache");
+    assert_eq!(handshake["accept_encoding"], "gzip, deflate, br, zstd");
+    assert!(!handshake["accept_language"].as_str().unwrap().is_empty());
+    // 握手自有头必须由传输层重建：上游拿到的是它自己的 key 与版本。
+    let upstream_key = handshake["upstream_key"].as_str().unwrap();
+    assert!(!upstream_key.is_empty(), "{handshake}");
+    assert_ne!(upstream_key, client_key, "客户端的握手 key 不得被转发");
+    assert_eq!(handshake["upstream_version"], "13");
+    assert_eq!(handshake["upstream_upgrade"], "websocket");
     assert!(
         handshake["origin"].as_str().unwrap().starts_with("http://127.0.0.1"),
         "{handshake}"

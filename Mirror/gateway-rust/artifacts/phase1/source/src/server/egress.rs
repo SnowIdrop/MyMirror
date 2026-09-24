@@ -94,7 +94,14 @@ pub(super) fn rotate_epoch(conn: &rusqlite::Connection) -> Result<()> {
 
 pub(super) fn client(config: &Config, profile: &Value) -> Result<wreq::Client> {
     let mut builder = identity::client_builder().timeout(config.timeout);
-    if profile["enabled"] == true {
+    if profile["enabled"] == json!(true) {
+        // wreq 在 HTTPS 目标走代理时会 `no_alpn()`（conn/connector.rs），
+        // 代理路径的 ClientHello 因此与直连画像不同形。本批宁可停用代理出口，
+        // 也不静默发出可区分的降级指纹。
+        anyhow::ensure!(
+            config.upstream.scheme() != "https" && config.ws_upstream.scheme() != "wss",
+            "代理出口会关闭 TLS ALPN，与 Chrome146 画像不同形，本轮停用：请先停用代理，或等待保留 ALPN 的代理实现"
+        );
         let mut proxy =
             wreq::Proxy::all(profile["proxy_url"].as_str().context("缺少代理地址")?)?;
         if let Some(user) = profile["username"].as_str() {

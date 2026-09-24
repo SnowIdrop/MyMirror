@@ -67,6 +67,9 @@ struct State {
     generation: u64,
     cookies: Vec<(String, String)>,
     last_attempt: Option<Instant>,
+    /// 最近一次 cfbypass 返回的实测身份：`/api/refresh-cfbypass` 把它交给调用方，
+    /// 便于运维核对「取 clearance 的那一跳」与自己是否声称同一个浏览器。
+    identity: Option<Value>,
 }
 
 impl Cloudflare {
@@ -85,6 +88,11 @@ impl Cloudflare {
     /// 当前可用的 CF cookies（白名单过滤后的副本）。
     pub(super) async fn cookies(&self) -> Vec<(String, String)> {
         self.inner.lock().await.cookies.clone()
+    }
+
+    /// 最近一次 cfbypass 实测身份（旧版 cfbypass 不返回时为 `None`）。
+    pub(super) async fn identity(&self) -> Option<Value> {
+        self.inner.lock().await.identity.clone()
     }
 
     /// 失效当前 cookies：下一次请求必须重新走 cfbypass 才能通过。冷却计时保持不变。
@@ -132,6 +140,7 @@ impl Cloudflare {
         let mut state = self.inner.lock().await;
         state.generation += 1;
         state.cookies = cookies.clone();
+        state.identity = payload.get("identity").cloned();
         Ok(cookies)
     }
 }
@@ -152,7 +161,50 @@ async fn fetch_payload(app: &App) -> Result<Value> {
         .json()
         .await
         .context("cfbypass 响应无效")?;
+    log_identity_mismatch(&result);
     Ok(result)
+}
+
+/// 取 clearance 的那一跳与网关必须声称同一个浏览器身份：`cf_clearance` 绑定
+/// IP+UA+浏览器指纹，错配会让两次请求被关联。cfbypass 返回它实测到的身份，
+/// 不一致时留痕（日志只记身份字段，不含 cookie 与令牌）。
+fn log_identity_mismatch(payload: &Value) {
+    let Some(identity) = payload.get("identity").filter(|value| value.is_object()) else {
+        // 旧版 cfbypass 没有该字段：不能因此判定错配，但要让运维知道可比对性缺失。
+        tracing::warn!(
+            module = "gateway",
+            "cfbypass 未返回 identity 字段，无法校验该跳的浏览器身份是否与网关一致"
+        );
+        return;
+    };
+    let unquoted = |name: &str| identity::hint(name).trim_matches('"').to_owned();
+    // 字段路径与 cfbypass 的 `IdentityInfo`/`UserAgentDataInfo` 一一对应。
+    // `platform_version` 刻意不比对：Linux 真机取值尚未采集（候选固定发空串），
+    // 每次刷新都报同一处已知残余只会淹没真正的新错配；该值仍随
+    // `/api/refresh-cfbypass` 的 `cfbypass_identity` 回给运维，用来补齐这项证据。
+    for (field, want) in [
+        ("user_agent", identity::USER_AGENT.to_owned()),
+        ("user_agent_data.full_version", identity::full_version()),
+        ("user_agent_data.platform", unquoted("sec-ch-ua-platform")),
+        ("user_agent_data.architecture", unquoted("sec-ch-ua-arch")),
+        ("user_agent_data.bitness", unquoted("sec-ch-ua-bitness")),
+    ] {
+        let actual = identity
+            .pointer(&format!("/{}", field.replace('.', "/")))
+            .and_then(Value::as_str);
+        // 探测失败的字段是 null：那是 cfbypass 侧的可观测缺陷，不是身份错配。
+        if let Some(actual) = actual {
+            if actual != want {
+                tracing::warn!(
+                    module = "gateway",
+                    field,
+                    expected = %want,
+                    actual = %actual,
+                    "cfbypass 一跳的浏览器身份与网关声称值不一致"
+                );
+            }
+        }
+    }
 }
 
 /// 白名单过滤：非数组、缺少 name/value 与未列入白名单的条目一律丢弃。
