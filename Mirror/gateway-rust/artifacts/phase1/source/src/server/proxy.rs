@@ -467,7 +467,27 @@ async fn me_passthrough(app: &App, request: Request, session: &Session) -> Resul
     buffered_response(app, session, upstream).await
 }
 
-/// 上游认证材料。带凭据会话用账号 access_token + extra_cookies；
+/// 会话 Cookie 名（原版 `append_session_cookies` / `supplemental_has_next_auth_cookie`
+/// 处理的那一项）：Django 把 SessionToken 作为独立字段下发，上游要的却是这个 Cookie。
+pub(super) const SESSION_COOKIE: &str = "__Secure-next-auth.session-token";
+
+/// 凭据绑定：账号 + 实际会发给上游的三样凭据。会话 Cookie 参与上游请求字节，
+/// 因此与 access_token、extra_cookies 一起参与绑定；登录、会话解析、凭据刷新与
+/// 批量签发四处必须用同一份计算，否则绑定会在两处得出不同结果。
+/// `None` 与空串归一为同一输入：号池行的 `session_token` 允许是空串（Django 字段
+/// `blank=True`），登录侧缺失时是 NULL，两者必须得出同一个绑定。
+pub(super) fn credential_binding(
+    account: &str,
+    access_token: &str,
+    session_token: Option<&str>,
+    extra_cookies: &str,
+) -> String {
+    sha256_hex(
+        &json!([account, access_token, session_token.unwrap_or_default(), extra_cookies]).to_string(),
+    )
+}
+
+/// 上游认证材料。带凭据会话用账号 access_token + 会话 Cookie + extra_cookies；
 /// 匿名会话用全局共享匿名身份（server/anonymous.rs）。
 /// 镜像 token 本身绝不转发上游。
 pub(super) struct ChatAuth {
@@ -475,12 +495,41 @@ pub(super) struct ChatAuth {
     /// 会话凭据 cookie（Django 下发的 name/value 结构），始终排在最前，
     /// 与 `rust_credential_binding` 绑定的原文保持一致。
     pub(super) cookies: Vec<(String, String)>,
+    /// 账号的 SessionToken（`gateway_sessions.session_token`）：上游要的是
+    /// [`SESSION_COOKIE`]，由 [`session_cookie_group`] 合成。匿名会话恒为 None。
+    pub(super) session_token: Option<String>,
     /// 上游 cookie jar（原版 `db::SupplementalCookie` 同形的 9 字段条目）：
     /// 会话凭据 + 捕获到的上游 cookie（含设备标识 `oai-did`）。见
     /// server/upstream_cookies.rs。匿名会话恒为空。
     pub(super) jar: Vec<upstream_cookies::Cookie>,
     pub(super) anonymous: bool,
     client: reqwest::Client,
+}
+
+/// 合成会话 Cookie 组（原版 `append_session_cookies` + `supplemental_has_next_auth_cookie`）：
+/// 只在本次请求**确实不会**发出同名 Cookie 时才补。`cookies` 与 `jar` 覆盖发送侧的
+/// 全部来源，因此管理员导入过会话态（`extra_cookies` 或号池行里已有该 Cookie）时
+/// 不会被合成的值顶掉。
+pub(super) fn session_cookie_group(
+    auth: &ChatAuth,
+    cookies: &[(String, String)],
+    jar: &[(String, String)],
+) -> Vec<(String, String)> {
+    let Some(token) = auth
+        .session_token
+        .as_deref()
+        .filter(|value| !value.is_empty())
+    else {
+        return Vec::new();
+    };
+    let already_sent = cookies
+        .iter()
+        .chain(jar.iter())
+        .any(|(name, _)| name.eq_ignore_ascii_case(SESSION_COOKIE));
+    if already_sent {
+        return Vec::new();
+    }
+    vec![(SESSION_COOKIE.to_owned(), token.to_owned())]
 }
 
 /// 会话对应的上游认证材料：匿名会话取共享匿名身份，其余取账号凭据。
@@ -496,6 +545,7 @@ pub(super) async fn chat_auth(app: &App, session: &Session) -> Result<Option<Cha
         return Ok(Some(ChatAuth {
             access_token: None,
             cookies,
+            session_token: None,
             jar: Vec::new(),
             anonymous: true,
             client: session.outbound.client.clone(),
@@ -513,17 +563,27 @@ pub(super) async fn refresh_auth_session(
 ) -> Result<Option<(String, String)>> {
     let (mut auth, mode) = {
         let db = app.db.lock().await;
-        let row: Option<(String, String, String)> = db.conn.query_row(
-            "SELECT access_token,extra_cookies,login_mode FROM gateway_sessions WHERE user_name=?1 AND chatgpt_username=?2 AND mirror_token=?3",
+        let row: Option<(String, String, String, Option<String>)> = db.conn.query_row(
+            "SELECT access_token,extra_cookies,login_mode,session_token FROM gateway_sessions WHERE user_name=?1 AND chatgpt_username=?2 AND mirror_token=?3",
             params![session.user, session.account, sha256_hex(token)],
-            |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)),
+            |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?, row.get(3)?)),
         ).optional()?;
-        let Some((access, cookies, mode)) = row else {
+        let Some((access, cookies, mode, session_token)) = row else {
             return Ok(None);
         };
         let access_token = db.decrypt(&access)?;
         let raw_cookies = db.decrypt(&cookies)?;
-        if sha256_hex(&json!([session.account,access_token,raw_cookies]).to_string()) != session.credential_binding {
+        let session_token = match session_token.as_deref() {
+            Some(encrypted) => Some(db.decrypt(encrypted)?),
+            None => None,
+        };
+        if credential_binding(
+            &session.account,
+            &access_token,
+            session_token.as_deref(),
+            &raw_cookies,
+        ) != session.credential_binding
+        {
             return Ok(None);
         }
         let cookies = parse_extra_cookies(&raw_cookies);
@@ -544,6 +604,7 @@ pub(super) async fn refresh_auth_session(
             ChatAuth {
                 access_token: Some(access_token),
                 cookies,
+                session_token,
                 jar,
                 anonymous: false,
                 client: session.outbound.client.clone(),
@@ -607,16 +668,26 @@ pub(super) async fn refresh_auth_session(
 
 async fn load_credentials(app: &App, session: &Session) -> Result<Option<ChatAuth>> {
     let db = app.db.lock().await;
-    let row: Option<(String, String, Option<i64>)> = db.conn.query_row(
-        "SELECT access_token, extra_cookies, proxy_node_id FROM gateway_sessions WHERE user_name=?1 AND chatgpt_username=?2 AND mirror_token=?3",
+    let row: Option<(String, String, Option<i64>, Option<String>)> = db.conn.query_row(
+        "SELECT access_token, extra_cookies, proxy_node_id, session_token FROM gateway_sessions WHERE user_name=?1 AND chatgpt_username=?2 AND mirror_token=?3",
         params![session.user, session.account, session.token_hash],
-        |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)),
+        |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?, row.get(3)?)),
     ).optional()?;
-    let Some((access_token, extra_cookies, node)) = row else { return Ok(None); };
+    let Some((access_token, extra_cookies, node, session_token)) = row else { return Ok(None); };
     if egress::binding(&db,&app.config,node)? != session.outbound.binding { return Ok(None); }
     let access_token = db.decrypt(&access_token)?;
     let extra_cookies = db.decrypt(&extra_cookies)?;
-    if sha256_hex(&json!([session.account,access_token,extra_cookies]).to_string()) != session.credential_binding {
+    let session_token = match session_token.as_deref() {
+        Some(encrypted) => Some(db.decrypt(encrypted)?),
+        None => None,
+    };
+    if credential_binding(
+        &session.account,
+        &access_token,
+        session_token.as_deref(),
+        &extra_cookies,
+    ) != session.credential_binding
+    {
         return Ok(None);
     }
     let cookies = parse_extra_cookies(&extra_cookies);
@@ -637,6 +708,7 @@ async fn load_credentials(app: &App, session: &Session) -> Result<Option<ChatAut
     Ok(Some(ChatAuth {
         access_token: Some(access_token),
         cookies,
+        session_token,
         jar,
         anonymous: false,
         client: session.outbound.client.clone(),
@@ -817,8 +889,13 @@ async fn send_chat_once(
         app.cloudflare.cookies().await
     };
     let jar_pairs = upstream_cookies::pairs_for(&auth.jar, base);
-    if let Some(cookie) = cloudflare::cookie_header(&[cookies, jar_pairs.as_slice(), cf.as_slice()])
-    {
+    let session = session_cookie_group(auth, cookies, jar_pairs.as_slice());
+    if let Some(cookie) = cloudflare::cookie_header(&[
+        cookies,
+        session.as_slice(),
+        jar_pairs.as_slice(),
+        cf.as_slice(),
+    ]) {
         headers.insert(
             "cookie",
             HeaderValue::from_str(&cookie).context("Cookie 头无效")?,

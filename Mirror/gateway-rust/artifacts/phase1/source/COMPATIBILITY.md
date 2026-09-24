@@ -172,6 +172,36 @@ Django 健康检测据此把凭据标成不可用、可能发告警，刷新 cro
 Django `DJANGO_ENV=LOCAL manage.py test` 93 项通过（本批未改 Django 代码，作为回归确认）。
 证据全部来自合成回环 fixture：真实账号、真实 chatgpt.com 与真实 WS 上游联调未执行。
 
+### 新建对话的前端真实形状（2026-09-24 分块取证，只读）
+
+为了判定真实探针三次新建尝试被上游 JSON 403 拒绝的原因，从公开前端 CDN 重新取回
+`cdn.oaistatic.com/assets/` 的三个分块（`4813494d-i6uoff53a7o08h8b.js` 2558090 B
+`6fbde837…0ed012f`、`8b34dbc2-oz862wcamnpza3ku.js` 3691919 B `dbf21758…8dfc495d`、
+`conversation-small-c1t85fv7s1nl9k7s.js` 5562125 B `766bba7e…98dfa38c`，sha256 全部与
+`src/assets/chatgpt-api-routes.json` 冻结值一致），只做静态阅读，不接触账号。
+
+| 项 | 确证内容 |
+|---|---|
+| 创建端点 | 前缀由 `P0t()` 在 `https://chatgpt.com/backend-api`（登录态）与 `…/backend-anon`（匿名态）间切换，后缀为 `/f/conversation`（`f_completion` 关闭时退化为 `/conversation`）；另有 `POST /f/conversation/prepare` 前置调用。**探针用的 `/backend-api/f/conversation` 与 `/backend-api/conversation/id/{id}` 选择正确** |
+| 请求体 | 顶层约 40 个键（`action`/`messages`/`model`/`parent_message_id`/`conversation_id`/`timezone`/`history_and_training_disabled` 等）；`messages[]` 元素为前端原样透传（仅删 `clientMetadata`），键名 `id`/`author{role,name}`/`content{content_type,parts}`/`recipient`/`metadata`/`status`/`weight` |
+| sentinel 头族 | 枚举 `TYt`：`OpenAI-Sentinel-Chat-Requirements-Token`、`…-Prepare-Token`、`OpenAI-Sentinel-Turnstile-Token`、`…-Proof-Token`、`…-SO-Token`、`OpenAI-Sentinel-Token`、`OAI-Telemetry`；创建请求把它们与 `OAI-Echo-Logs`、`x-conduit-token`、`x-oai-turn-trace-id` 一起合并 |
+| 握手顺序 | `POST /backend-api/sentinel/chat-requirements/prepare`，体为 `{p: <requirements token>}`，`p` 由页面内 SDK 本地算出（`gAAAAAC` 前缀）→ 响应取 `prepare_token`/`persona`/`turnstile`/`proofofwork`/`so`/`force_login` → `POST …/finalize`，体为 `{prepare_token, proofofwork?, turnstile?}` → 响应的 `token` 回填进 `OpenAI-Sentinel-Chat-Requirements-Token` |
+| PoW / Turnstile | **条件触发**：仅当 prepare 响应里 `proofofwork.required`（用 `seed`+`difficulty`）/ `turnstile.required` 为真时由浏览器求解；不需要时不计算 |
+| SDK 来源 | `sdkVariant` 默认 `chatgpt` → `https://chatgpt.com/backend-api/sentinel/sdk.js`（仅 `openai` 变体用 `sentinel.openai.com`），以动态插入 `<script>` 加载，并靠 `SentinelSDK.token()/sessionObserverToken()/timing()` 产出上述令牌，`/sentinel/heartbeat` 定时续期 |
+
+结论与候选的关系：
+
+1. **403 的原因是缺 sentinel 握手，不是路由或载荷选错**；合成探针不会产生这一族头，被拒属预期。
+2. **候选无需为写路径实现 sentinel**：令牌由浏览器产生，原版网关同样只透传（其二进制查无
+   `f/conversation`、`openai-sentinel`、`chat-requirements-token`、`proof-token` 字面量）。
+3. 链路已具备：请求头按黑名单过滤后原样透传（`openai-sentinel-*`、`oai-*` 不在剔除集内）；
+   改写表第 37 行 `https://chatgpt.com/backend-api/` → `/backend-api/` 覆盖 SDK 与握手请求；
+   CSP 的 `script-src` 同时允许 `'self'` 与 `https://chatgpt.com`（改写漏掉时也不被拦）；
+   ACL 把 `/backend-api/sentinel/*`（`UNOWNED` 含 `sentinel`）与 `/backend-api/f/conversation/prepare`
+   按账号级放行，后者另有单测。
+4. **剩下的是验收方式而非实现**：要证明「浏览器经镜像能新建并续聊」，必须做真实浏览器驱动的
+   端到端流程；合成回环只能证明「没有丢掉浏览器的材料」。
+
 ## 缺口 3 完整批次：资源 ACL 产品接线（2026-09-24）
 
 共享上游账号下唯一的内容级边界从「会话名称式归属」换成 ACL v1（`src/resource_acl.rs` +
@@ -342,6 +372,60 @@ Django 侧只读 `name`/`value`（`chatgpt/models.py`），多余字段被忽略
 回注，`oai-did` 只是其中一项。
 
 ## 证据
+
+## 会话 Cookie 合成与浏览器端到端验收（2026-09-24，真实上游实测）
+
+浏览器驱动验收发现：账号用 SessionToken（`login_mode = web`）登录时，候选不给上游带
+会话 Cookie，前端因此拿到上游的未登录页面、整体退回匿名通道。本批按原版补齐。
+
+| 项 | 原版（逆向证据） | 本候选 |
+|---|---|---|
+| 会话 Cookie 来源 | `append_session_cookies`、`supplemental_has_next_auth_cookie`、`build_upstream_auth_cookie_header`、`cookie_value`、`rebuild_split_cookie_value`（符号各 1 处）；cookie 名字面量 `__Secure-next-auth.session-token` 5 处、`next-auth.session-token` 8 处、`__Secure-` 7 处、`__Host-` 1 处 | Django 把 SessionToken 作为独立字段下发（`backend/app/chatgpt/views/chatgpt.py` 的 payload），候选把它合成为 `__Secure-next-auth.session-token` 再发上游（`proxy::session_cookie_group`） |
+| 已有同名 Cookie | `supplemental_has_next_auth_cookie` 判定「补充 cookie 里已经有就跳过」 | 相同：本次请求确实会发出同名 Cookie（会话 `extra_cookies` 或 jar）时不再合成，管理员导入的会话态优先 |
+| Cookie 顺序 | 会话 cookies → 其余 → CF | 会话 `extra_cookies` → 合成的会话 Cookie → jar 作用域内条目 → CF 缓存（同名取先） |
+| 落库 | 会话 Cookie 并入 `gateway_sessions.extra_cookies` | **有意偏离**：不落库。它是账号凭据，落在会话列会随 v3 备份一起搬走；jar 的两张排除表本就把 `next-auth.session-token` 系列为镜像自有名字 |
+| 号池行 | 未确证 | 不写号池行，不凭一次请求创建账号池记录 |
+
+**凭据绑定变更（会影响存量会话）**：`rust_credential_binding` 原本只覆盖
+`[account, access_token, extra_cookies]`；会话 Cookie 现在参与上游请求字节，因此一并纳入
+绑定（`proxy::credential_binding`，四处调用点：登录、`session()` 解析、`refresh_auth_session`、
+`load_credentials`，外加 `management::mirror_token` 批量签发）。后果：**本批之前建立的全部
+镜像会话立即失效并需要重新登录**，而不是继续发出过期会话 Cookie。`None` 与空串归一为同一
+输入，因为号池行的 `session_token` 允许是空串（Django 字段 `blank=True`）。尚未部署过候选，
+因此没有存量会话需要迁移。
+
+### 浏览器驱动验收（`artifacts/phase1/probe/probe_browser_create.py`）
+
+真实 Chromium（系统 Python 的 Playwright 1.62 + chromium-1234）经候选网关加载真实
+chatgpt.com 页面；`:memory:` 库、无常驻改动、令牌与 Cookie 不落证据。
+
+| 轮次 | 结果 |
+|---|---|
+| 修复前（AccessToken 登录） | 页面 200、输入框出现，但前端走**匿名通道**：`/backend-anon/me`、`/backend-anon/conversation/init`、`/backend-anon/sentinel/chat-requirements/{prepare,finalize}` 全 200，`/backend-api/` 请求为 0 |
+| 修复后（SessionToken 登录，只读） | 走**登录通道**：`/backend-api/me`、`/backend-api/accounts/check/…`、`/backend-api/conversations` 200，sentinel `prepare` → `finalize` → `/f/conversation/prepare` 200；首屏 HTML 含 `accessToken`；`/backend-anon/` 请求为 0 |
+| 修复后（真实写入） | `POST /backend-api/f/conversation` **200 `text/event-stream`**，会话创建成功；随后 `stream_status`/`textdocs`/`conversations` 读取 200；删除经网关返回 **200** `{"success":…}`，账号无残留 |
+
+删除经网关返回 200 同时证明**创建路径的 ACL 归属登记生效**：未登记会话在作用域路径上会被
+网关判 404 且不接触上游。合成回环只能证明「没有丢掉浏览器的材料」，本表是唯一一次
+真实浏览器端到端证据。
+
+两个附带结论：
+
+1. **页面加载不需要 cfbypass**：真实浏览器自带 `sec-ch-ua*` 客户端提示头，`GET /` 直接 200
+   （507KB 真实页面，700 条子请求里 `/cdn/assets/*` 全部 200）。合成 `curl`/Python 客户端
+   缺这些头时会拿到 `403 + cf-mitigated: challenge`，此前的「需要 cfbypass」结论只对合成
+   客户端成立。网关自身请求之所以不被挑战，靠的是 jar 里捕获到的 `__cf_bm`/`_cfuvid` 回注。
+2. **前端 sentinel 流程与分块取证一致**：`prepare` → `finalize` → `f/conversation/prepare` →
+   `f/conversation` 的顺序与头族逐条吻合，候选无需实现 sentinel。
+
+验证状态：`cargo test --locked --offline` **197 项全过**（71 库内 + 126 集成；
+`tests/upstream_cookie_jar.rs` 由 4 项增至 8 项），
+`cargo clippy --locked --offline --all-targets -- -D warnings` 通过。
+
+强制防御性审查已执行：`session_cookie_group` 的「已有同名就不合成」不是多余防御
+（管理面导入会话态是真实数据形状，已有单测锁定），`credential_binding` 的
+`None`/空串归一有明确来源（号池行 `blank=True`），四处绑定调用点收敛到一个函数
+正是为了不出现两处公式漂移；未发现需要删除的多余防御。
 
 ## 原版的上游 cookie 模型（2026-09-24 二进制复核）
 

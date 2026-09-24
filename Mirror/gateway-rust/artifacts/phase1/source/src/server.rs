@@ -436,10 +436,15 @@ async fn login(
         return Err(error(StatusCode::CONFLICT, "登录期间出口配置已变化，请重新登录"));
     }
     let encrypted_access = db.encrypt(&access)?;
-    let session = if input.session_token.is_empty() {
+    // 会话 Cookie 的明文参与绑定（见下方 credential_binding），密文只管落库。
+    let session_token = if input.session_token.is_empty() {
         None
     } else {
-        Some(db.encrypt(&input.session_token)?)
+        Some(input.session_token.as_str())
+    };
+    let session = match session_token {
+        Some(value) => Some(db.encrypt(value)?),
+        None => None,
     };
     let extra = db.encrypt(&extra_cookies)?;
     // 稳定账号键：mirror profile 必须由 Django 载荷提供（缺失即拒绝登录，
@@ -456,7 +461,15 @@ async fn login(
     } else {
         None
     };
-    payload["rust_credential_binding"] = json!(sha256_hex(&json!([email, access, extra_cookies]).to_string()));
+    // 绑定覆盖实际会发给上游的三样凭据：access_token、会话 Cookie 与 extra_cookies
+    // （见 proxy::credential_binding）。admin 单独轮换 SessionToken 时，旧会话因此
+    // 立刻失效并要求重新登录，而不是继续发出过期会话 Cookie。
+    payload["rust_credential_binding"] = json!(proxy::credential_binding(
+        &email,
+        &access,
+        session_token,
+        &extra_cookies,
+    ));
     let mode = if anonymous_login {
         anonymous::LOGIN_MODE
     } else {
@@ -1206,9 +1219,22 @@ async fn session(app: &App, token: &str) -> Result<Option<Session>> {
     let Some((authorization, expiry)) = authorization else { return Ok(None); };
     if expiry <= now() { return Ok(None); }
     let payload: Value = serde_json::from_str(&db.decrypt(&authorization)?)?;
-    let credential_binding = sha256_hex(&json!([account,db.decrypt(&encrypted)?,db.decrypt(&cookies)?]).to_string());
+    let (node, session_token): (Option<i64>, Option<String>) = db.conn.query_row(
+        "SELECT proxy_node_id, session_token FROM gateway_sessions WHERE mirror_token=?1",
+        [&hash],
+        |row| Ok((row.get(0)?, row.get(1)?)),
+    )?;
+    let session_token = match session_token.as_deref() {
+        Some(value) => Some(db.decrypt(value)?),
+        None => None,
+    };
+    let credential_binding = proxy::credential_binding(
+        &account,
+        &db.decrypt(&encrypted)?,
+        session_token.as_deref(),
+        &db.decrypt(&cookies)?,
+    );
     if payload["rust_credential_binding"].as_str()!=Some(credential_binding.as_str()) { return Ok(None); }
-    let node: Option<i64> = db.conn.query_row("SELECT proxy_node_id FROM gateway_sessions WHERE mirror_token=?1",[&hash],|row|row.get(0))?;
     let outbound = egress::load(&db, &app.config, node)?;
     if payload["rust_egress_binding"].as_str()!=Some(outbound.binding.as_str()) { return Ok(None); }
     let policy = if app.config.mirror_profile {

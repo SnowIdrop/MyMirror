@@ -179,11 +179,67 @@ ACL 模块接入产品路径。
   - **未定名**：`is_browser_preference_cookie_name`(0x1872F0) 里还有一条 12 字节内联比较
     （解出 `oai-allow-ne…`），完整名字未还原，未纳入排除表；若实测发现它被跨会话搬迁，再按实测
     名字补表。名称比较目前按大小写不敏感（更保守），原版常量比较是否如此未确证。
-  - **写路径仍未打通（不属于 cookie jar）**：三次真实新建尝试全部 JSON 403（无 CF 挑战、
-    非 HTML），其中一次携带的是上游自己下发的 `oai-did`。剩余原因指向浏览器侧材料
-    （`/backend-api/sentinel/chat-requirements` 的令牌、前端自身请求头）。要闭环必须做
-    **真实浏览器驱动**的镜像端到端流程（headless Chromium 经镜像登录真实账号、页面自行完成
-    sentinel/PoW、发起一次新建与删除）；本仓库目前没有可复用的浏览器驱动脚本。
+  - **写路径 JSON 403 的原因已定性（2026-09-24 前端分块取证，见 COMPATIBILITY
+    「新建对话的前端真实形状」）**：路由与端点没选错（登录态确为
+    `POST /backend-api/f/conversation`，且前面还有 `/f/conversation/prepare`）；缺的是
+    **sentinel 握手产生的请求头**。合成探针直接 POST 创建端点、不带
+    `OpenAI-Sentinel-Chat-Requirements-Token` 一族的头，上游拒绝属预期，**不是候选实现缺口**。
+  - **结论：不需要为写路径实现 sentinel。** 这套令牌全部由浏览器产生（`p` 由页面内 SDK
+    本地算出、`prepare_token` 来自上游响应、PoW/Turnstile 在 `required` 时由浏览器求解、
+    最终 `token` 来自 finalize），原版网关同样不做令牌合成（其二进制查无 `f/conversation`
+    与 `openai-sentinel` 字面量）。候选按黑名单过滤请求头、原样透传该族头，改写表第 37 行已把
+    `https://chatgpt.com/backend-api/` 映射为同源 `/backend-api/`，ACL 对
+    `/backend-api/sentinel/*` 与 `/backend-api/f/conversation/prepare` 均按账号级放行。
+  - **仍未闭环的只剩验收方式**：要证明「浏览器经镜像能新建并续聊」，必须做**真实浏览器驱动**
+    的镜像端到端流程（headless Chromium 经镜像登录真实账号、页面自行完成 sentinel/PoW、
+    发起一次新建与删除）；本仓库目前没有可复用的浏览器驱动脚本。合成回环最多证明
+    「没有丢掉浏览器的材料」，证明不了上游接受。
+  - 备选低成本路径：在仍可用的原网关上用 DevTools 抓一份真实
+    `POST /backend-api/f/conversation`（cURL / HAR），比对候选转发的头与载荷，
+    可在不部署浏览器驱动的前提下先确认头族与 `content-type` 实际取值。
+  - **浏览器驱动验收（2026-09-24 第一轮，只读）发现的新差异：`session_token` 登录
+    不会给上游带会话 cookie。** 探针 `artifacts/phase1/probe/probe_browser_create.py`
+    用真实 Chromium 经候选网关加载页面（真实浏览器自带客户端提示头，因此**不需要
+    cfbypass**，页面 200、507KB、输入框出现、700 条子请求里 `/cdn/assets/*` 全 200），
+    但前端走的是**匿名通道**（`/backend-anon/me`、`/backend-anon/conversation/init`、
+    `/backend-anon/sentinel/chat-requirements/{prepare,finalize}` 全 200），
+    没有发出任何 `/backend-api/conversation*`。
+    证据链：
+    - 前端用上游 SSR 的 HTML 判定登录态：镜像首屏 HTML 不含 `accessToken`；
+      实测给 `GET /` 加 `Authorization: Bearer <accessToken>` 也不改变上游 HTML
+      （两次 `accessToken` 计数均为 0），因此登录态 HTML 只能来自会话 cookie。
+    - 镜像自身的会话面正常：页面内 `fetch('/api/auth/session')` 返回 200，
+      键为 `authProvider/expires/loginMode/planType/user`。
+    - 候选缺口：`server/proxy.rs` 全文不出现 `session_token`；
+      `load_credentials`/`refresh_auth_session` 只用 `extra_cookies` 组装 Cookie 头，
+      因此 `session_token` 列（Django 以独立字段下发，见
+      `backend/app/chatgpt/views/chatgpt.py` 的 payload）从不进入上游 Cookie 头。
+    - 原版有对应逻辑（**符号级证据，未反编译**）：ELF 符号表含
+      `append_session_cookies`、`supplemental_has_next_auth_cookie`、
+      `build_upstream_auth_cookie_header`、`cookie_value`、`rebuild_split_cookie_value`
+      （均 1 处），cookie 名字面量 `__Secure-next-auth.session-token` 5 处、
+      `next-auth.session-token` 8 处、`__Secure-` 7 处、`__Host-` 1 处。
+  - **影响**：账号用 `session_token`（login_mode `web`）登录时，浏览器拿到的是上游的
+    未登录页面，前端退回匿名通道——会话不落账号，ACL/归属层不参与。若账号的
+    `extra_cookies` 里本来就有 `__Secure-next-auth.session-token`（管理面导入 cookie），
+    则该路径当前可用。
+  - **已实现（2026-09-24）**：会话 cookie 合成（`session_token` 列 → 上游
+    `__Secure-next-auth.session-token`，`extra_cookies` 或 jar 已有同名条目不重复），
+    并纳入凭据绑定。见 COMPATIBILITY「会话 Cookie 合成与浏览器端到端验收」。
+  - **登录态端到端验收已通过**：真实 Chromium 经候选网关加载页面后走登录通道
+    （`/backend-api/*` 60 次、`/backend-anon/*` 0 次），真实新建会话
+    `POST /backend-api/f/conversation` 200 `text/event-stream`，随后经网关删除 200
+    `{"success":…}`，账号无残留。删除成功同时证明创建路径的 ACL 归属登记生效。
+  - **仍未覆盖**：WS 握手侧的会话 cookie 合成只有同一函数的合成回环覆盖，没有独立的
+    WS fixture 用例（HTTP 侧已端到端验证）；流式回复的正文渲染、停止生成、
+    重命名/删除的历史界面流程仍未逐条断言。
+  - **新发现的上游路由（未分类，503）**：真实页面会请求
+    `GET /backend-api/checkout_pricing_config/configs/US`，该路径**不在** 923 条路由快照里
+    （快照冻结于 2026-09-23），因此按 ACL 设计返回
+    `503 {"code":"acl_unclassified_route"}`。它不是对话路径，但说明前端已有快照之后新增的
+    路由；要开放需先把它按账号级登记进 `UNOWNED` 并刷新快照。
+  - **页面加载不需要 cfbypass**：真实浏览器自带 `sec-ch-ua*` 客户端提示头即可 200；
+    合成客户端缺这些头才会被挑战。cfbypass 仍是挑战刷新路径的依赖（`CF_BYPASS_URL`）。
   - 真实上游 cookie 名已在证据里固化，可用于后续批次核对捕获名单。
   - 登录/诊断链（`/api/login` 的 session_token 换取、`/api/get-user-info`、
     `/api/diagnose-chatgpt-auth`）在会话建立前调用上游，不走会话通道，因此既不播种也不捕获；

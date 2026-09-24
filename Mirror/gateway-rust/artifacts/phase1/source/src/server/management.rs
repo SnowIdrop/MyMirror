@@ -168,8 +168,10 @@ pub(super) async fn mirror_token(
         }
         // encrypt 对 enc:v1: 输入幂等、对存量明文行就地加密，与 login 写入同义。
         let access = crypto.encrypt(&access_raw)?;
-        let session = match session_raw {
-            Some(raw) => Some(crypto.encrypt(&raw)?),
+        // 会话 Cookie 的明文参与绑定（见下方 credential_binding），密文只管落库。
+        let session_token = session_raw.as_deref();
+        let session = match session_token {
+            Some(raw) => Some(crypto.encrypt(raw)?),
             None => None,
         };
         let cookies = crypto.encrypt(&cookies_raw)?;
@@ -212,7 +214,12 @@ pub(super) async fn mirror_token(
         )?;
         let (mut payload, expiry) = policies.get(account).cloned().unwrap_or((json!({}), i64::MAX));
         payload["rust_egress_binding"] = json!(binding);
-        payload["rust_credential_binding"] = json!(sha256_hex(&json!([account,crypto.decrypt(&access)?,crypto.decrypt(&cookies)?]).to_string()));
+        payload["rust_credential_binding"] = json!(proxy::credential_binding(
+            account,
+            &crypto.decrypt(&access)?,
+            session_token,
+            &crypto.decrypt(&cookies)?,
+        ));
         tx.execute(
             "INSERT INTO rust_authorizations(token_hash,payload,expires_at) VALUES(?1,?2,?3)",
             params![hash, crypto.encrypt(&payload.to_string())?, expiry],

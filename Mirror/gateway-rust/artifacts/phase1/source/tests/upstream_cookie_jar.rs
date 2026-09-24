@@ -27,6 +27,10 @@ const ADMIN: &str = "upstream-jar-admin-secret";
 const KEY: &str = "upstream-jar-fixture-encryption-key-0001";
 /// 上游账号名：登录时网关用它作为 `chatgpt_username`（来自 `/backend-api/me` 的 email）。
 const ACCOUNT: &str = "fixture@example.invalid";
+/// 夹具的 SessionToken：上游要的是 `__Secure-next-auth.session-token`。
+const SESSION_TOKEN: &str = "synthetic-session-token-1";
+/// 管理面导入过的会话 Cookie（`extra_cookies` 里的同名条目）。
+const IMPORTED_SESSION: &str = "imported-session-token-9";
 /// 挑战次数哨兵：一直用实测挑战形态拒绝。
 const ALWAYS: usize = usize::MAX;
 
@@ -96,6 +100,10 @@ async fn chat_upstream(state: Arc<Upstream>, request: Request) -> Response {
             .into_response();
     }
     let mut response = match parts.uri.path() {
+        // SessionToken 换取：上游用会话 Cookie 换 accessToken（真实形态同此）。
+        "/api/auth/session" => {
+            axum::Json(json!({"accessToken":"exchanged-access-token"})).into_response()
+        }
         "/backend-api/me" => axum::Json(json!({"email":ACCOUNT})).into_response(),
         path => axum::Json(json!({"path":path})).into_response(),
     };
@@ -255,6 +263,62 @@ impl Fixture {
             .send()
             .await
             .unwrap()
+    }
+
+    /// 用 SessionToken 登录（`login_mode = web`）：网关先拿会话 Cookie 换取
+    /// accessToken，因此夹具上游的 `/api/auth/session` 必须返回 `accessToken`。
+    /// `extra` 是 Django 一并下发的额外 Cookie（管理面导入会话态时非空）。
+    async fn session_login(&self, user: &str, extra: Value) -> (String, StatusCode) {
+        let response = self
+            .client
+            .post(format!("{}/api/login", self.base))
+            .bearer_auth(ADMIN)
+            .json(&json!({
+                "user_name":user,
+                "session_token":SESSION_TOKEN,
+                "authorization":"signature-v1",
+                "login_mode":"web",
+                "isolated_session":true,
+                "mcp_isolation":true,
+                "skills_isolation":true,
+                "model_isolation":true,
+                "daily_quota":20,
+                "monthly_quota":100,
+                "model_allowed_ids":["fixture-model"],
+                "model_rate_limits":{},
+                "limits":[],
+                "mcp_allowed_ids":[],
+                "skills_allowed_ids":[],
+                "chatgpt_account_id":"3",
+                "extra_cookies":extra,
+            }))
+            .send()
+            .await
+            .unwrap();
+        let status = response.status();
+        if status != StatusCode::OK {
+            return (String::new(), status);
+        }
+        let body: Value = serde_json::from_str(&response.text().await.unwrap()).unwrap();
+        let token = body["login_url"]
+            .as_str()
+            .unwrap()
+            .split('=')
+            .nth(1)
+            .unwrap()
+            .to_owned();
+        (token, status)
+    }
+
+    /// 覆盖会话列里的 SessionToken（模拟管理员在 Django 侧轮换该凭据）。
+    fn overwrite_session_token(&self, user: &str, value: &str) {
+        let crypto = Crypto::new(KEY).unwrap();
+        let conn = Connection::open(self._dir.path().join("db.sqlite")).unwrap();
+        conn.execute(
+            "UPDATE gateway_sessions SET session_token = ?1 WHERE user_name = ?2",
+            rusqlite::params![crypto.encrypt(value).unwrap(), user],
+        )
+        .unwrap();
     }
 
     /// 号池账号行：`extra_cookies` 写明文 JSON（与导入的历史数据同形，解密为透传）。
@@ -515,5 +579,99 @@ async fn cloudflare_refresh_drops_stale_stored_cloudflare_cookies() {
         names(&fixture.session_jar("alice")),
         Vec::<String>::new(),
         "旧 CF 条目必须从落库 jar 里一并清掉"
+    );
+}
+
+/// SessionToken → 会话 Cookie 合成（原版 `append_session_cookies`）：账号只有
+/// SessionToken 时，上游必须收到 `__Secure-next-auth.session-token`；它属于账号凭据，
+/// 不落 jar、也不写进号池行。
+#[tokio::test]
+async fn session_token_is_synthesized_into_the_upstream_cookie() {
+    let fixture = Fixture::new(false).await;
+    let (token, status) = fixture.session_login("alice", json!([])).await;
+    assert_eq!(status, StatusCode::OK);
+
+    // 换取路径本身也要带会话 Cookie（既有行为，这里顺带锁定）。
+    let exchanged = fixture.calls("/api/auth/session");
+    assert!(
+        exchanged.iter().any(|entry| entry["cookie"]
+            .as_str()
+            .unwrap()
+            .contains("__Secure-next-auth.session-token=")),
+        "{exchanged:?}"
+    );
+    fixture.clear_calls();
+
+    assert_eq!(fixture.me(&token).await.status(), StatusCode::OK);
+    let call = last(&fixture.calls("/backend-api/me")).clone();
+    let cookie = call["cookie"].as_str().unwrap();
+    assert!(
+        cookie.contains(&format!("__Secure-next-auth.session-token={SESSION_TOKEN}")),
+        "会话 Cookie 必须进入上游请求: {call}"
+    );
+    // 会话 Cookie 是账号凭据：既不进 jar 落库，也不写成号池捕获条目。
+    assert_eq!(fixture.session_jar_column("alice"), None, "{call}");
+}
+
+/// 管理面导入过会话态时以导入值为准：`extra_cookies` 里已有同名 Cookie 就不再合成，
+/// 否则合成的值会顶掉管理员导入的会话（原版 `supplemental_has_next_auth_cookie`）。
+#[tokio::test]
+async fn imported_session_cookie_wins_over_synthesized_value() {
+    let fixture = Fixture::new(false).await;
+    let extra = json!([{"name":"__Secure-next-auth.session-token","value":IMPORTED_SESSION}]);
+    let (token, status) = fixture.session_login("alice", extra).await;
+    assert_eq!(status, StatusCode::OK);
+    fixture.clear_calls();
+
+    assert_eq!(fixture.me(&token).await.status(), StatusCode::OK);
+    let cookie = last(&fixture.calls("/backend-api/me")).clone()["cookie"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    assert!(cookie.contains(&format!("={IMPORTED_SESSION}")), "{cookie}");
+    assert!(
+        !cookie.contains(SESSION_TOKEN),
+        "已有同名 Cookie 时不得再合成: {cookie}"
+    );
+    assert_eq!(
+        cookie.matches("__Secure-next-auth.session-token=").count(),
+        1,
+        "同名 Cookie 只能出现一次: {cookie}"
+    );
+}
+
+/// 只有 AccessToken 的登录不发会话 Cookie：不凭空给上游塞一个空会话态。
+#[tokio::test]
+async fn access_token_login_sends_no_session_cookie() {
+    let fixture = Fixture::new(false).await;
+    let token = fixture.login("alice").await;
+    fixture.clear_calls();
+
+    assert_eq!(fixture.me(&token).await.status(), StatusCode::OK);
+    let cookie = last(&fixture.calls("/backend-api/me")).clone()["cookie"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    assert!(
+        !cookie.contains("__Secure-next-auth.session-token"),
+        "{cookie}"
+    );
+}
+
+/// 凭据绑定覆盖会话 Cookie：管理员单独轮换 SessionToken 后，旧镜像会话立刻失效
+/// （401），而不是继续把过期会话 Cookie 发上游。
+#[tokio::test]
+async fn rotating_session_token_invalidates_the_existing_session() {
+    let fixture = Fixture::new(false).await;
+    let (token, status) = fixture.session_login("alice", json!([])).await;
+    assert_eq!(status, StatusCode::OK);
+    assert_eq!(fixture.me(&token).await.status(), StatusCode::OK);
+
+    fixture.overwrite_session_token("alice", "rotated-session-token-2");
+    fixture.clear_calls();
+    assert_eq!(fixture.me(&token).await.status(), StatusCode::UNAUTHORIZED);
+    assert!(
+        fixture.calls("/backend-api/me").is_empty(),
+        "绑定失效必须在接触上游之前拒绝"
     );
 }

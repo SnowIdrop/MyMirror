@@ -190,9 +190,14 @@ async fn upstream_headers(
         app.cloudflare.cookies().await
     };
     let jar = upstream_cookies::pairs_for(&auth.jar, &app.config.ws_upstream);
-    if let Some(cookie) =
-        cloudflare::cookie_header(&[auth.cookies.as_slice(), jar.as_slice(), cf.as_slice()])
-    {
+    // 与 HTTP 侧同规则：账号只有 SessionToken 时合成会话 Cookie 再发上游。
+    let session = proxy::session_cookie_group(auth, auth.cookies.as_slice(), jar.as_slice());
+    if let Some(cookie) = cloudflare::cookie_header(&[
+        auth.cookies.as_slice(),
+        session.as_slice(),
+        jar.as_slice(),
+        cf.as_slice(),
+    ]) {
         headers.insert(
             "cookie",
             HeaderValue::from_str(&cookie).context("Cookie 头无效")?,
