@@ -1,3 +1,6 @@
+// `resource_acl.rs` 以独立模块编译：产品侧接线（网关库、每请求复验）不参与本用例，
+// 只用模块自身的判权/登记/审计自由函数，因此关掉未接线入口的 dead_code 警告。
+#[allow(dead_code)]
 #[path = "../src/resource_acl.rs"]
 mod resource_acl;
 
@@ -150,7 +153,7 @@ fn fresh_version_role_user_subject_and_expiry_are_rechecked() {
 
 #[test]
 fn failed_create_records_nothing_and_unknown_is_admin_read_only() {
-    let mut db = database();
+    let db = database();
     let owner = actor("1", false);
     let admin = actor("3", true);
     let resource = key("missing", ResourceKind::Conversation);

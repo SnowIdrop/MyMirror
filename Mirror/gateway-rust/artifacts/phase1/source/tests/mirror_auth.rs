@@ -12,7 +12,11 @@ async fn mirror_authority_revocation_and_relogin_are_enforced() {
     let stub=Router::new()
         .route("/0x/user/gateway-authorization",post(|Json(v):Json<Value>|async move{
             let version=match v["authorization"].as_str(){Some("signature-v1")=>"v1",Some("signature-v2")=>"v2",_=>""};
-            Json(json!({"active":!version.is_empty(),"version":version,"expires_at":SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs()+3600}))
+            // ACL 可信身份：user_id/is_admin/subject/principal_kind 一律来自本响应。
+            Json(json!({"active":!version.is_empty(),"version":version,
+                "user_id":"7","is_admin":false,"principal_kind":"user",
+                "subject":v["subject"],
+                "expires_at":SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs()+3600}))
         }))
         .route("/backend-api/me",axum::routing::get(|headers:axum::http::HeaderMap|async move{
             assert_eq!(headers["authorization"],"Bearer synthetic-access-token");
@@ -50,7 +54,8 @@ async fn mirror_authority_revocation_and_relogin_are_enforced() {
         .redirect(reqwest::redirect::Policy::none())
         .build()
         .unwrap();
-    let mut payload = json!({"user_name":"alice","authorization":"signature-v1","access_token":"synthetic-access-token","login_mode":"api","isolated_session":true,"mcp_isolation":true,"skills_isolation":true,"model_isolation":true,"daily_quota":20,"monthly_quota":100,"model_allowed_ids":["fixture-model"],"model_rate_limits":{},"limits":[],"mcp_allowed_ids":[],"skills_allowed_ids":[]});
+    // `chatgpt_account_id` 由 Django `/api/login` 载荷下发（稳定账号键）。
+    let mut payload = json!({"user_name":"alice","authorization":"signature-v1","access_token":"synthetic-access-token","login_mode":"api","isolated_session":true,"mcp_isolation":true,"skills_isolation":true,"model_isolation":true,"daily_quota":20,"monthly_quota":100,"model_allowed_ids":["fixture-model"],"model_rate_limits":{},"limits":[],"mcp_allowed_ids":[],"skills_allowed_ids":[],"chatgpt_account_id":"3"});
     assert_eq!(
         client
             .post(format!("{base}/api/login"))
@@ -188,6 +193,7 @@ async fn mirror_authority_revocation_and_relogin_are_enforced() {
     conn.execute("INSERT INTO chatgpt_accounts(chatgpt_username,access_token,auth_status) VALUES('fixture@example.invalid','synthetic-access-token',1)", []).unwrap();
     let mut mint = payload.clone();
     mint["chatgpt_list"] = json!(["fixture@example.invalid"]);
+    mint["chatgpt_account_ids"] = json!({"fixture@example.invalid":"11"});
     mint["model_policies"] = json!({"fixture@example.invalid":{"model_isolation":true,"model_allowed_ids":["fixture-model"],"model_rate_limits":{}}});
     mint["authorization"] = json!("invalid-signature");
     assert_eq!(

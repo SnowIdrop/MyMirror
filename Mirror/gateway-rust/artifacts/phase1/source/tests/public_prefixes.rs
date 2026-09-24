@@ -119,6 +119,10 @@ impl Fixture {
                             return axum::Json(serde_json::json!({
                                 "active": true,
                                 "version": "v1",
+                                "user_id": "7",
+                                "is_admin": false,
+                                "principal_kind": "user",
+                                "subject": "alice",
                                 "expires_at": 4_102_444_800_i64,
                             }))
                             .into_response();
@@ -182,6 +186,7 @@ impl Fixture {
                 "limits":[],
                 "mcp_allowed_ids":[],
                 "skills_allowed_ids":[],
+                "chatgpt_account_id":"3",
                 "extra_cookies":[{"name":"probe_extra","value":"EV"}],
             }))
             .send()

@@ -1,8 +1,9 @@
 {
   "ACTIVE_OBJECT": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source",
   "LAST_CONFIRMED_RESULT": {
-    "implementation": "已登录业务面 /backend-api/* 读写与 SSE、会话归属登记最小核心、/ws-chatgpt 桥接、公共前缀策略表（缺口 1+2）已实现并合成回环验证；项目/分支级 ACL 与传输身份（缺口 3 完整批次、缺口 5）仍未接线",
-    "rust_tests": 171,
+    "implementation": "资源 ACL v1 已从孤立模块接成产品判权层（缺口 3 完整批次）：六类资源分类与判权、创建登记、集合过滤、访客拒绝、身份每请求复验、稳定账号键、生成互斥、撤权中止、管理 API、旧归属一次性回填、网关备份 v3；缺口 1+2 仍有效，缺口 5（传输身份与出口策略）未接线",
+    "rust_tests": 176,
+    "rust_acl_wiring_tests": 6,
     "clippy": "passed --all-targets -- -D warnings",
     "configuration_cases": 30,
     "original_page_observations": 40,
@@ -16,9 +17,9 @@
     "backend_api_surface_tests": 7,
     "public_prefixes_tests": 7,
     "ws_bridge_tests": 3,
-    "django_regression_tests": 93
+    "django_regression_tests": 101
   },
-  "NEXT_EXECUTABLE_ACTION": "缺口 3（项目/分支级归属与 ACL 接线）与缺口 5（传输身份与出口策略）；缺口 1+2 已落地，遗留项见 artifacts/phase1/source/NEXT_WORK.md。",
+  "NEXT_EXECUTABLE_ACTION": "缺口 5（传输身份与出口策略：wreq/curl-impersonate、代理节点分流、MIRROR_API_PREFIX/ADMIN_UPSTREAM/CF_BYPASS_PROXY_SERVER/TRUSTED_PROXY_IPS）；缺口 3 已落地，残项与访客策略见 artifacts/phase1/source/NEXT_WORK.md。",
   "INPUT_PATHS": [
     "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\generation-egress\\HANDOFF.json",
     "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\generation-egress\\GATE_RESULTS.json",
@@ -37,9 +38,9 @@
   "remaining": [
     "缺口 1：已登录读写/SSE/归属判定与登记、/ws-chatgpt 桥接、/realtime HTTP 已落地；仍未覆盖真实上游流式渲染与停止/重命名/删除端到端断言；见 source/NEXT_WORK.md",
     "缺口 2：39 个同源前缀已按策略表逐条接管（反代或可行动文案），契约测试解析改写表；/external 主机白名单仍未还原；见 source/NEXT_WORK.md",
-    "缺口 3：会话级归属已接线（创建登记 + 转发前校验 + 未知归属拒绝）；项目/分支级归属与 resource_acl 产品接线仍待做；见 source/NEXT_WORK.md",
+    "缺口 3：已落地 ACL v1 产品接线（六类资源判权/登记/过滤、管理 API、身份复验、生成互斥、撤权中止、旧归属回填、备份 v3）；残项为连接器创建不自动登记、分支维度归属、真实上游探针、Vue 管理界面、访客策略；见 source/NEXT_WORK.md",
     "缺口 5：传输身份（wreq/curl-impersonate 观测）、代理节点与出口 profile 绑定，补齐 MIRROR_API_PREFIX/ADMIN_UPSTREAM/CF_BYPASS_PROXY_SERVER/TRUSTED_PROXY_IPS；见 source/NEXT_WORK.md",
-    "本批新增遗留：未登记会话的管理端重新分配路径、/realtime 升级桥接、/api/livekit 语音、estuary 改写、/api/account-capabilities 定性",
+    "本批新增遗留：/realtime 升级桥接、/api/livekit 语音、estuary 改写、/api/account-capabilities 定性（未登记资源的认领路径已由缺口 3 的 /api/acl/claim 提供，界面仍未做）",
     "保留差异：初次登录 accounts/check、管理非空库自增 ID 与上游序列、login extra_cookies 严格提取契约",
     "第六阶段：统一验收与 All-in-One 镜像交付（rebuild-reference/README.md 的六条交付步骤）",
     "显式非目标（不再作为验收缺口）：计量/配额/限流/审核 provider/PoW；见 source/COMPATIBILITY.md"

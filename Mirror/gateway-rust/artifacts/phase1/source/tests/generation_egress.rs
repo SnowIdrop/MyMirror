@@ -76,7 +76,9 @@ impl Fixture {
         let state = Arc::new(Seen::default());
         let authority=Router::new().route("/0x/user/gateway-authorization",post(|State(s):State<Arc<Seen>>|async move{
             if s.hold_auth.swap(false,Ordering::SeqCst) { s.auth_entered.notify_one();s.auth_release.notified().await; }
-            Json(json!({"active":true,"version":"v1","expires_at":SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs()+3600}))
+            Json(json!({"active":true,"version":"v1",
+                "user_id":"7","is_admin":false,"principal_kind":"user","subject":"alice",
+                "expires_at":SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs()+3600}))
         })).with_state(state.clone());
         let (django, django_task) = bind(authority).await;
         let (chat, chat_task) = upstream("direct", state.clone()).await;
@@ -119,7 +121,7 @@ impl Fixture {
         }
     }
     fn payload(access: &str) -> Value {
-        json!({"user_name":"alice","authorization":"signature-v1","access_token":access,"login_mode":"api","isolated_session":true,"mcp_isolation":true,"skills_isolation":true,"model_isolation":true,"daily_quota":20,"monthly_quota":100,"model_allowed_ids":["fixture-model"],"model_rate_limits":{},"limits":[],"mcp_allowed_ids":[],"skills_allowed_ids":[],"extra_cookies":[{"name":"fixture_generation","value":access}]})
+        json!({"user_name":"alice","authorization":"signature-v1","access_token":access,"login_mode":"api","isolated_session":true,"mcp_isolation":true,"skills_isolation":true,"model_isolation":true,"daily_quota":20,"monthly_quota":100,"model_allowed_ids":["fixture-model"],"model_rate_limits":{},"limits":[],"mcp_allowed_ids":[],"skills_allowed_ids":[],"chatgpt_account_id":"3","extra_cookies":[{"name":"fixture_generation","value":access}]})
     }
     fn login_request(&self, access: &str) -> reqwest::RequestBuilder {
         self.client

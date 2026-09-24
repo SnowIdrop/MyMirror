@@ -236,18 +236,27 @@ fn http_restore_legacy_ignores_non_array_and_unknown_keys() {
 }
 
 #[test]
-fn http_restore_non_v2_version_uses_legacy_upsert() {
+fn http_restore_rejects_versioned_envelopes_that_cannot_carry_acl() {
     let dir = tempfile::tempdir().unwrap();
     let mut db = open(&dir);
     seed(&db);
-    let mut payload = db.export_backup().unwrap();
-    payload["version"] = json!(3);
-    payload["chatgpt_accounts"][0]["remark"] = json!("changed-remark");
-    db.restore_http_backup(&payload).unwrap();
+    let base = db.export_backup().unwrap();
+    // v2 及更早：整包格式没有 ACL 四表，按原版「非 2 走局部 upsert」会静默丢权限。
+    let mut legacy = base.clone();
+    legacy["version"] = json!(2);
+    legacy["chatgpt_accounts"][0]["remark"] = json!("changed-remark");
+    let error = db.restore_http_backup(&legacy).unwrap_err();
+    assert!(error.to_string().contains("不含 ACL 权限表"), "{error}");
+    // 更高版本语义未知：同样不能退化成局部写入。
+    let mut future = base.clone();
+    future["version"] = json!(4);
+    let error = db.restore_http_backup(&future).unwrap_err();
+    assert!(error.to_string().contains("不受支持"), "{error}");
+    // 两次拒绝都不落地：数据保持原样。
     assert_eq!(count(&db, "chatgpt_accounts"), 2);
     assert_eq!(
         text(&db, "SELECT remark FROM chatgpt_accounts WHERE id = 1"),
-        "changed-remark"
+        "one"
     );
 }
 
@@ -257,7 +266,7 @@ fn http_restore_strict_requires_every_table() {
     let mut db = open(&dir);
     seed(&db);
     let error = db
-        .restore_http_backup(&json!({"version": 2, "settings": []}))
+        .restore_http_backup(&json!({"version": 3, "settings": []}))
         .unwrap_err();
     assert_eq!(error.to_string(), "完整备份缺少 chatgpt_accounts");
 
@@ -605,7 +614,7 @@ fn http_restore_strict_all_empty_arrays_clears_tables() {
     let mut db = open(&dir);
     seed(&db);
     db.restore_http_backup(&json!({
-        "version": 2,
+        "version": 3,
         "chatgpt_accounts": [],
         "gateway_sessions": [],
         "settings": [],
@@ -613,7 +622,11 @@ fn http_restore_strict_all_empty_arrays_clears_tables() {
         "project_owners": [],
         "visit_logs": [],
         "conversation_statistics": [],
-        "conversation_model_statistics": []
+        "conversation_model_statistics": [],
+        "acl_resources": [],
+        "acl_project_links": [],
+        "acl_shares": [],
+        "acl_audit": []
     }))
     .unwrap();
     for table in [
@@ -625,6 +638,10 @@ fn http_restore_strict_all_empty_arrays_clears_tables() {
         "visit_logs",
         "conversation_statistics",
         "conversation_model_statistics",
+        "acl_resources",
+        "acl_project_links",
+        "acl_shares",
+        "acl_audit",
     ] {
         assert_eq!(count(&db, table), 0, "表 {table} 应被清空");
     }
@@ -647,11 +664,12 @@ fn http_restore_failure_rolls_back_every_table() {
 }
 
 #[test]
-fn restore_backup_keeps_strict_v2_contract() {
+fn restore_backup_keeps_strict_current_version_contract() {
     let dir = tempfile::tempdir().unwrap();
     let mut db = open(&dir);
     seed(&db);
     let base = db.export_backup().unwrap();
+    assert_eq!(base["version"], json!(3));
 
     let mut payload = base.clone();
     payload["visit_logs"][0]["surprise"] = json!(1);
@@ -663,7 +681,12 @@ fn restore_backup_keeps_strict_v2_contract() {
 
     let mut payload = base.clone();
     payload["version"] = json!(1);
-    assert!(db.restore_backup(&payload).is_err(), "version 必须为 2");
+    assert!(db.restore_backup(&payload).is_err(), "version 必须为当前版本");
+
+    // v2 信封不含 ACL 四表：必须显式拒绝，不能静默丢权限。
+    let mut payload = base.clone();
+    payload["version"] = json!(2);
+    assert!(db.restore_backup(&payload).is_err(), "v2 必须被拒绝");
 
     assert_eq!(db.export_backup().unwrap(), base);
 }

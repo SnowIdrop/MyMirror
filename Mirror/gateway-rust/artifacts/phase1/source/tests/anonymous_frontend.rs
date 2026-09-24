@@ -84,9 +84,18 @@ impl Fixture {
         let django_url = {
             let router = Router::new().fallback(|request: Request| async move {
                 if request.uri().path() == "/0x/user/gateway-authorization" {
+                    // 访客会话：principal_kind=visitor，网关不构造 ACL 身份，
+                    // 资源路径一律拒绝，但页面与匿名通道保持可用。
+                    let (_, body) = request.into_parts();
+                    let body = to_bytes(body, 64 * 1024).await.unwrap();
+                    let input: Value = serde_json::from_slice(&body).unwrap_or_default();
                     return axum::Json(json!({
                         "active": true,
                         "version": "v1",
+                        "user_id": "21",
+                        "is_admin": false,
+                        "principal_kind": "visitor",
+                        "subject": input["subject"],
                         // 固定远期 Unix 秒：fixture 不依赖运行时钟。
                         "expires_at": 4_102_444_800_i64,
                     }))

@@ -132,10 +132,10 @@ Django 健康检测据此把凭据标成不可用、可能发告警，刷新 cro
 
 | 项 | 原版 | 本候选 | 说明 |
 |---|---|---|---|
-| `/backend-api/*` | 已登录通道，方法语义交给上游 | 相同；会话作用域与续聊先做归属判定 | `server/proxy.rs` + `server/owners.rs` |
+| `/backend-api/*` | 已登录通道，方法语义交给上游 | 相同；六类资源先做 ACL 判权（缺口 3 起，取代名称式判定） | `server/proxy.rs` + `server/acl.rs` |
 | 会话归属登记 | `claim_conversation_owner` 等（报告 08 §3.1-C、§6.1） | 创建响应里出现 `"conversation_id":"<uuid>"` 即登记；跨块用尾窗重叠识别，**在把含该 id 的块交给客户端之前**写库 | 冲突不覆盖属主；2xx 创建响应认不出 id 时记 warn（只记路径） |
 | 未知归属 | 未确证 | 一律拒绝：`404 {"message":"会话不存在或不属于当前用户"}`，不接触上游 | 含本批之前创建、或直接在上游站点创建的会话；唯一恢复途径是管理员在后端重新分配（未实现，见 NEXT_WORK） |
-| 项目/分支级归属 | `enforce_project_owner` 等 | 未接线（缺口 3 完整批次） | `project_owners` 表与 ACL 模块保持现状 |
+| 项目/分支级归属 | `enforce_project_owner` 等 | 已接线（见下方「缺口 3 完整批次」） | 项目/文件/图片/任务/连接器与项目动态共享统一由 `resource_acl.rs` 判定 |
 | estuary 内容 URL 绝对化 | `absolutize_estuary_content_urls`（规则未证实，报告 08 §7.2） | 不做；`/backend-api/estuary/*` 按普通已登录路径转发 | 已知差异，规则只有符号名 |
 
 ### WebSocket 与实时通道
@@ -171,6 +171,66 @@ Django 健康检测据此把凭据标成不可用、可能发告警，刷新 cro
 `cargo clippy --locked --offline --all-targets -- -D warnings` 通过；
 Django `DJANGO_ENV=LOCAL manage.py test` 93 项通过（本批未改 Django 代码，作为回归确认）。
 证据全部来自合成回环 fixture：真实账号、真实 chatgpt.com 与真实 WS 上游联调未执行。
+
+## 缺口 3 完整批次：资源 ACL 产品接线（2026-09-24）
+
+共享上游账号下唯一的内容级边界从「会话名称式归属」换成 ACL v1（`src/resource_acl.rs` +
+`server/acl.rs` + `server/acl_admin.rs`）。判权在网关单锁内用 IMMEDIATE 事务完成，
+路由分类来自 2026-09-23 冻结的公开前端路由快照（`src/assets/chatgpt-api-routes.json`，
+349 个分块 sha256、923 条 `/backend-api/*` 模板）。
+
+### 分类与拒绝契约
+
+| 判定 | 路径示例 | 行为 |
+|---|---|---|
+| 资源作用域 | `conversation/{uuid}*`、`projects/{id}*`、`websites/{project_id}*`、`files/{id}*`、`files/library/**`、`images/{id}*`、`my/image/**`、`tasks/{id}`、`task/cancel`、`aip/connectors/{id}*`、`aip/connectors/links/{id}`、`v2/connectors|links/{id}`、`ecosystem/file_*` | 转发前判权；未登记或他人资源 `404 {"message":"会话不存在或不属于当前用户","code":"acl_not_found"}`，**不接触上游** |
+| 集合读取 | `conversations?…`、`conversations/search`、`projects`、`files`、`files/library/*`、`images`、`images/image-tags`、`my/recent/image_gen|uploaded_images`、`tasks` | 转发后按 ACL 过滤元素并把 `total` 重算为可见条数；上游非 2xx 或正文不可解析时仍是 `{"items":[],"total":0}` |
+| 创建登记 | `POST conversation`、`f/conversation`、`sidebar/conversation`、`projects`、`files`、`files/import_image`、`images`、`images/image-tags`、`tasks` | 只在**已确认 2xx** 的响应流上按块扫描资源 id，在把含该 id 的块交给客户端之前写入 `acl_resources`；冲突不覆盖；2xx 未认领到 id 时只记路径与状态码 |
+| 账号级路径 | `me`、`models`、`accounts/*`、`settings/*`、`conversation/init`、`f/conversation/prepare`、`sidebar/*` 反馈族、`aip/ledger/*`、`aip/first-party/*`、`ecosystem/widget*`、`task_suggestions`、遥测族 | 与六类资源无关，按原版行为透传（`acl.rs` 的 `UNOWNED` 显式清单） |
+| 未分类 | 未出现在快照、也未登记的前缀 | `503 {"message":"该路径尚未完成归属分类，候选制品未启用","code":"acl_unclassified_route"}`；新增路由必须显式分类后可用，库内单测对 923 条模板逐条断言 |
+
+访客（Django `FREE_ACCOUNT` 的 `free_account:<sid>`，`principal_kind="visitor"`）不参与 ACL：
+作用域与创建路径 `403 {"code":"acl_visitor_denied"}`，集合读取直接返回空信封且**不向上游取数**，
+账号级路径与页面/匿名通道保持既有可用性。这是产品决定：访客没有稳定的镜像身份，
+无法把资源安全地登记给某个主体；若今后要让访客参与会话，必须单独定义访客归属策略。
+
+### 身份、账号键与写入面
+
+| 项 | 实现 |
+|---|---|
+| 可信身份 | Django 授权响应的 `active/version/expires_at/user_id/is_admin/subject/principal_kind` 在登录时固定进会话，**每个资源请求前**从固定 Django 源复验 `user_id/is_admin/version/subject`，任一变化即 `401`；浏览器自报的同名字段一律被覆盖 |
+| 稳定账号键 | `chatgpt_account_id`（`ChatgptAccount.pk` 十进制串）随登录载荷与 `/api/get-mirror-token` 下发并存入 `gateway_sessions.chatgpt_account_id`；mirror profile 下缺失即拒绝签发登录态，不用用户名顶替 |
+| 生成互斥 | `(account_id, conversation_id)` 独占租约，同一会话已有在途生成时 `409 {"code":"generation_busy"}`；不排队、不重放；成功/失败/取消/断开随响应体 Drop 释放；重启不重建上游任务 |
+| 撤权屏障 | 活动 SSE/WS 按 subject 登记，`/api/revoke-authorization` 命中后中止匹配流；登出同样中止该用户在途流 |
+| 管理 API | `GET /api/acl/resources`、`POST /api/acl/claim|share|move`、`GET /api/acl/audit`：服务密钥由中间件校验，操作者身份另行从固定 Django 源 fresh 校验并要求 `is_admin`，服务密钥本身不代表管理员 |
+| 旧归属回填 | 启动时若未写过 `acl_backfill_v1` 标记，调用 `POST /0x/user/gateway-acl-mapping` 一次性把 `conversation_owners`/`project_owners` 搬进 `acl_resources`；只有能唯一映射的行才认领，访客主体（含 `:`）与无法映射的行保持未认领并记清单日志；幂等、不修改旧表 |
+| 备份 | 网关备份升 v3：新增 `acl_resources`/`acl_project_links`/`acl_shares`/`acl_audit` 四个集合；`version` 为 2 或更早（不含 ACL）以及更高版本一律显式拒绝并给出重新导出的行动指引，不按旧格式局部恢复 |
+
+### 已知残项（本批未做）
+
+- **连接器创建不自动登记**：`POST /backend-api/aip/connectors/*` 的响应形状没有实测证据
+  （同一前缀下既有创建也有 `list_repos`/`search_contacts` 这类动作），凭响应里的 `id`
+  自动认领会把动作结果误登记成连接器资源。当前连接器只能由管理员用 `/api/acl/claim` 认领；
+  自动登记留待有真实观测后再做。
+- **上传预约 id 不认领**：`files/upload_reservations*`、`files/process_upload_stream` 返回的是
+  预约/会话 id 而非文件 id，文件实体随后由 `/files` 或文件库接口登记，因此这些路径按账号级放行。
+- **项目/分支级归属只在项目维度落地**：原版 `enforce_project_owner` 的「分支」维度在逆向材料里
+  只有符号名，本批按项目 ACL + 动态共享实现，未猜测分支语义。
+- **真实上游探针未执行**：本批验收证据全部来自合成回环 fixture；真实账号、真实 chatgpt.com
+  与真实 WebSocket 上游联调未执行（需要单独批准并提供本地令牌文件路径）。
+- **管理界面未做**：`/api/acl/*` 只有 API，Vue 管理界面不在本批。
+- **`GATEWAY_COMPAT_PROFILE=original` 下资源路径不判权**：该 profile 没有 Django 可信身份与
+  `chatgpt_account_id`，六类资源路径按「无账号键」fail-closed（作用域/创建 403、集合空信封）。
+  `original` 只用于原版契约观测，产品面使用默认的 `mirror` profile；若要在该 profile 下恢复
+  按名称的归属，需要另行定义账号键与回填规则。
+
+### 本批验证
+
+`cargo test --locked --offline` 176 项全过（63 项库内单测 + 113 项集成用例，其中本批新增
+`tests/acl_product_wiring.rs` 6 项，并在 `coord_acl_contract.rs` 保留 28 项离线 ACL 契约用例），
+`cargo clippy --locked --offline --all-targets -- -D warnings` 通过；
+Django `DJANGO_ENV=LOCAL manage.py test` 101 项通过（新增身份字段、映射端点、备份 v3 与旧版拒绝用例）。
+真实上游联调仍未执行。
 
 ## 证据
 

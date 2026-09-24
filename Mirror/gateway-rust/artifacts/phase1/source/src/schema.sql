@@ -47,6 +47,8 @@ CREATE TABLE IF NOT EXISTS gateway_sessions (
     proxy_node_id INTEGER,
     daily_quota INTEGER NOT NULL DEFAULT 0,
     monthly_quota INTEGER NOT NULL DEFAULT 0,
+    -- 候选新增（原版无此列）：ACL 的稳定上游账号键，取值 Django ChatgptAccount.pk。
+    chatgpt_account_id TEXT,
     created_at INTEGER,
     updated_at INTEGER,
     UNIQUE(user_name, chatgpt_username),

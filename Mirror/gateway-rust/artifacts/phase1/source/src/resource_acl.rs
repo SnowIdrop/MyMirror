@@ -1,11 +1,18 @@
-//! Isolated ACL v1. Not wired into the gateway, its login, or its database.
-//! Trust boundary: only a verified Django response and a server-side successful
-//! creation adapter may construct the inputs. This module performs no network I/O.
+//! 资源 ACL v1：共享上游账号下每个镜像用户只能看到自己登记的会话/项目/文件/
+//! 图片/任务/连接器。
+//!
+//! 信任边界：`Identity` 只能由已校验的 Django 授权响应或本地 profile 的镜像会话
+//! 构造；`ConfirmedCreation` 只能由服务端在**已确认成功**的上游创建响应后构造。
+//! 本模块不做任何网络 I/O。
+//!
+//! 接线方式：产品路径直接调用本文件的自由函数，并传入网关自己的 SQLite 连接
+//! （`Database::conn`），因此所有判权与登记都在网关单锁内、用 IMMEDIATE 事务完成；
+//! [`ResourceAcl`] 句柄仅保留给不接入网关库的独立使用与离线测试。
 
 use std::collections::BTreeSet;
 use std::fmt;
 
-use rusqlite::{params, Connection, OptionalExtension, TransactionBehavior};
+use rusqlite::{params, Connection, OptionalExtension, Transaction, TransactionBehavior};
 use serde_json::Value;
 
 #[derive(Debug)]
@@ -68,6 +75,20 @@ impl Identity {
         })
     }
 
+    /// 原始 profile（`GATEWAY_COMPAT_PROFILE=original`）没有 Django 可信源：
+    /// 身份直接取本地镜像会话的 `user_name`，信任边界是镜像会话 token 本身，
+    /// 与原始网关按 `user_name` 判定归属的既有语义一致。版本留空，不冒充 Django 版本。
+    pub fn local(subject: &str) -> Result<Self> {
+        if subject.trim().is_empty() {
+            return Err(AclError::Unauthorized);
+        }
+        Ok(Self {
+            user_id: subject.to_owned(),
+            is_admin: false,
+            authorization_version: String::new(),
+        })
+    }
+
     pub fn user_id(&self) -> &str {
         &self.user_id
     }
@@ -84,6 +105,12 @@ impl Identity {
 pub struct RequestIdentity(Identity);
 
 impl RequestIdentity {
+    /// 会话在建立时已固定身份：本类型只包装该固定身份，供需要 `RequestIdentity`
+    /// 的判权入口使用；mirror profile 的每请求复验在 `server::session` 内完成。
+    pub fn from_session(identity: Identity) -> Self {
+        Self(identity)
+    }
+
     pub fn verify(
         pinned: &Identity,
         details: &Value,
@@ -96,6 +123,7 @@ impl RequestIdentity {
         }
         Ok(Self(current))
     }
+
 }
 
 fn valid_user_id(value: &str) -> bool {
@@ -104,6 +132,31 @@ fn valid_user_id(value: &str) -> bool {
         .first()
         .is_some_and(|c| (b'1'..=b'9').contains(c))
         && value.bytes().all(|c| c.is_ascii_digit())
+}
+
+/// 访客会话的每请求复验：访客没有可固定的 ACL 身份（不参与归属判权），但仍须确认
+/// 固定 Django 源继续把同一 subject 判为有效访客——版本与过期时间未变、没有被提升成
+/// `user`。任何变化都返回 `Unauthorized`，调用方据此拒绝该会话。
+pub fn verify_visitor(
+    details: &Value,
+    expected_subject: &str,
+    expected_version: &str,
+    now: i64,
+) -> Result<()> {
+    let version = details["version"].as_str().ok_or(AclError::Unauthorized)?;
+    let valid = details["active"] == true
+        && details["principal_kind"] == "visitor"
+        && !expected_subject.is_empty()
+        && details["subject"].as_str() == Some(expected_subject)
+        && version == expected_version
+        && details["expires_at"]
+            .as_i64()
+            .is_some_and(|expiry| expiry > now);
+    if valid {
+        Ok(())
+    } else {
+        Err(AclError::Unauthorized)
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -126,6 +179,19 @@ impl ResourceKind {
             Self::Task => "task",
             Self::Connector => "connector",
         }
+    }
+}
+
+/// 库内 `resource_type` 文本 → 枚举；未知取值说明库被外部改写，按输入错误拒绝。
+fn kind_from_str(value: &str) -> Option<ResourceKind> {
+    match value {
+        "conversation" => Some(ResourceKind::Conversation),
+        "project" => Some(ResourceKind::Project),
+        "file" => Some(ResourceKind::File),
+        "image" => Some(ResourceKind::Image),
+        "task" => Some(ResourceKind::Task),
+        "connector" => Some(ResourceKind::Connector),
+        _ => None,
     }
 }
 
@@ -251,18 +317,306 @@ CREATE TABLE IF NOT EXISTS acl_audit (
 );
 "#;
 
+/// 建表并打开外键约束；幂等，`Database::open` 与独立句柄都会调用。
+pub fn init(conn: &Connection) -> Result<()> {
+    conn.execute_batch("PRAGMA foreign_keys=ON;")?;
+    let tx = immediate(conn)?;
+    tx.execute_batch(SCHEMA)?;
+    tx.commit()?;
+    Ok(())
+}
+
+/// IMMEDIATE 写事务：写路径先取写锁再读受众，避免两次判权之间被别人改掉归属。
+fn immediate(conn: &Connection) -> Result<Transaction<'_>> {
+    Ok(Transaction::new_unchecked(
+        conn,
+        TransactionBehavior::Immediate,
+    )?)
+}
+
+pub fn authorize(
+    conn: &Connection,
+    actor: &RequestIdentity,
+    resource: &ResourceKey,
+    action: Action,
+) -> Result<Access> {
+    authorize_in(conn, &actor.0, resource, action)
+}
+
+/// `None` 表示上游创建失败或未被确认：不登记任何东西。
+pub fn record_created(
+    conn: &Connection,
+    actor: &RequestIdentity,
+    receipt: Option<ConfirmedCreation>,
+) -> Result<Option<AclChange>> {
+    let Some(receipt) = receipt else {
+        return Ok(None);
+    };
+    if receipt.creation_id.trim().is_empty() {
+        return Err(AclError::InvalidInput);
+    }
+    let key = &receipt.resource;
+    let tx = immediate(conn)?;
+    if let Some(project) = &receipt.project {
+        check_project(&tx, &actor.0, key, project)?;
+    }
+    let duplicate: bool = tx.query_row(
+        "SELECT EXISTS(SELECT 1 FROM acl_resources WHERE creation_id=?1 OR (account_id=?2 AND resource_type=?3 AND upstream_id=?4))",
+        params![receipt.creation_id,key.account_id,key.kind.as_str(),key.upstream_id], |r| r.get(0))?;
+    if duplicate {
+        return Err(AclError::AlreadyRegistered);
+    }
+    tx.execute("INSERT INTO acl_resources(account_id,resource_type,upstream_id,owner_user_id,creation_id) VALUES(?1,?2,?3,?4,?5)",
+        params![key.account_id,key.kind.as_str(),key.upstream_id,actor.0.user_id,receipt.creation_id])?;
+    if let Some(project) = &receipt.project {
+        tx.execute("INSERT INTO acl_project_links(account_id,resource_type,upstream_id,project_id) VALUES(?1,?2,?3,?4)",
+            params![key.account_id,key.kind.as_str(),key.upstream_id,project.upstream_id])?;
+    }
+    let id = audit(&tx, &actor.0, "create", key, None, receipt.project.as_ref())?;
+    tx.commit()?;
+    Ok(Some(change(id, key, None)))
+}
+
+/// 管理员认领/重新分配**未登记**资源：把 key 登记到 `owner_user_id` 名下。
+/// 已登记资源不改属主（返回 `AlreadyRegistered`），避免管理员误覆盖他人归属。
+pub fn claim(
+    conn: &Connection,
+    actor: &RequestIdentity,
+    resource: &ResourceKey,
+    owner_user_id: &str,
+) -> Result<AclChange> {
+    if !actor.0.is_admin {
+        return Err(AclError::Forbidden);
+    }
+    if !valid_user_id(owner_user_id) {
+        return Err(AclError::InvalidInput);
+    }
+    let tx = immediate(conn)?;
+    let duplicate: bool = tx.query_row(
+        "SELECT EXISTS(SELECT 1 FROM acl_resources WHERE account_id=?1 AND resource_type=?2 AND upstream_id=?3)",
+        params![resource.account_id, resource.kind.as_str(), resource.upstream_id],
+        |r| r.get(0),
+    )?;
+    if duplicate {
+        return Err(AclError::AlreadyRegistered);
+    }
+    let creation_id = format!(
+        "claim:{}:{}:{}",
+        resource.account_id,
+        resource.kind.as_str(),
+        resource.upstream_id
+    );
+    tx.execute(
+        "INSERT INTO acl_resources(account_id,resource_type,upstream_id,owner_user_id,creation_id) VALUES(?1,?2,?3,?4,?5)",
+        params![resource.account_id, resource.kind.as_str(), resource.upstream_id, owner_user_id, creation_id],
+    )?;
+    let id = audit(&tx, &actor.0, "claim", resource, Some(owner_user_id), None)?;
+    tx.commit()?;
+    Ok(change(id, resource, Some(owner_user_id)))
+}
+
+pub fn grant(
+    conn: &Connection,
+    actor: &RequestIdentity,
+    resource: &ResourceKey,
+    recipient_user_id: &str,
+) -> Result<AclChange> {
+    set_share(conn, actor, resource, recipient_user_id, true)
+}
+
+pub fn revoke(
+    conn: &Connection,
+    actor: &RequestIdentity,
+    resource: &ResourceKey,
+    recipient_user_id: &str,
+) -> Result<AclChange> {
+    set_share(conn, actor, resource, recipient_user_id, false)
+}
+
+fn set_share(
+    conn: &Connection,
+    actor: &RequestIdentity,
+    resource: &ResourceKey,
+    recipient: &str,
+    grant: bool,
+) -> Result<AclChange> {
+    if !actor.0.is_admin {
+        return Err(AclError::Forbidden);
+    }
+    if !valid_user_id(recipient) {
+        return Err(AclError::InvalidInput);
+    }
+    let tx = immediate(conn)?;
+    require_known(&tx, resource)?;
+    if grant {
+        tx.execute("INSERT OR IGNORE INTO acl_shares(account_id,resource_type,upstream_id,recipient_user_id) VALUES(?1,?2,?3,?4)",
+            params![resource.account_id,resource.kind.as_str(),resource.upstream_id,recipient])?;
+    } else {
+        tx.execute("DELETE FROM acl_shares WHERE account_id=?1 AND resource_type=?2 AND upstream_id=?3 AND recipient_user_id=?4",
+            params![resource.account_id,resource.kind.as_str(),resource.upstream_id,recipient])?;
+    }
+    let id = audit(
+        &tx,
+        &actor.0,
+        if grant { "grant" } else { "revoke" },
+        resource,
+        Some(recipient),
+        None,
+    )?;
+    tx.commit()?;
+    Ok(change(id, resource, Some(recipient)))
+}
+
+pub fn move_to_project(
+    conn: &Connection,
+    actor: &RequestIdentity,
+    resource: &ResourceKey,
+    project: Option<&ResourceKey>,
+) -> Result<AclChange> {
+    if resource.kind == ResourceKind::Project {
+        return Err(AclError::InvalidOperation);
+    }
+    let tx = immediate(conn)?;
+    authorize_in(&tx, &actor.0, resource, Action::Modify)?;
+    if let Some(project) = project {
+        check_project(&tx, &actor.0, resource, project)?;
+    }
+    let before = audience(&tx, resource)?;
+    tx.execute("DELETE FROM acl_project_links WHERE account_id=?1 AND resource_type=?2 AND upstream_id=?3",
+        params![resource.account_id,resource.kind.as_str(),resource.upstream_id])?;
+    if let Some(project) = project {
+        tx.execute("INSERT INTO acl_project_links(account_id,resource_type,upstream_id,project_id) VALUES(?1,?2,?3,?4)",
+            params![resource.account_id,resource.kind.as_str(),resource.upstream_id,project.upstream_id])?;
+    }
+    if !actor.0.is_admin && !audience(&tx, resource)?.is_subset(&before) {
+        return Err(AclError::Forbidden); // Dropping transaction restores previous link.
+    }
+    let id = audit(&tx, &actor.0, "move", resource, None, project)?;
+    tx.commit()?;
+    Ok(change(id, resource, None))
+}
+
+/// 管理员资源查询：按账号/类型/属主过滤，返回有界页（不是备份导出）。
+pub fn list_resources(
+    conn: &Connection,
+    actor: &RequestIdentity,
+    account_id: Option<&str>,
+    kind: Option<ResourceKind>,
+    owner_user_id: Option<&str>,
+    limit: u32,
+) -> Result<Vec<ResourceRecord>> {
+    if !actor.0.is_admin {
+        return Err(AclError::Forbidden);
+    }
+    if limit == 0 || limit > 1000 {
+        return Err(AclError::InvalidInput);
+    }
+    let kind = kind.map(ResourceKind::as_str);
+    let mut statement = conn.prepare(
+        "SELECT account_id,resource_type,upstream_id,owner_user_id FROM acl_resources \
+         WHERE (?1 IS NULL OR account_id=?1) AND (?2 IS NULL OR resource_type=?2) \
+           AND (?3 IS NULL OR owner_user_id=?3) \
+         ORDER BY account_id,resource_type,upstream_id LIMIT ?4",
+    )?;
+    let rows = statement.query_map(params![account_id, kind, owner_user_id, limit], |r| {
+        Ok((
+            r.get::<_, String>(0)?,
+            r.get::<_, String>(1)?,
+            r.get::<_, String>(2)?,
+            r.get::<_, String>(3)?,
+        ))
+    })?;
+    let mut records = Vec::new();
+    for row in rows {
+        let (account_id, resource_type, upstream_id, owner_user_id) = row?;
+        let kind = kind_from_str(&resource_type).ok_or(AclError::InvalidInput)?;
+        records.push(ResourceRecord {
+            owner_user_id,
+            resource: ResourceKey {
+                account_id,
+                kind,
+                upstream_id,
+            },
+        });
+    }
+    Ok(records)
+}
+
+/// Admin-only paginated audit read; a bounded page is not a backup export.
+pub fn audit_after(
+    conn: &Connection,
+    actor: &RequestIdentity,
+    after_id: i64,
+    limit: u32,
+) -> Result<Vec<AuditRecord>> {
+    if !actor.0.is_admin {
+        return Err(AclError::Forbidden);
+    }
+    if after_id < 0 || limit == 0 || limit > 1000 {
+        return Err(AclError::InvalidInput);
+    }
+    let mut statement = conn.prepare("SELECT id,actor_user_id,authorization_version,action,account_id,resource_type,upstream_id,recipient_user_id,project_id,occurred_at FROM acl_audit WHERE id>?1 ORDER BY id LIMIT ?2")?;
+    let rows = statement.query_map(params![after_id, limit], |r| {
+        Ok(AuditRecord {
+            id: r.get(0)?,
+            occurred_at: r.get(9)?,
+            actor_user_id: r.get(1)?,
+            authorization_version: r.get(2)?,
+            action: r.get(3)?,
+            account_id: r.get(4)?,
+            resource_type: r.get(5)?,
+            upstream_id: r.get(6)?,
+            recipient_user_id: r.get(7)?,
+            project_id: r.get(8)?,
+        })
+    })?;
+    Ok(rows.collect::<rusqlite::Result<Vec<_>>>()?)
+}
+
+/// 已登记资源行（管理员查询输出）。
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ResourceRecord {
+    pub owner_user_id: String,
+    pub resource: ResourceKey,
+}
+
+/// 某账号下当前会话可见的全部资源 id：集合响应的过滤与 `total` 共用这条受众
+/// 规则，逐条判权与集合计数不会漂移。
+pub fn visible_ids(
+    conn: &Connection,
+    actor: &RequestIdentity,
+    account_id: &str,
+    kind: ResourceKind,
+) -> Result<BTreeSet<String>> {
+    let mut statement =
+        conn.prepare("SELECT upstream_id FROM acl_resources WHERE account_id=?1 AND resource_type=?2")?;
+    let rows = statement.query_map(params![account_id, kind.as_str()], |r| {
+        r.get::<_, String>(0)
+    })?;
+    let mut visible = BTreeSet::new();
+    for row in rows {
+        let upstream_id = row?;
+        let key = ResourceKey {
+            account_id: account_id.to_owned(),
+            kind,
+            upstream_id: upstream_id.clone(),
+        };
+        if authorize_in(conn, &actor.0, &key, Action::Read).is_ok() {
+            visible.insert(upstream_id);
+        }
+    }
+    Ok(visible)
+}
+
+/// 独立拥有的 ACL 句柄：只用于不接入网关库的独立使用与离线测试；
+/// 产品路径直接调用上面的自由函数，与网关共用同一个 SQLite 连接。
 pub struct ResourceAcl {
     conn: Connection,
 }
 
 impl ResourceAcl {
-    /// Use an independent, caller-owned SQLite connection. No legacy migration,
-    /// no user database, no implicit connection to production or original storage.
-    pub fn new(mut conn: Connection) -> Result<Self> {
-        conn.execute_batch("PRAGMA foreign_keys=ON;")?;
-        let tx = conn.transaction_with_behavior(TransactionBehavior::Immediate)?;
-        tx.execute_batch(SCHEMA)?;
-        tx.commit()?;
+    pub fn new(conn: Connection) -> Result<Self> {
+        init(&conn)?;
         Ok(Self { conn })
     }
 
@@ -272,159 +626,51 @@ impl ResourceAcl {
         resource: &ResourceKey,
         action: Action,
     ) -> Result<Access> {
-        authorize(&self.conn, &actor.0, resource, action)
+        authorize(&self.conn, actor, resource, action)
     }
 
-    /// None means upstream creation failed/was not confirmed: nothing is recorded.
     pub fn record_created(
-        &mut self,
+        &self,
         actor: &RequestIdentity,
         receipt: Option<ConfirmedCreation>,
     ) -> Result<Option<AclChange>> {
-        let Some(receipt) = receipt else {
-            return Ok(None);
-        };
-        if receipt.creation_id.trim().is_empty() {
-            return Err(AclError::InvalidInput);
-        }
-        let key = &receipt.resource;
-        let tx = self
-            .conn
-            .transaction_with_behavior(TransactionBehavior::Immediate)?;
-        if let Some(project) = &receipt.project {
-            check_project(&tx, &actor.0, key, project)?;
-        }
-        let duplicate: bool = tx.query_row(
-            "SELECT EXISTS(SELECT 1 FROM acl_resources WHERE creation_id=?1 OR (account_id=?2 AND resource_type=?3 AND upstream_id=?4))",
-            params![receipt.creation_id,key.account_id,key.kind.as_str(),key.upstream_id], |r| r.get(0))?;
-        if duplicate {
-            return Err(AclError::AlreadyRegistered);
-        }
-        tx.execute("INSERT INTO acl_resources(account_id,resource_type,upstream_id,owner_user_id,creation_id) VALUES(?1,?2,?3,?4,?5)",
-            params![key.account_id,key.kind.as_str(),key.upstream_id,actor.0.user_id,receipt.creation_id])?;
-        if let Some(project) = &receipt.project {
-            tx.execute("INSERT INTO acl_project_links(account_id,resource_type,upstream_id,project_id) VALUES(?1,?2,?3,?4)",
-                params![key.account_id,key.kind.as_str(),key.upstream_id,project.upstream_id])?;
-        }
-        let id = audit(&tx, &actor.0, "create", key, None, receipt.project.as_ref())?;
-        tx.commit()?;
-        Ok(Some(change(id, key, None)))
+        record_created(&self.conn, actor, receipt)
     }
 
     pub fn grant(
-        &mut self,
+        &self,
         actor: &RequestIdentity,
         resource: &ResourceKey,
         recipient_user_id: &str,
     ) -> Result<AclChange> {
-        self.set_share(actor, resource, recipient_user_id, true)
+        grant(&self.conn, actor, resource, recipient_user_id)
     }
 
     pub fn revoke(
-        &mut self,
+        &self,
         actor: &RequestIdentity,
         resource: &ResourceKey,
         recipient_user_id: &str,
     ) -> Result<AclChange> {
-        self.set_share(actor, resource, recipient_user_id, false)
-    }
-
-    fn set_share(
-        &mut self,
-        actor: &RequestIdentity,
-        resource: &ResourceKey,
-        recipient: &str,
-        grant: bool,
-    ) -> Result<AclChange> {
-        if !actor.0.is_admin {
-            return Err(AclError::Forbidden);
-        }
-        if !valid_user_id(recipient) {
-            return Err(AclError::InvalidInput);
-        }
-        let tx = self
-            .conn
-            .transaction_with_behavior(TransactionBehavior::Immediate)?;
-        require_known(&tx, resource)?;
-        if grant {
-            tx.execute("INSERT OR IGNORE INTO acl_shares(account_id,resource_type,upstream_id,recipient_user_id) VALUES(?1,?2,?3,?4)",
-                params![resource.account_id,resource.kind.as_str(),resource.upstream_id,recipient])?;
-        } else {
-            tx.execute("DELETE FROM acl_shares WHERE account_id=?1 AND resource_type=?2 AND upstream_id=?3 AND recipient_user_id=?4",
-                params![resource.account_id,resource.kind.as_str(),resource.upstream_id,recipient])?;
-        }
-        let id = audit(
-            &tx,
-            &actor.0,
-            if grant { "grant" } else { "revoke" },
-            resource,
-            Some(recipient),
-            None,
-        )?;
-        tx.commit()?;
-        Ok(change(id, resource, Some(recipient)))
+        revoke(&self.conn, actor, resource, recipient_user_id)
     }
 
     pub fn move_to_project(
-        &mut self,
+        &self,
         actor: &RequestIdentity,
         resource: &ResourceKey,
         project: Option<&ResourceKey>,
     ) -> Result<AclChange> {
-        if resource.kind == ResourceKind::Project {
-            return Err(AclError::InvalidOperation);
-        }
-        let tx = self
-            .conn
-            .transaction_with_behavior(TransactionBehavior::Immediate)?;
-        authorize(&tx, &actor.0, resource, Action::Modify)?;
-        if let Some(project) = project {
-            check_project(&tx, &actor.0, resource, project)?;
-        }
-        let before = audience(&tx, resource)?;
-        tx.execute("DELETE FROM acl_project_links WHERE account_id=?1 AND resource_type=?2 AND upstream_id=?3",
-            params![resource.account_id,resource.kind.as_str(),resource.upstream_id])?;
-        if let Some(project) = project {
-            tx.execute("INSERT INTO acl_project_links(account_id,resource_type,upstream_id,project_id) VALUES(?1,?2,?3,?4)",
-                params![resource.account_id,resource.kind.as_str(),resource.upstream_id,project.upstream_id])?;
-        }
-        if !actor.0.is_admin && !audience(&tx, resource)?.is_subset(&before) {
-            return Err(AclError::Forbidden); // Dropping transaction restores previous link.
-        }
-        let id = audit(&tx, &actor.0, "move", resource, None, project)?;
-        tx.commit()?;
-        Ok(change(id, resource, None))
+        move_to_project(&self.conn, actor, resource, project)
     }
 
-    /// Admin-only paginated audit read; a bounded page is not a backup export.
     pub fn audit_after(
         &self,
         actor: &RequestIdentity,
         after_id: i64,
         limit: u32,
     ) -> Result<Vec<AuditRecord>> {
-        if !actor.0.is_admin {
-            return Err(AclError::Forbidden);
-        }
-        if after_id < 0 || limit == 0 || limit > 1000 {
-            return Err(AclError::InvalidInput);
-        }
-        let mut statement = self.conn.prepare("SELECT id,actor_user_id,authorization_version,action,account_id,resource_type,upstream_id,recipient_user_id,project_id,occurred_at FROM acl_audit WHERE id>?1 ORDER BY id LIMIT ?2")?;
-        let rows = statement.query_map(params![after_id, limit], |r| {
-            Ok(AuditRecord {
-                id: r.get(0)?,
-                occurred_at: r.get(9)?,
-                actor_user_id: r.get(1)?,
-                authorization_version: r.get(2)?,
-                action: r.get(3)?,
-                account_id: r.get(4)?,
-                resource_type: r.get(5)?,
-                upstream_id: r.get(6)?,
-                recipient_user_id: r.get(7)?,
-                project_id: r.get(8)?,
-            })
-        })?;
-        Ok(rows.collect::<rusqlite::Result<Vec<_>>>()?)
+        audit_after(&self.conn, actor, after_id, limit)
     }
 }
 
@@ -434,7 +680,7 @@ fn require_known(conn: &Connection, key: &ResourceKey) -> Result<String> {
         .ok_or(AclError::UnknownResource)
 }
 
-fn authorize(
+fn authorize_in(
     conn: &Connection,
     actor: &Identity,
     key: &ResourceKey,
@@ -469,7 +715,7 @@ fn check_project(
     if resource.account_id != project.account_id {
         return Err(AclError::CrossAccount);
     }
-    authorize(conn, actor, project, Action::Modify)?;
+    authorize_in(conn, actor, project, Action::Modify)?;
     Ok(())
 }
 

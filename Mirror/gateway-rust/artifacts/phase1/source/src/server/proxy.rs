@@ -34,18 +34,19 @@
 //!   见 server/cloudflare.rs 的模块注释；chat 路径额外固定 origin/referer
 //!   （scheme://host 去端口）。
 //! - `/0x/*`：任意方法透传，流式响应（无 content-length，由 HTTP 栈分块）。
-//! - `/backend-api/*`：放行读写与 SSE，方法语义交给上游；会话作用域路径与
-//!   `POST …/conversation` 的续聊载荷在转发前做归属判定（server/owners.rs），
-//!   创建响应在把含会话 id 的块交给客户端前登记归属。
+//! - `/backend-api/*`：放行读写与 SSE，方法语义交给上游；每个路径先由
+//!   server/acl.rs 判为资源作用域 / 集合 / 创建 / 账号级，作用域请求在转发前
+//!   判权、集合响应按受众过滤、创建响应在把含资源 id 的块交给客户端前登记，
+//!   未分类路径一律 503。
 //! - `/backend-api/me`：状态码、端到端响应头与原始字节透传（非重序列化），
 //!   上游 4xx/5xx 与畸形正文也原样回传。
 //! - `/backend-api/conversations`：仅 GET；offset/limit 等查询原样转发；成功 2xx 时
-//!   解析上游 JSON，从 `items[].id` 过滤出 (chatgpt_username, user_name) 归属当前
-//!   会话的条目（重复条目不去重、未知归属不认领），`total` 换成该账号 + 用户的
-//!   conversation_owners 计数，其余键原样保留（serde_json 默认按键排序输出）；
-//!   非 2xx 或正文不可解析时返回 `{"items":[],"total":0}`（状态码保留上游值）。
-//! - 重启恢复：归属行持久化在 conversation_owners；conversation_statistics 的
-//!   存量回填由 storage 的 schema.sql 在启动时执行（证据：p3-after-restart-list）。
+//!   按 ACL 受众过滤 `items` 并把 `total` 改成可见条目数，其余键原样保留
+//!   （serde_json 默认按键排序输出）；非 2xx 或正文不可解析时返回
+//!   `{"items":[],"total":0}`（状态码保留上游值）。
+//! - 重启恢复：归属行持久化在四张 `acl_*` 表并随 gateway 备份 v3 一起搬迁；
+//!   conversation_statistics 的存量回填由 storage 的 schema.sql 在启动时执行
+//!   （证据：p3-after-restart-list）。
 //!
 //! CSP 与安全响应头由统一中间件负责；text/html 客户端资源从原版离线响应重建，
 //! 静态资源来源/哈希记录在 evidence/client-template-v3.json，未执行浏览器验收。
@@ -71,9 +72,9 @@ const MAX_BODY: usize = 16 * 1024 * 1024;
 /// p1-cfg-client-cookie-ua：客户端 UA 均被替换）。
 pub(super) const DEFAULT_USER_AGENT: &str = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36";
 
-/// 已取得原版成功观测、允许放行的 chat 读取路径。
+/// 已取得原版成功观测、允许放行的 chat 读取路径（`/backend-api/conversations`
+/// 与其余 `/backend-api/*` 一样走 ACL 集合过滤，不再是独立分支）。
 const ME_PATH: &str = "/backend-api/me";
-const CONVERSATIONS_PATH: &str = "/backend-api/conversations";
 
 /// 匿名通道与公共接口前缀（原版路由表：`/backend-anon/*` 为匿名通道，
 /// `/public-api/`、`/ces/`、`/sentinel/`、`/cdn-cgi/` 为公共/遥测/挑战路径）。
@@ -200,8 +201,6 @@ pub(super) async fn chat_proxy(State(app): State<Shared>, request: Request) -> R
     let method = request.method().clone();
     let result = if method == Method::GET && path == ME_PATH {
         me_passthrough(&app, request, &session).await
-    } else if method == Method::GET && path == CONVERSATIONS_PATH {
-        conversations_response(&app, request, &session).await
     } else if let Some(target) = internal_upstream_target(&path, request.uri().query()) {
         // 媒体代理只放行白名单主机，且从不携带账号凭据。
         if media_method_allowed(&method) {
@@ -304,13 +303,53 @@ async fn chat_forward(app: Shared, request: Request, session: &Session) -> Resul
     base.set_path(&request_path);
     base.set_query(parts.uri.query());
     let data = to_bytes(body, MAX_BODY).await.context("请求体读取失败")?;
-    // 共享账号下唯一的内容级边界：会话作用域与续聊写路径必须命中本用户的登记行，
-    // 未知归属（含本批之前创建的会话）一律拒绝，且不接触上游。
-    let ownership = owners::classify(&request_path, &parts.method, &data);
-    if let owners::Ownership::Existing(conversation_id) = &ownership {
-        if !owners::owned_by(&app, session, conversation_id).await? {
-            return Ok(owners::refusal());
+    // 共享账号下唯一的内容级边界：所有可归属资源都按 ACL 分类与判权，
+    // 未登记/他人/未分类路径一律在接触上游之前拒绝。
+    let verdict = acl::classify(&parts.method, &request_path, &parts.headers, &data);
+    let (collection, creation, lease) = match &verdict {
+        acl::Verdict::Scoped(scope) => {
+            let Some((identity, account_id)) = acl::identity_of(session) else {
+                return Ok(acl::visitor_denied());
+            };
+            if !acl::authorized(
+                &app,
+                identity,
+                account_id,
+                scope.kind,
+                &scope.upstream_id,
+                scope.action,
+            )
+            .await?
+            {
+                return Ok(acl::refusal());
+            }
+            // 生成类写请求：同一会话同时只允许一个在途生成，冲突不排队。
+            if scope.generation {
+                match acl::Runtime::acquire(&app.acl, account_id, &scope.upstream_id) {
+                    Some(lease) => (None, None, Some(lease)),
+                    None => return Ok(acl::generation_busy()),
+                }
+            } else {
+                (None, None, None)
+            }
         }
+        acl::Verdict::Creation { kind, project } => (
+            None,
+            acl::identity_of(session)
+                .map(|_| (*kind, project.clone())),
+            None,
+        ),
+        acl::Verdict::Collection(kind) => (Some(*kind), None, None),
+        acl::Verdict::Unscoped => (None, None, None),
+        acl::Verdict::Unclassified => return Ok(acl::unclassified(&request_path)),
+    };
+    if matches!(verdict, acl::Verdict::Creation { .. }) && creation.is_none() {
+        return Ok(acl::visitor_denied());
+    }
+    // 访客/匿名会话没有可归属资源：集合读取直接给空信封，不必向上游取数再过滤
+    // （作用域与创建路径已在上面 403）。空信封形状与原版列表一致。
+    if collection.is_some() && acl::identity_of(session).is_none() {
+        return Ok(empty_collection_response());
     }
     // Cloudflare 挑战的刷新/重放与缓存失效统一在 [`send_chat`] 内处理；这里只分流响应形态。
     // 其它 4xx 是上游对具体请求的业务答复（实测 401 由客户端缺少 oai-* 头导致），
@@ -318,19 +357,55 @@ async fn chat_forward(app: Shared, request: Request, session: &Session) -> Resul
     let upstream = send_chat(&app, parts.method, parts.headers, base, data, &auth).await?;
     if is_html(&upstream) {
         buffered_response(&app, session, upstream).await
-    } else if matches!(ownership, owners::Ownership::Creation) {
+    } else if let Some(kind) = collection {
+        // 集合读取：按 ACL 过滤正文并重算 total，再交给客户端。
         let (status, headers, body) = upstream_parts(upstream);
-        // 创建响应：先把正文里出现的会话 id 登记归属，再把该块交给客户端；
-        // 非 2xx 没有新会话可登记，按原样回传。
+        let raw = to_bytes(body, usize::MAX)
+            .await
+            .context("集合响应读取失败")?;
+        let payload = if status.is_success() {
+            match serde_json::from_slice::<Value>(&raw) {
+                Ok(value) => acl::filter_collection(&app, session, kind, value).await?,
+                // 上游 2xx 但正文不是 JSON：没有可放行的条目，返回空集合。
+                Err(_) => json!({"items": [], "total": 0}),
+            }
+        } else {
+            json!({"items": [], "total": 0})
+        };
+        let body = serde_json::to_vec(&payload).context("集合响应序列化失败")?;
+        let (body, headers) = inject_client_resource(&app, session, headers, body).await?;
+        let mut response = Response::new(Body::from(body));
+        *response.status_mut() = status;
+        *response.headers_mut() = strip_response_hop_by_hop(&headers);
+        mark_proxied(&mut response);
+        Ok(response)
+    } else if let Some((kind, project)) = creation {
+        let (status, headers, body) = upstream_parts(upstream);
+        // 创建响应：先把正文里出现的资源 id 登记归属，再把该块交给客户端；
+        // 非 2xx 没有新资源可登记，按原样回传。
         let body = if status.is_success() {
-            owners::creation_body(app, session, request_path, body)
+            acl::creation_body(app, session, kind, project, request_path, body)
         } else {
             body
         };
         Ok(stream_body(status, headers, body))
     } else {
-        stream_response(upstream).await
+        // 生成/SSE 流：带 ACL 身份的会话在撤权时立即结束响应，不把剩余内容
+        // 交给已失权用户；匿名/公共路径保持原样透传。
+        let abort_subject = session.identity.as_ref().map(|_| session.user.clone());
+        let response = stream_response(upstream).await?;
+        Ok(match abort_subject {
+            Some(subject) => acl::abortable_stream(&app.acl, &subject, response),
+            None => response,
+        })
     }
+    .map(|response| {
+        // 生成租约必须活到响应结束；放在响应体流上，Drop 即释放。
+        match lease {
+            Some(lease) => acl::attach_lease(response, lease),
+            None => response,
+        }
+    })
 }
 
 fn is_html(upstream: &reqwest::Response) -> bool {
@@ -376,64 +451,6 @@ async fn me_passthrough(app: &App, request: Request, session: &Session) -> Resul
     let data = to_bytes(body, MAX_BODY).await.context("请求体读取失败")?;
     let upstream = send_chat(app, parts.method, parts.headers, base, data, &auth).await?;
     buffered_response(app, session, upstream).await
-}
-
-/// `/backend-api/conversations`：归属过滤 + 分页/总数语义（观测见模块注释）。
-async fn conversations_response(
-    app: &App,
-    request: Request,
-    session: &Session,
-) -> Result<Response> {
-    let Some(auth) = chat_auth(app, session).await? else {
-        return Ok(error(StatusCode::UNAUTHORIZED, "会话或出口绑定已失效").into_response());
-    };
-    let (parts, body) = request.into_parts();
-    let mut base = app.config.upstream.clone();
-    base.set_path(parts.uri.path());
-    base.set_query(parts.uri.query());
-    let data = to_bytes(body, MAX_BODY).await.context("请求体读取失败")?;
-    let upstream = send_chat(app, parts.method, parts.headers, base, data, &auth).await?;
-    let (status, headers, body) = upstream_parts(upstream);
-    let raw = to_bytes(body, usize::MAX)
-        .await
-        .context("上游响应读取失败")?;
-    let payload = if status.is_success() {
-        match serde_json::from_slice::<Value>(&raw) {
-            Ok(value) => {
-                let db = app.db.lock().await;
-                let total: i64 = db.conn.query_row(
-                    "SELECT count(*) FROM conversation_owners WHERE chatgpt_username=?1 AND user_name=?2",
-                    params![session.account, session.user],
-                    |row| row.get(0),
-                )?;
-                let rebuilt = rebuild_conversations(
-                    value,
-                    &mut |conversation_id| {
-                        let found: i64 = db.conn.query_row(
-                        "SELECT EXISTS(SELECT 1 FROM conversation_owners WHERE chatgpt_username=?1 AND conversation_id=?2 AND user_name=?3)",
-                        params![session.account, conversation_id, session.user],
-                        |row| row.get(0),
-                    )?;
-                        Ok(found != 0)
-                    },
-                    total,
-                )?;
-                drop(db);
-                rebuilt
-            }
-            // 上游 2xx 但正文不是 JSON：原版同样回落为空列表信封（状态码保留）。
-            Err(_) => json!({"items": [], "total": 0}),
-        }
-    } else {
-        json!({"items": [], "total": 0})
-    };
-    let body = serde_json::to_vec(&payload).context("会话列表序列化失败")?;
-    let (body, headers) = inject_client_resource(app, session, headers, body).await?;
-    let mut response = Response::new(Body::from(body));
-    *response.status_mut() = status;
-    *response.headers_mut() = strip_response_hop_by_hop(&headers);
-    mark_proxied(&mut response);
-    Ok(response)
 }
 
 /// 上游认证材料。带凭据会话用账号 access_token + extra_cookies；
@@ -806,6 +823,17 @@ fn stream_body(status: StatusCode, headers: HeaderMap, body: Body) -> Response {
     response
 }
 
+/// 空集合信封：访客/匿名会话的集合读取结果，形状与原版列表一致（无资源可列出）。
+fn empty_collection_response() -> Response {
+    let mut response = Response::new(Body::from(r#"{"items":[],"total":0}"#));
+    response.headers_mut().insert(
+        "content-type",
+        HeaderValue::from_static("application/json"),
+    );
+    mark_proxied(&mut response);
+    response
+}
+
 /// 缓冲回传（chat 路径）：状态码与端到端头保留，正文按原始字节返回，
 /// content-length 由实际字节数重算。
 async fn buffered_response(
@@ -912,41 +940,6 @@ fn upstream_parts(upstream: reqwest::Response) -> (StatusCode, HeaderMap, Body) 
     (status, headers, body)
 }
 
-/// 会话列表重建：`items` 为数组时按归属过滤并替换 `total`（其余键保留）；
-/// 其它形态回落为空信封（观测：无 items 键的 200 响应与不可解析正文同为此形）。
-fn rebuild_conversations(
-    payload: Value,
-    is_owned: &mut dyn FnMut(&str) -> Result<bool>,
-    total: i64,
-) -> Result<Value> {
-    match payload {
-        Value::Object(mut object) if object.get("items").map(Value::is_array).unwrap_or(false) => {
-            let items = object
-                .get("items")
-                .and_then(Value::as_array)
-                .cloned()
-                .unwrap_or_default();
-            let mut kept = Vec::with_capacity(items.len());
-            for item in items {
-                // 无字符串 id 的条目无法映射归属（原版同样不出现在结果中）。
-                let Some(conversation_id) =
-                    item.get("id").and_then(Value::as_str).map(str::to_owned)
-                else {
-                    continue;
-                };
-                if is_owned(&conversation_id)? {
-                    // 重复条目不去重（观测 p2-dup-alice）。
-                    kept.push(item);
-                }
-            }
-            object.insert("items".into(), Value::Array(kept));
-            object.insert("total".into(), json!(total));
-            Ok(Value::Object(object))
-        }
-        _ => Ok(json!({"items": [], "total": 0})),
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1031,50 +1024,6 @@ mod tests {
         for method in [Method::POST, Method::DELETE, Method::PATCH, Method::OPTIONS] {
             assert!(!media_method_allowed(&method), "{method}");
         }
-    }
-
-    fn owned_set(ids: &[&str]) -> std::collections::HashSet<String> {
-        ids.iter().map(|id| (*id).to_owned()).collect()
-    }
-
-    #[test]
-    fn conversations_filter_keeps_scope_and_extra_keys() {
-        let payload = json!({
-            "items": [
-                {"id": "conv-1", "title": "one"},
-                {"id": "conv-2", "title": "two"},
-                {"id": "conv-2", "title": "two-dup"},
-                {"title": "no-id"}
-            ],
-            "total": 5,
-            "limit": 20,
-            "offset": 0,
-            "cursor": "abc"
-        });
-        let owned = owned_set(&["conv-2"]);
-        let mut lookup = |id: &str| -> Result<bool> { Ok(owned.contains(id)) };
-        let result = rebuild_conversations(payload, &mut lookup, 2).expect("重建失败");
-        assert_eq!(
-            result,
-            json!({"cursor": "abc", "items": [
-                {"id": "conv-2", "title": "two"},
-                {"id": "conv-2", "title": "two-dup"}
-            ], "limit": 20, "offset": 0, "total": 2})
-        );
-    }
-
-    #[test]
-    fn conversations_without_items_fall_back_to_empty_envelope() {
-        let payload = json!({"stub": true, "path": "/backend-api/conversations"});
-        let mut lookup = |_: &str| -> Result<bool> { Ok(true) };
-        let result = rebuild_conversations(payload, &mut lookup, 9).expect("重建失败");
-        assert_eq!(result, json!({"items": [], "total": 0}));
-        let array_root = json!([1, 2, 3]);
-        let result = rebuild_conversations(array_root, &mut lookup, 9).expect("重建失败");
-        assert_eq!(result, json!({"items": [], "total": 0}));
-        let items_not_array = json!({"items": 5, "total": 9});
-        let result = rebuild_conversations(items_not_array, &mut lookup, 9).expect("重建失败");
-        assert_eq!(result, json!({"items": [], "total": 0}));
     }
 
     /// CF 白名单过滤与同名去重由 server/cloudflare.rs 的单元测试覆盖；

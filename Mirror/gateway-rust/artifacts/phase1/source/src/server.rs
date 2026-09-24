@@ -1,11 +1,12 @@
 // Author: MingTea. Implemented contracts are listed in COMPATIBILITY.md; no original-binary fallback.
+mod acl;
+mod acl_admin;
 mod anonymous;
 mod chat_ws;
 mod cloudflare;
 mod compression;
 mod egress;
 mod management;
-mod owners;
 mod proxy;
 mod public_prefixes;
 mod static_assets;
@@ -13,9 +14,10 @@ use crate::{
     config::Config,
     crypto::sha256_hex,
     policy::{Policy, Revocation},
+    resource_acl::{Identity, RequestIdentity},
     storage::Database,
 };
-use anyhow::{Context, Result};
+use anyhow::{bail, Context, Result};
 use axum::{
     body::{to_bytes, Body},
     extract::{Query, Request, State},
@@ -41,6 +43,8 @@ pub struct App {
     db: Mutex<Database>,
     client: reqwest::Client,
     cloudflare: cloudflare::Cloudflare,
+    /// ACL 运行时：生成互斥租约与撤权中止（进程内状态，重启即清空）。
+    acl: Arc<acl::Runtime>,
 }
 type Shared = Arc<App>;
 type ApiResult = std::result::Result<Json<Value>, ApiError>;
@@ -85,11 +89,36 @@ impl From<url::ParseError> for ApiError {
 fn error(status: StatusCode, message: &str) -> ApiError {
     ApiError(status, message.into(), None)
 }
+
+/// 带稳定错误码的 API 错误：消费方（Django/管理端）按 `code` 分支，
+/// 不依赖面向用户的文案。
+fn error_code(status: StatusCode, message: &str, code: &'static str) -> ApiError {
+    ApiError(status, message.into(), Some(code))
+}
 fn now() -> i64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .expect("clock before epoch")
         .as_secs() as i64
+}
+
+/// 登录/会话载荷里的 ACL 身份：`principal_kind` 决定该会话是否参与 ACL。
+///
+/// - `user`：必须是本候选契约的 Django 授权响应（三字段 + subject），否则拒绝；
+/// - `visitor`：访客（Django `FREE_ACCOUNT`）没有可归属的镜像身份，资源路径一律
+///   403 `acl_visitor_denied`，但页面与账号级路径保持既有可用性；
+/// - 其它取值/缺失：说明 Django 响应不是本候选契约，直接拒绝而不构造降级身份。
+fn identity_from_payload(payload: &Value) -> Result<Option<Identity>> {
+    let subject = payload["user_name"]
+        .as_str()
+        .context("会话载荷缺少 user_name")?;
+    match payload["principal_kind"].as_str() {
+        Some("user") => Identity::from_authority(payload, subject, now())
+            .map(Some)
+            .map_err(anyhow::Error::from),
+        Some("visitor") => Ok(None),
+        _ => bail!("会话载荷 principal_kind 不是 user/visitor"),
+    }
 }
 
 pub async fn router(config: Config) -> Result<Router> {
@@ -106,11 +135,19 @@ pub async fn router(config: Config) -> Result<Router> {
         db: Mutex::new(db),
         client,
         cloudflare: cloudflare::Cloudflare::new(),
+        acl: Arc::new(acl::Runtime::default()),
     });
     if app.config.cfbypass.is_some() {
         match app.cloudflare.force(&app).await {
             Ok(_) => {}
             Err(cause) => tracing::warn!(module="gateway", error=%cause, "cfbypass prewarm failed"),
+        }
+    }
+    // 旧归属一次性回填：只在 acl_resources 为空且无回填标记时调用映射端点。
+    // 失败不阻塞启动（回填标记未写，下次启动重试），也不猜测无法唯一映射的行。
+    if app.config.mirror_profile {
+        if let Err(cause) = acl::backfill_legacy_ownership(&app).await {
+            tracing::warn!(module = "gateway", error = %cause, "旧归属回填失败，保持未认领");
         }
     }
     let admin = Router::new()
@@ -130,6 +167,13 @@ pub async fn router(config: Config) -> Result<Router> {
         .route("/api/operations-overview", any(overview))
         .route("/api/conversation-statistics", any(statistics))
         .route("/api/conversation-statistics/reset", any(reset_statistics))
+        // ACL 管理 API 组（server/acl_admin.rs）：服务密钥由 require_admin 校验，
+        // 管理员身份另由固定 Django 源 fresh 校验，二者不可互相替代。
+        .route("/api/acl/resources", get(acl_admin::list_resources))
+        .route("/api/acl/claim", post(acl_admin::claim))
+        .route("/api/acl/share", post(acl_admin::share))
+        .route("/api/acl/move", post(acl_admin::move_to_project))
+        .route("/api/acl/audit", get(acl_admin::audit))
         // 管理端点（server/management.rs）：restore 仍留在父文件，另行原子校验。
         .route("/api/get-mirror-token", any(management::mirror_token))
         .route("/api/get-user-use-count", any(management::user_use_count))
@@ -397,6 +441,20 @@ async fn login(
         Some(db.encrypt(&input.session_token)?)
     };
     let extra = db.encrypt(&extra_cookies)?;
+    // 稳定账号键：mirror profile 必须由 Django 载荷提供（缺失即拒绝登录，
+    // 不能用用户名或客户端字段顶替）；original profile 与匿名会话没有上游账号，
+    // 保持 NULL，ACL 路径随后按「无账号键」拒绝。
+    let account_id = if app.config.mirror_profile && !anonymous_login {
+        Some(
+            payload["chatgpt_account_id"]
+                .as_str()
+                .filter(|value| !value.is_empty())
+                .context("登录载荷缺少 chatgpt_account_id")?
+                .to_owned(),
+        )
+    } else {
+        None
+    };
     payload["rust_credential_binding"] = json!(sha256_hex(&json!([email, access, extra_cookies]).to_string()));
     let mode = if anonymous_login {
         anonymous::LOGIN_MODE
@@ -406,8 +464,8 @@ async fn login(
     let auth_payload = db.encrypt(&payload.to_string())?;
     let tx = db.conn.transaction()?;
     tx.execute("DELETE FROM rust_authorizations WHERE token_hash IN (SELECT mirror_token FROM gateway_sessions WHERE user_name=?1 AND chatgpt_username=?2)",params![input.user_name,email])?;
-    tx.execute("INSERT INTO gateway_sessions(user_name,chatgpt_username,access_token,session_token,extra_cookies,login_mode,mirror_token,isolated_session,force_chat_mode,limits,proxy_node_id,daily_quota,monthly_quota,created_at,updated_at) VALUES(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?14) ON CONFLICT(user_name,chatgpt_username) DO UPDATE SET access_token=excluded.access_token,session_token=excluded.session_token,extra_cookies=excluded.extra_cookies,mirror_token=excluded.mirror_token,login_mode=excluded.login_mode,isolated_session=excluded.isolated_session,force_chat_mode=excluded.force_chat_mode,limits=excluded.limits,proxy_node_id=excluded.proxy_node_id,daily_quota=excluded.daily_quota,monthly_quota=excluded.monthly_quota,updated_at=excluded.updated_at",
-        params![input.user_name,email,encrypted_access,session,extra,mode,hash,payload["isolated_session"].as_bool().unwrap_or(true),payload["force_chat_mode"].as_bool().unwrap_or(true),payload.get("limits").cloned().unwrap_or(json!([])).to_string(),payload["proxy_node_id"].as_i64(),payload["daily_quota"].as_i64().unwrap_or(0),payload["monthly_quota"].as_i64().unwrap_or(0),time])?;
+    tx.execute("INSERT INTO gateway_sessions(user_name,chatgpt_username,access_token,session_token,extra_cookies,login_mode,mirror_token,isolated_session,force_chat_mode,limits,proxy_node_id,daily_quota,monthly_quota,chatgpt_account_id,created_at,updated_at) VALUES(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?15) ON CONFLICT(user_name,chatgpt_username) DO UPDATE SET access_token=excluded.access_token,session_token=excluded.session_token,extra_cookies=excluded.extra_cookies,mirror_token=excluded.mirror_token,login_mode=excluded.login_mode,isolated_session=excluded.isolated_session,force_chat_mode=excluded.force_chat_mode,limits=excluded.limits,proxy_node_id=excluded.proxy_node_id,daily_quota=excluded.daily_quota,monthly_quota=excluded.monthly_quota,chatgpt_account_id=excluded.chatgpt_account_id,updated_at=excluded.updated_at",
+        params![input.user_name,email,encrypted_access,session,extra,mode,hash,payload["isolated_session"].as_bool().unwrap_or(true),payload["force_chat_mode"].as_bool().unwrap_or(true),payload.get("limits").cloned().unwrap_or(json!([])).to_string(),payload["proxy_node_id"].as_i64(),payload["daily_quota"].as_i64().unwrap_or(0),payload["monthly_quota"].as_i64().unwrap_or(0),account_id,time])?;
     tx.execute(
         "INSERT INTO rust_authorizations(token_hash,payload,expires_at) VALUES(?1,?2,?3)",
         params![hash, auth_payload, expiry],
@@ -428,18 +486,7 @@ async fn authorize_login_payload(
         return Ok(i64::MAX);
     }
     let policy = Policy::from_login(payload)?;
-    let auth = app
-        .client
-        .post(app.config.django.join("/0x/user/gateway-authorization")?)
-        .bearer_auth(&app.config.secret)
-        .json(&json!({"authorization":policy.authorization,"subject":policy.user_name}))
-        .send()
-        .await
-        .context("Django 授权服务不可用")?;
-    if !auth.status().is_success() {
-        return Err(error(StatusCode::UNAUTHORIZED, "登录已失效，请重新登录"));
-    }
-    let details: Value = auth.json().await.context("Django 授权响应无效")?;
+    let details = authority_details(app, &policy.authorization, &policy.user_name).await?;
     if details["active"] != true {
         return Err(error(StatusCode::UNAUTHORIZED, "Django 未确认有效授权"));
     }
@@ -454,7 +501,71 @@ async fn authorize_login_payload(
         .filter(|s| !s.is_empty())
         .context("Django 缺少 version")?);
     payload["expires_at"] = json!(expiry);
+    // ACL 可信身份：四个字段全部来自 Django 签名授权的响应，客户端载荷里的
+    // 同名值在这里被覆盖，浏览器自报的身份不参与判权。
+    // `active` 与 `expires_at`/`version` 一起写入：会话建立时固定的身份要能被
+    // 后续每个请求原样复验（`Identity::from_authority` 同样要求这三项），
+    // 否则登录成功但下一次请求就判身份无效。
+    for key in ["active", "user_id", "is_admin", "subject", "principal_kind"] {
+        payload[key] = details
+            .get(key)
+            .cloned()
+            .with_context(|| format!("Django 授权响应缺少 {key}"))?;
+    }
     Ok(expiry)
+}
+
+/// 固定的 Django 授权源：唯一可信身份来源。
+///
+/// `/api/login`、`/api/get-mirror-token` 与每个资源请求的复验都走这里；
+/// 服务密钥只证明调用方是 Django，不构成管理员身份，管理员判定一律来自本响应。
+pub(super) async fn authority_details(
+    app: &App,
+    authorization: &str,
+    subject: &str,
+) -> std::result::Result<Value, ApiError> {
+    let response = app
+        .client
+        .post(app.config.django.join("/0x/user/gateway-authorization")?)
+        .bearer_auth(&app.config.secret)
+        .json(&json!({"authorization":authorization,"subject":subject}))
+        .send()
+        .await
+        .context("Django 授权服务不可用")?;
+    if !response.status().is_success() {
+        return Err(error(StatusCode::UNAUTHORIZED, "登录已失效，请重新登录"));
+    }
+    response
+        .json()
+        .await
+        .map_err(|cause| error(StatusCode::BAD_GATEWAY, &format!("Django 授权响应无效: {cause}")))
+}
+
+/// 管理 API 的请求方身份：服务密钥已由中间件校验，这里再要求请求自带
+/// `authorization` + `subject` 并在固定 Django 源做一次 fresh 校验，最后要求
+/// `is_admin`。缺任一步都不能构造管理员身份，服务密钥本身不代表管理员。
+pub(super) async fn request_admin_identity(
+    app: &App,
+    headers: &HeaderMap,
+) -> std::result::Result<Option<RequestIdentity>, ApiError> {
+    let header = |name: &str| {
+        headers
+            .get(name)
+            .and_then(|value| value.to_str().ok())
+            .filter(|value| !value.is_empty())
+    };
+    let (Some(authorization), Some(subject)) = (header("authorization"), header("subject")) else {
+        return Ok(None);
+    };
+    let details = authority_details(app, authorization, subject).await?;
+    // 身份三字段缺失/错型/访客/过期都由 `Identity::from_authority` 拒绝。
+    let Ok(identity) = Identity::from_authority(&details, subject, now()) else {
+        return Ok(None);
+    };
+    if !identity.is_admin() {
+        return Ok(None);
+    }
+    Ok(Some(RequestIdentity::from_session(identity)))
 }
 
 fn session_cookies(response: &mut Response, token: &str, secure: bool) -> Result<()> {
@@ -657,6 +768,8 @@ async fn logout(
     State(app): State<Shared>,
     Json(input): Json<UserName>,
 ) -> std::result::Result<Response, ApiError> {
+    // 登出同样中止该用户在途流：会话行即将删除，剩余内容不能再下发。
+    app.acl.abort_subject(&input.user_name);
     let mut db = app.db.lock().await;
     let tx = db.conn.transaction()?;
     tx.execute("DELETE FROM rust_authorizations WHERE token_hash IN (SELECT mirror_token FROM gateway_sessions WHERE user_name=?1)",[&input.user_name])?;
@@ -703,10 +816,14 @@ async fn revoke(State(app): State<Shared>, Json(input): Json<Value>) -> ApiResul
         .query_map([], |r| Ok((r.get(0)?, r.get(1)?)))?
         .collect::<std::result::Result<_, _>>()?;
     let mut keys = Vec::new();
+    // 撤权命中的会话，其镜像用户名（subject）用于中止在途流：撤权后不能再把
+    // 剩余生成内容交给已失权用户。
+    let mut subjects = Vec::new();
     for (key, value) in records {
         let payload: Value = serde_json::from_str(&db.decrypt(&value)?).context("会话策略损坏")?;
         let policy = Policy::from_login(&payload)?;
         if event.matches(&policy, now()) {
+            subjects.push(policy.user_name.clone());
             keys.push(key);
         }
     }
@@ -719,6 +836,10 @@ async fn revoke(State(app): State<Shared>, Json(input): Json<Value>) -> ApiResul
         )?;
     }
     tx.commit()?;
+    drop(db);
+    for subject in subjects {
+        app.acl.abort_subject(&subject);
+    }
     Ok(Json(json!({"revoked":true})))
 }
 async fn export_backup(State(app): State<Shared>) -> ApiResult {
@@ -1065,12 +1186,17 @@ struct Session {
     outbound: egress::Egress,
     /// 匿名会话（`login_mode = anonymous`）：上游凭据来自全局共享匿名身份。
     anonymous: bool,
+    /// ACL 身份：mirror profile 为 Django 可信身份，original profile 为本地 user_name；
+    /// 匿名会话与访客为 None（资源路径一律拒绝）。
+    identity: Option<Identity>,
+    /// 稳定上游账号键（Django `ChatgptAccount.pk`）；老会话/匿名会话为 None。
+    account_id: Option<String>,
 }
 async fn session(app: &App, token: &str) -> Result<Option<Session>> {
     let hash = sha256_hex(token);
     let db = app.db.lock().await;
-    let record:Option<(String,String,String,String,String)>=db.conn.query_row("SELECT user_name,chatgpt_username,access_token,extra_cookies,login_mode FROM gateway_sessions WHERE mirror_token=?1",[&hash],|r|Ok((r.get(0)?,r.get(1)?,r.get(2)?,r.get(3)?,r.get(4)?))).optional()?;
-    let Some((user, account, encrypted, cookies, login_mode)) = record else {
+    let record:Option<(String,String,String,String,String,Option<String>)>=db.conn.query_row("SELECT user_name,chatgpt_username,access_token,extra_cookies,login_mode,chatgpt_account_id FROM gateway_sessions WHERE mirror_token=?1",[&hash],|r|Ok((r.get(0)?,r.get(1)?,r.get(2)?,r.get(3)?,r.get(4)?,r.get(5)?))).optional()?;
+    let Some((user, account, encrypted, cookies, login_mode, account_id)) = record else {
         return Ok(None);
     };
     let authorization: Option<(String,i64)> = db.conn.query_row(
@@ -1089,6 +1215,15 @@ async fn session(app: &App, token: &str) -> Result<Option<Session>> {
     } else {
         None
     };
+    // ACL 身份：mirror profile 由 Django 每请求复验；original profile 信任本地
+    // 镜像会话本身（与原始网关按 user_name 判定归属一致）。匿名/访客没有身份。
+    let identity = if login_mode == anonymous::LOGIN_MODE {
+        None
+    } else if app.config.mirror_profile {
+        identity_from_payload(&payload)?
+    } else {
+        Some(Identity::local(&user)?)
+    };
     let value = Session {
         user,
         account,
@@ -1097,9 +1232,14 @@ async fn session(app: &App, token: &str) -> Result<Option<Session>> {
         credential_binding,
         outbound,
         anonymous: login_mode == anonymous::LOGIN_MODE,
+        identity,
+        account_id,
     };
     drop(db);
-    if let Some(policy) = &value.policy {
+    // 访客与匿名会话没有可固定的 ACL 身份：mirror profile 下仍需每请求确认固定
+    // Django 源继续判其为同一有效访客，避免撤权后旧会话继续使用账号级路径。
+    let subject = value.policy.as_ref().map(|policy| policy.user_name.clone());
+    if let (Some(policy), Some(subject)) = (&value.policy, subject) {
         let res = app
             .client
             .post(app.config.django.join("/0x/user/gateway-authorization")?)
@@ -1111,10 +1251,21 @@ async fn session(app: &App, token: &str) -> Result<Option<Session>> {
             return Ok(None);
         }
         let details: Value = res.json().await?;
-        if details["active"] != true
-            || details["version"] != policy.version
-            || details["expires_at"].as_i64().unwrap_or(0) <= now()
-        {
+        // 有身份的资源会话复验三字段 + subject；访客只确认仍是同一有效访客。
+        // 两条路径都从固定 Django 源读取，任一变化都拒绝旧会话，不静默升权。
+        let verified = match &value.identity {
+            Some(identity) => {
+                RequestIdentity::verify(identity, &details, &subject, now()).is_ok()
+            }
+            None => crate::resource_acl::verify_visitor(
+                &details,
+                &subject,
+                &policy.version,
+                now(),
+            )
+            .is_ok(),
+        };
+        if !verified {
             return Ok(None);
         }
     }

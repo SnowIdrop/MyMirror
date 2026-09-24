@@ -13,7 +13,8 @@
 - 登录交接、Cookie 轮换和退出清理；配置持久化、Django 回环代理（含查询串/响应流）。
 - 纯模型与能力允许清单策略及回归测试；**MCP/Skills 请求侧协议、完整配额执行未接线**。
 - 匿名上游前端已接通（2026-09-23 真实上游实测）：页面 `/`、`/c/*`，匿名通道 `/backend-anon/*`，公共接口 `/public-api/`、`/ces/`、`/cdn-cgi/`、`/sentinel/`，以及 `/assets/`、`/cdn/` 与 `/internal-upstream/https/<host>/...` 媒体代理；页面 HTML 在 `</head>` 之前注入客户端模板，匿名对话（SSE）、匿名上传（签名 blob PUT）与媒体加载均在真实上游通过。
-- 已登录业务面（2026-09-23 本批）：`/backend-api/*` 开放读写与 SSE，方法语义交给上游；`/backend-api/me` 与 `/backend-api/conversations`（按共享账号内用户归属过滤、保留分页语义）保持原状。会话作用域路径与 `POST …/conversation` 的续聊载荷在转发前做归属判定，创建响应在把含会话 id 的块交给客户端之前登记归属（`server/owners.rs`）；未登记会话（含本批之前创建）一律拒绝，唯一恢复途径是管理员在后端重新分配。
+- 已登录业务面（2026-09-23 开放，2026-09-24 换成 ACL）：`/backend-api/*` 开放读写与 SSE，方法语义交给上游；`/backend-api/me` 保持原状，`/backend-api/conversations` 与其余集合按 ACL 受众过滤并把 `total` 重算为可见条数。会话/项目/文件/图片/任务/连接器六类资源在转发前判权（未登记或他人资源 `404 acl_not_found` 且不接触上游），创建响应在把含资源 id 的块交给客户端之前登记归属（`server/acl.rs` + `src/resource_acl.rs`）；未分类路径 `503 acl_unclassified_route`，未登记资源（含本批之前创建）一律拒绝，唯一恢复途径是管理员通过 `/api/acl/claim` 认领。
+- 资源 ACL v1（2026-09-24 本批）：身份四字段来自固定 Django 源的签名响应并在每个资源请求前复验；稳定账号键 `chatgpt_account_id` 随登录载荷下发；生成互斥 `409 generation_busy`；撤权/登出中止在途流；管理 API `/api/acl/{resources,claim,share,move,audit}` 要求服务密钥 + fresh 管理员身份；旧归属经映射端点一次性回填且不认领访客行；网关备份升 v3（含四张 `acl_*` 表，v2 备份显式拒绝）。访客不参与 ACL，只能使用账号级路径与空集合。
 - WebSocket 桥接（本批）：`/ws-chatgpt[/…]` 固定连 `wss://ws.chatgpt.com/…`（configured 模式；offline 用回环基址），复用会话凭据与会话出口绑定；代理出口上 fail-closed 返回 503，不静默改走直连。`/realtime/*` 作为 HTTP/SSE 通道开放，携带 `Upgrade: websocket` 的请求显式 503；`/api/livekit/` 语音与 `/realtime` 升级桥接不在本批。
 - 公共前缀策略表（本批，`server/public_prefixes.rs`）：注入脚本改写出去的 39 个同源前缀要么命中固定主机的无凭据反代（`/common/`、`/static-rsc-1|4/`、`/images-openai/`、`/images-app/`、`/persistent-deep-research/`、`/files*`、`/openai-files/`、`/connector-assets/`、`/mapbox*`、`/google-s2/`、`/google-avatar/`、`/gstatic-t0..t3/`、`/ab/`），要么拿到按类别区分的可行动文案（`/external/*`、遥测类、沙箱页面、`/v1/*`）。契约测试直接解析 `src/assets/gateway-client.html` 的两张改写表，新增或改名而不更新策略表即失败。
 - 全局共享匿名上游身份：`server/anonymous.rs` 从 cfbypass 取 Cloudflare cookies（整组下发），持久化到 `gateway_settings['anonymous_upstream']`（整值加密）；只有实测的 Cloudflare 挑战（403 + `cf-mitigated: challenge`）才触发缓存处理：幂等 GET 刷新一次并重放一次，生成/上传类请求只失效缓存、由下一次请求重新获取。匿名链路以 cookies 为唯一凭据、不发 `Authorization`：`accessToken` 只属于真实账号登录（实测匿名 `/api/auth/session` 返回 200 `{}`），匿名对话与上传均不需要它。
@@ -48,7 +49,7 @@ CDN 已接入公共静态的 `/assets/` 与 `/cdn/` 路径（脚本、样式、�
 `/internal-upstream/https/<host>/<path>` 是注入脚本内置主机表（`src/assets/gateway-client-hosts.json`）的媒体代理：GET/HEAD 读取，PUT 用于匿名上传返回的签名 blob 地址；主机不在表内、非 https、缺少路径分隔符或其它方法都在接触上游前拒绝。
 `CHATGPT_AB_BASE_URL` 可选，对应原版同名变量，是注入脚本改写目标 `/ab/*` 的上游基址；未配置时该前缀返回可行动文案而不是静默丢弃统计请求。其它公共前缀按策略表内的固定主机访问，不需要额外配置。
 `GATEWAY_ALLOW_ANONYMOUS_SESSION` 默认 `false`（只接受字面量 `true`/`false`）：打开后 `/api/login` 允许无上游凭据的镜像会话，该会话绑定全局共享匿名上游身份。关闭时与原版一致，空凭据登录仍然 400。镜像自身的登录门禁不变：无 `mirror_token` 的页面/匿名请求仍是 401。
-`/api/auth/session` 已接入 accounts/check → me 的逐次刷新，网络等待不持数据库锁，并在返回前重新校验撤权；初次登录的accounts检查仍未对齐。独立ACL模块只暂存和运行契约测试，没有产品权限接线。
+`/api/auth/session` 已接入 accounts/check → me 的逐次刷新，网络等待不持数据库锁，并在返回前重新校验撤权；初次登录的accounts检查仍未对齐。`resource_acl.rs` 已完成产品接线（见上），`GATEWAY_BACKUP_VERSION` 随之为 3。
 `GATEWAY_COMPAT_PROFILE=mirror` 是默认值，必须传 Django 授权与策略字段；`original` 只用于原版契约观测，不自动降级到该模式。
 `COOKIE_SECURE` 默认 true。局部合成 HTTP 测试可设 false；这不是公网部署配置。
 

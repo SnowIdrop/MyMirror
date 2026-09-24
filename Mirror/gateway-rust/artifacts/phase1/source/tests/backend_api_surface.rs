@@ -28,6 +28,16 @@ const CONVERSATION: &str = "6ab350c7-5d3c-83ea-be1f-a87b536c1c6c";
 
 type Events = Arc<Mutex<Vec<Value>>>;
 
+/// 镜像用户名 → 稳定 user_id（真实 Django 为 `User.pk`）；两个用户必须不同，
+/// 否则 ACL 会把 Bob 当成 Alice。
+fn fixture_user_id(subject: &str) -> &'static str {
+    match subject {
+        "alice" => "11",
+        "bob" => "12",
+        _ => "13",
+    }
+}
+
 #[derive(Default)]
 struct Upstream {
     events: Events,
@@ -170,9 +180,20 @@ impl Fixture {
         let django_url = {
             serve(Router::new().fallback(|request: Request| async move {
                 if request.uri().path() == "/0x/user/gateway-authorization" {
+                    // 身份三字段 + subject 恒来自本响应：subject 回显请求里的 subject，
+                    // 与真实 Django 的可信响应同形。
+                    let (_, body) = request.into_parts();
+                    let body = to_bytes(body, 64 * 1024).await.unwrap();
+                    let input: Value = serde_json::from_slice(&body).unwrap_or_default();
+                    let subject = input["subject"].as_str().unwrap_or("");
                     return axum::Json(json!({
                         "active": true,
                         "version": "v1",
+                        // 镜像用户各自的稳定 user_id（真实 Django 为 User.pk）。
+                        "user_id": fixture_user_id(subject),
+                        "is_admin": false,
+                        "principal_kind": "user",
+                        "subject": subject,
                         // 固定远期 Unix 秒：fixture 不依赖运行时钟。
                         "expires_at": 4_102_444_800_i64,
                     }))
@@ -242,6 +263,7 @@ impl Fixture {
                 "limits":[],
                 "mcp_allowed_ids":[],
                 "skills_allowed_ids":[],
+                "chatgpt_account_id":"3",
                 "extra_cookies":[{"name":"probe_extra","value":user}],
             }))
             .send()

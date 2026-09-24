@@ -16,8 +16,9 @@ from app.accounts.models import PendingLogin, User, VisitorSession, GatewayRevoc
 from app.accounts.session_authority import authorization_is_active, gateway_authorization, authorization_details, authorization_version
 from app.accounts.views import revoke_user_sessions
 from app.accounts.views.login import LoginIpRateThrottle
+from app.chatgpt.models import ChatgptAccount
 from app.settings import FREE_ACCOUNT_USERNAME
-from app.utils import get_request_subject
+from app.utils import get_request_subject, issue_free_session
 
 
 class GatewayLeaseTests(TransactionTestCase):
@@ -259,6 +260,43 @@ class LoginSecurityTests(TestCase):
         self.user.delete()
         self.assertFalse(authorization_is_active(grant, subject))
 
+    def test_authorization_details_expose_trusted_identity_fields(self):
+        self.login()
+        grant, subject = self.grant()
+        details = authorization_details(grant, subject)
+        self.assertEqual(details["user_id"], str(self.user.pk))
+        self.assertEqual(details["subject"], subject)
+        self.assertEqual(details["principal_kind"], "user")
+        self.assertFalse(details["is_admin"])
+
+        staff = User.objects.create_user(
+            username="identity-staff", password="Strong-password-123!", is_staff=True,
+        )
+        superuser = User.objects.create_superuser(
+            username="identity-superuser", password="Strong-password-123!",
+        )
+        for user in (staff, superuser):
+            Token.objects.create(user=user)
+            user_grant, user_subject = self.grant(user=user)
+            user_details = authorization_details(user_grant, user_subject)
+            self.assertTrue(user_details["is_admin"], user.username)
+            self.assertEqual(user_details["principal_kind"], "user")
+            self.assertEqual(user_details["user_id"], str(user.pk))
+            self.assertEqual(user_details["subject"], user.username)
+
+    def test_visitor_authorization_details_are_marked_as_visitor(self):
+        free = User.objects.create_user(username=FREE_ACCOUNT_USERNAME, password="Free-password-123!")
+        token = Token.objects.create(user=free)
+        request = SimpleNamespace(
+            user=free, auth=token, COOKIES={"free_session": issue_free_session()},
+        )
+        subject = get_request_subject(request)
+        details = authorization_details(gateway_authorization(request), subject)
+        self.assertEqual(details["principal_kind"], "visitor")
+        self.assertEqual(details["subject"], subject)
+        self.assertEqual(details["user_id"], str(free.pk))
+        self.assertFalse(details["is_admin"])
+
     def test_policy_changes_reject_old_authority_without_relying_on_remote_cleanup(self):
         self.login()
         grant, subject = self.grant()
@@ -301,3 +339,62 @@ class LoginSecurityTests(TestCase):
             self.assertTrue(LoginIpRateThrottle().allow_request(first, None))
         self.assertFalse(LoginIpRateThrottle().allow_request(first, None))
         self.assertTrue(LoginIpRateThrottle().allow_request(second, None))
+
+
+@override_settings(ALLOWED_HOSTS=["testserver"], GATEWAY_ADMIN_SECRET="internal-test-secret")
+class GatewayAclMappingTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.staff = User.objects.create_user(
+            username="acl-staff", password="Strong-password-123!", is_staff=True,
+        )
+        self.plain = User.objects.create_user(username="acl-plain", password="Strong-password-123!")
+        self.first = ChatgptAccount.objects.create(
+            chatgpt_username="acl-first@example.com", plan_type="plus",
+            access_token="acl-first-access-secret", session_token="acl-first-session-secret",
+            created_time=1, updated_time=1,
+        )
+        self.second = ChatgptAccount.objects.create(
+            chatgpt_username="acl-Second@Example.com", plan_type="plus",
+            access_token="acl-second-access-secret", created_time=1, updated_time=1,
+        )
+
+    def mapping(self, authorization=None):
+        headers = {"HTTP_AUTHORIZATION": authorization} if authorization else {}
+        return self.client.post("/0x/user/gateway-acl-mapping", {}, format="json", **headers)
+
+    def test_mapping_requires_service_secret(self):
+        self.assertIn(self.mapping().status_code, (401, 403))
+        self.assertIn(self.mapping("Bearer wrong-secret").status_code, (401, 403))
+        self.assertEqual(self.mapping("Bearer internal-test-secret").status_code, 200)
+
+    def test_mapping_is_ordered_by_pk_and_carries_no_credentials(self):
+        response = self.mapping("Bearer internal-test-secret")
+        self.assertEqual(response.status_code, 200)
+        body = response.data
+        self.assertEqual(
+            [item["username"] for item in body["users"]],
+            list(User.objects.order_by("pk").values_list("username", flat=True)),
+        )
+        self.assertEqual(
+            [item["user_id"] for item in body["users"]],
+            [str(pk) for pk in User.objects.order_by("pk").values_list("pk", flat=True)],
+        )
+        self.assertEqual(
+            body["accounts"],
+            [
+                {"chatgpt_username": account.chatgpt_username, "account_id": str(account.pk)}
+                for account in ChatgptAccount.objects.order_by("pk")
+            ],
+        )
+        by_username = {item["username"]: item for item in body["users"]}
+        self.assertTrue(by_username["acl-staff"]["is_admin"])
+        self.assertFalse(by_username["acl-plain"]["is_admin"])
+        for item in body["users"]:
+            self.assertEqual(set(item), {"username", "user_id", "is_admin"})
+        for item in body["accounts"]:
+            self.assertEqual(set(item), {"chatgpt_username", "account_id"})
+        raw = response.content.decode()
+        self.assertNotIn("acl-first-access-secret", raw)
+        self.assertNotIn("acl-first-session-secret", raw)
+        self.assertNotIn("acl-second-access-secret", raw)

@@ -111,9 +111,15 @@ pub(super) async fn route(
     } else {
         ws.protocols(protocols)
     };
+    // 撤权/登出中止：与 SSE 共用 ACL 运行时的订阅表，撤权后 WebSocket 立即断开，
+    // 不再把后续内容交给已失权用户。匿名与访客没有可中止的镜像身份。
+    let abort = session
+        .identity
+        .as_ref()
+        .map(|_| acl::Runtime::watch(&app.acl, &session.user));
     upgrade
         .on_upgrade(move |client| async move {
-            if let Err(cause) = pump(client, upstream).await {
+            if let Err(cause) = pump(client, upstream, abort).await {
                 tracing::warn!(module = "gateway", error = %cause, "WebSocket 桥接结束");
             }
         })
@@ -237,12 +243,16 @@ pub(super) async fn connect(
 }
 
 /// 桥接本体：双向透传，任一侧结束即把关闭帧转交另一侧后收尾。
+/// `abort` 非空时，撤权/登出会写通道使本次桥接立即结束（不再转发剩余消息）。
 pub(super) async fn pump(
     client: WebSocket,
-    upstream: tokio_tungstenite::WebSocketStream<
-        tokio_tungstenite::MaybeTlsStream<tokio::net::TcpStream>,
-    >,
+    upstream: UpstreamStream,
+    abort: Option<acl::AbortWatch>,
 ) -> Result<()> {
+    let (mut abort, _guard) = match abort {
+        Some((rx, guard)) => (Some(rx), Some(guard)),
+        None => (None, None),
+    };
     let (mut client_sink, mut client_stream) = client.split();
     let (mut upstream_sink, mut upstream_stream) = upstream.split();
     let mut relay = Relay {
@@ -250,15 +260,40 @@ pub(super) async fn pump(
         upstream_open: true,
     };
     // 正常阶段不设超时：对话通道可以长时间空闲。
+    let mut revoked = false;
     while relay.client_open && relay.upstream_open {
-        relay
-            .step(
-                &mut client_stream,
-                &mut client_sink,
-                &mut upstream_stream,
-                &mut upstream_sink,
-            )
-            .await?;
+        match abort.as_mut() {
+            Some(rx) => {
+                tokio::select! {
+                    biased;
+                    _ = rx.changed() => {
+                        revoked = true;
+                        break;
+                    }
+                    step = relay.step(
+                        &mut client_stream,
+                        &mut client_sink,
+                        &mut upstream_stream,
+                        &mut upstream_sink,
+                    ) => step?,
+                }
+            }
+            None => {
+                relay
+                    .step(
+                        &mut client_stream,
+                        &mut client_sink,
+                        &mut upstream_stream,
+                        &mut upstream_sink,
+                    )
+                    .await?;
+            }
+        }
+    }
+    // 撤权/登出后不再走关闭握手：握手阶段仍会把上游剩余消息转给客户端，
+    // 与「立即停止下发」冲突，因此这里直接结束并让连接被关闭。
+    if revoked {
+        return Ok(());
     }
     // 收尾阶段把关闭握手走完，语义是「任一侧关闭即关闭另一侧」。
     let _ = tokio::time::timeout(CLOSE_GRACE, async {
@@ -452,7 +487,7 @@ mod tests {
                     match connect(&target, headers).await {
                         Ok((upstream, _)) => ws
                             .on_upgrade(move |client| async move {
-                                let _ = pump(client, upstream).await;
+                                let _ = pump(client, upstream, None).await;
                             })
                             .into_response(),
                         Err(failure) => (

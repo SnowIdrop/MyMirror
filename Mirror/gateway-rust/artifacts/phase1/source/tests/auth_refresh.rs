@@ -50,7 +50,9 @@ async fn fixture() -> Fixture {
     let state = Arc::new(Upstream::default());
     state.me_status.store(200, Ordering::SeqCst);
     let stub = Router::new()
-        .route("/0x/user/gateway-authorization", post(|| async { Json(json!({"active":true,"version":"v1","expires_at":SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs()+3600})) }))
+        .route("/0x/user/gateway-authorization", post(|| async { Json(json!({"active":true,"version":"v1",
+            "user_id":"7","is_admin":false,"principal_kind":"user","subject":"alice",
+            "expires_at":SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs()+3600})) }))
         .route("/backend-api/accounts/check/v4-2023-04-27", get(|State(s): State<Arc<Upstream>>, headers: axum::http::HeaderMap| async move {
             s.paths.lock().await.push("accounts".into());
             assert_eq!(headers["authorization"], "Bearer synthetic-access-token");
@@ -98,7 +100,7 @@ async fn fixture() -> Fixture {
         .build()
         .unwrap();
     let result: Value = client.post(format!("{base}/api/login")).bearer_auth("fixture-admin-secret-0001")
-        .json(&json!({"user_name":"alice","authorization":"signature-v1","access_token":"synthetic-access-token","login_mode":"api","isolated_session":true,"mcp_isolation":true,"skills_isolation":true,"model_isolation":true,"daily_quota":20,"monthly_quota":100,"model_allowed_ids":["fixture-model"],"model_rate_limits":{},"limits":[],"mcp_allowed_ids":[],"skills_allowed_ids":[],"extra_cookies":[{"name":"fixture_extra","value":"synthetic"}]}))
+        .json(&json!({"user_name":"alice","authorization":"signature-v1","access_token":"synthetic-access-token","login_mode":"api","isolated_session":true,"mcp_isolation":true,"skills_isolation":true,"model_isolation":true,"daily_quota":20,"monthly_quota":100,"model_allowed_ids":["fixture-model"],"model_rate_limits":{},"limits":[],"mcp_allowed_ids":[],"skills_allowed_ids":[],"chatgpt_account_id":"3","extra_cookies":[{"name":"fixture_extra","value":"synthetic"}]}))
         .send().await.unwrap().error_for_status().unwrap().json().await.unwrap();
     let token = result["login_url"]
         .as_str()

@@ -87,6 +87,9 @@ class GetMirrorToken(APIView):
             "model_policies": account_model_policies_by_username(user, user_gpt_list),
             "limits": normalized_model_limits(user),
             "chatgpt_list": chatgpt_username_list,
+            "chatgpt_account_ids": {
+                account.chatgpt_username.lower(): str(account.id) for account in user_gpt_list
+            },
             "user_name": get_request_subject(request),
             "authorization": gateway_authorization(request),
             "daily_quota": user.daily_quota,

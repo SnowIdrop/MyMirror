@@ -22,8 +22,8 @@ from app.fields import decrypt_value, encrypt_value
 from app.utils import req_gateway
 
 
-BACKUP_VERSION = 2
-GATEWAY_BACKUP_VERSION = 2
+BACKUP_VERSION = 3
+GATEWAY_BACKUP_VERSION = 3
 DJANGO_BACKUP_COLLECTIONS = (
     "groups",
     "users",
@@ -44,6 +44,10 @@ GATEWAY_BACKUP_COLLECTIONS = (
     "visit_logs",
     "conversation_statistics",
     "conversation_model_statistics",
+    "acl_resources",
+    "acl_project_links",
+    "acl_shares",
+    "acl_audit",
 )
 
 
@@ -206,7 +210,14 @@ def _require_complete_django_backup(payload):
 def _require_complete_gateway_backup(payload):
     if not isinstance(payload, dict):
         raise ValidationError({"archive": "完整备份缺少 Gateway 数据"})
-    if payload.get("version") != GATEWAY_BACKUP_VERSION:
+    version = payload.get("version")
+    if version != GATEWAY_BACKUP_VERSION:
+        # v2 及更早的网关备份没有 ACL 集合，直接恢复会静默丢掉权限数据，因此明确拒绝并给出行动指引。
+        if isinstance(version, int) and version < GATEWAY_BACKUP_VERSION:
+            raise ValidationError(
+                {"archive": f"网关备份 v{version} 不含 ACL 权限表，拒绝静默丢失权限；"
+                            f"请使用 v{GATEWAY_BACKUP_VERSION} 备份重新导出"}
+            )
         raise ValidationError({"archive": "Gateway 备份版本不匹配"})
     for name in GATEWAY_BACKUP_COLLECTIONS:
         if not isinstance(payload.get(name), list):
@@ -415,6 +426,12 @@ class UnifiedBackupView(APIView):
             )
             return Response({"message": "旧版统一备份已恢复；旧备份不包含新增的全部数据"})
         if version != BACKUP_VERSION:
+            # v2 统一备份的网关信封同样不含 ACL 集合，静默降级会丢权限，因此拒绝并给出行动指引。
+            if isinstance(version, int) and version < BACKUP_VERSION:
+                raise ValidationError(
+                    {"archive": f"备份 v{version} 不含 ACL 权限表，拒绝静默丢失权限；"
+                                f"请使用 v{BACKUP_VERSION} 备份重新导出"}
+                )
             raise ValidationError({"archive": "不支持的备份版本"})
 
         django_payload = payload.get("django")

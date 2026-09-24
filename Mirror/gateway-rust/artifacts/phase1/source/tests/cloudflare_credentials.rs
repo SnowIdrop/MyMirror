@@ -150,6 +150,10 @@ impl Fixture {
                     return axum::Json(json!({
                         "active": true,
                         "version": "v1",
+                        "user_id": "7",
+                        "is_admin": false,
+                        "principal_kind": "user",
+                        "subject": "alice",
                         // 固定远期 Unix 秒：fixture 不依赖运行时钟。
                         "expires_at": 4_102_444_800_i64,
                     }))
@@ -207,6 +211,7 @@ impl Fixture {
                 "user_name":"alice",
                 "session_token":"synthetic-session-token",
                 "authorization":"signature-v1",
+                "chatgpt_account_id":"3",
                 "login_mode":"web",
                 "isolated_session":true,
                 "mcp_isolation":true,

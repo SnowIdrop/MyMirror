@@ -45,7 +45,23 @@ async fn spawn_fixture(
                 let input: Value = serde_json::from_slice(&body).unwrap();
                 let known = ["alice", "bob"].contains(&input["subject"].as_str().unwrap_or(""));
                 return axum::Json(json!({"active":active.load(Ordering::SeqCst) && known && input["authorization"] == "coord-signature-v1",
-                    "version":"v1", "expires_at":SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs()+3600})).into_response();
+                    "version":"v1", "user_id":"7", "is_admin":false, "principal_kind":"user",
+                    "subject":input["subject"],
+                    "expires_at":SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs()+3600})).into_response();
+            }
+            // 旧归属回填的映射端点（启动时调用一次）：只回 user_name → user_id 与
+            // chatgpt_username → account_id，不含任何凭据。
+            if role == "django" && parts.uri.path() == "/0x/user/gateway-acl-mapping" {
+                return axum::Json(json!({
+                    "users": [
+                        {"username":"alice","user_id":"7","is_admin":false},
+                        {"username":"bob","user_id":"8","is_admin":false}
+                    ],
+                    "accounts": [
+                        {"chatgpt_username":"account-a@example.invalid","account_id":"3"},
+                        {"chatgpt_username":"account-b@example.invalid","account_id":"4"}
+                    ]
+                })).into_response();
             }
             if role == "chat" && parts.uri.path() == "/backend-api/accounts/check/v4-2023-04-27" {
                 if !matches!(parts.headers.get("authorization").and_then(|v| v.to_str().ok()),
@@ -208,7 +224,8 @@ impl Harness {
             "user_name":user,"authorization":"coord-signature-v1","access_token":access,"login_mode":mode,
             "isolated_session":true,"mcp_isolation":true,"skills_isolation":true,"model_isolation":true,
             "daily_quota":20,"monthly_quota":100,"model_allowed_ids":["fixture-model"],"model_rate_limits":{},
-            "limits":[],"mcp_allowed_ids":[],"skills_allowed_ids":[]}))).await;
+            "limits":[],"mcp_allowed_ids":[],"skills_allowed_ids":[],
+            "chatgpt_account_id":if user.contains("bob"){"4"}else{"3"}}))).await;
         assert_eq!(response.status, 200, "{}", response.body);
         let value: Value = serde_json::from_str(&response.body).unwrap();
         value["login_url"]
@@ -645,6 +662,11 @@ async fn coord_shared_account_token_rotation_preserves_other_user() {
 #[tokio::test]
 async fn coord_invalid_credentials_fail_without_egress_or_echo() {
     let h = Harness::new("invalid_credentials").await;
+    // 启动期有一次归属回填映射调用，因此出口断言按基线比较：无效凭据不得新增任何出口。
+    let baseline: Vec<(&str, usize)> = ["chat", "django", "cdn-unwired", "client-target-decoy"]
+        .into_iter()
+        .map(|role| (role, h.egress(role).len()))
+        .collect();
     for path in [
         "/backend-api/me",
         "/internal-upstream/unknown",
@@ -683,8 +705,12 @@ async fn coord_invalid_credentials_fail_without_egress_or_echo() {
         .await;
     assert_eq!(handoff.status, 401);
     no_credential_echo(&handoff, &[BROWSER_AUTH, BROWSER_COOKIE, ADMIN]);
-    for role in ["chat", "django", "cdn-unwired", "client-target-decoy"] {
-        assert!(h.egress(role).is_empty());
+    for (role, before) in baseline {
+        assert_eq!(
+            h.egress(role).len(),
+            before,
+            "{role} 不应因无效凭据新增出口调用"
+        );
     }
 }
 

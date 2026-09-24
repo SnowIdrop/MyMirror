@@ -2,7 +2,8 @@
 // Author  : MingTea
 // File    : storage.rs
 // Created : 2026-09-22
-// Summary : 网关 SQLite 存储层：8 张原版表、settings 读写、v2 备份导出/事务恢复、
+// Summary : 网关 SQLite 存储层：8 张原版表 + 4 张 ACL 表、settings 读写、
+//           v3 备份导出/事务恢复（v2 备份显式拒绝，避免静默丢失 ACL 权限）、
 //           HTTP 兼容备份恢复分派（restore_http_backup）、
 //           旧库只读迁移（新库清空会话）。DDL 与行为证据来自
 //           reverse/reports/05-database-schema.md 与 04-gateway-disassembly.md。
@@ -36,11 +37,17 @@ use crate::crypto::{self, Crypto};
 /// 建库 DDL（8 表 + 3 索引 + 存量回填），逐字复刻报告 §3。
 const SCHEMA_SQL: &str = include_str!("schema.sql");
 
-/// 备份版本号（原版 export_backup 恒写 2，恢复端校验 `version == 2`）。
-const BACKUP_VERSION: u64 = 2;
+/// 备份版本号。原版 export_backup 恒写 2；本候选新增 ACL 权限后升为 3，
+/// 并显式拒绝 v2 备份：旧信封不含 ACL 表，静默恢复会让所有归属失效。
+const BACKUP_VERSION: u64 = 3;
 
-/// 恢复前清空语句：按原版 DELETE 批（@0xD8FF3A）的“子表 → 父表”顺序删除 8 表。
+/// 恢复前清空语句：按原版 DELETE 批（@0xD8FF3A）的“子表 → 父表”顺序删除，
+/// ACL 四表按共享/关联/审计 → 资源 的顺序插在同批最前（外键要求先删子表）。
 const RESTORE_DELETE_SQL: &str = "\
+DELETE FROM acl_audit;
+DELETE FROM acl_shares;
+DELETE FROM acl_project_links;
+DELETE FROM acl_resources;
 DELETE FROM conversation_model_statistics;
 DELETE FROM conversation_statistics;
 DELETE FROM conversation_owners;
@@ -64,8 +71,8 @@ struct TableSpec {
     encrypted_columns: &'static [&'static str],
 }
 
-/// 8 张原版表的备份/恢复顺序，与报告 §7.1 一致。
-const TABLES: [TableSpec; 8] = [
+/// 备份/恢复顺序：先 8 张原版表（与报告 §7.1 一致），再接 4 张 ACL 表。
+const TABLES: [TableSpec; 12] = [
     TableSpec {
         name: "chatgpt_accounts",
         json_key: "chatgpt_accounts",
@@ -108,6 +115,7 @@ const TABLES: [TableSpec; 8] = [
             "proxy_node_id",
             "daily_quota",
             "monthly_quota",
+            "chatgpt_account_id",
             "created_at",
             "updated_at",
         ],
@@ -185,7 +193,70 @@ const TABLES: [TableSpec; 8] = [
         conflict: "user_name, model_name",
         encrypted_columns: &[],
     },
+    // ACL 四表：权限真相在网关库内，必须随备份一起搬迁，否则恢复后归属全丢。
+    TableSpec {
+        name: "acl_resources",
+        json_key: "acl_resources",
+        columns: &[
+            "account_id",
+            "resource_type",
+            "upstream_id",
+            "owner_user_id",
+            "creation_id",
+        ],
+        conflict: "account_id, resource_type, upstream_id",
+        encrypted_columns: &[],
+    },
+    TableSpec {
+        name: "acl_project_links",
+        json_key: "acl_project_links",
+        columns: &[
+            "account_id",
+            "resource_type",
+            "upstream_id",
+            "project_type",
+            "project_id",
+        ],
+        conflict: "account_id, resource_type, upstream_id",
+        encrypted_columns: &[],
+    },
+    TableSpec {
+        name: "acl_shares",
+        json_key: "acl_shares",
+        columns: &[
+            "account_id",
+            "resource_type",
+            "upstream_id",
+            "recipient_user_id",
+        ],
+        conflict: "account_id, resource_type, upstream_id, recipient_user_id",
+        encrypted_columns: &[],
+    },
+    TableSpec {
+        name: "acl_audit",
+        json_key: "acl_audit",
+        columns: &[
+            "id",
+            "occurred_at",
+            "actor_user_id",
+            "authorization_version",
+            "action",
+            "account_id",
+            "resource_type",
+            "upstream_id",
+            "recipient_user_id",
+            "project_id",
+        ],
+        conflict: "id",
+        encrypted_columns: &[],
+    },
 ];
+
+/// ACL 表不属于原版 8 表：旧库迁移与旧格式恢复都不搬运它们
+/// （归属由映射端点回填，不能从没有 ACL 表的旧库凭空生成）。
+fn is_acl_table(name: &str) -> bool {
+    name.starts_with("acl_")
+}
 
 /// 网关存储句柄：外层自行加锁，本结构内部不持 `Mutex`。
 pub struct Database {
@@ -215,6 +286,7 @@ impl Database {
         conn.execute_batch(SCHEMA_SQL)
             .context("初始化 schema 失败")?;
         ensure_legacy_columns(&conn)?;
+        crate::resource_acl::init(&conn)?;
         let db = Self { conn, crypto };
         db.migrate_sensitive_rows()?;
         Ok(db)
@@ -319,11 +391,15 @@ impl Database {
         Ok(())
     }
 
-    /// HTTP 兼容恢复：原版 `/api/backup/restore` 分派（证据 evidence/backup-v3-original-003..012）。
+    /// HTTP 兼容恢复：原版 `/api/backup/restore` 分派（证据 evidence/backup-v3-original-003..012），
+    /// 其中整包格式随 ACL 接线升到 v3。
     ///
-    /// - `version == 2` → 完整备份路径：8 个表键必须齐全且为数组（否则报
-    ///   `完整备份缺少 <键>`），事务内先清空 8 表再回填；
-    /// - 其余输入（无 `version`、`version` 为字符串或其它数字）→ 旧格式局部路径：
+    /// - `version == 3`（当前版本）→ 完整备份路径：12 个表键必须齐全且为数组
+    ///   （否则报 `完整备份缺少 <键>`），事务内先清空再回填；
+    /// - 其它数字版本 → 显式拒绝：v2 及更早的信封不含 ACL 四表，按原版
+    ///   「非 2 版本走局部 upsert」处理会静默丢掉全部归属；更高版本的语义未知。
+    ///   两者都不能退化成局部写入，文案给出重新导出的行动指引；
+    /// - 无 `version` 或 `version` 不是非负整数 → 旧格式局部路径：
     ///   只处理出现且为数组的表键，逐表 upsert 且不清空；非数组值与未知信封键忽略；
     /// - 行内未知字段忽略；密文与明文一律按原样存储（本函数不做加解密）；
     /// - 缺失/类型不符的必填字段按观测文案报错，事务内失败整体回滚。
@@ -337,6 +413,22 @@ impl Database {
         payload: &Value,
         validate: impl FnOnce(&Connection, &Crypto) -> Result<()>,
     ) -> Result<()> {
+        // 带 version 的信封只接受当前版本：v2 及更早不含 ACL 四表（静默恢复会让
+        // 归属全丢），更高版本的信封语义未知，都不能退化成“局部 upsert”。
+        if let Some(version) = payload.get("version").and_then(Value::as_u64) {
+            if version != BACKUP_VERSION {
+                if version < BACKUP_VERSION {
+                    bail!(
+                        "网关备份 v{version} 不含 ACL 权限表，拒绝静默丢失权限；\
+                         请使用 v{BACKUP_VERSION} 备份重新导出"
+                    );
+                }
+                bail!(
+                    "网关备份版本 v{version} 不受支持（当前 v{BACKUP_VERSION}），\
+                     拒绝按旧格式局部恢复"
+                );
+            }
+        }
         let full = payload.get("version").and_then(Value::as_u64) == Some(BACKUP_VERSION);
         let mut planned = Vec::new();
         for spec in &TABLES {
@@ -380,7 +472,8 @@ impl Database {
             .with_context(|| format!("打开源数据库失败: {}", source.display()))?;
         for spec in &TABLES {
             // 会话不迁移，源库无需存在该表
-            if spec.name == "gateway_sessions" {
+            // ACL 表是候选新增能力，旧库没有；归属由映射端点回填，不从旧库搬运
+            if spec.name == "gateway_sessions" || is_acl_table(spec.name) {
                 continue;
             }
             if !table_exists(&source_conn, spec.name)? {
@@ -390,7 +483,7 @@ impl Database {
         let mut prepared = Vec::new();
         for spec in &TABLES {
             // 登录会话与旧密钥/旧登录态绑定，不迁移（迁移完成需在新库重新登录）
-            if spec.name == "gateway_sessions" {
+            if spec.name == "gateway_sessions" || is_acl_table(spec.name) {
                 continue;
             }
             let columns: Vec<String> = source_conn
@@ -586,6 +679,10 @@ fn is_default_time_column(column: &str) -> bool {
 }
 
 /// 生成 upsert 语句：冲突键固定，其余列 `= excluded.<列>`。
+///
+/// 冲突键覆盖全部列时（`acl_shares` 的主键就是全部列）没有可更新的列，
+/// 此时退化为 `DO NOTHING`：SQLite 不接受空的 `DO UPDATE SET`，而语义上也不存在
+/// 需要覆盖的字段（整行相同即重复授予，重复插入本就应当无副作用）。
 fn upsert_sql(spec: &TableSpec) -> String {
     let conflict_columns: Vec<&str> = spec.conflict.split(", ").collect();
     let placeholders: Vec<String> = (1..=spec.columns.len())
@@ -598,13 +695,17 @@ fn upsert_sql(spec: &TableSpec) -> String {
         .filter(|column| !conflict_columns.contains(column))
         .map(|column| format!("{column} = excluded.{column}"))
         .collect();
+    let conflict_action = if assignments.is_empty() {
+        "DO NOTHING".to_owned()
+    } else {
+        format!("DO UPDATE SET {}", assignments.join(", "))
+    };
     format!(
-        "INSERT INTO {} ({}) VALUES ({}) ON CONFLICT({}) DO UPDATE SET {}",
+        "INSERT INTO {} ({}) VALUES ({}) ON CONFLICT({}) {conflict_action}",
         spec.name,
         spec.columns.join(", "),
         placeholders.join(", "),
         spec.conflict,
-        assignments.join(", ")
     )
 }
 
@@ -707,6 +808,7 @@ fn http_row_values(spec: &TableSpec, row: &Value) -> Result<Vec<SqlValue>> {
             http_opt_int(obj, "proxy_node_id"),
             http_int_or(obj, "daily_quota", 0),
             http_int_or(obj, "monthly_quota", 0),
+            http_opt_text(obj, "chatgpt_account_id"),
             http_opt_int(obj, "created_at"),
             http_opt_int(obj, "updated_at"),
         ]),
@@ -794,6 +896,99 @@ fn http_row_values(spec: &TableSpec, row: &Value) -> Result<Vec<SqlValue>> {
                 )?),
                 http_int_or(obj, "message_count", 0),
                 http_time_or(obj, "updated_at", now),
+            ])
+        }
+        // ACL 四表：v3 起随网关备份一起搬迁。缺字段按“该表必填字段缺失”拒绝，
+        // 不用默认值伪造归属（owner/creation_id 缺失会让权限失真）。
+        "acl_resources" => Ok(vec![
+            SqlValue::Text(http_required_str(obj, "account_id", "备份 ACL 资源缺少账号")?),
+            SqlValue::Text(http_required_str(
+                obj,
+                "resource_type",
+                "备份 ACL 资源缺少类型",
+            )?),
+            SqlValue::Text(http_required_str(
+                obj,
+                "upstream_id",
+                "备份 ACL 资源缺少 ID",
+            )?),
+            SqlValue::Text(http_required_str(
+                obj,
+                "owner_user_id",
+                "备份 ACL 资源缺少属主",
+            )?),
+            SqlValue::Text(http_required_str(
+                obj,
+                "creation_id",
+                "备份 ACL 资源缺少创建回执",
+            )?),
+        ]),
+        "acl_project_links" => Ok(vec![
+            SqlValue::Text(http_required_str(obj, "account_id", "备份 ACL 项目关联缺少账号")?),
+            SqlValue::Text(http_required_str(
+                obj,
+                "resource_type",
+                "备份 ACL 项目关联缺少类型",
+            )?),
+            SqlValue::Text(http_required_str(
+                obj,
+                "upstream_id",
+                "备份 ACL 项目关联缺少 ID",
+            )?),
+            http_text_or(obj, "project_type", "project"),
+            SqlValue::Text(http_required_str(
+                obj,
+                "project_id",
+                "备份 ACL 项目关联缺少项目 ID",
+            )?),
+        ]),
+        "acl_shares" => Ok(vec![
+            SqlValue::Text(http_required_str(obj, "account_id", "备份 ACL 共享缺少账号")?),
+            SqlValue::Text(http_required_str(
+                obj,
+                "resource_type",
+                "备份 ACL 共享缺少类型",
+            )?),
+            SqlValue::Text(http_required_str(
+                obj,
+                "upstream_id",
+                "备份 ACL 共享缺少 ID",
+            )?),
+            SqlValue::Text(http_required_str(
+                obj,
+                "recipient_user_id",
+                "备份 ACL 共享缺少接收者",
+            )?),
+        ]),
+        "acl_audit" => {
+            let now = now_ts();
+            Ok(vec![
+                SqlValue::Integer(http_required_i64(obj, "id", "备份 ACL 审计缺少 ID")?),
+                http_time_or(obj, "occurred_at", now),
+                SqlValue::Text(http_required_str(
+                    obj,
+                    "actor_user_id",
+                    "备份 ACL 审计缺少操作者",
+                )?),
+                http_text_or(obj, "authorization_version", ""),
+                SqlValue::Text(http_required_str(obj, "action", "备份 ACL 审计缺少动作")?),
+                SqlValue::Text(http_required_str(
+                    obj,
+                    "account_id",
+                    "备份 ACL 审计缺少账号",
+                )?),
+                SqlValue::Text(http_required_str(
+                    obj,
+                    "resource_type",
+                    "备份 ACL 审计缺少类型",
+                )?),
+                SqlValue::Text(http_required_str(
+                    obj,
+                    "upstream_id",
+                    "备份 ACL 审计缺少 ID",
+                )?),
+                http_opt_text(obj, "recipient_user_id"),
+                http_opt_text(obj, "project_id"),
             ])
         }
         // TABLES/TableSpec 为闭集；新增表时必须同步补充此处的 HTTP 绑定
@@ -973,6 +1168,14 @@ fn ensure_legacy_columns(conn: &Connection) -> Result<()> {
         "monthly_quota",
         "ALTER TABLE gateway_sessions ADD COLUMN monthly_quota INTEGER NOT NULL DEFAULT 0",
     )?;
+    // ACL 的稳定账号键（Django ChatgptAccount.pk）。存量行补为 NULL：
+    // 无法证明账号身份的老会话在 ACL 路径上按未验证处理，不回填猜测值。
+    ensure_column(
+        conn,
+        "gateway_sessions",
+        "chatgpt_account_id",
+        "ALTER TABLE gateway_sessions ADD COLUMN chatgpt_account_id TEXT",
+    )?;
     Ok(())
 }
 
@@ -1025,13 +1228,18 @@ mod tests {
         rows.map(|row| row.unwrap()).collect()
     }
 
+    /// 库内表：8 张原版表 + 4 张 ACL 表（共享账号下的内容级边界）。
     #[test]
-    fn schema_has_eight_tables_and_settings_roundtrip() {
+    fn schema_has_original_and_acl_tables_and_settings_roundtrip() {
         let dir = tempfile::tempdir().unwrap();
         let db = new_db(&dir, "new.sqlite", &"k".repeat(32));
         assert_eq!(
             table_names(&db),
             vec![
+                "acl_audit",
+                "acl_project_links",
+                "acl_resources",
+                "acl_shares",
                 "chatgpt_accounts",
                 "conversation_model_statistics",
                 "conversation_owners",
@@ -1085,7 +1293,7 @@ mod tests {
             .unwrap();
 
         let backup = db.export_backup().unwrap();
-        assert_eq!(backup["version"], json!(2));
+        assert_eq!(backup["version"], json!(BACKUP_VERSION));
         assert_eq!(backup["chatgpt_accounts"].as_array().unwrap().len(), 1);
         assert_eq!(backup["settings"].as_array().unwrap().len(), 1);
 
@@ -1094,10 +1302,13 @@ mod tests {
         bad_envelope["surprise"] = json!([]);
         assert!(db.restore_backup(&bad_envelope).is_err());
 
-        // version 不是 2 必须失败
+        // version 不是当前版本必须失败（v2 不含 ACL 表，静默恢复会丢全部归属）
         let mut wrong_version = backup.clone();
         wrong_version["version"] = json!(1);
         assert!(db.restore_backup(&wrong_version).is_err());
+        let mut legacy = backup.clone();
+        legacy["version"] = json!(2);
+        assert!(db.restore_backup(&legacy).is_err());
 
         // 行内未知字段必须失败，且失败后原数据完好（事务回滚）
         let mut bad_row = backup.clone();

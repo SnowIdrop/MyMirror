@@ -31,9 +31,9 @@
     "finalize.py",
     "validate.py"
   ],
-  "live_result": "缺口 1+2 实施完成并合成回环验证：cargo test 64 库内 + 107 集成全过、clippy -D warnings 过、Django 93 项回归过；真实账号/真实上游联调未执行。",
+  "live_result": "缺口 3 完整批次实施完成并合成回环验证：资源 ACL v1 产品接线（六类资源判权/登记/集合过滤、访客拒绝、身份每请求复验、稳定账号键、生成互斥、撤权中止、/api/acl/* 管理 API、旧归属一次性回填、网关备份 v3）已落地；cargo test 63 库内 + 113 集成全过、clippy -D warnings 过、Django 101 项过；真实账号/真实上游探针未执行（缺本地令牌文件路径）。",
   "new_evidence": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\page-original-001\\summary.json",
-  "current_implementation": "本批新增：/backend-api/* 已登录读写与 SSE、会话归属登记与校验（server/owners.rs）、/ws-chatgpt 桥接（代理出口 fail-closed）、/realtime HTTP 与升级显式拒绝、公共前缀策略表（server/public_prefixes.rs）与改写表契约测试；新增可选 CHATGPT_AB_BASE_URL。项目/分支级 ACL、传输身份与语音仍未接线。",
+  "current_implementation": "本批新增：server/acl.rs 与 src/resource_acl.rs 的产品接线（分类判定、转发前判权、创建登记、集合过滤、生成租约、撤权中止）、server/acl_admin.rs 管理 API、gateway_sessions.chatgpt_account_id 稳定账号键、启动期旧归属回填（/0x/user/gateway-acl-mapping）、网关备份 v3（含四张 acl_* 表）；会话名称式判定 server/owners.rs 已删除。缺口 5（传输身份与出口策略）、/realtime 升级桥接、语音、Vue 管理界面仍未接线；连接器创建不自动登记（无响应形状证据）。",
   "interfaces": "Config 新增 ws_upstream（configured 固定 wss://ws.chatgpt.com/，offline 用回环）、ab_upstream、public_prefix_base（仅离线回归）；egress::Egress 新增 proxied 标记；proxy::chat_auth/chat_origin/apply_chrome_146_identity/method_not_allowed 与 static_assets::forward_public 扩为 pub(super) 供新模块复用。",
   "delegable": [
     {
@@ -75,11 +75,11 @@
     "binary": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\.build\\phase1-probe-targets\\modified\\debug\\mirror-gateway.exe",
     "binary_note": "Prefer immutable source snapshot; binary is current modified-only target output, may be rebuilt in later turns."
   },
-  "next_owner_work": "缺口 1 与缺口 2 已同批落地（见 source/COMPATIBILITY.md「缺口 1 + 2 同批落地」）；下一批为缺口 3 完整批次（项目/分支级归属与 resource_acl 产品接线）与缺口 5（传输身份与出口策略）。范围与遗留项见 Mirror/gateway-rust/artifacts/phase1/source/NEXT_WORK.md。缺口 4 为显式非目标。",
+  "next_owner_work": "缺口 3 已落地（见 source/COMPATIBILITY.md「缺口 3 完整批次」）；下一批为缺口 5（传输身份 wreq/curl-impersonate、代理节点与出口 profile 绑定、MIRROR_API_PREFIX/ADMIN_UPSTREAM/CF_BYPASS_PROXY_SERVER/TRUSTED_PROXY_IPS）。缺口 3 残项（连接器创建登记、分支维度归属、真实上游探针、Vue 管理界面、访客策略）与其它遗留见 Mirror/gateway-rust/artifacts/phase1/source/NEXT_WORK.md。缺口 4 为显式非目标。",
   "reviewed_identity_proposal": "user_id canonical decimal string; is_admin staff|superuser; wire version opaque authorization_version; principal_kind separates FREE_ACCOUNT visitor. New ACL visitors fail closed; existing login unchanged. Not yet product-wired.",
   "auth_contract_delta": "auth_session now snapshots credentials for exact mirror token, drops DB lock, sends accounts/check then me each request, revalidates session after network; account-lookup HTTP failure=>free with me still checked, me auth failure/account mismatch=>empty object. Login request chain unchanged (one me); malformed/transport refresh=>502.",
   "regression_handoff_ack": "Completed: reviewed boundary file integrated, accounts fixture added, old no-egress assumption replaced with ordered accounts/check -> me assertions per account. All 8 tests executed in the 109-test combined gate; credential/isolation assertions retained. Original and upgraded hashes are in integrations/manifest.json. Login still calls only me.",
-  "pending_integration": "This reviewed batch integrated. ACL remains unexported and unused by product routes/DB. Admin is contract-only. No handoff.",
+  "pending_integration": "ACL v1 is exported and wired into product routes, session DB and backup v3. Admin ACL API is live behind service key + fresh Django admin identity. Legacy ownership backfill is one-shot and idempotent. Connector creation registration stays manual claim: no observed response shape. No handoff.",
   "metadata_history": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\history\\coordination-before-identity-gate.json",
   "upstream_visible_identity_gate": {
     "status": "Final section12 audit received, hashed and indexed. Narrow offline consistency observations accepted as scoped evidence; six explained differences require follow-up; end-to-end identity remains 尚未验证 and pages remain gated.",

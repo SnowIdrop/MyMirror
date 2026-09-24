@@ -233,6 +233,7 @@ class ChatGPTLoginView(APIView):
         payload = {
             "user_name": user_name,
             "authorization": gateway_authorization(request),
+            "chatgpt_account_id": str(chatgpt.id),
             "access_token": chatgpt.access_token,
             "session_token": chatgpt.session_token,
             "extra_cookies": chatgpt.extra_cookies,

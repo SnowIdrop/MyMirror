@@ -121,9 +121,20 @@ def authorization_details(value, subject):
             if not visitor:
                 return None
             expiry = min(expiry, visitor.expires_at)
+            principal_kind = "visitor"
         elif subject != user.username:
             return None
-        return {"active": True, "version": payload["version"], "expires_at": int(expiry.timestamp())}
+        else:
+            principal_kind = "user"
+        return {
+            "active": True,
+            "version": payload["version"],
+            "expires_at": int(expiry.timestamp()),
+            "user_id": str(user.pk),
+            "is_admin": bool(user.is_staff or user.is_superuser),
+            "subject": subject,
+            "principal_kind": principal_kind,
+        }
     except (signing.BadSignature, Token.DoesNotExist, KeyError, TypeError, ValueError):
         return None
 

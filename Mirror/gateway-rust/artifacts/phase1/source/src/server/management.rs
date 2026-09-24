@@ -53,6 +53,10 @@ type MgmtResult = std::result::Result<Response, ApiError>;
 pub(super) struct MirrorTokenRequest {
     user_name: String,
     chatgpt_list: Vec<String>,
+    /// 稳定上游账号键（Django `ChatgptAccount.pk`），小写用户名 → id。
+    /// mirror profile 缺失即拒绝该账号，不能用用户名顶替账号键。
+    #[serde(default)]
+    chatgpt_account_ids: Map<String, Value>,
     #[serde(default)]
     isolated_session: bool,
     #[serde(default = "default_force_chat_mode")]
@@ -136,6 +140,26 @@ pub(super) async fn mirror_token(
         let Some((access_raw, session_raw, cookies_raw)) = credentials else {
             continue;
         };
+        // 稳定账号键：mirror profile 必须随 chatgpt_list 一起下发，缺失说明 Django
+        // 载荷不是本候选契约，按未产出处理（与账号未入库同一分支），不猜测键值。
+        let account_id = if app.config.mirror_profile {
+            input
+                .chatgpt_account_ids
+                .get(&account.to_lowercase())
+                .and_then(Value::as_str)
+                .filter(|value| !value.is_empty())
+                .map(str::to_owned)
+        } else {
+            None
+        };
+        if app.config.mirror_profile && account_id.is_none() {
+            tracing::warn!(
+                module = "gateway",
+                account = %account,
+                "Django 未下发 chatgpt_account_id，拒绝为该账号签发登录态"
+            );
+            continue;
+        }
         let existing_node: Option<Option<i64>> = tx.query_row(
             "SELECT proxy_node_id FROM gateway_sessions WHERE user_name=?1 AND chatgpt_username=?2",
             params![input.user_name,account],|row|row.get(0)).optional()?;
@@ -159,14 +183,16 @@ pub(super) async fn mirror_token(
         tx.execute(
             "INSERT INTO gateway_sessions (user_name, chatgpt_username, access_token, \
              session_token, extra_cookies, login_mode, mirror_token, isolated_session, \
-             force_chat_mode, limits, proxy_node_id, daily_quota, monthly_quota, created_at, \
-             updated_at) VALUES (?1,?2,?3,?4,?5,'api',?6,?7,?8,?9,NULL,?10,?11,?12,?12) \
+             force_chat_mode, limits, proxy_node_id, daily_quota, monthly_quota, \
+             chatgpt_account_id, created_at, updated_at) \
+             VALUES (?1,?2,?3,?4,?5,'api',?6,?7,?8,?9,NULL,?10,?11,?12,?13,?13) \
              ON CONFLICT(user_name, chatgpt_username) DO UPDATE SET \
              access_token=excluded.access_token, session_token=excluded.session_token, \
              extra_cookies=excluded.extra_cookies, login_mode=excluded.login_mode, \
              mirror_token=excluded.mirror_token, isolated_session=excluded.isolated_session, \
              force_chat_mode=excluded.force_chat_mode, limits=excluded.limits, \
              daily_quota=excluded.daily_quota, monthly_quota=excluded.monthly_quota, \
+             chatgpt_account_id=excluded.chatgpt_account_id, \
              updated_at=excluded.updated_at",
             params![
                 &input.user_name,
@@ -180,6 +206,7 @@ pub(super) async fn mirror_token(
                 limits,
                 input.daily_quota,
                 input.monthly_quota,
+                account_id,
                 time
             ],
         )?;

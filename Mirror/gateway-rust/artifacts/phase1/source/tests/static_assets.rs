@@ -33,6 +33,17 @@ impl Drop for Fixture {
     }
 }
 
+/// 网关启动时的一次性归属回填会调用映射端点：用专用路由应答，避免它落进各用例
+/// 自己的路径白名单与调用计数（这些用例只关心静态资源出口）。
+fn acl_mapping_route() -> axum::routing::MethodRouter {
+    axum::routing::post(|| async {
+        (
+            [(axum::http::header::CONTENT_TYPE, "application/json")],
+            r#"{"users":[],"accounts":[]}"#,
+        )
+    })
+}
+
 async fn fixture(stub: Router, enable_cdn: bool) -> Fixture {
     let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
     let upstream = loopback_url(&format!("http://{}", listener.local_addr().unwrap())).unwrap();
@@ -77,7 +88,9 @@ async fn fixture(stub: Router, enable_cdn: bool) -> Fixture {
 async fn routes_public_assets_without_any_credentials_or_response_cookies() {
     let calls = Arc::new(AtomicUsize::new(0));
     let count = calls.clone();
-    let stub = Router::new().fallback(move |request: Request| {
+    let stub = Router::new()
+        .route("/0x/user/gateway-acl-mapping", acl_mapping_route())
+        .fallback(move |request: Request| {
         let count = count.clone();
         async move {
             count.fetch_add(1, Ordering::SeqCst);
@@ -149,10 +162,12 @@ async fn unknown_paths_methods_and_unconfigured_cdn_never_contact_upstream() {
     let calls = Arc::new(AtomicUsize::new(0));
     let count = calls.clone();
     let f = fixture(
-        Router::new().fallback(move || {
-            count.fetch_add(1, Ordering::SeqCst);
-            async { StatusCode::OK }
-        }),
+        Router::new()
+            .route("/0x/user/gateway-acl-mapping", acl_mapping_route())
+            .fallback(move || {
+                count.fetch_add(1, Ordering::SeqCst);
+                async { StatusCode::OK }
+            }),
         true,
     )
     .await;

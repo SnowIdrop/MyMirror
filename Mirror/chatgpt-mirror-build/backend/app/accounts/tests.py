@@ -1,3 +1,4 @@
+import json
 from datetime import timedelta
 from unittest.mock import Mock, call, patch
 
@@ -14,6 +15,7 @@ from app.accounts.views import (
     ChangePasswordView,
     ConversationTitlePrivacyView,
     CustomScriptConfigView,
+    GetMirrorToken,
     UserAccountView,
     UserConversationStatisticsView,
     UserSessionRevokeView,
@@ -30,6 +32,8 @@ from app.accounts.views.login import (
     verify_turnstile,
 )
 from app.accounts.views.backup import (
+    BACKUP_VERSION,
+    DJANGO_BACKUP_COLLECTIONS,
     GATEWAY_BACKUP_COLLECTIONS,
     GATEWAY_BACKUP_VERSION,
     _require_complete_gateway_backup,
@@ -40,11 +44,15 @@ from app.chatgpt.models import ChatgptAccount, ChatgptCar
 from app.chatgpt.serializers import ShowChatgptTokenSerializer
 from app.chatgpt.views.chatgpt import ChatGPTLoginView, ChatGPTLoginCountResetView
 from app.chatgpt.views.gptcar import GptCarDetailView, GptCarUserAssignmentView
+from app.fields import decrypt_value, encrypt_value
 from app.settings import ADMIN_USERNAME, FREE_ACCOUNT_USERNAME
 from app.utils import get_client_ip, req_gateway
 
 
 class UnifiedBackupValidationTests(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+
     def _gateway_backup(self):
         return {
             "version": GATEWAY_BACKUP_VERSION,
@@ -63,6 +71,59 @@ class UnifiedBackupValidationTests(TestCase):
         payload.pop("gateway_sessions")
         with self.assertRaises(ValidationError):
             _require_complete_gateway_backup(payload)
+
+        payload = self._gateway_backup()
+        payload.pop("acl_shares")
+        with self.assertRaises(ValidationError):
+            _require_complete_gateway_backup(payload)
+
+    def test_gateway_backup_v2_is_rejected_with_actionable_error(self):
+        payload = self._gateway_backup()
+        payload["version"] = 2
+        with self.assertRaises(ValidationError) as raised:
+            _require_complete_gateway_backup(payload)
+        message = str(raised.exception)
+        self.assertIn("不含 ACL 权限表", message)
+        self.assertIn("v3", message)
+
+    @patch("app.accounts.views.backup.req_gateway")
+    def test_export_archive_is_v3_and_contains_acl_collections(self, req_gateway):
+        req_gateway.return_value = self._gateway_backup()
+        admin = User.objects.create_superuser(
+            username="export-admin", password="Strong-password-123!",
+        )
+        request = self.factory.get("/0x/user/backup")
+        force_authenticate(request, user=admin)
+        response = UnifiedBackupView.as_view()(request)
+        self.assertEqual(response.status_code, 200)
+        payload = json.loads(decrypt_value(response.data["archive"]))
+        self.assertEqual(payload["version"], BACKUP_VERSION)
+        self.assertEqual(payload["gateway"]["version"], GATEWAY_BACKUP_VERSION)
+        for name in ("acl_resources", "acl_project_links", "acl_shares", "acl_audit"):
+            self.assertIn(name, GATEWAY_BACKUP_COLLECTIONS)
+            self.assertIn(name, payload["gateway"])
+
+    @patch("app.accounts.views.backup.req_gateway")
+    def test_restore_rejects_v2_gateway_archive_without_calling_gateway(self, req_gateway):
+        archive = encrypt_value(json.dumps({
+            "version": BACKUP_VERSION,
+            "django": {name: [] for name in DJANGO_BACKUP_COLLECTIONS},
+            "gateway": {
+                "version": 2,
+                **{name: [] for name in GATEWAY_BACKUP_COLLECTIONS},
+            },
+        }, ensure_ascii=False))
+        admin = User.objects.create_superuser(
+            username="restore-admin", password="Strong-password-123!",
+        )
+        request = self.factory.post(
+            "/0x/user/backup", {"confirm": "RESTORE", "archive": archive}, format="json",
+        )
+        force_authenticate(request, user=admin)
+        response = UnifiedBackupView.as_view()(request)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("ACL", json.dumps(response.data, ensure_ascii=False))
+        req_gateway.assert_not_called()
 
     @patch("app.accounts.views.backup.req_gateway")
     def test_gateway_is_rolled_back_when_django_restore_fails(self, req_gateway):
@@ -670,6 +731,38 @@ class SecurityRegressionTests(TestCase):
         account.refresh_from_db()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(account.login_count, 4)
+        self.assertEqual(
+            _req_gateway.call_args.kwargs["json"]["chatgpt_account_id"], str(account.id),
+        )
+
+    @patch("app.accounts.views.req_gateway",
+           return_value=[{"chatgpt_username": "pool@example.com", "token": "remote-token"}])
+    def test_get_mirror_token_payload_maps_chatgpt_usernames_to_account_ids(self, req_gateway):
+        account = ChatgptAccount.objects.create(
+            chatgpt_username="Pool@Example.com",
+            plan_type="plus",
+            access_token="secret-access",
+            created_time=1,
+            updated_time=1,
+        )
+        car = ChatgptCar.objects.create(
+            car_name="mirror-token-car",
+            gpt_account_list=[account.id],
+            created_time=1,
+            updated_time=1,
+        )
+        user = User.objects.create_user(
+            username="mirror-token-user",
+            password="Strong-password-123!",
+            gptcar_list=[car.id],
+        )
+        request = self.factory.get("/0x/user/get-mirror-token")
+        force_authenticate(request, user=user)
+        response = GetMirrorToken.as_view()(request)
+        self.assertEqual(response.status_code, 200)
+        payload = req_gateway.call_args.kwargs["json"]
+        self.assertEqual(payload["chatgpt_account_ids"], {"pool@example.com": str(account.id)})
+        self.assertEqual(payload["chatgpt_list"], ["Pool@Example.com"])
 
     def test_admin_can_reset_upstream_login_count(self):
         admin = User.objects.create_superuser(
