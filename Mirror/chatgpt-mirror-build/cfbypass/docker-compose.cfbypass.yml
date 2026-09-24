@@ -1,5 +1,7 @@
 # 本地构建与验证用的 cfbypass 编排片段（127.0.0.1 边界）。
 # 生产编排仍以仓库根目录 docker-compose.yml 中的 cfbypass 服务为准，环境变量保持一致。
+# 身份一致性（系统 chromium 版本、UA 同值要求、升级清单）见 README「身份一致性」。
+# 只读身份探针（不开端口、不驻留）：docker compose -f docker-compose.cfbypass.yml run --rm cfbypass python probe_identity.py
 services:
   cfbypass:
     build: .
@@ -26,6 +28,7 @@ services:
       CF_BYPASS_NAVIGATION_RETRIES: "${CF_BYPASS_NAVIGATION_RETRIES:-1}"
       CF_BYPASS_ELEMENT_LOOKUP_TIMEOUT_SECONDS: "${CF_BYPASS_ELEMENT_LOOKUP_TIMEOUT_SECONDS:-0.2}"
       CF_BYPASS_DISPLAY_SIZE: "${CF_BYPASS_DISPLAY_SIZE:-1920x1080}"
+      CF_BYPASS_BROWSER_PATH: "${CF_BYPASS_BROWSER_PATH:-/usr/bin/chromium}"
       CF_BYPASS_SECRET: "${CF_BYPASS_SECRET:?CF_BYPASS_SECRET must be set}"
       CF_BYPASS_ALLOWED_HOSTS: "${CF_BYPASS_ALLOWED_HOSTS:-127.0.0.1,localhost}"
       CF_BYPASS_PROXY_SERVER: "${CF_BYPASS_PROXY_SERVER:-}"

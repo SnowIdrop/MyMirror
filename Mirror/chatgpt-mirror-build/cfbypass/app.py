@@ -8,6 +8,9 @@
 - 导航目标必须命中 CF_BYPASS_ALLOWED_HOSTS 白名单，服务不会被当作任意代理使用；
 - 导航接口需要 Authorization: Bearer <CF_BYPASS_SECRET>，与仓库既有服务间
   认证约定一致；
+- 浏览器固定为镜像内的系统 chromium（CF_BYPASS_BROWSER_PATH，默认 /usr/bin/chromium），
+  不用 Playwright 自带浏览器；响应新增 identity 字段，取自实际浏览器会话，
+  供网关比对 Chrome146/Linux 声称值（见 README「身份一致性」）；
 - 本实现不包含任何真实 ChatGPT 凭据；仓库内验证只使用 127.0.0.1 本地目标，
   不对生产 Cloudflare 做验证；
 - 与根目录 docker-compose.yml 中的 cfbypass 服务对齐：容器内监听 8000，
@@ -29,7 +32,7 @@ from fastapi.responses import JSONResponse
 from playwright.async_api import Error as PlaywrightError
 from playwright.async_api import TimeoutError as PlaywrightTimeoutError
 from playwright.async_api import async_playwright
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
 LOGGER = logging.getLogger("cfbypass")
@@ -38,6 +41,63 @@ DEFAULT_USER_AGENT = (
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
 )
+
+# 系统 chromium：容器内由 Dockerfile 从 snapshot.debian.org 固定版本安装，
+# 本地开发用 CF_BYPASS_BROWSER_PATH 指向本机 Chrome/Chromium 可执行文件。
+DEFAULT_BROWSER_PATH = "/usr/bin/chromium"
+
+# 在真实页面上下文里采集该跳的身份。逐字段 try/catch，取不到就是 null；
+# 不用环境变量补值，网关要据此发现 UA/UA-CH/版本错配。
+IDENTITY_PROBE_SCRIPT = """
+async () => {
+  const read = (getter) => {
+    try {
+      const value = getter();
+      return value === undefined ? null : value;
+    } catch (error) {
+      return null;
+    }
+  };
+  const brands = (list) => {
+    if (!Array.isArray(list)) {
+      return null;
+    }
+    return list.map((entry) => ({brand: String(entry.brand), version: String(entry.version)}));
+  };
+  const data = navigator.userAgentData || null;
+  let entropy = null;
+  if (data && typeof data.getHighEntropyValues === "function") {
+    try {
+      entropy = await data.getHighEntropyValues([
+        "architecture",
+        "bitness",
+        "fullVersion",
+        "fullVersionList",
+        "platformVersion",
+      ]);
+    } catch (error) {
+      entropy = null;
+    }
+  }
+  const high = entropy || {};
+  return {
+    user_agent: read(() => navigator.userAgent || null),
+    language: read(() => navigator.language || null),
+    languages: read(() => (Array.isArray(navigator.languages) ? Array.from(navigator.languages) : null)),
+    timezone: read(() => Intl.DateTimeFormat().resolvedOptions().timeZone || null),
+    user_agent_data: data === null ? null : {
+      brands: read(() => brands(data.brands)),
+      platform: read(() => data.platform || null),
+      mobile: read(() => (typeof data.mobile === "boolean" ? data.mobile : null)),
+      architecture: high.architecture ?? null,
+      bitness: high.bitness ?? null,
+      full_version: high.fullVersion ?? null,
+      full_version_list: brands(high.fullVersionList ?? null),
+      platform_version: high.platformVersion ?? null,
+    },
+  };
+}
+"""
 
 # 单进程内同时运行的浏览器实例上限，避免并发请求耗尽容器内存与 /dev/shm。
 BROWSER_SLOTS = asyncio.Semaphore(2)
@@ -128,6 +188,7 @@ class Settings:
     secret: str
     allowed_hosts: tuple[str, ...]
     user_agent: str
+    browser_path: str
     accept_language: str
     headless: bool
     max_wait_seconds: float
@@ -150,6 +211,7 @@ def _load_settings() -> Settings:
         secret=os.getenv("CF_BYPASS_SECRET", "").strip(),
         allowed_hosts=_env_allowed_hosts(),
         user_agent=_env_text("CF_BYPASS_USER_AGENT", DEFAULT_USER_AGENT),
+        browser_path=_env_text("CF_BYPASS_BROWSER_PATH", DEFAULT_BROWSER_PATH),
         accept_language=_env_text("CF_BYPASS_ACCEPT_LANGUAGE", "zh-CN,zh"),
         headless=_env_bool("CF_BYPASS_HEADLESS", True),
         max_wait_seconds=_env_float("CF_BYPASS_MAX_WAIT_SECONDS", 20.0),
@@ -171,9 +233,12 @@ if not SETTINGS.secret:
     LOGGER.warning("CF_BYPASS_SECRET 未配置，/bypass 将拒绝所有请求")
 if not SETTINGS.allowed_hosts:
     LOGGER.warning("CF_BYPASS_ALLOWED_HOSTS 为空，/bypass 将拒绝所有目标")
+if not os.path.exists(SETTINGS.browser_path):
+    LOGGER.warning("CF_BYPASS_BROWSER_PATH 指向的可执行文件不存在: %s，浏览器启动会失败", SETTINGS.browser_path)
 LOGGER.info(
-    "cfbypass 配置: allowed_hosts=%s headless=%s max_wait=%.1fs page_load_timeout=%.1fs stable_polls=%d retries=%d proxy=%s",
+    "cfbypass 配置: allowed_hosts=%s browser=%s headless=%s max_wait=%.1fs page_load_timeout=%.1fs stable_polls=%d retries=%d proxy=%s",
     SETTINGS.allowed_hosts,
+    SETTINGS.browser_path,
     SETTINGS.headless,
     SETTINGS.max_wait_seconds,
     SETTINGS.page_load_timeout_seconds,
@@ -199,10 +264,48 @@ class CookieInfo(BaseModel):
     same_site: str
 
 
+class UserAgentBrand(BaseModel):
+    """User-Agent Client Hints 的品牌条，字段名沿用规范 camelCase 的 snake_case 写法。"""
+
+    brand: str
+    version: str
+
+
+class UserAgentDataInfo(BaseModel):
+    """`navigator.userAgentData` 低熵字段 + `getHighEntropyValues` 可选结果，取不到为 null。"""
+
+    brands: list[UserAgentBrand] | None = None
+    platform: str | None = None
+    mobile: bool | None = None
+    architecture: str | None = None
+    bitness: str | None = None
+    full_version: str | None = None
+    full_version_list: list[UserAgentBrand] | None = None
+    platform_version: str | None = None
+
+
+class IdentityInfo(BaseModel):
+    """该跳浏览器会话的实测身份，供网关与自己的 Chrome146 常量逐字段比对。
+
+    全部字段都取自实际浏览器（`navigator`/`Intl`/`Browser.getVersion`）与本次启动参数，
+    探测失败时对应字段为 null，不用环境变量补值。
+    """
+
+    user_agent: str | None = None
+    browser_version: str | None = None
+    language: str | None = None
+    languages: list[str] | None = None
+    timezone: str | None = None
+    proxied: bool
+    proxy_server: str | None = None
+    user_agent_data: UserAgentDataInfo | None = None
+
+
 class BypassResponse(BaseModel):
     ok: bool = True
     url: str
     user_agent: str
+    identity: IdentityInfo
     cookies: list[CookieInfo]
     elapsed_seconds: float
 
@@ -343,9 +446,62 @@ async def _goto_with_retries(page, target: str) -> None:
             LOGGER.warning("导航失败（第 %d/%d 次），准备重试: %s（%s）", attempt, attempts, target, error)
 
 
-async def _navigate(target: str, proxy: dict | None) -> tuple[list[CookieInfo], str]:
+async def _probe_identity(browser, page, proxy: dict | None) -> IdentityInfo:
+    """从实际浏览器会话采集身份（UA、UA-CH、语言、时区、浏览器版本）。
+
+    探测失败时对应字段为 null 并记日志，不用环境变量补值：网关只有看到真实结果，
+    才能发现「CF_BYPASS_USER_AGENT 与浏览器实际 UA 不一致」这类错配。
+    """
+    probed: dict = {}
+    try:
+        probed = await page.evaluate(IDENTITY_PROBE_SCRIPT)
+    except PlaywrightError as error:
+        LOGGER.error("身份探测失败（浏览器会话）: %s", error)
+    raw = probed
+    proxy_server = (proxy or {}).get("server")
+    fields = {
+        "user_agent": raw.get("user_agent"),
+        "browser_version": browser.version(),
+        "language": raw.get("language"),
+        "languages": raw.get("languages"),
+        "timezone": raw.get("timezone"),
+        "user_agent_data": raw.get("user_agent_data"),
+        "proxied": proxy_server is not None,
+        "proxy_server": proxy_server,
+    }
+    missing = sorted(name for name, value in fields.items() if value is None)
+    if missing:
+        LOGGER.warning("身份探测缺失字段（按 null 返回，网关据此刻画错配）: %s", ", ".join(missing))
+    try:
+        identity = IdentityInfo(**fields)
+    except ValidationError as error:
+        # 目标页面可以改写 navigator.*，形状异常时按未知处理，不能让整次取 Cookie 失败。
+        LOGGER.error("身份探测结果结构异常，按缺失字段返回: %s", error)
+        return IdentityInfo(proxied=proxy_server is not None, proxy_server=proxy_server)
+    LOGGER.info(
+        "身份探测: chromium=%s ua_data_full_version=%s platform=%s languages=%s timezone=%s proxied=%s",
+        identity.browser_version,
+        identity.user_agent_data.full_version if identity.user_agent_data else None,
+        identity.user_agent_data.platform if identity.user_agent_data else None,
+        identity.languages,
+        identity.timezone,
+        identity.proxied,
+    )
+    return identity
+
+
+async def _navigate(target: str, proxy: dict | None) -> tuple[list[CookieInfo], str, IdentityInfo]:
     async with async_playwright() as playwright:
-        browser = await playwright.chromium.launch(headless=SETTINGS.headless, proxy=proxy)
+        # executable_path 指向系统 chromium（镜像内由 Dockerfile 固定版本安装）：
+        # Playwright 自带的浏览器不参与这一跳的身份。chromium_sandbox=False 与
+        # Playwright 默认值一致（容器内以 root 运行，无法用 user namespace 沙箱），
+        # 见 https://playwright.dev/python/docs/api/class-browsertype#browser-type-launch
+        browser = await playwright.chromium.launch(
+            executable_path=SETTINGS.browser_path,
+            headless=SETTINGS.headless,
+            chromium_sandbox=False,
+            proxy=proxy,
+        )
         try:
             context = await browser.new_context(
                 user_agent=SETTINGS.user_agent,
@@ -358,8 +514,9 @@ async def _navigate(target: str, proxy: dict | None) -> tuple[list[CookieInfo], 
             final_url = page.url
             if not _host_allowed(urlparse(final_url).hostname or ""):
                 raise RedirectNotAllowed(final_url)
+            identity = await _probe_identity(browser, page, proxy)
             cookies = await _wait_for_stable_cookies(page, context)
-            return cookies, final_url
+            return cookies, final_url, identity
         finally:
             await browser.close()
 
@@ -384,7 +541,11 @@ async def health() -> dict[str, str]:
     return {"status": "ok", "service": "cfbypass"}
 
 
-@app.post("/bypass", response_model=BypassResponse)
+# 网关按原版 all-in-one 契约调用 /cloudflare5s/bypass-v1（/v2 与之等价，见报告 02）；
+# /bypass 保留给本地诊断。三条路径共用同一实现，身份探测在所有路径上都生效。
+@app.post("/bypass", response_model=BypassResponse, operation_id="bypass")
+@app.post("/cloudflare5s/bypass-v1", response_model=BypassResponse, operation_id="bypass_v1")
+@app.post("/cloudflare5s/bypass-v2", response_model=BypassResponse, operation_id="bypass_v2")
 async def bypass(payload: BypassRequest, _: None = Depends(require_secret)) -> BypassResponse:
     target = _validated_target(payload.url)
     try:
@@ -397,7 +558,7 @@ async def bypass(payload: BypassRequest, _: None = Depends(require_secret)) -> B
     started = time.monotonic()
     async with BROWSER_SLOTS:
         try:
-            cookies, final_url = await _navigate(target, proxy)
+            cookies, final_url, identity = await _navigate(target, proxy)
         except RedirectNotAllowed as error:
             raise HTTPException(
                 status_code=403,
@@ -429,10 +590,18 @@ async def bypass(payload: BypassRequest, _: None = Depends(require_secret)) -> B
             ) from error
 
     elapsed = round(time.monotonic() - started, 3)
-    LOGGER.info("导航完成: %s -> %s（%d 个 Cookie，%.2fs）", target, final_url, len(cookies), elapsed)
+    LOGGER.info(
+        "导航完成: %s -> %s（%d 个 Cookie，%.2fs，chromium=%s）",
+        target,
+        final_url,
+        len(cookies),
+        elapsed,
+        identity.browser_version,
+    )
     return BypassResponse(
         url=final_url,
         user_agent=SETTINGS.user_agent,
+        identity=identity,
         cookies=cookies,
         elapsed_seconds=elapsed,
     )
