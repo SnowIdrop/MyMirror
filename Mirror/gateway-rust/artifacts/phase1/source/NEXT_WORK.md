@@ -230,9 +230,15 @@ ACL 模块接入产品路径。
     （`/backend-api/*` 60 次、`/backend-anon/*` 0 次），真实新建会话
     `POST /backend-api/f/conversation` 200 `text/event-stream`，随后经网关删除 200
     `{"success":…}`，账号无残留。删除成功同时证明创建路径的 ACL 归属登记生效。
+  - **已端到端验收（2026-09-24 第二轮，`probe_browser_accept.py`）**：流式回复正文渲染
+    （创建 200 `text/event-stream`，助手气泡渲染出预期串）、停止生成（按钮点击后消失）、
+    重命名 200、重载后历史可见（经网关列表 1 条且含目标 id，页面自行导航到 `/c/<id>`）、
+    真实 WS 上游（`/ws-chatgpt/p4/ws/user/…` 经桥接到 `wss://ws.chatgpt.com`，双向各 1 帧，
+    连接未关闭）、跨用户隔离（同账号第二个镜像用户 404 `acl_not_found`，未触上游）、
+    删除 200 且账号 `total=0` 无残留。逐项证据见 COMPATIBILITY「端到端验收的第二轮」。
   - **仍未覆盖**：WS 握手侧的会话 cookie 合成只有同一函数的合成回环覆盖，没有独立的
-    WS fixture 用例（HTTP 侧已端到端验证）；流式回复的正文渲染、停止生成、
-    重命名/删除的历史界面流程仍未逐条断言。
+    WS fixture 用例（HTTP 与真实 WS 均已在真机走通）；语音（`/api/livekit/`）与
+    `/realtime` 升级仍未开放。
   - **新发现的上游路由（未分类，503）**：真实页面会请求
     `GET /backend-api/checkout_pricing_config/configs/US`，该路径**不在** 923 条路由快照里
     （快照冻结于 2026-09-23），因此按 ACL 设计返回

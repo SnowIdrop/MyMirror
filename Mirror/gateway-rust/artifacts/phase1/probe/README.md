@@ -131,3 +131,25 @@ py -3 probe_browser_create.py --use-session-token --allow-real-write   # 真实�
   cookie 里取到的 token，用交接前的值会被判未登录（这正是首轮删除 401 的原因）。
 - 页面加载不需要 cfbypass：真实浏览器自带 `sec-ch-ua*`，`GET /` 直接 200。
   `--session-token-as-extra-cookie` 可复现「管理面导入过会话 cookie」的账号形态。
+
+## 端到端验收（`probe_browser_accept.py`，2026-09-24）
+
+在浏览器驱动的基础上补齐「消息 → 流式回复 → 停止生成 → 重命名 → 重载后历史 → 跨用户隔离
+→ 删除」，并在只读模式下观察真实 WebSocket。
+
+```powershell
+cd D:\Project\ReMirror\MiRebuild\Mirror\gateway-rust\artifacts\phase1\probe
+py -3 probe_browser_accept.py --no-write     # 只读：加载页面 + 观察 WS 帧，不写任何东西
+py -3 probe_browser_accept.py                # 真实验收：一次新建会话，跑完即删
+```
+
+要点：
+
+- 复用 `probe.py` 与 `probe_browser_create.py` 的授权桩、进程与凭据读取；网关库 `:memory:`。
+- 写入之间默认停 10 秒（`--pause-seconds`），避免被上游当成爬虫脚本。
+- 证据只落状态、长度、sha256、信封字段名与 WS 帧计数；提示词、回复正文、标题、Cookie 与
+  令牌一律不落盘（正文只落长度与 sha256）。
+- 列表检查在 Python 侧发起（页面重载期间 frame 可能在导航，页面内 `fetch` 会是竞态；
+  `probe_browser_accept.py` 保留页面内检查仅作旁证）。直连上游的对照组走 curl——纯 Python
+  的 TLS 会被 Cloudflare 挑战，curl 不会。
+- 删除放在异常路径之外：任何一步失败都会执行清理，避免在真实账号里留下会话。

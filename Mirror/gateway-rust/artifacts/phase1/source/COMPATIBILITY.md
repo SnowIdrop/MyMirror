@@ -418,6 +418,30 @@ chatgpt.com 页面；`:memory:` 库、无常驻改动、令牌与 Cookie 不落�
 2. **前端 sentinel 流程与分块取证一致**：`prepare` → `finalize` → `f/conversation/prepare` →
    `f/conversation` 的顺序与头族逐条吻合，候选无需实现 sentinel。
 
+### 端到端验收的第二轮（`artifacts/phase1/probe/probe_browser_accept.py`）
+
+第一轮只覆盖「新建 + 删除」。第二轮补齐流式渲染、停止生成、重命名、历史加载、真实 WS 与
+跨用户隔离，全部在真实上游完成，会话用完即删。
+
+| 验收项 | 证据 |
+|---|---|
+| 流式回复渲染 | `POST /backend-api/f/conversation` 200 `text/event-stream`（12351 B）；页面上助手气泡渲染完成，正文 8 字符、sha256 `86d90d7c…`、含预期串；`is_streaming_settled=true` |
+| 停止生成 | 流式中出现停止按钮，点击后按钮消失（`stop_button_found=true`、`present_after_click=false`） |
+| 重命名 | `POST /backend-api/conversation/id/{id}/rename` 200（经网关的作用域 Modify 判权） |
+| 历史加载 | 重载后页面自行导航到 `/c/<id>`；经网关 `GET /backend-api/conversations?offset=0&limit=50` 返回 200，信封 `items/limit/offset/total`，可见 1 条 |
+| 删除 | `DELETE /backend-api/conversation/id/{id}` 经网关 200；随后直连上游列表 `total=0`，账号无残留 |
+| 跨用户隔离 | 同账号第二个镜像用户（`probe-bob`）`GET /backend-api/conversation/{id}` → **404 `acl_not_found`**，拒绝发生在接触上游之前 |
+| 真实 WS 上游 | 页面经改写打开 `ws://<gateway>/ws-chatgpt/p4/ws/user/<id>?verify=…`，桥接到 `wss://ws.chatgpt.com`：**发送 1 帧 298 B、收到 1 帧 371 B、连接未关闭**，网关日志无 WS 错误 |
+
+第一轮曾观察到「重载后列表 0 条」，第二轮用 Python 侧对比（经网关 vs 直连上游）证明那是
+页面导航竞态下的读取假象：两边同为 1 条且都含目标 id，ACL 集合过滤没有丢条目。探针已改为
+Python 侧确定性读取，页面内检查降级为旁证。
+
+**验收方式的一个修正**：第一轮首次跑完删除返回 401，原因是登录交接会轮换 mirror_token，
+而删除用的是交接前的值；探针改为从浏览器 cookie 取交接后的 token。另有一次因页面内
+`fetch` 抛异常导致删除步骤被跳过，账号里留下 1 条会话（已用直连上游清理，`total=0` 复核）；
+探针随后把删除移到异常路径之外，任何一步失败都会执行清理。
+
 验证状态：`cargo test --locked --offline` **197 项全过**（71 库内 + 126 集成；
 `tests/upstream_cookie_jar.rs` 由 4 项增至 8 项），
 `cargo clippy --locked --offline --all-targets -- -D warnings` 通过。
