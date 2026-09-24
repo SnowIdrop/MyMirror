@@ -216,8 +216,9 @@ Django `DJANGO_ENV=LOCAL manage.py test` 93 项通过（本批未改 Django 代�
   预约/会话 id 而非文件 id，文件实体随后由 `/files` 或文件库接口登记，因此这些路径按账号级放行。
 - **项目/分支级归属只在项目维度落地**：原版 `enforce_project_owner` 的「分支」维度在逆向材料里
   只有符号名，本批按项目 ACL + 动态共享实现，未猜测分支语义。
-- **真实上游探针未执行**：本批验收证据全部来自合成回环 fixture；真实账号、真实 chatgpt.com
-  与真实 WebSocket 上游联调未执行（需要单独批准并提供本地令牌文件路径）。
+- **真实上游探针只完成读路径**：2026-09-24 用真实 AccessToken 执行（见下方「真实上游探针」），
+  凭据换取与四条读路径在真实上游通过；真实新建会话被上游以 JSON `403` 拒绝，因此跨用户隔离
+  在真实会话上仍未验证，真实 WebSocket 上游也未联调。
 - **管理界面未做**：`/api/acl/*` 只有 API，Vue 管理界面不在本批。
 - **`GATEWAY_COMPAT_PROFILE=original` 下资源路径不判权**：该 profile 没有 Django 可信身份与
   `chatgpt_account_id`，六类资源路径按「无账号键」fail-closed（作用域/创建 403、集合空信封）。
@@ -230,7 +231,41 @@ Django `DJANGO_ENV=LOCAL manage.py test` 93 项通过（本批未改 Django 代�
 `tests/acl_product_wiring.rs` 6 项，并在 `coord_acl_contract.rs` 保留 28 项离线 ACL 契约用例），
 `cargo clippy --locked --offline --all-targets -- -D warnings` 通过；
 Django `DJANGO_ENV=LOCAL manage.py test` 101 项通过（新增身份字段、映射端点、备份 v3 与旧版拒绝用例）。
-真实上游联调仍未执行。
+
+### 真实上游探针（2026-09-24）
+
+用真实 AccessToken 执行 `artifacts/phase1/probe/probe.py`（证据
+`Mirror/gateway-rust/evidence/gap3-real-probe-001/`）。环境：`configured` 模式、
+`DATABASE_PATH=:memory:`、本地 Django 授权桩、未配置 `CF_BYPASS_URL`、Windows 本机出口。
+
+| 观测 | 结果 |
+|---|---|
+| 真实凭据换取 + `/backend-api/me` + `accounts/check` + `conversations` | 4 次运行全部 `200`：真实 AccessToken 的换取、校验与集合转发在真实上游成立。`conversations` 的 `items`/`total` 是 **ACL 过滤后**的视图，不能用来判断账号里原有会话数 |
+| `files/library/nodes`、`tasks` | 各有至少一次 `200`，也有若干次发送阶段失败（见下） |
+| `GET /projects` | 每次都 `405`：上游不支持该 GET。冻结快照里此路径只有 `POST`，因此候选的集合分支在这里不生效（无害，归属判权仍只作用于真实存在的端点） |
+| `task_suggestions` | `404`：该账号下上游无此端点 |
+| `POST /f/conversation` | 唯一一次尝试被上游以 JSON `{"detail":…}` + `403` 拒绝：未创建任何会话，未重试、未改写请求形状 |
+
+两点必须知道：
+
+1. **直连存在间歇性发送阶段失败**：表现为网关自己的 `502 {"message":"上游请求失败"}`
+   （无上游响应头、无 `cf-mitigated`、非 HTML），不同路径在不同运行间随机出现。
+   网关客户端刻意关闭了自动重放（生成类绝不可重放），因此这类抖动会如实变成 502，
+   不会变成「看起来成功」。缓解手段是配置 `CF_BYPASS_URL` 或走代理出口（缺口 5）。
+   本机 `127.0.0.1:18001` 的 cfbypass 探针运行期间未启动，故 CF 刷新/重放分支未在真实上游触发。
+2. **真实写入未取得证据**：创建会话的请求体形状在逆向材料里只有路由模板，没有实测样本；
+   上游 403 之后按既定边界停止（不猜第二个端点、不做第二次真实写入、不重放生成类请求）。
+   探针的创建请求是合成的：它只带 `accept`/`content-type`，`extra_cookies` 为空且无 CF 缓存，
+   因此上游看到的是一个**没有 Cookie 头**的写请求；而网关的 chat 路径会转发浏览器自己的
+   端到端请求头，生产路径下 Django 也会把账号 `extra_cookies` 一起下发。所以这条 403 证明的是
+   「合成请求被拒」，不等于镜像写路径不可用；要取得真实写证据，需要前端真实请求的观测样本
+   （DevTools 复制为 cURL / HAR）来对齐请求头与 Cookie。
+   代码里的自动登记逻辑因此仍只在合成回环上验证过。
+   该 403 本身说明这次尝试没有创建会话，无需清理；但「列表为 0 条」不是「账号为空」的证据——
+   未登记资源经 ACL 过滤后一律呈现为空信封，这正是缺口 3 的预期行为。
+
+探针证据只落状态码、内容类型、正文长度与 sha256、字段名、集合条数、本候选自己的错误码与
+文案；令牌、Cookie、镜像会话 token、上游正文与标题一律不落盘。
 
 ## 证据
 

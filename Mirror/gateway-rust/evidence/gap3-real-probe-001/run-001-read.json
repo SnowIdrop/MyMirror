@@ -1,0 +1,193 @@
+{
+  "probe": "gap3-real-upstream",
+  "started_at": "2026-09-24T01:18:20.313136+00:00",
+  "token_file": "D:\\Project\\ReMirror\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\probe\\access-token.txt",
+  "access_token_sha256": "6d53634b405a1da638cb71bbc4b28dbb38c4638ac011fe29349b9ccdb21d2120",
+  "gateway": {
+    "mode": "configured",
+    "binary": "D:\\Project\\ReMirror\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\target\\debug\\mirror-gateway.exe",
+    "database": ":memory:",
+    "chatgpt_base": "https://chatgpt.com",
+    "cdn_base": "https://cdn.oaistatic.com",
+    "cf_bypass_configured": false,
+    "request_timeout_secs": 45.0,
+    "real_write_allowed": false
+  },
+  "steps": [
+    {
+      "status": 200,
+      "content_type": "application/json",
+      "body_bytes": 203,
+      "body_sha256": "1e36c81b5eb215e26cb2b43ff2f4b7dcb11d28847d76f2913a84f8f293ca9c56",
+      "body_truncated": false,
+      "elapsed_ms": 4444,
+      "html_like": false,
+      "upstream_blocked": false,
+      "json_top_keys": [
+        "chatgpt_username",
+        "login_mode",
+        "login_url",
+        "message"
+      ],
+      "label": "login:probe-alice",
+      "route": "/api/login",
+      "method": "POST"
+    },
+    {
+      "status": 200,
+      "content_type": "application/json",
+      "body_bytes": 1150,
+      "body_sha256": "c02fa0b6e0f780958004cbe3298f67da2fe887d4639db3523fad2fe511524256",
+      "body_truncated": false,
+      "elapsed_ms": 1662,
+      "html_like": false,
+      "upstream_blocked": false,
+      "json_top_keys": [
+        "ads_segment_id",
+        "amr",
+        "chatgpt_eval_data",
+        "claimed_domain_org_id",
+        "client_id",
+        "country",
+        "created",
+        "email",
+        "email_domain_type",
+        "first_name",
+        "groups",
+        "has_payg_project_spend_limit",
+        "id",
+        "is_test_user",
+        "mfa_flag_enabled",
+        "name",
+        "object",
+        "orgs",
+        "phone_number",
+        "picture",
+        "region",
+        "region_code",
+        "signup_attribution",
+        "tenants"
+      ],
+      "label": "me",
+      "route": "/backend-api/me",
+      "method": "GET"
+    },
+    {
+      "status": 200,
+      "content_type": "application/json",
+      "body_bytes": 8821,
+      "body_sha256": "349342b0b71f2fb7f490900d86b5e724d8a7886da96b9fbc4b7c8f1030f85135",
+      "body_truncated": false,
+      "elapsed_ms": 1440,
+      "html_like": false,
+      "upstream_blocked": false,
+      "json_top_keys": [
+        "account_ordering",
+        "accounts"
+      ],
+      "label": "accounts_check",
+      "route": "/backend-api/accounts/check/v4-2023-04-27",
+      "method": "GET"
+    },
+    {
+      "status": 200,
+      "content_type": "application/json",
+      "body_bytes": 43,
+      "body_sha256": "319b35a28bb0b9f21ed9bb5a9d6f780ba6b1ee0d57f56ae31b70098373843c9c",
+      "body_truncated": false,
+      "elapsed_ms": 1158,
+      "html_like": false,
+      "upstream_blocked": false,
+      "json_top_keys": [
+        "items",
+        "limit",
+        "offset",
+        "total"
+      ],
+      "item_count": 0,
+      "total": 0,
+      "label": "conversations",
+      "route": "/backend-api/conversations",
+      "method": "GET",
+      "query": "offset=0&limit=1"
+    },
+    {
+      "status": 405,
+      "content_type": "application/json",
+      "body_bytes": 22,
+      "body_sha256": "4bf7c8639bc34bbbae5aef4aba3c724f9a425cbdc0416ab6384f7745ae1acb96",
+      "body_truncated": false,
+      "elapsed_ms": 864,
+      "html_like": false,
+      "upstream_blocked": false,
+      "json_top_keys": [
+        "items",
+        "total"
+      ],
+      "item_count": 0,
+      "total": 0,
+      "label": "projects",
+      "route": "/backend-api/projects",
+      "method": "GET"
+    },
+    {
+      "status": 502,
+      "content_type": "application/json",
+      "body_bytes": 32,
+      "body_sha256": "aecaa1935678e1f30512e1d71dd3079cfca867c5f5cec4c016e4948c30360a5c",
+      "body_truncated": false,
+      "elapsed_ms": 19856,
+      "html_like": false,
+      "upstream_blocked": false,
+      "json_top_keys": [
+        "message"
+      ],
+      "label": "files_library",
+      "route": "/backend-api/files/library/nodes",
+      "method": "GET"
+    },
+    {
+      "status": 200,
+      "content_type": "application/json",
+      "body_bytes": 26,
+      "body_sha256": "06320ea31c96935e37a528d5e79bbdaa7ffb3d103db7ddbe88070b0f2a00d8c5",
+      "body_truncated": false,
+      "elapsed_ms": 1469,
+      "html_like": false,
+      "upstream_blocked": false,
+      "json_top_keys": [
+        "cursor",
+        "tasks"
+      ],
+      "item_count": 0,
+      "label": "tasks",
+      "route": "/backend-api/tasks",
+      "method": "GET"
+    },
+    {
+      "status": 404,
+      "content_type": "application/json",
+      "body_bytes": 22,
+      "body_sha256": "37ec4665a8102d115ffd1ac20dae94c98b4dac64b0c1a68228aa2a531caeb35d",
+      "body_truncated": false,
+      "elapsed_ms": 1834,
+      "html_like": false,
+      "upstream_blocked": false,
+      "json_top_keys": [
+        "detail"
+      ],
+      "label": "task_suggestions",
+      "route": "/backend-api/task_suggestions",
+      "method": "GET"
+    }
+  ],
+  "notes": [
+    "projects 返回非 2xx，按实际状态记录，未重试。",
+    "files_library 返回非 2xx，按实际状态记录，未重试。",
+    "task_suggestions 返回非 2xx，按实际状态记录，未重试。",
+    "未传入 --allow-real-write：本次只跑读路径，真实新建会话与其删除未执行。"
+  ],
+  "authority_calls": 9,
+  "gateway_log_lines": 1,
+  "finished_at": "2026-09-24T01:18:54.010251+00:00"
+}

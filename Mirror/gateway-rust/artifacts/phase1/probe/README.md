@@ -69,3 +69,16 @@ py -3 probe.py --allow-real-write   # 再补：恰好一次真实新建会话 + 
 
 已知残留：若删除未返回 2xx，新建的会话可能仍留在账号里，请在网页端手动删除，且不要重复
 运行本探针。
+
+## 已观测结果（2026-09-24）
+
+真实 AccessToken 下的第一轮结果与逐路径状态码见
+[`../../evidence/gap3-real-probe-001/SUMMARY.md`](../../evidence/gap3-real-probe-001/SUMMARY.md)。
+摘要：凭据换取、`/backend-api/me`、`accounts/check`、`conversations` 稳定 `200`；
+`GET /projects` 恒为 `405`（上游该路径只有 `POST`）；`task_suggestions` 为 `404`；
+`POST /f/conversation` 被上游以 JSON `403` 拒绝，未创建会话、未重试。
+本机直连存在间歇性发送阶段失败（记为网关自身 `502`，非挑战形状），当时本地 cfbypass
+（`127.0.0.1:18001`）未运行，因此建议先起 cfbypass 再带 `--cf-bypass-url` 复跑。
+
+另注意：`conversations` 的 `items`/`total` 是 ACL 过滤后的视图，**不能**用来判断账号里
+原本有多少会话。

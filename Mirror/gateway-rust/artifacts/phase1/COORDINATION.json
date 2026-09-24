@@ -31,7 +31,7 @@
     "finalize.py",
     "validate.py"
   ],
-  "live_result": "缺口 3 完整批次实施完成并合成回环验证：资源 ACL v1 产品接线（六类资源判权/登记/集合过滤、访客拒绝、身份每请求复验、稳定账号键、生成互斥、撤权中止、/api/acl/* 管理 API、旧归属一次性回填、网关备份 v3）已落地；cargo test 63 库内 + 113 集成全过、clippy -D warnings 过、Django 101 项过；真实账号/真实上游探针未执行（缺本地令牌文件路径）。",
+  "live_result": "缺口 3 完整批次实施完成并合成回环验证：资源 ACL v1 产品接线（六类资源判权/登记/集合过滤、访客拒绝、身份每请求复验、稳定账号键、生成互斥、撤权中止、/api/acl/* 管理 API、旧归属一次性回填、网关备份 v3）已落地；cargo test 63 库内 + 113 集成全过、clippy -D warnings 过、Django 101 项过。2026-09-24 真实上游探针（真实 AccessToken）跑通凭据换取 + me + accounts/check + conversations（证据 evidence/gap3-real-probe-001）；真实新建会话被上游 403 拒绝，跨用户隔离在真实会话上仍未验证，本机直连存在间歇性发送阶段失败。",
   "new_evidence": "E:\\M\\Project\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\page-original-001\\summary.json",
   "current_implementation": "本批新增：server/acl.rs 与 src/resource_acl.rs 的产品接线（分类判定、转发前判权、创建登记、集合过滤、生成租约、撤权中止）、server/acl_admin.rs 管理 API、gateway_sessions.chatgpt_account_id 稳定账号键、启动期旧归属回填（/0x/user/gateway-acl-mapping）、网关备份 v3（含四张 acl_* 表）；会话名称式判定 server/owners.rs 已删除。缺口 5（传输身份与出口策略）、/realtime 升级桥接、语音、Vue 管理界面仍未接线；连接器创建不自动登记（无响应形状证据）。",
   "interfaces": "Config 新增 ws_upstream（configured 固定 wss://ws.chatgpt.com/，offline 用回环）、ab_upstream、public_prefix_base（仅离线回归）；egress::Egress 新增 proxied 标记；proxy::chat_auth/chat_origin/apply_chrome_146_identity/method_not_allowed 与 static_assets::forward_public 扩为 pub(super) 供新模块复用。",

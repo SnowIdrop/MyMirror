@@ -1,0 +1,41 @@
+{
+  "probe": "gap3-real-upstream",
+  "started_at": "2026-09-24T01:21:31.106590+00:00",
+  "token_file": "D:\\Project\\ReMirror\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\probe\\access-token.txt",
+  "access_token_sha256": "6d53634b405a1da638cb71bbc4b28dbb38c4638ac011fe29349b9ccdb21d2120",
+  "gateway": {
+    "mode": "configured",
+    "binary": "D:\\Project\\ReMirror\\MiRebuild\\Mirror\\gateway-rust\\artifacts\\phase1\\source\\target\\debug\\mirror-gateway.exe",
+    "database": ":memory:",
+    "chatgpt_base": "https://chatgpt.com",
+    "cdn_base": "https://cdn.oaistatic.com",
+    "cf_bypass_configured": false,
+    "request_timeout_secs": 45.0,
+    "real_write_allowed": false
+  },
+  "steps": [
+    {
+      "status": 400,
+      "content_type": "application/json",
+      "body_bytes": 32,
+      "body_sha256": "aecaa1935678e1f30512e1d71dd3079cfca867c5f5cec4c016e4948c30360a5c",
+      "body_truncated": false,
+      "elapsed_ms": 5028,
+      "html_like": false,
+      "upstream_blocked": false,
+      "json_top_keys": [
+        "message"
+      ],
+      "local_message": "上游请求失败",
+      "label": "login:probe-alice",
+      "route": "/api/login",
+      "method": "POST"
+    }
+  ],
+  "notes": [
+    "登录未成功，后续业务请求未发出：可能是令牌失效、用户名与授权桩不匹配，或上游被拦截；按该步状态码判定。"
+  ],
+  "authority_calls": 2,
+  "gateway_log_lines": 2,
+  "finished_at": "2026-09-24T01:21:36.960239+00:00"
+}

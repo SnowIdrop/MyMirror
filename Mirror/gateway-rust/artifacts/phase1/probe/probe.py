@@ -85,6 +85,28 @@ LOCAL_CODES = {
     "generation_busy",
     "upstream_blocked",
 }
+# 本候选自己的错误文案（逐字取自 source/src/server*，随源码更新）。
+# 只有与这张表逐字相同的 `message` 才会写进证据：这样「网关在发送阶段就失败」与
+# 「上游答复了 502」可以区分，而上游正文、上游错误文案仍然只留 sha256。
+LOCAL_MESSAGES = (
+    "上游请求失败",
+    "上游响应读取失败",
+    "上游会话刷新失败",
+    "上游用户信息缺少 email",
+    "会话或出口绑定已失效",
+    "未登录",
+    "登录已失效，请重新登录",
+    "本地未实现的 /api 路径",
+    "该路径不支持此方法",
+    "实时通道升级未开放",
+    "WebSocket 桥接尚未支持代理出口",
+    "集合响应读取失败",
+    "集合响应序列化失败",
+    "请求体读取失败",
+    "静态资源上游不可用",
+    "静态资源上游类型不匹配",
+    "静态资源上游重定向未开放",
+)
 COLLECTION_KEYS = (
     "items",
     "data",
@@ -96,6 +118,11 @@ COLLECTION_KEYS = (
     "connectors",
 )
 CONVERSATION_ID_PATTERN = re.compile(rb'"conversation_id"\s*:\s*"([0-9a-fA-F-]{36})"')
+
+
+def conversation_id_digest(conversation_id: str) -> str:
+    """会话 id 只以 sha256 进证据：它足以核对两次运行指同一会话，又不泄露内容引用。"""
+    return hashlib.sha256(conversation_id.encode("utf-8")).hexdigest()
 
 
 def scrub(text: str, token: str) -> str:
@@ -234,6 +261,8 @@ def describe(status: int, headers, raw: bytes, elapsed: float, stopped_early: bo
                 entry["total"] = payload["total"]
             if payload.get("code") in LOCAL_CODES:
                 entry["code"] = payload["code"]
+            if payload.get("message") in LOCAL_MESSAGES:
+                entry["local_message"] = payload["message"]
     return entry
 
 
@@ -577,30 +606,32 @@ def run_probe(args: argparse.Namespace, token: str) -> dict:
             )
             return evidence
 
-        delete_route = DELETE_ROUTE_TEMPLATE.format(conversation_id=conversation_id)
-        delete_entry = http_request(
-            opener, "DELETE", f"{base}{delete_route}", None, session_headers, args.timeout
+        # 属主直读：能拿到 200 说明创建时已登记归属，且登记发生在客户端拿到 id 之前。
+        owner_read = http_request(
+            opener,
+            "GET",
+            f"{base}/backend-api/conversation/{conversation_id}",
+            None,
+            session_headers,
+            args.timeout,
         )
-        delete_entry.update(
+        owner_read.update(
             {
-                "label": "delete_conversation",
-                "route": DELETE_ROUTE_TEMPLATE,
-                "method": "DELETE",
-                "conversation_id_sha256": hashlib.sha256(
-                    conversation_id.encode("utf-8")
-                ).hexdigest(),
+                "label": "owner_read",
+                "route": "/backend-api/conversation/{conversation_id}",
+                "method": "GET",
+                "conversation_id_sha256": conversation_id_digest(conversation_id),
             }
         )
-        steps.append(delete_entry)
-        # 删除也是作用域请求：能通过说明创建时的登记已经生效且被本人可见。
-        delete_ok = delete_entry.get("status") is not None and 200 <= int(delete_entry["status"]) < 300
+        steps.append(owner_read)
         notes.append(
-            "删除成功：会话归属登记在删除判权前已生效。"
-            if delete_ok
-            else "删除未返回 2xx：会话可能仍留在账号里，请在网页端手动删除；"
-            "不要重复运行本探针。"
+            "属主直读新建会话 200：登记在 id 下发之前已完成。"
+            if owner_read.get("status") == 200
+            else f"属主直读得到 {owner_read.get('status')}：登记或上游读取存在偏差，需人工确认。"
         )
 
+        # 第二个镜像用户：同一上游账号、不同镜像身份。必须在**会话仍存在**时判定，
+        # 否则 404 也可能只是「已被删除」，证明不了归属隔离。
         second_entry, second_token = login(
             opener, base, args.user + "-b", args.account_id, token, args.timeout
         )
@@ -619,18 +650,65 @@ def run_probe(args: argparse.Namespace, token: str) -> dict:
                     "label": "second_user_read",
                     "route": "/backend-api/conversation/{conversation_id}",
                     "method": "GET",
-                    "conversation_id_sha256": hashlib.sha256(
-                        conversation_id.encode("utf-8")
-                    ).hexdigest(),
+                    "conversation_id_sha256": conversation_id_digest(conversation_id),
                 }
             )
             steps.append(entry)
             notes.append(
-                "第二个镜像用户读到同一会话被拒为 404 acl_not_found（该分支在转发前返回，"
+                "第二个镜像用户在会话仍存在时读到 404 acl_not_found（该分支在转发前返回，"
                 "不接触上游；上游调用计数为 0 由合成回环用例保证）。"
                 if entry.get("status") == 404 and entry.get("code") == "acl_not_found"
                 else "第二个镜像用户未得到预期的 404 acl_not_found，需人工确认。"
             )
+        else:
+            notes.append("第二个镜像用户登录失败：跨用户隔离未取得真实证据。")
+
+        delete_route = DELETE_ROUTE_TEMPLATE.format(conversation_id=conversation_id)
+        delete_entry = http_request(
+            opener, "DELETE", f"{base}{delete_route}", None, session_headers, args.timeout
+        )
+        delete_entry.update(
+            {
+                "label": "delete_conversation",
+                "route": DELETE_ROUTE_TEMPLATE,
+                "method": "DELETE",
+                "conversation_id_sha256": conversation_id_digest(conversation_id),
+            }
+        )
+        steps.append(delete_entry)
+        # 删除同样是作用域请求：通过则说明本人对本会话有删除权。
+        delete_ok = delete_entry.get("status") is not None and 200 <= int(delete_entry["status"]) < 300
+        notes.append(
+            "删除成功：会话归属登记在删除判权前已生效。"
+            if delete_ok
+            else "删除未返回 2xx：会话可能仍留在账号里，请在网页端手动删除；"
+            "不要重复运行本探针。"
+        )
+
+        # 删除后回到列表：确认账号里没有留下这次真实写入。
+        listed = http_request(
+            opener,
+            "GET",
+            f"{base}/backend-api/conversations?offset=0&limit=20",
+            None,
+            session_headers,
+            args.timeout,
+        )
+        listed.update(
+            {
+                "label": "conversations_after_delete",
+                "route": "/backend-api/conversations",
+                "method": "GET",
+                "query": "offset=0&limit=20",
+            }
+        )
+        steps.append(listed)
+        remaining = listed.get("item_count")
+        notes.append(
+            "删除后列表可见条目为 0：本次真实写入没有在账号里留下会话。"
+            if remaining == 0
+            else f"删除后列表仍有 {remaining} 条：请人工确认，不要重复运行本探针。"
+        )
         return evidence
     finally:
         stop_process(process)

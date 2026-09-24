@@ -150,8 +150,18 @@ ACL 模块接入产品路径。
   - 连接器创建不自动登记：`POST /backend-api/aip/connectors/*` 的响应形状无实测证据
     （同一前缀下既有创建也有 `list_repos`/`search_contacts` 之类动作），凭响应 `id` 自动认领会
     误登记，因此连接器目前只能由管理员用 `/api/acl/claim` 认领。
-  - 真实上游探针未执行：缺本地令牌文件路径（用户批准的 accessToken 探针对象），本批证据全部来自
-    合成回环；真实账号、真实 chatgpt.com 与真实 WS 上游联调需要单独提供路径并单独记录证据。
+  - 真实上游探针已执行读路径（2026-09-24，证据 `Mirror/gateway-rust/evidence/gap3-real-probe-001/`）：
+    真实 AccessToken 换取、`me`、`accounts/check`、`conversations` 四条路径稳定 200。仍未完成的是：
+    - 真实新建会话被上游以 JSON `403` 拒绝，因此跨用户隔离在真实会话上未验证。该请求是合成的
+      （无 Cookie、无 `oai-*` 等前端头），所以这条 403 说的是合成请求被拒，不是镜像写路径不可用。
+      推进方式：取一份前端真实 `POST /backend-api/f/conversation` 的观测样本（DevTools 复制为
+      cURL / HAR）对齐请求头与 Cookie，或改为浏览器驱动前端流程。
+    - 本机直连 chatgpt.com 存在间歇性发送阶段失败（网关如实返回自身 502，不重放生成类请求）。
+      `127.0.0.1:18001` 的本地 cfbypass 当时未启动，因此 `CF_BYPASS_URL` 的刷新/重放分支未在真实上游触发；
+      下次可先起 cfbypass 再跑 `probe.py --cf-bypass-url http://127.0.0.1:18001`。
+    - `GET /backend-api/projects` 在真实上游是 405（快照里该路径只有 `POST`）：项目集合的读取入口
+      仍未知，需要用前端实际请求观测补齐。
+    - `/backend-api/task_suggestions` 在该账号下是 404：上游是否按账号/版本开放待定。
   - 管理界面未做：`/api/acl/{resources,claim,share,move,audit}` 只有 API，Vue 管理界面不在本批。
   - 「分支」维度归属未做：原版 `enforce_project_owner` 的分支语义在逆向材料里只有符号名，
     本批按项目 ACL + 动态共享实现，未猜测分支协议。

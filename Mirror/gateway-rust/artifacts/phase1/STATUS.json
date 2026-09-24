@@ -12,7 +12,7 @@
     "independent_acl_tests": 28,
     "integrated_boundary_tests": 8,
     "generation_egress_tests": 12,
-    "real_environment_acceptance": "not run",
+    "real_environment_acceptance": "partial: 2026-09-24 real AccessToken probe passed credential exchange + /backend-api/me + accounts/check + conversations (evidence/gap3-real-probe-001); real conversation creation rejected by upstream 403, so cross-user isolation and real WS upstream remain unverified",
     "full_replacement_complete": false,
     "backend_api_surface_tests": 7,
     "public_prefixes_tests": 7,
