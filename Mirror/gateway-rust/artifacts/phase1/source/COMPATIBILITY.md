@@ -900,6 +900,7 @@ console error 7 → 5，剩余为 React #418/Datadog/favicon 这类既有噪声�
 | 管理界面 | 原版网关用 tower-http ServeDir 在 `/admin`、`/static` 自托管前端产物（`reverse/reports/08-reconstruction-notes.md` §3.3）；候选把 `/admin` 透传给 Django，而 Django 生产模式没有该路由，因此管理界面由 `frontend` 侧车提供：nginx 服务 `/admin/` SPA、把 `/0x/` 转给网关。镜像面不经过 nginx，SSE/WS 少一跳 |
 | 数据库 | 网关独立库 `/app/data/gateway-rust.db`（卷 `gateway-data`），刻意不复用旧网关的库；Django 沿用 `backend/db` |
 | 构建树换行 | `Mirror/chatgpt-mirror-build/.gitattributes` 固定 `*.sh`、`Dockerfile`、`docker-compose*.yml` 为 LF。Windows 上 `core.autocrlf=true` 会把 `backend/entrypoint.sh` 检出成 CRLF，容器内 dash 报 `set: Illegal option -` 并无限重启（实测） |
+| 侧车解析 | `frontend/nginx.rust.conf` 用 `resolver 127.0.0.11 valid=10s ipv6=off` + 变量 `proxy_pass` 让 nginx 按 TTL 重新解析网关。静态写 `proxy_pass http://gateway:40002` 时 nginx 只在启动解析一次并永久缓存：网关容器重建换了 IP 之后，管理端整片 502，nginx 错误日志明确指向旧地址（实测 `upstream: "http://172.19.0.2:40002"`，而网关已是 `172.19.0.5`） |
 
 ### 容器验证中发现并修复的三处真实缺陷
 
