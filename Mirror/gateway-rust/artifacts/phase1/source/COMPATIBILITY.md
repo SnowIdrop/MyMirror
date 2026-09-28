@@ -939,3 +939,7 @@ console error 7 → 5，剩余为 React #418/Datadog/favicon 这类既有噪声�
   Django `DJANGO_ENV=LOCAL manage.py test` 107 项通过。
 - 未做：真实上游写入、All-in-One 单镜像打包、TLS 终结与公网暴露策略
   （`LOCAL_NETWORK_ACCESS`/`DJANGO_*_COOKIE_SECURE`/`CSRF_TRUSTED_ORIGINS` 由部署方设置）。
+- **冷启动瞬态**：四个容器被宿主机同时拉起时（例如 dockerd/WSL 重启），网关的 cfbypass
+  预热可能早于 cfbypass 监听端口，日志出现一条 `cfbypass prewarm failed ... cfbypass 请求失败`。
+  预热按设计不阻塞启动（server.rs:141-146），首次真正需要 clearance 的请求会重新刷新；
+  cfbypass 已在监听时重启网关则不应出现该行——出现且刷新持续失败才需要排查。
