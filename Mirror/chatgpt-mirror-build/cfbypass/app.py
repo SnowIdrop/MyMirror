@@ -46,6 +46,11 @@ DEFAULT_USER_AGENT = (
 # 本地开发用 CF_BYPASS_BROWSER_PATH 指向本机 Chrome/Chromium 可执行文件。
 DEFAULT_BROWSER_PATH = "/usr/bin/chromium"
 
+# 回环页：只用来在浏览器内读一次原生 UA-CH 元数据，不产生真实网络请求（由 page.route
+# 本地应答）。必须是 https 才会被当成安全上下文——只有安全上下文里才有 navigator.userAgentData。
+NATIVE_HINTS_URL = "https://native-hints.invalid/identity"
+NATIVE_HINTS_PAGE = "<!doctype html><meta charset=utf-8><title>native hints</title>"
+
 # 在真实页面上下文里采集该跳的身份。逐字段 try/catch，取不到就是 null；
 # 不用环境变量补值，网关要据此发现 UA/UA-CH/版本错配。
 IDENTITY_PROBE_SCRIPT = """
@@ -101,6 +106,36 @@ async () => {
 
 # 单进程内同时运行的浏览器实例上限，避免并发请求耗尽容器内存与 /dev/shm。
 BROWSER_SLOTS = asyncio.Semaphore(2)
+
+# 读浏览器**原生**的 UA-CH 元数据（必须在任何 UA 覆盖之前执行）。
+NATIVE_CLIENT_HINTS_SCRIPT = """
+async () => {
+  const data = navigator.userAgentData;
+  if (!data || typeof data.getHighEntropyValues !== "function") {
+    return null;
+  }
+  const brands = (list) => (Array.isArray(list)
+    ? list.map((entry) => ({brand: String(entry.brand), version: String(entry.version)}))
+    : []);
+  const high = await data.getHighEntropyValues([
+    "architecture",
+    "bitness",
+    "fullVersionList",
+    "model",
+    "platformVersion",
+  ]);
+  return {
+    brands: brands(data.brands),
+    fullVersionList: brands(high.fullVersionList),
+    platform: String(data.platform || ""),
+    platformVersion: String(high.platformVersion || ""),
+    architecture: String(high.architecture || ""),
+    model: String(high.model || ""),
+    mobile: data.mobile === true,
+    bitness: String(high.bitness || ""),
+  };
+}
+"""
 
 # 挑战页探测选择器，仅用于日志诊断。
 CHALLENGE_SELECTORS = "#challenge-form, .cf-challenge, iframe[src*='challenges.cloudflare.com']"
@@ -446,6 +481,51 @@ async def _goto_with_retries(page, target: str) -> None:
             LOGGER.warning("导航失败（第 %d/%d 次），准备重试: %s（%s）", attempt, attempts, target, error)
 
 
+async def _serve_native_hints(route) -> None:
+    """回环页的本地应答：不经过网络，只提供一个安全上下文让页面能读 navigator.userAgentData。"""
+    await route.fulfill(status=200, content_type="text/html; charset=utf-8", body=NATIVE_HINTS_PAGE)
+
+
+async def _apply_upstream_identity(context, page) -> None:
+    """把该跳的身份对齐成「配置的 UA 字符串 + 浏览器原生 UA-CH 元数据」。
+
+    不能用 `browser.new_context(user_agent=...)`：Playwright 会连 UA-CH 元数据一起替换成它
+    自己派生的值——实测 Linux 上 `architecture` 变成 `x64`、`fullVersionList` 也不再来自浏览器，
+    与网关声称的 `x86`/146 不一致（真实 Chromium 在 POSIX 上由 `GetCpuArchitecture()`
+    对 `x86_64` 固定返回 `x86`）。另外两种更差的形态也实测过：只发 `userAgent` 的 CDP 覆盖、
+    以及启动参数 `--user-agent=`，都会把 UA-CH 全部清空。
+
+    因此顺序是：先在回环页读原生元数据，再用 CDP 把「配置的 UA + 原生元数据」一起装上，
+    让该跳在线上看到的每一跳都与网关常量逐字段相同。
+    """
+    await page.route(f"{NATIVE_HINTS_URL}**", _serve_native_hints)
+    await page.goto(NATIVE_HINTS_URL, wait_until="domcontentloaded")
+    metadata = await page.evaluate(NATIVE_CLIENT_HINTS_SCRIPT)
+    await page.unroute(f"{NATIVE_HINTS_URL}**")
+    if not isinstance(metadata, dict) or not metadata.get("brands"):
+        # `userAgentData` 只存在于安全上下文；读不到说明这套 chromium 的行为变了。
+        # 此时宁可让取 Cookie 失败并报错，也不发一条 UA 与 UA-CH 互相矛盾的请求。
+        raise PlaywrightError(f"浏览器原生 UA-CH 元数据不可用: {metadata!r}")
+    session = await context.new_cdp_session(page)
+    await session.send(
+        "Emulation.setUserAgentOverride",
+        {
+            "userAgent": SETTINGS.user_agent,
+            "acceptLanguage": SETTINGS.accept_language,
+            "platform": metadata["platform"],
+            "userAgentMetadata": metadata,
+        },
+    )
+    LOGGER.info(
+        "身份已对齐: arch=%s bitness=%s platform=%s platform_version=%r full_version_list=%s",
+        metadata["architecture"],
+        metadata["bitness"],
+        metadata["platform"],
+        metadata["platformVersion"],
+        metadata["fullVersionList"],
+    )
+
+
 async def _probe_identity(browser, page, proxy: dict | None) -> IdentityInfo:
     """从实际浏览器会话采集身份（UA、UA-CH、语言、时区、浏览器版本）。
 
@@ -461,7 +541,9 @@ async def _probe_identity(browser, page, proxy: dict | None) -> IdentityInfo:
     proxy_server = (proxy or {}).get("server")
     fields = {
         "user_agent": raw.get("user_agent"),
-        "browser_version": browser.version(),
+        # playwright-python 里 `Browser.version` 是属性，不是方法：写成
+        # `browser.version()` 会让整个取 Cookie 接口 500（实测踩到）。
+        "browser_version": browser.version,
         "language": raw.get("language"),
         "languages": raw.get("languages"),
         "timezone": raw.get("timezone"),
@@ -504,12 +586,12 @@ async def _navigate(target: str, proxy: dict | None) -> tuple[list[CookieInfo], 
         )
         try:
             context = await browser.new_context(
-                user_agent=SETTINGS.user_agent,
                 locale=SETTINGS.accept_language.split(",")[0],
                 viewport={"width": SETTINGS.viewport_width, "height": SETTINGS.viewport_height},
                 extra_http_headers={"Accept-Language": SETTINGS.accept_language},
             )
             page = await context.new_page()
+            await _apply_upstream_identity(context, page)
             await _goto_with_retries(page, target)
             final_url = page.url
             if not _host_allowed(urlparse(final_url).hostname or ""):

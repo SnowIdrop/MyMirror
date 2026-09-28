@@ -159,6 +159,16 @@ impl Fixture {
                     }))
                     .into_response();
                 }
+                // 管理端透传回归用：回显收到的 cookie 头，证明浏览器 cookie 原样到达。
+                if request.uri().path() == "/0x/user/cookie-echo" {
+                    let cookie = request
+                        .headers()
+                        .get("cookie")
+                        .and_then(|value| value.to_str().ok())
+                        .unwrap_or("")
+                        .to_owned();
+                    return axum::Json(json!({ "cookie": cookie })).into_response();
+                }
                 StatusCode::NOT_FOUND.into_response()
             });
             serve(router).await
@@ -433,5 +443,28 @@ async fn concurrent_challenges_share_one_cfbypass_refresh() {
         f.fetches() - before,
         1,
         "并发挑战必须共用一次 cfbypass 刷新"
+    );
+}
+
+/// 管理端（浏览器）经网关访问 Django 时必须带上自己的 cookie：`csrftoken` 与 Django
+/// session 一旦被 CF 白名单 cookie 覆盖，登录会直接 403「CSRF cookie not set」。
+/// CF 缓存由启动预热填满（`Fixture::new(true, ..)` 内部已 await 预热），因此这里
+/// 能真实复现「缓存非空」这一前提，而不是在空缓存下空过。
+#[tokio::test]
+async fn django_passthrough_preserves_browser_cookies() {
+    let f = Fixture::new(true, 0).await;
+    let response = f
+        .client
+        .get(format!("{}/0x/user/cookie-echo", f.base))
+        .header("cookie", "csrftoken=FIXTURE-CSRF; sessionid=fixture-session")
+        .send()
+        .await
+        .unwrap();
+    assert_eq!(response.status(), StatusCode::OK);
+    let value: Value = response.json().await.unwrap();
+    assert_eq!(
+        value["cookie"],
+        json!("csrftoken=FIXTURE-CSRF; sessionid=fixture-session"),
+        "Django 只应看到浏览器带来的 cookie，不得被 CF 白名单 cookie 覆盖"
     );
 }

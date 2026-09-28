@@ -99,8 +99,11 @@ const INTERNAL_UPSTREAM_PREFIX: &str = "/internal-upstream/";
 const INTERNAL_UPSTREAM_SUFFIXES: [&str; 1] = [".oaiusercontent.com"];
 
 /// 请求方向需要过滤的逐跳头与凭据头（`connection` 命名头另行按值移除）。
-/// cookie/x-mirror-token 丢弃；Django 必须保留 Authorization，chat 路径另行替换为上游凭据。
-const REQUEST_HOP_BY_HOP: [&str; 12] = [
+/// x-mirror-token 一律丢弃；Django 必须保留 Authorization，chat 路径另行替换为上游凭据。
+/// `cookie` 不在这里：两条路径的取舍相反——chat 路径必须丢弃客户端 cookie（另见
+/// [`send_chat_once`]），Django 透传必须原样保留（`csrftoken`/session 是管理端登录凭据，
+/// 丢掉会让管理端登录 403「CSRF cookie not set」，2026-09-28 容器实测）。
+const REQUEST_HOP_BY_HOP: [&str; 11] = [
     "host",
     "connection",
     "content-length",
@@ -111,7 +114,6 @@ const REQUEST_HOP_BY_HOP: [&str; 12] = [
     "keep-alive",
     "te",
     "trailer",
-    "cookie",
     "x-mirror-token",
 ];
 
@@ -562,8 +564,7 @@ async fn django_forward(
             HeaderValue::from_str(&ip.to_string()).context("客户端 IP 头无效")?,
         );
     }
-    let upstream =
-        send_upstream_with_headers(app, parts.method, headers, base, data, None).await?;
+    let upstream = send_upstream_with_headers(app, parts.method, headers, base, data).await?;
     stream_response(upstream).await
 }
 
@@ -978,6 +979,8 @@ async fn send_chat_once(
 ) -> Result<wreq::Response> {
     let mut headers = strip_request_hop_by_hop(client_headers)?;
     headers.remove("authorization");
+    // 客户端 cookie 绝不能进上游：这里先清掉，下面只写服务端合成的 cookie 组。
+    headers.remove("cookie");
     let origin = chat_origin(base)?;
     headers.insert(
         "origin",
@@ -1033,35 +1036,18 @@ async fn send_chat_once(
         .context("上游请求失败")
 }
 
-/// 头处理完成后的 Django 转发发送步骤：附加 CF cookie（无账号凭据）。
+/// Django 转发发送步骤：浏览器带来的 `cookie`（`csrftoken`、Django session）必须原样
+/// 到达 Django——管理端登录与 CSRF 校验全靠它。这里刻意不叠加 CF 白名单 cookie：
+/// 那一组只属于 chatgpt.com 上游，与本机 Django 无关；一旦覆盖 `cookie` 头，
+/// 管理端登录会直接 403「CSRF cookie not set」（2026-09-28 容器实测）。
 async fn send_upstream_with_headers(
     app: &App,
     method: Method,
-    mut headers: HeaderMap,
+    headers: HeaderMap,
     base: url::Url,
     body: Bytes,
-    credentials: Option<&ChatAuth>,
 ) -> Result<wreq::Response> {
-    let cf = app.cloudflare.cookies().await;
-    let session_cookies = credentials.map_or(&[][..], |value| value.cookies.as_slice());
-    if let Some(cookie) = cloudflare::cookie_header(&[session_cookies, cf.as_slice()]) {
-        headers.insert(
-            "cookie",
-            HeaderValue::from_str(&cookie).context("Cookie 头无效")?,
-        );
-    }
-    if let Some(credentials) = credentials {
-        if let Some(token) = credentials.access_token.as_deref() {
-            headers.insert(
-                "authorization",
-                HeaderValue::from_str(&format!("Bearer {token}")).context("上游凭据头无效")?,
-            );
-        }
-    }
-    // Only the Django forwarding caller lacks account credentials. Chat always
-    // uses the client captured with that exact token's egress binding.
-    let client = credentials.map_or(&app.client, |value| &value.client);
-    client
+    app.client
         .request(method, base.as_str())
         .headers(headers)
         .body(body)
@@ -1384,7 +1370,12 @@ mod tests {
         headers.insert("user-agent", HeaderValue::from_static("foreign/1.0"));
         let filtered = strip_request_hop_by_hop(&headers).expect("过滤失败");
         assert!(!filtered.contains_key("x-conn-token"));
-        assert!(!filtered.contains_key("cookie"));
+        // cookie 由调用方按路径决定：Django 透传保留（管理端 csrftoken/session），
+        // chat 路径在 `send_chat_once` 里显式清掉后只写服务端合成的 cookie 组。
+        assert_eq!(
+            filtered.get("cookie").map(|v| v.to_str().unwrap()),
+            Some("mirror_token=secret")
+        );
         assert_eq!(filtered["authorization"], "Bearer mirrortoken");
         assert!(!filtered.contains_key("x-second-hop"));
         assert!(!filtered.contains_key("x-mirror-token"));
