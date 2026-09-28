@@ -19,8 +19,8 @@
 
 | 项 | 实测值 |
 |---|---|
-| ClientHello 归一化 sha256（`https://127.0.0.1:<port>/`，无 SNI） | `01425d3fe0c24e404839d678bca29b881e52bcd05b37efdc795aac02f703c3cb` |
-| 该值与候选 `identity_fingerprint.rs::EXPECTED_FINGERPRINT_SHA256` | **逐位相同** |
+| ClientHello 归一化 sha256（`https://127.0.0.1:<port>/`，无 SNI；**排序归一化**口径，见各采集的 `rust_normalized_sha256`） | `01425d3fe0c24e404839d678bca29b881e52bcd05b37efdc795aac02f703c3cb` |
+| 候选在同一排序口径下的值 | **逐位相同**；候选运行时自锁的是**顺序敏感**口径（`identity_fingerprint.rs::EXPECTED_HELLO_SHA256 = 01e7ace0…`、`EXPECTED_HELLO_SNI_SHA256 = 15d917f3…`、`EXPECTED_H2_SHA256 = 7b3ac4b0…`），两边共同的比对口径是逐字段对照 |
 | ClientHello 归一化 sha256（`https://localhost:<port>/`，有 SNI） | `502b55cca23185a72501e8a77f40741e54b0af48a2c08dd59c50c987e24e40ec` |
 | `sec-ch-ua-platform-version`（Windows 真值） | `"15.0.0"` |
 | `sec-ch-ua-platform-version`（Linux 真值，源码核对） | `""`（见 `04-linux-platform-version.json`） |
@@ -174,7 +174,7 @@ Chrome 的差别；**环境差异** = 本次夹具（headless、语言设置、�
 | `supported_versions` | `0304,0303` | 同 | — | 一致 |
 | `has_sni` | IP 字面量 false；`localhost` true | IP 字面量 false | — | 与输入同形 |
 | 其余 `has_*` | 全 true | 全 true | — | 一致 |
-| 归一化 sha256 | `01425d3f…0343cb` | `01425d3f…0343cb` | — | **逐位相同** |
+| 归一化 sha256（排序口径） | `01425d3f…0343cb` | `01425d3f…0343cb` | — | **逐位相同**；候选顺序敏感口径的自锁常量 `01e7ace0…` 与之口径不同、不直接比较 |
 
 ### B. HTTP 请求头
 
@@ -196,13 +196,17 @@ Chrome 的差别；**环境差异** = 本次夹具（headless、语言设置、�
 | 头顺序（XHR，去掉传输层生成的 `Host`/`Connection`/`Content-Length`） | 见上表 | `REQUEST_HEADER_ORDER`（19 项） | — | **逐项一致**（含 `content-type` 在 `sec-ch-ua-platform-version` 之前、`origin` 在 `sec-fetch-site` 之前、`referer` 在 `accept-encoding` 之前；GET 时缺位的 `content-type`/`origin` 与候选表的并集形状相符） |
 | 头名大小写（HTTP/1.1） | 常见头名大写（`User-Agent`/`Accept`/`Referer`/`Origin`/`Content-Length`），`sec-ch-ua*` 与 fetch 侧 `content-type` 小写 | 候选顺序表统一小写 | 实现差异（低风险） | 候选出网走上游 h2，HPACK 一律小写，两者在该路径等价；只有当候选对 h1 上游发这些头时才可观测到差异 |
 
-### C. HTTP/2 首帧
+### C. HTTP/2 首帧（已闭合，2026-09-24 第二轮）
 
-| 字段 | 真 Chrome146 win64 实测 | 候选登记 | 分类 | 说明 |
-|---|---|---|---|---|
-| SETTINGS 顺序与值 | `0001=65536`、`0002=0`、`0004=6291456`、`0006=262144`（无 GREASE 项） | 未登记取值（`COMPATIBILITY.md` 只写「取值来自 wreq-util 的 http2_options」） | 未覆盖 | 需要用同一口径打开候选 ClientHello 之后的 h2 首帧，或直接查 `wreq-util` 源码常量，才能判定 |
-| `WINDOW_UPDATE` | 流 0，`15663105` | 未登记 | 未覆盖 | 同上 |
-| 伪头顺序 | `:method, :authority, :scheme, :path` | 未登记 | 未覆盖 | 同上 |
+`tests/identity_fingerprint.rs` 现在会完成一次本地自签 TLS 握手并抓取候选的 h2 首帧，
+逐项对照本文件 `capture`：
+
+| 字段 | 真 Chrome146 win64 实测 | 候选实测 | 结论 |
+|---|---|---|---|
+| SETTINGS 顺序与值 | `0001=65536`、`0002=0`、`0004=6291456`、`0006=262144`（无 GREASE 项） | 同（并断言只有这四项） | 一致 |
+| `WINDOW_UPDATE` | 流 0，`15663105` | 同 | 一致 |
+| 伪头顺序 | `:method, :authority, :scheme, :path` | 同 | 一致 |
+| 首帧序列 | `SETTINGS` → `WINDOW_UPDATE` → `HEADERS` | 同 | 一致 |
 
 ## 附录：Linux `sec-ch-ua-platform-version`（源码核对，2026-09-24）
 
@@ -234,7 +238,8 @@ Chrome 的差别；**环境差异** = 本次夹具（headless、语言设置、�
 2. **品牌构建待验**：本次用的是 Chrome for Testing（Chromium 品牌），拿不到 `Google Chrome`
    品牌项与它的品牌顺序；`sec-ch-ua`/`full-version-list` 与候选的差异因此归为「构建差异」，
    不能据此判定候选错。
-3. **H2 候选基线缺失**：候选侧没有已记录的 SETTINGS/WINDOW_UPDATE/伪头取值，本批只交了参照侧。
+3. **H2 候选基线（已闭合）**：第二轮已用 `tests/identity_fingerprint.rs` 在本地自签 TLS 上抓取候选
+   的 h2 首帧，SETTINGS/`WINDOW_UPDATE`/伪头顺序/首帧序列均与本参照逐项一致（见上 C 节）。
 4. **headless 环境**：本次为 Playwright 新 headless（UA 带 `HeadlessChrome`）。UA-CH 取值与
    TLS/H2/头顺序不受影响；若需要非 headless 的 UA 字面量，需要一次带窗口的运行（本批未做，
    避免在宿主桌面弹窗）。

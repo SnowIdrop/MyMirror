@@ -59,6 +59,10 @@ async fn stub(events: Events, request: Request) -> Response {
         "cookie": header("cookie"),
         "authorization": header("authorization"),
         "x_mirror_token": header("x-mirror-token"),
+        // 身份整组的关键项：外链代理与其它公共出网路径必须发出同一个浏览器身份。
+        "user_agent": header("user-agent"),
+        "sec_ch_ua": header("sec-ch-ua"),
+        "sec_ch_ua_platform": header("sec-ch-ua-platform"),
         "body": String::from_utf8_lossy(&body),
     }));
     let path = parts.uri.path().to_owned();
@@ -379,6 +383,23 @@ async fn refused_prefixes_answer_with_a_stable_category_message() {
 async fn external_proxy_forwards_without_credentials_and_refuses_unsafe_answers() {
     let f = Fixture::new(true).await;
     f.clear();
+    // 同一条公共出网面里的固定上游反代：它的身份整组由 `identity::apply_identity`
+    // 写入，用来证明外链代理没有自己另一套身份（两侧逐项相同）。
+    let asset = f
+        .client
+        .get(format!("{}/common/a.png", f.base))
+        .send()
+        .await
+        .unwrap();
+    assert_eq!(asset.status(), StatusCode::OK);
+    let asset_call = f
+        .events
+        .lock()
+        .unwrap()
+        .last()
+        .cloned()
+        .expect("公共资源请求必须到达夹具上游");
+    f.clear();
     let response = f
         .client
         .post(format!("{}/external/https/bzr.openai.com/v1/obi/sync?k=1", f.base))
@@ -400,6 +421,19 @@ async fn external_proxy_forwards_without_credentials_and_refuses_unsafe_answers(
     assert_eq!(call["body"], "{\"p\":1}");
     for header in ["cookie", "authorization", "x_mirror_token"] {
         assert_eq!(call[header], "", "{header} 不得转发给第三方");
+    }
+    // 身份形状：外链代理必须声称同一个 Chrome146/Linux 身份，不能是空值。
+    let user_agent = call["user_agent"].as_str().unwrap();
+    assert!(user_agent.contains("Chrome/146.0.0.0"), "{user_agent}");
+    assert!(user_agent.contains("Linux x86_64"), "{user_agent}");
+    assert!(call["sec_ch_ua"].as_str().unwrap().contains("Chromium"));
+    assert_eq!(call["sec_ch_ua_platform"], "\"Linux\"");
+    // 与固定上游反代逐项相同：出网身份只有 `identity` 一个来源。
+    for header in ["user_agent", "sec_ch_ua", "sec_ch_ua_platform"] {
+        assert_eq!(
+            call[header], asset_call[header],
+            "{header} 必须与同一网关的其他公共出网路径一致"
+        );
     }
 
     // 重定向不跟随：第三方 302 一律按上游故障上报。

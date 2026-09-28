@@ -708,8 +708,8 @@ full-version-list/model/platform-version`，491 条请求里 488 条带 `sec-ch-
 
 | 项 | 真 Chrome 146 | 候选 | 结论 |
 |---|---|---|---|
-| ClientHello 归一化 sha256（无 SNI） | `01425d3f…0343cb` | 同一常量 | **逐位相同** |
-| 密码套件（原始顺序） | `1301,1302,1303,c02b,c02f,c02c,c030,cca9,cca8,c013,c014,009c,009d,002f,0035` | 同 | 一致 |
+| ClientHello 归一化 sha256 | `01425d3f…0343cb`（排序归一化口径，见参照的 `rust_normalized_sha256`） | 同值；运行时自锁的是**顺序敏感**口径 `01e7ace0…`（IP）/ `15d917f3…`（SNI） | **逐字段一致**（两个常量口径不同、不直接比较；套件原始顺序已单独核对相同） |
+| 密码套件（原始顺序，去 GREASE） | `1301,1302,1303,c02b,c02f,c02c,c030,cca9,cca8,c013,c014,009c,009d,002f,0035` | 同（2026-09-28 复核 `candidate_client_hello_matches_chrome_shape` 的输出） | 一致 |
 | 扩展集合 | 15 项（含 `44cd`/`fe0d`/`ff01`） | 同 | 一致 |
 | 扩展顺序 | **逐连接重排** | 逐连接重排 | 一致（`permute_extensions` 行为由测试锁定） |
 | `signature_algorithms` | 8 项（无 ML-DSA） | 同 | 一致（此前 151 对照里的 ML-DSA 差异确认为版本差） |
@@ -721,8 +721,10 @@ full-version-list/model/platform-version`，491 条请求里 488 条带 `sec-ch-
 | `sec-ch-ua-platform-version` | `"15.0.0"`（Windows） | 候选声称 Linux，发 `""` | **已闭合（源码核对，非运行时）**：Linux 上该 feature 默认 `stable` ⇒ `GetPlatformVersion()` 返回空串 ⇒ 头值 `""`；证据 `04-linux-platform-version.json`（ref/commit/行号/sha256） |
 | `sec-ch-ua` 品牌表 | `"Not-A.Brand";v="24", "Chromium";v="146"`（两项） | `"Chromium";v="146", "Not-A.Brand";v="24", "Google Chrome";v="146"`（三项） | **构建差异**：CfT 是 Chromium 品牌构建，不含 `Google Chrome` 项；候选的品牌表与原版二进制实测字节逐字相同（`reverse/reports/06-sandbox-verification.md` §9.5 的代理链抓包），与自身「Google Chrome 146」的 UA 自洽 |
 
-`tests/identity_fingerprint.rs` 因此有三层断言：自锁常量（ClientHello×2 场景 + H2）、**与
-`evidence/reference-chrome146-001/` 逐字段对照**、以及身份相关 crate
+`tests/identity_fingerprint.rs` 因此有三层断言：自锁常量（顺序敏感 ClientHello ×2 场景
+`01e7ace0…`/`15d917f3…` + H2 首帧 `7b3ac4b0…`）、**与 `evidence/reference-chrome146-001/`
+的逐字段对照**（参照里存的 `rust_normalized_sha256 = 01425d3f…` 是排序归一化口径，与顺序
+敏感的自锁常量口径不同、数值也不同；两边共同的比对口径是逐字段对照）、以及身份相关 crate
 （`wreq`/`wreq-util`/`wreq-proto`/`btls`/`btls-sys`/`tokio-btls`/`http2`）的锁定版本。
 `cargo update` 或画像误换都会让其中至少一层变红。
 
