@@ -1,5 +1,11 @@
-*
-!artifacts/
-artifacts/*
-!artifacts/MODIFIED_FILE
-!Dockerfile
+# 镜像只需清单与 src/（include_str! 的资源在 src/assets 与 src/schema.sql 里）。
+# 测试、示例、证据与文档都不参与二进制构建：tests/ 对 ../../../../evidence 的
+# include_str! 因此不会进上下文。
+target/
+.git/
+.gitignore
+*.md
+tests/
+examples/
+compose*.yml
+.env*

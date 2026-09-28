@@ -882,3 +882,60 @@ console error 7 → 5，剩余为 React #418/Datadog/favicon 这类既有噪声�
 `route_auto_pass/denied/filtered` 与 `claim_auto` 留痕由 `tests/auto_route_acl.rs` 的
 合成回环用例覆盖（含「同一路径只记一次」与「拒绝也写审计」），Auto 在本批的角色是
 未来新路径的兜底。
+
+## 打包与部署（Docker Compose，2026-09-28）
+
+候选网关由源码构建成可部署镜像，并在 WSL Ubuntu 26.04 的 dockerd（29.1.3、overlayfs）里
+起完整栈验证。改动落在候选源码（`Dockerfile`、`.dockerignore`、`server/proxy.rs`）与
+`Mirror/chatgpt-mirror-build/`（新编排、cfbypass 修复、构建树换行属性）。
+
+### 镜像与编排
+
+| 项 | 结论 |
+|---|---|
+| 基础镜像 | `debian:trixie-slim` 两阶段。原配方的 `FROM scratch` 对 BoringSSL 不可行：`btls-sys-0.5.6/build/main.rs:594-599` 对 unix/gnu 目标固定 `cargo:rustc-link-lib=stdc++`，`ldd` 实测依赖 libstdc++/libgcc_s/libm/libc。构建阶段装 cmake/clang/libclang-dev/pkg-config，运行阶段只留 ca-certificates 与 libstdc++6 |
+| 镜像大小 | 网关 179 MB（内容 46.8 MB，二进制 39,801,176 B）；Django 324 MB；cfbypass 1.4 GB；管理界面镜像按需构建 |
+| 依赖层缓存 | 先 `COPY Cargo.toml Cargo.lock` + 占位 `src/main.rs` 编第三方依赖，再 `COPY src`。`find src -type f -exec touch {} +` 必须刷新 mtime，否则 Cargo 认为源码没变而复用占位产物——实测踩到过：镜像里装的是 2.1 MB 的 `fn main(){}`，容器起来静默退出 0。构建期守卫：产物 >5 MB 且缺必需配置时必须非零退出 |
+| 端口约定 | 镜像面 `${PORT:-40002}` 直连网关（`/`、`/backend-api/*`、`/ws-chatgpt`）；管理界面 `${ADMIN_PORT:-40003}` 走 nginx 侧车。网关**容器**端口固定 40002、只有宿主端口可配，避免侧车与 Django 的固定指向漂移 |
+| 管理界面 | 原版网关用 tower-http ServeDir 在 `/admin`、`/static` 自托管前端产物（`reverse/reports/08-reconstruction-notes.md` §3.3）；候选把 `/admin` 透传给 Django，而 Django 生产模式没有该路由，因此管理界面由 `frontend` 侧车提供：nginx 服务 `/admin/` SPA、把 `/0x/` 转给网关。镜像面不经过 nginx，SSE/WS 少一跳 |
+| 数据库 | 网关独立库 `/app/data/gateway-rust.db`（卷 `gateway-data`），刻意不复用旧网关的库；Django 沿用 `backend/db` |
+| 构建树换行 | `Mirror/chatgpt-mirror-build/.gitattributes` 固定 `*.sh`、`Dockerfile`、`docker-compose*.yml` 为 LF。Windows 上 `core.autocrlf=true` 会把 `backend/entrypoint.sh` 检出成 CRLF，容器内 dash 报 `set: Illegal option -` 并无限重启（实测） |
+
+### 容器验证中发现并修复的三处真实缺陷
+
+1. **cfbypass 取 Cookie 接口 500**：`cfbypass/app.py` 写成 `browser.version()`，而
+   playwright-python 的 `Browser.version` 是属性。每次网关预热/刷新都拿到 500，
+   网关只能报「cfbypass 拒绝请求」。已改为属性访问，并补 `tests/test_app.py` 用例
+   （桩对象只提供属性、不提供同名方法，写成调用即失败）。
+2. **cfbypass 一跳的 UA-CH 与网关声称值不一致（马脚）**：`browser.new_context(user_agent=...)`
+   会让 Playwright 连 UA-CH 元数据一起替换成它自己派生的值——Linux 容器内实测
+   `architecture` 变成 `x64`、`fullVersionList` 也不再来自浏览器，而网关声称 `x86`/146。
+   已改为：先在本地回环的 https 页（`page.route` 本地应答，不产生真实请求）读浏览器**原生**
+   UA-CH，再用 CDP `Emulation.setUserAgentOverride` 把「配置的 UA + 原生元数据」一起装上。
+   另两种更差的形态也实测过并排除：只发 `userAgent` 的 CDP 覆盖、启动参数 `--user-agent=`，
+   都会把 UA-CH 全部清空。Chromium 源码 `GetCpuArchitecture()`（POSIX 分支对 `x86_64`
+   前缀判 `x86`）与真机实测都确认 `x86` 才是原生值。
+3. **`/0x/*` 透传丢掉浏览器 cookie**：`REQUEST_HOP_BY_HOP` 把 `cookie` 当逐跳头统一删除，
+   随后 `send_upstream_with_headers` 又把 CF 白名单 cookie 写成 Django 请求的 cookie——
+   结果是浏览器带来的 `csrftoken`/session 到不了 Django，管理端登录必然
+   `403「CSRF 验证失败: CSRF cookie not set」`。已改为按路径取舍：chat 路径在
+   `send_chat_once` 里显式清掉客户端 cookie（上游只收服务端合成的 cookie 组），Django 透传
+   保留客户端 cookie 且不再叠加与本机服务无关的 CF cookie。
+
+### 本批验证
+
+- 构建：`mirror-gateway:phase1`、`mirror-django:phase1`、`mirror-cfbypass:phase1`、
+  `mirror-frontend:phase1` 四镜像全部构建成功；`docker compose config` 通过。
+- 容器冒烟：四服务起来后 gateway/django 健康；`/` 401、`/0x/user/version-cfg` 200、
+  cfbypass `/health` 200、未实现的 `/api/*` 仍是本地 404。
+- 身份对齐：`/cloudflare5s/bypass-v1` 返回 `arch=x86`、`bitness=64`、
+  `platform=Linux`、`platformVersion=''`、`Chromium 146.0.7680.177`；网关重启后
+  `prewarm failed` 与「cfbypass 一跳的浏览器身份与网关声称值不一致」两条告警均为 0。
+- 管理端：同一套「version-cfg → login → login-confirm → me」流程在直连 Django、经网关、
+  经 nginx 侧车三条路径都返回 200 且 `is_admin: true`（修复前经网关/nginx 均 403）。
+- 回归：`cargo test --locked --offline` 22 套件全过（本批新增
+  `django_passthrough_preserves_browser_cookies`，该用例在修复前确实失败）；
+  `cargo clippy --locked --offline --all-targets -- -D warnings` 通过；
+  Django `DJANGO_ENV=LOCAL manage.py test` 107 项通过。
+- 未做：真实上游写入、All-in-One 单镜像打包、TLS 终结与公网暴露策略
+  （`LOCAL_NETWORK_ACCESS`/`DJANGO_*_COOKIE_SECURE`/`CSRF_TRUSTED_ORIGINS` 由部署方设置）。

@@ -165,12 +165,29 @@ FastAPI + Playwright，通过 `uvicorn app:app --host 0.0.0.0 --port 8000` 启�
 | `user_agent_data.architecture` / `bitness` / `full_version` / `full_version_list` / `platform_version` | `navigator.userAgentData.getHighEntropyValues([...])` 的 `architecture` / `bitness` / `fullVersion` / `fullVersionList` / `platformVersion` |
 | `proxied` / `proxy_server` | 本次浏览器启动是否带代理（`proxy_server` 只含 scheme://host:port，不含用户名密码） |
 
+### UA 与 UA-CH 必须同源（2026-09-28 实测修正）
+
+取 Cookie 的会话不能用 `browser.new_context(user_agent=...)`：Playwright 会连 UA-CH 元数据
+一起替换成它自己派生的值（Linux 容器内实测 `architecture` 变成 `x64`、`fullVersionList` 也不
+再来自浏览器），而网关声称 `x86`/146；两个更差的形态（只发 `userAgent` 的 CDP 覆盖、启动参数
+`--user-agent=`）会把 UA-CH 直接清空。任一形态都会让上游同时看到「UA 说 Chrome146/Linux」与
+「提示说 x64 或干脆没有」。
+
+现在的做法：先在本地回环的 https 页读浏览器**原生** UA-CH（`page.route` 本地应答，不产生真实
+请求），再用 CDP `Emulation.setUserAgentOverride` 把「配置的 `CF_BYPASS_USER_AGENT` + 原生
+元数据」一起装上。实测线上头为 `sec-ch-ua-arch: "x86"`、`sec-ch-ua-bitness: "64"`、
+`sec-ch-ua-full-version: "146.0.7680.177"`、`sec-ch-ua-platform: "Linux"`，
+`platformVersion` 为空串，与网关身份常量逐字段一致。
+
 ### 升级清单
 
 1. 先改网关画像与常量（`identity.rs` 的 `USER_AGENT` / `FULL_VERSION`，wreq 画像同步）；
 2. 用真机重采参照（网关侧 ClientHello / H2 首帧基线，例如 `tests/identity_fingerprint.rs`）；
 3. 改本镜像 chromium 版本：Dockerfile 的 `CHROMIUM_VERSION` 与两个 snapshot 时间戳；
-4. 同步 compose 的 `CF_BYPASS_USER_AGENT`，再跑下面这个探针逐字段对照，两端摘要一致才算对齐。
+4. 同步 compose 的 `CF_BYPASS_USER_AGENT`，再跑下面这个探针逐字段对照，两端摘要一致才算对齐；
+5. 重建 cfbypass 镜像后重启网关：启动日志**不得**出现 `cfbypass prewarm failed`，也不得出现
+   「cfbypass 一跳的浏览器身份与网关声称值不一致」；二者的含义分别是「取 Cookie 接口失败」与
+   「这一跳与网关不是同一个浏览器身份」。
 
 ### 只读身份探针（`probe_identity.py`）
 

@@ -1,0 +1,6 @@
+# 本目录是 Linux 容器构建树：这些文件在容器内被 shell 直接执行或由 Docker 解析，
+# 工作区必须保持 LF。Windows 上 core.autocrlf=true 会把它们改回 CRLF，
+# 导致 backend/entrypoint.sh 在 dash 下报 "set: Illegal option -" 而无限重启。
+*.sh text eol=lf
+Dockerfile text eol=lf
+docker-compose*.yml text eol=lf

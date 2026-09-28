@@ -324,26 +324,27 @@ sha256）。**本批仍不做**：代理节点与出口分流、`CF_BYPASS_PROXY
     `accept-encoding`/`cache-control`/`pragma`；**已收敛（2026-09-24 第二批）**：按真浏览器
     实录补齐，逐跳头与握手自有头不转发，证据 `evidence/ws-handshake-headers-001.json`。
   - **第二批新增遗留（2026-09-24）**：
-    - Linux `sec-ch-ua-platform-version`：**已由源码核对闭合**（本机 WSL 装不上发行版，
-      改用源码判定）——Linux 上该 feature 默认 `stable` ⇒ `GetPlatformVersion()` 返回空串 ⇒
-      头值 `""`；Windows 参照实测 `"15.0.0"`。证据
-      `evidence/reference-chrome146-001/04-linux-platform-version.json`；运行时复核留给打包
-      批次（cfbypass 容器内 `probe_identity.py` 会回报 `platformVersion`）。
-    - cfbypass 镜像改动（Debian trixie + chromium 146.0.7680.177）与容器内 `probe_identity.py`
-      **未经构建/运行验证**（本机无 Docker）；需在有 Docker 的机器上按
-      `cfbypass/README.md` 的身份一致性一节的四步升级清单复跑。
-      网关的跨跳比对已把 `user_agent_data.platform_version` 纳入（2026-09-24），因此首次刷新
-      若出现「cfbypass 一跳的浏览器身份与网关声称值不一致」的 platform_version 告警，就是
-      镜像里 `ReduceUserAgentDataLinuxPlatformVersion` 被关掉的实证：先核对镜像 chromium
-      版本，再决定是否补 `--enable-features=ReduceUserAgentDataLinuxPlatformVersion`。
+    - Linux `sec-ch-ua-platform-version`：**已闭合（2026-09-28 运行时复核）**——Linux 上该
+      feature 默认 `stable` ⇒ `GetPlatformVersion()` 返回空串 ⇒ 头值 `""`；Windows 参照实测
+      `"15.0.0"`。证据 `evidence/reference-chrome146-001/04-linux-platform-version.json`；
+      cfbypass 容器内 `probe_identity.py` 与 `/bypass` 的 `identity.user_agent_data.platform_version`
+      都实测为空串，与网关声称值一致。
+    - cfbypass 镜像（Debian trixie + chromium 146.0.7680.177）与容器内 `probe_identity.py`：
+      **已构建并跑通（2026-09-28）**。同一批还修掉两处由此暴露的缺陷：`browser.version()` 让取
+      Cookie 接口 500；`new_context(user_agent=...)` 把 UA-CH 换成 Playwright 派生值
+      （`architecture` 从原生 `x86` 变 `x64`）。现改为 CDP 覆盖「配置 UA + 浏览器原生 UA-CH」，
+      线上头与网关常量逐字段一致，详见 COMPATIBILITY「打包与部署」。
     - cfbypass 仍为 headless-only（原版 all-in-one 是 Xvfb + headful）；需要 headful 时补
       xvfb/xauth 与显示管理。
     - 代理出口停用（wreq 走代理关闭 ALPN）；恢复需要保留 ALPN 的代理实现或透明出口。
     - JS 覆盖不涉及语言/时区/字体/WebGL/Canvas/Worker/子框架：这些保持宿主真值，属已知边界。
-  - 打包面：`Dockerfile` 的 `FROM scratch` 与 musl/zig 静态路线对 BoringSSL 不可行，
-    需改成 Debian + glibc 基础镜像，构建阶段要 cmake/clang（本批不改制品）。
-  - WSL 路径未打通（本机 WSL 需要重启后安装发行版），本批在本机 Windows 工具链完成
-    编译与回归；Linux 内编译留给制品批次。
+  - 打包面：**已闭环（2026-09-28）**。`Dockerfile` 改成 `debian:trixie-slim` 两阶段
+    （BoringSSL 需要 cmake/clang/libclang 构建、运行期需要 libstdc++），四镜像构建成功并起
+    完整栈验证；编排、端口约定与残余见 COMPATIBILITY「打包与部署」。
+  - WSL 路径：**已打通（2026-09-28）**。Ubuntu 26.04 内 `cargo test`（22 套件）与
+    `cargo clippy --all-targets -- -D warnings` 全过，Docker 构建与运行也都在 WSL 内完成。
+  - 尚未做的部署面：All-in-One 单镜像打包、TLS 终结与公网暴露策略、`/admin` 由网关本体自托管
+    （候选仍按既有实现把 `/admin` 透传给 Django，管理界面走 nginx 侧车）。
 - 初次登录只调 `me`，原版登录同样先调 `accounts/check`（COMPATIBILITY「未完成/显式差异」）。
 - 管理非空库 `gateway_sessions` 自增 ID 偏移与上游调用序列差异、`login extra_cookies` 严格提取契约。
 - 审核 provider 的 5 个扩展响应用例（已列非目标，保留 503 门禁）。

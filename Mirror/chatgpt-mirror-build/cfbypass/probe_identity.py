@@ -138,6 +138,9 @@ HEADERS_FRAME = 0x1
 WINDOW_UPDATE_FRAME = 0x8
 FLAG_ACK = 0x1
 FLAG_END_HEADERS = 0x4
+# HEADERS 的 PADDED/PRIORITY 会在头块前后插入固定字节（RFC 7540 §6.2）。
+FLAG_PADDED = 0x8
+FLAG_PRIORITY = 0x20
 
 
 class ProbeError(RuntimeError):
@@ -320,6 +323,8 @@ def with_summary_hash(summary: dict[str, object]) -> dict[str, object]:
 
 
 def hpack_int(block: bytes, index: int, prefix_bits: int) -> tuple[int, int]:
+    if index >= len(block):
+        raise ProbeError(f"HPACK 整数越界：index={index}, len={len(block)}")
     mask = 0xFF >> (8 - prefix_bits)
     value = block[index] & mask
     index += 1
@@ -339,7 +344,10 @@ def hpack_int(block: bytes, index: int, prefix_bits: int) -> tuple[int, int]:
 def hpack_skip_string(block: bytes, index: int) -> int:
     """跳过字符串字面量：长度前缀不受 Huffman 编码影响，因此不需要 Huffman 表。"""
     length, index = hpack_int(block, index, 7)
-    return index + length
+    end = index + length
+    if end > len(block):
+        raise ProbeError(f"HPACK 字符串越界：end={end}, len={len(block)}")
+    return end
 
 
 def hpack_name(index: int) -> str:
@@ -447,7 +455,13 @@ def capture_http2(conn: socket.socket, ssl_context: ssl.SSLContext, timeout: flo
                 entry["end_headers"] = bool(flags & FLAG_END_HEADERS)
                 # 头块被 CONTINUATION 拆开时这一帧只是片段，解出来的名字没有意义。
                 if flags & FLAG_END_HEADERS:
-                    names = decode_hpack_names(payload)
+                    # Chrome 的首条 HEADERS 带 PRIORITY：前 5 字节是
+                    # E+Stream Dependency(4) + Weight(1)，不是头块片段。
+                    # 实测不跳过这 5 字节会把优先权字段当成 HPACK 解析。
+                    block = payload[5:] if flags & FLAG_PRIORITY else payload
+                    if flags & FLAG_PADDED:
+                        raise ProbeError("首条 HEADERS 带 PADDED：探针尚未解析该形态，需先补实现")
+                    names = decode_hpack_names(block)
                     result["request_pseudo_header_order"] = [name for name in names if name.startswith(":")]
                     result["request_header_names_resolved"] = names
                 break
@@ -599,7 +613,9 @@ def collect(browser_path: str, timeout: float) -> dict[str, object]:
                 chromium_sandbox=False,
             )
             try:
-                result["browser_version"] = browser.version()
+                # Playwright 的 `Browser.version` 是属性，不是方法（写成 version() 会在首次
+                # 运行就抛 TypeError；容器内探针因本机无 Docker 一直没被执行过）。
+                result["browser_version"] = browser.version
                 # 自签证书不参与身份比对，这里显式忽略证书错误以便完成握手。
                 context = browser.new_context(ignore_https_errors=True, locale="zh-CN")
                 page = context.new_page()

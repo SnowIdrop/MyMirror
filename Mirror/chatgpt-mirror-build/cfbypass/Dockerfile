@@ -33,11 +33,14 @@ RUN set -eux; \
     rm -rf /var/lib/apt/lists/*
 
 # 之后所有 apt 包一律来自固定快照：主仓提供 chromium 的运行依赖，安全仓提供被钉死的本体。
+# snapshot.debian.org 是冻结归档，各 Release 文件带的是当时签发的 Valid-Until，早已过期；
+# 必须关掉有效期检查，否则 apt-get update 直接报
+# "Release file ... is expired"（本镜像首次构建时即踩到）。
 RUN set -eux; \
     rm -f /etc/apt/sources.list /etc/apt/sources.list.d/debian.sources; \
     printf 'deb https://snapshot.debian.org/archive/debian/%s trixie main\n' "$DEBIAN_SNAPSHOT" > /etc/apt/sources.list.d/snapshot.list; \
     printf 'deb https://snapshot.debian.org/archive/debian-security/%s trixie-security main\n' "$DEBIAN_SECURITY_SNAPSHOT" >> /etc/apt/sources.list.d/snapshot.list; \
-    apt-get update; \
+    apt-get -o Acquire::Check-Valid-Until=false update; \
     apt-get install -y --no-install-recommends \
         "chromium=${CHROMIUM_VERSION}" \
         openssl \
