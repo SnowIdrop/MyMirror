@@ -124,10 +124,6 @@ const PROXY: &[Prefix] = &[
 /// 有意不代理的前缀与文案。保持 503 状态码，但按类别给出可行动信息，
 /// 而不是把「未开放」和「上游故障」混成同一句话。
 const REFUSED: &[(&str, &str)] = &[
-    (
-        "/external/",
-        "外链代理尚未开放：原版按上游主机白名单转发，白名单内容未还原",
-    ),
     ("/v1/", "OpenAI 兼容接口（/v1/chat/completions）尚未开放"),
     ("/vendor-script/", "第三方脚本代理不在本候选范围"),
     ("/vendor-static", "第三方脚本代理不在本候选范围"),
@@ -143,6 +139,9 @@ const REFUSED: &[(&str, &str)] = &[
 pub(super) enum Route {
     /// 反代到固定上游：无账号凭据、拒绝重定向与非 2xx、拒绝 `text/html` 正文。
     Proxy(url::Url),
+    /// 外链代理（`/external/<scheme>/<host>/<path>`）：目标由客户端给出，因此
+    /// 解析与公网校验在 `server/external.rs` 里按请求逐个做。
+    External,
     /// 有意不代理：返回固定文案的 503，不接触上游。
     Refused(&'static str),
 }
@@ -150,6 +149,11 @@ pub(super) enum Route {
 /// 命中策略表则返回处置方式；未命中返回 None，由其它分支（页面、匿名通道、
 /// 已登录业务面、内部媒体代理）决定。
 pub(super) fn resolve(config: &Config, path: &str, query: Option<&str>) -> Option<Route> {
+    // 外链代理：目标是客户端指定的第三方地址，语义（公网校验、无凭据、拒绝
+    // 重定向与 HTML）全在下面这个模块里，不在这里解析。
+    if path.starts_with("/external/") {
+        return Some(Route::External);
+    }
     // `/ab/*` 的上游来自配置（原版 CHATGPT_AB_BASE_URL），未配置时给出可行动文案。
     if let Some(rest) = strip_local(path, "/ab/") {
         return Some(match (ab_base(config), safe_remainder(rest)) {
@@ -292,6 +296,8 @@ pub(super) fn disposition(prefix: &str) -> Option<Disposition> {
         || PROXY
             .iter()
             .any(|entry| strip_local(prefix, entry.local).is_some())
+        // 外链代理在 `server/external.rs` 里逐个请求校验目标，属于已处理。
+        || strip_local(prefix, "/external/").is_some()
     {
         return Some(Disposition::Handled);
     }
@@ -359,7 +365,7 @@ mod tests {
         for target in [
             "/", "/api/", "/ces/", "/public-api/", "/realtime/", "/backend-api/",
             "/backend-api/estuary/", "/backend-anon/", "/assets/", "/cdn/", "/cdn/assets/",
-            "/internal-upstream/",
+            "/internal-upstream/", "/external/",
         ] {
             assert!(
                 matches!(disposition(target), Some(Disposition::Handled)),
@@ -371,7 +377,6 @@ mod tests {
             "/vendor-script/",
             "/mapbox-events/events/",
             "/v1/",
-            "/external/",
             "/cloudflare-insights/",
             "/vendor-batch/collect",
             "/connector-deep-research",

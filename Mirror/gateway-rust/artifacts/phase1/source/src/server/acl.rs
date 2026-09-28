@@ -169,8 +169,9 @@ pub(super) enum Verdict {
     },
     /// 账号级路径，不参与归属判权。
     Unscoped,
-    /// 未分类：候选制品没有该路径的归属语义，拒绝而不是猜。
-    Unclassified,
+    /// 未显式分类：按请求里出现的资源 id 判定（上游前端新增路由时不需要再登记）。
+    /// `claim` 为真表示这是写方法，2xx 响应里的新资源 id 归当前用户。
+    Auto { claim: bool, ids: Vec<String> },
 }
 
 pub(super) struct Scoped {
@@ -182,7 +183,13 @@ pub(super) struct Scoped {
 }
 
 /// 分类：路径 + 方法 + 请求体 + 归属头。
-pub(super) fn classify(method: &Method, path: &str, headers: &HeaderMap, body: &[u8]) -> Verdict {
+pub(super) fn classify(
+    method: &Method,
+    path: &str,
+    query: Option<&str>,
+    headers: &HeaderMap,
+    body: &[u8],
+) -> Verdict {
     let Some(rest) = path.strip_prefix("/backend-api") else {
         // 页面、匿名通道与公共前缀由 `open_path` 决定可达性，这里没有归属语义。
         return Verdict::Unscoped;
@@ -479,8 +486,48 @@ pub(super) fn classify(method: &Method, path: &str, headers: &HeaderMap, body: &
     if UNOWNED.contains(&head) {
         Verdict::Unscoped
     } else {
-        Verdict::Unclassified
+        // 未显式登记的前缀不再按路径形状拒绝：只要请求里出现的资源 id 都
+        // 属于当前会话就放行，写方法的成功响应再按响应 id 登记新资源。
+        Verdict::Auto {
+            claim: !read,
+            ids: auto_ids(rest, query, body),
+        }
     }
+}
+
+/// 未分类路径的 id 材料：路径里 UUID 形态的段、query 与请求体顶层的 `*_id` 键。
+/// 只认「一定不是字面量」的形态（UUID 或 `*_id` 键名），避免把普通路径段
+/// 当成资源 id 误判。
+fn auto_ids(path: &str, query: Option<&str>, body: &[u8]) -> Vec<String> {
+    let mut ids: Vec<String> = Vec::new();
+    for segment in path.split('/') {
+        if is_uuid(segment) {
+            ids.push(segment.to_owned());
+        }
+    }
+    for pair in query.unwrap_or("").split('&') {
+        if let Some((key, value)) = pair.split_once('=') {
+            if key.ends_with("_id") {
+                ids.push(value.to_owned());
+            }
+        }
+    }
+    if let Ok(value) = serde_json::from_slice::<Value>(body) {
+        if let Some(object) = value.as_object() {
+            for (key, value) in object {
+                if !key.ends_with("_id") {
+                    continue;
+                }
+                if let Some(value) = value.as_str() {
+                    ids.push(value.to_owned());
+                }
+            }
+        }
+    }
+    ids.retain(|id| is_resource_id(id));
+    let mut seen = HashSet::new();
+    ids.retain(|id| seen.insert(id.clone()));
+    ids
 }
 
 /// 归属上下文头：前端在项目内创建/读取时携带 `chatgpt-project-id`
@@ -681,13 +728,33 @@ pub(super) fn visitor_denied() -> Response {
     .into_response()
 }
 
-/// 未分类路由：候选制品没有该路径的归属语义，拒绝而不是猜。
-pub(super) fn unclassified(path: &str) -> Response {
-    tracing::warn!(module = "gateway", path = %path, "未分类的已登录业务路径被拒绝");
+/// 未显式分类的路径带着账号下查不到的 id：保持「未登记资源不可用」不变量，
+/// 拒绝并给出两条可行动出路（管理员认领，或把该路径登记为账号级）。
+pub(super) fn unclassified_id() -> Response {
     error_code(
         StatusCode::SERVICE_UNAVAILABLE,
-        "该路径尚未完成归属分类，候选制品未启用",
-        "acl_unclassified_route",
+        "该路径携带的资源 id 尚未登记：管理员可认领该资源，或把该路径登记为账号级前缀",
+        "acl_unclassified_id",
+    )
+    .into_response()
+}
+
+/// 未显式分类的响应正文里出现了他人资源：不裁剪也不透传，整体拒绝。
+pub(super) fn foreign_in_response() -> Response {
+    error_code(
+        StatusCode::SERVICE_UNAVAILABLE,
+        "上游响应包含不属于当前用户的资源：该路径需要显式登记归属语义",
+        "acl_foreign_resource_in_response",
+    )
+    .into_response()
+}
+
+/// 未显式分类的 JSON 响应超过可过滤上限：不做部分过滤，整体拒绝。
+pub(super) fn response_too_large() -> Response {
+    error_code(
+        StatusCode::BAD_GATEWAY,
+        "上游响应过大，无法完成归属过滤：该路径需要显式登记为账号级前缀",
+        "acl_response_too_large",
     )
     .into_response()
 }
@@ -706,47 +773,64 @@ pub(super) fn generation_busy() -> Response {
 // 创建响应登记
 // ---------------------------------------------------------------------------
 
-/// 创建响应里可能出现的资源 id 字段名，按资源族区分。
-fn creation_keys(kind: ResourceKind) -> &'static [&'static str] {
-    match kind {
-        ResourceKind::Conversation => &["conversation_id"],
-        ResourceKind::Project => &["project_id"],
-        ResourceKind::File => &["file_id", "library_file_id"],
-        ResourceKind::Image => &["image_id", "gen_id"],
-        ResourceKind::Task => &["task_id"],
-        ResourceKind::Connector => &["connector_id"],
-    }
-}
+/// 响应正文与集合条目里的资源 id 字段名 → 资源族。创建登记、Auto 路径的响应
+/// 登记与集合过滤共用同一张表，键名不会在两个方向漂移。
+const RESOURCE_ID_KEYS: &[(&str, ResourceKind)] = &[
+    ("conversation_id", ResourceKind::Conversation),
+    ("project_id", ResourceKind::Project),
+    ("file_id", ResourceKind::File),
+    ("library_file_id", ResourceKind::File),
+    ("image_id", ResourceKind::Image),
+    ("gen_id", ResourceKind::Image),
+    ("task_id", ResourceKind::Task),
+    ("connector_id", ResourceKind::Connector),
+];
 
-/// 创建响应的扫描器：按块寻找 `<键>":"<id>`，尾部保留重叠，保证 id 跨块时仍能
-/// 命中；同一个 id 只登记一次。
+/// 响应正文扫描器：按块寻找 `<键>":"<id>`，尾部保留重叠，保证 id 跨块时仍能
+/// 命中；同一个 id 只出现一次。
 #[derive(Default)]
-struct CreationScanner {
+struct IdScanner {
     tail: Vec<u8>,
-    claimed: std::collections::HashSet<String>,
-    keys: Vec<String>,
+    seen: HashSet<String>,
+    keys: Vec<(String, ResourceKind)>,
 }
 
-impl CreationScanner {
-    fn new(kind: ResourceKind) -> Self {
-        let mut keys: Vec<String> = creation_keys(kind)
+impl IdScanner {
+    /// 单族扫描（创建响应登记）：族专用键 + 兜底的 `id`。
+    fn for_kind(kind: ResourceKind) -> Self {
+        let mut keys: Vec<(String, ResourceKind)> = RESOURCE_ID_KEYS
             .iter()
-            .map(|key| format!("\"{key}\":\""))
+            .filter(|(_, key_kind)| *key_kind == kind)
+            .map(|(key, key_kind)| (format!("\"{key}\":\""), *key_kind))
             .collect();
         // 部分创建响应只回 `id`；它排在族专用键之后，命中的 id 也一并登记。
-        keys.push("\"id\":\"".to_string());
+        keys.push(("\"id\":\"".to_string(), kind));
         Self {
             keys,
             ..Self::default()
         }
     }
 
-    /// 扫描一个正文块，返回本块内新识别到的资源 id（跨块与同块都去重）。
-    fn push(&mut self, chunk: &[u8]) -> Vec<String> {
+    /// 全族扫描（未分类路径的响应登记）：未显式分类的路径可能返回任意资源族。
+    fn for_all_kinds() -> Self {
+        let mut keys: Vec<(String, ResourceKind)> = RESOURCE_ID_KEYS
+            .iter()
+            .map(|(key, kind)| (format!("\"{key}\":\""), *kind))
+            .collect();
+        // 裸 `id` 无法区分资源族；会话是唯一带 UUID 约束的族，按会话登记。
+        keys.push(("\"id\":\"".to_string(), ResourceKind::Conversation));
+        Self {
+            keys,
+            ..Self::default()
+        }
+    }
+
+    /// 扫描一个正文块，返回本块内新识别到的 (资源族, id)（跨块与同块都去重）。
+    fn push(&mut self, chunk: &[u8]) -> Vec<(ResourceKind, String)> {
         let mut window = std::mem::take(&mut self.tail);
         window.extend_from_slice(chunk);
-        let mut found: Vec<String> = Vec::new();
-        for marker in &self.keys {
+        let mut found: Vec<(ResourceKind, String)> = Vec::new();
+        for (marker, kind) in &self.keys {
             let needle = marker.as_bytes();
             let mut cursor = 0;
             while let Some(offset) = find(&window[cursor..], needle) {
@@ -761,8 +845,8 @@ impl CreationScanner {
                     break;
                 };
                 if let Ok(id) = std::str::from_utf8(&id[..end]) {
-                    if is_resource_id(id) && self.claimed.insert(id.to_owned()) {
-                        found.push(id.to_owned());
+                    if is_resource_id(id) && self.seen.insert(id.to_owned()) {
+                        found.push((*kind, id.to_owned()));
                     }
                 }
                 cursor = start;
@@ -797,7 +881,7 @@ pub(super) fn creation_body(
     let identity = identity.clone();
     let account_id = account_id.to_owned();
     let recognized = Arc::new(AtomicU64::new(0));
-    let scanner = CreationScanner::new(kind);
+    let scanner = IdScanner::for_kind(kind);
     // 只有拿到完整 id 才推送正文：登记必须发生在客户端看到该 id 之前。
     let stream = futures_util::stream::unfold(
         (body.into_data_stream(), scanner),
@@ -811,7 +895,7 @@ pub(super) fn creation_body(
             async move {
                 match data.next().await {
                     Some(Ok(chunk)) => {
-                        for upstream_id in scanner.push(&chunk) {
+                        for (_, upstream_id) in scanner.push(&chunk) {
                             recognized.fetch_add(1, Ordering::SeqCst);
                             let key = ResourceKey::new(&account_id, kind, &upstream_id);
                             let receipt = key.ok().map(|resource| ConfirmedCreation {
@@ -1112,6 +1196,237 @@ fn empty_collection(value: Value) -> Value {
 }
 
 // ---------------------------------------------------------------------------
+// 未显式分类的路径（Auto）：按 id 判定与响应裁剪
+// ---------------------------------------------------------------------------
+
+/// Auto 路径的请求侧判定结果。
+pub(super) enum AutoDecision {
+    /// 请求里出现的资源 id 全部属于当前会话（或没有 id）。
+    Allowed,
+    /// 存在他人资源 id：不接触上游，按「不存在」拒绝。
+    Foreign,
+    /// 存在账号下查不到的 id：未登记资源不可用，拒绝并提示两条出路。
+    Unknown,
+}
+
+/// 请求侧判权：Auto 路径不像六族那样有固定语义，因此逐个 id 查登记与受众；
+/// 只要有一个 id 不属于当前会话就整体拒绝（不部分放行）。
+pub(super) async fn authorize_auto(
+    app: &App,
+    identity: &Identity,
+    account_id: &str,
+    ids: &[String],
+    method: &Method,
+) -> Result<AutoDecision> {
+    // 动作按方法推导，与六族路径同一套语义：读方法查读权限，DELETE 查删除，
+    // 其余按修改。
+    let action = if matches!(*method, Method::GET | Method::HEAD) {
+        Action::Read
+    } else if *method == Method::DELETE {
+        Action::Delete
+    } else {
+        Action::Modify
+    };
+    let actor = RequestIdentity::from_session(identity.clone());
+    let db = app.db.lock().await;
+    for id in ids {
+        match crate::resource_acl::auto_authority(&db.conn, &actor, account_id, id, action)? {
+            crate::resource_acl::AutoAuthority::Visible(_) => {}
+            crate::resource_acl::AutoAuthority::Foreign => return Ok(AutoDecision::Foreign),
+            crate::resource_acl::AutoAuthority::Unknown => return Ok(AutoDecision::Unknown),
+        }
+    }
+    Ok(AutoDecision::Allowed)
+}
+
+/// 六个资源族在当前会话下可见的 id 集合；Auto 响应过滤与创建登记共用一份视图，
+/// 避免逐条查库。
+pub(super) async fn visible_sets(
+    app: &App,
+    session: &Session,
+) -> Result<HashMap<ResourceKind, std::collections::BTreeSet<String>>> {
+    let mut sets = HashMap::new();
+    let Some((identity, account_id)) = identity_of(session) else {
+        return Ok(sets);
+    };
+    let actor = RequestIdentity::from_session(identity.clone());
+    let db = app.db.lock().await;
+    for kind in [
+        ResourceKind::Conversation,
+        ResourceKind::Project,
+        ResourceKind::File,
+        ResourceKind::Image,
+        ResourceKind::Task,
+        ResourceKind::Connector,
+    ] {
+        sets.insert(
+            kind,
+            crate::resource_acl::visible_ids(&db.conn, &actor, account_id, kind)?,
+        );
+    }
+    Ok(sets)
+}
+
+/// 对象里的资源 id：族专用键必看，裸 `id` 只在 UUID 形态时参与（否则
+/// `id: "gpt-5"` 这类账号级清单会被当成资源裁空）。
+fn object_ids(object: &Map<String, Value>) -> Vec<(ResourceKind, String)> {
+    let mut ids = Vec::new();
+    for (key, kind) in RESOURCE_ID_KEYS {
+        if let Some(id) = object.get(*key).and_then(Value::as_str) {
+            if is_resource_id(id) {
+                ids.push((*kind, id.to_owned()));
+            }
+        }
+    }
+    if let Some(id) = object.get("id").and_then(Value::as_str) {
+        if is_uuid(id) {
+            ids.push((ResourceKind::Conversation, id.to_owned()));
+        }
+    }
+    ids
+}
+
+/// 这些 id 是否全部可见；没有任何可识别 id 时恒为真（不参与过滤）。
+fn ids_visible(
+    ids: &[(ResourceKind, String)],
+    visible: &HashMap<ResourceKind, std::collections::BTreeSet<String>>,
+) -> bool {
+    ids.iter()
+        .all(|(kind, id)| visible.get(kind).is_some_and(|known| known.contains(id)))
+}
+
+/// 条目是否可见：非对象（数组里混入标量）不参与过滤。
+fn entry_visible(
+    item: &Value,
+    visible: &HashMap<ResourceKind, std::collections::BTreeSet<String>>,
+) -> bool {
+    match item.as_object() {
+        Some(object) => ids_visible(&object_ids(object), visible),
+        None => true,
+    }
+}
+
+/// Auto 响应过滤：顶层数组按可见性裁剪，已知信封同步 `total`；顶层对象自身
+/// 提到不可见 id 时整体拒绝（返回 None）。返回值第二项表示是否真的裁剪过，
+/// 没有裁剪时调用方可以原样回传上游字节。
+pub(super) fn filter_auto_json(
+    value: Value,
+    visible: &HashMap<ResourceKind, std::collections::BTreeSet<String>>,
+) -> Option<(Value, bool)> {
+    match value {
+        Value::Object(mut object) => {
+            // 顶层单对象：`{"conversation_id": "..."}` 这类响应不允许携带他人资源。
+            if !ids_visible(&object_ids(&object), visible) {
+                return None;
+            }
+            let mut changed = false;
+            let keys: Vec<String> = object.keys().cloned().collect();
+            for key in keys {
+                let Some(Value::Array(items)) = object.get(&key) else {
+                    continue;
+                };
+                let listed = items.len();
+                let filtered: Vec<Value> = items
+                    .iter()
+                    .filter(|item| entry_visible(item, visible))
+                    .cloned()
+                    .collect();
+                if filtered.len() == listed {
+                    continue;
+                }
+                let length = filtered.len();
+                object.insert(key.clone(), Value::Array(filtered));
+                changed = true;
+                if COLLECTION_ENVELOPES.contains(&key.as_str()) && object.contains_key("total") {
+                    object.insert("total".to_string(), json!(length));
+                }
+            }
+            Some((Value::Object(object), changed))
+        }
+        Value::Array(items) => {
+            let listed = items.len();
+            let filtered: Vec<Value> = items
+                .into_iter()
+                .filter(|item| entry_visible(item, visible))
+                .collect();
+            let changed = filtered.len() != listed;
+            Some((Value::Array(filtered), changed))
+        }
+        other => Some((other, false)),
+    }
+}
+
+/// Auto 路径的成功响应登记：把正文里出现的资源 id 记到当前会话名下，已登记
+/// 的归属一律不动（`claim_if_absent`）。
+pub(super) async fn claim_auto(
+    app: &App,
+    identity: &Identity,
+    account_id: &str,
+    found: Vec<(ResourceKind, String)>,
+) {
+    let actor = RequestIdentity::from_session(identity.clone());
+    let db = app.db.lock().await;
+    for (kind, upstream_id) in found {
+        let Ok(key) = ResourceKey::new(account_id, kind, &upstream_id) else {
+            continue;
+        };
+        match crate::resource_acl::claim_if_absent(&db.conn, &actor, &key) {
+            Ok(true) => tracing::info!(
+                module = "gateway",
+                kind = kind.as_str(),
+                upstream_id = %upstream_id,
+                "未分类路径响应里的新资源已登记归属"
+            ),
+            Ok(false) => {}
+            Err(cause) => tracing::warn!(
+                module = "gateway",
+                error = %cause,
+                "未分类路径的资源登记失败"
+            ),
+        }
+    }
+}
+
+/// 已缓冲的成功响应（JSON）：扫描正文里的资源 id 并登记给当前会话。
+pub(super) async fn claim_auto_buffer(app: &App, session: &Session, body: &[u8]) {
+    let Some((identity, account_id)) = identity_of(session) else {
+        return;
+    };
+    let found = IdScanner::for_all_kinds().push(body);
+    claim_auto(app, identity, account_id, found).await;
+}
+
+/// Auto 路径的流式响应正文：与创建响应同规则——含 id 的块交给客户端之前先登记。
+pub(super) fn auto_claim_body(app: Shared, session: &Session, body: Body) -> Body {
+    let Some((identity, account_id)) = identity_of(session) else {
+        return body;
+    };
+    let identity = identity.clone();
+    let account_id = account_id.to_owned();
+    let scanner = IdScanner::for_all_kinds();
+    let stream = futures_util::stream::unfold(
+        (body.into_data_stream(), scanner),
+        move |(mut data, mut scanner)| {
+            let app = app.clone();
+            let identity = identity.clone();
+            let account_id = account_id.clone();
+            async move {
+                match data.next().await {
+                    Some(Ok(chunk)) => {
+                        let found = scanner.push(&chunk);
+                        claim_auto(&app, &identity, &account_id, found).await;
+                        Some((Ok(chunk), (data, scanner)))
+                    }
+                    Some(Err(cause)) => Some((Err(cause), (data, scanner))),
+                    None => None,
+                }
+            }
+        },
+    );
+    Body::from_stream(stream)
+}
+
+// ---------------------------------------------------------------------------
 // 生成租约与撤权中止
 // ---------------------------------------------------------------------------
 
@@ -1123,6 +1438,63 @@ pub(super) struct Runtime {
     leases: Mutex<HashSet<String>>,
     streams: Mutex<Vec<StreamEntry>>,
     next_stream: AtomicU64,
+    /// 未显式分类路径的首次命中记录：`<方法> <路径>`，上限见 [`ROUTE_LOG_LIMIT`]。
+    routes: Mutex<HashSet<String>>,
+}
+
+/// 未分类路径的首次命中表上限。上游前端每次发版都会带来一批新路径，这张表
+/// 只用于「第一次见到就记一笔」，不是路由白名单，因此满了以后只记日志。
+const ROUTE_LOG_LIMIT: usize = 1024;
+
+/// 未分类路径的命中次数：只有第一次需要写日志与审计。
+#[derive(Debug, Clone, Copy)]
+pub(super) enum RouteSighting {
+    /// 第一次见到：写日志 + 审计。
+    First,
+    /// 第一次见到但表已满：只写日志（不再无限增长）。
+    Overflow,
+    /// 之前见过：静默。
+    Repeat,
+}
+
+/// 一次请求的未分类路径记录：判定与响应阶段共用同一个键与命中次数。
+pub(super) struct RouteWatch {
+    key: String,
+    sighting: RouteSighting,
+}
+
+impl RouteWatch {
+    /// 记录本请求的处理结果：首次命中写 warn 日志，`First` 额外写一条审计。
+    pub(super) async fn note(self, app: &App, session: &Session, action: &'static str) {
+        match self.sighting {
+            RouteSighting::Repeat => return,
+            RouteSighting::Overflow => {
+                tracing::warn!(
+                    module = "gateway",
+                    route = %self.key,
+                    "未分类路径首次命中但记录表已满：只记日志"
+                );
+                return;
+            }
+            RouteSighting::First => {}
+        }
+        tracing::warn!(
+            module = "gateway",
+            route = %self.key,
+            action,
+            "未分类路径首次命中：上游前端可能新增了路由"
+        );
+        let Some((identity, account_id)) = identity_of(session) else {
+            return;
+        };
+        let actor = RequestIdentity::from_session(identity.clone());
+        let db = app.db.lock().await;
+        if let Err(cause) =
+            crate::resource_acl::audit_route(&db.conn, &actor, account_id, action, &self.key)
+        {
+            tracing::warn!(module = "gateway", error = %cause, "未分类路径审计写入失败");
+        }
+    }
 }
 
 struct StreamEntry {
@@ -1275,6 +1647,21 @@ impl Drop for StreamGuard {
     }
 }
 
+/// 登记一次未分类路径的命中：只有 `<方法> <路径>` 第一次出现时需要留痕。
+pub(super) fn observe_route(runtime: &Runtime, method: &Method, path: &str) -> RouteWatch {
+    let key = format!("{method} {path}");
+    let mut routes = runtime.routes.lock().expect("路径表中毒");
+    let sighting = if routes.contains(&key) {
+        RouteSighting::Repeat
+    } else if routes.len() >= ROUTE_LOG_LIMIT {
+        RouteSighting::Overflow
+    } else {
+        routes.insert(key.clone());
+        RouteSighting::First
+    };
+    RouteWatch { key, sighting }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1282,7 +1669,12 @@ mod tests {
     const CONVERSATION: &str = "6ab350c7-5d3c-83ea-be1f-a87b536c1c6c";
 
     fn class(path: &str, method: Method) -> Verdict {
-        classify(&method, path, &HeaderMap::new(), b"")
+        classify(&method, path, None, &HeaderMap::new(), b"")
+    }
+
+    /// 测试辅助：按带 query 与请求体的真实形态分类。
+    fn class_with(path: &str, method: Method, query: Option<&str>, body: &[u8]) -> Verdict {
+        classify(&method, path, query, &HeaderMap::new(), body)
     }
 
     fn scoped(verdict: Verdict) -> Scoped {
@@ -1296,6 +1688,14 @@ mod tests {
         /// 测试辅助：判定是否为账号级路径。
         fn into_unscoped(self) -> bool {
             matches!(self, Verdict::Unscoped)
+        }
+
+        /// 测试辅助：判定是否为「未显式分类、按 id 判定」的路径。
+        fn into_auto(self) -> Option<(bool, Vec<String>)> {
+            match self {
+                Verdict::Auto { claim, ids } => Some((claim, ids)),
+                _ => None,
+            }
         }
     }
 
@@ -1323,6 +1723,7 @@ mod tests {
         let verdict = classify(
             &Method::POST,
             "/backend-api/conversation",
+            None,
             &HeaderMap::new(),
             body.as_bytes(),
         );
@@ -1332,6 +1733,7 @@ mod tests {
             classify(
                 &Method::POST,
                 "/backend-api/f/conversation",
+                None,
                 &HeaderMap::new(),
                 b""
             ),
@@ -1344,6 +1746,7 @@ mod tests {
             classify(
                 &Method::POST,
                 "/backend-api/sidebar/conversation",
+                None,
                 &HeaderMap::new(),
                 b"{}"
             ),
@@ -1427,9 +1830,9 @@ mod tests {
         ));
     }
 
-    /// 账号级前缀放行，未分类路径拒绝；两者都不能静默互换。
+    /// 账号级前缀放行；未显式登记的路径走 id 判定，两者都不能静默互换。
     #[test]
-    fn account_level_prefixes_are_explicit_and_unknown_paths_are_refused() {
+    fn account_level_prefixes_are_explicit_and_new_paths_take_the_id_route() {
         for path in [
             "/backend-api/me",
             "/backend-api/models",
@@ -1446,10 +1849,37 @@ mod tests {
                 "{path} 应为账号级路径"
             );
         }
-        assert!(matches!(
-            class("/backend-api/brand-new-surface/v2", Method::POST),
-            Verdict::Unclassified
-        ));
+        // 前端新路由：没有 id 就直接放行，不需要再登记前缀。
+        let (claim, ids) = class("/backend-api/brand-new-surface/v2", Method::POST)
+            .into_auto()
+            .expect("未登记前缀应当走 id 判定");
+        assert!(claim, "写方法需要按响应登记新资源");
+        assert!(ids.is_empty(), "无 id 的路径不参与判权：{ids:?}");
+        // 读方法不登记。
+        let (claim, _) = class("/backend-api/brand-new-surface/v2", Method::GET)
+            .into_auto()
+            .expect("未登记前缀应当走 id 判定");
+        assert!(!claim);
+        // 路径段里的 UUID、query 与请求体里的 `*_id` 都要被识别。
+        let (_, ids) = class_with(
+            &format!("/backend-api/brand-new-surface/{CONVERSATION}"),
+            Method::GET,
+            Some("file_id=file-0001&limit=20"),
+            br#"{"project_id":"proj-0001","title":"x"}"#,
+        )
+        .into_auto()
+        .expect("未登记前缀应当走 id 判定");
+        assert_eq!(ids, vec![CONVERSATION, "file-0001", "proj-0001"]);
+        // 形态不合法的值不是资源 id：不参与判权。
+        let (_, ids) = class_with(
+            "/backend-api/brand-new-surface/v2",
+            Method::POST,
+            Some("item_id=1"),
+            br#"{"name":"proj"}"#,
+        )
+        .into_auto()
+        .expect("未登记前缀应当走 id 判定");
+        assert!(ids.is_empty(), "短值/非 `_id` 键不应参与：{ids:?}");
         // 非业务面路径没有归属语义。
         assert!(matches!(
             class("/backend-anon/models", Method::GET),
@@ -1460,51 +1890,147 @@ mod tests {
     /// 创建响应扫描：id 跨块、重复块、同块重复都只登记一次。
     #[test]
     fn creation_scanner_finds_ids_across_chunks() {
-        let mut scanner = CreationScanner::new(ResourceKind::Project);
+        let mut scanner = IdScanner::for_kind(ResourceKind::Project);
         assert!(scanner.push(b"{\"project_id\":\"").is_empty());
-        assert_eq!(scanner.push(b"abc-123\",\"kind\":\"topic\"}"), vec!["abc-123"]);
+        assert_eq!(
+            scanner.push(b"abc-123\",\"kind\":\"topic\"}"),
+            vec![(ResourceKind::Project, "abc-123".to_owned())]
+        );
         assert!(scanner
             .push(format!("{{\"project_id\":\"{}\"}}", "abc-123").as_bytes())
             .is_empty());
         // 只有 `id` 的信封同样能认领。
-        let mut scanner = CreationScanner::new(ResourceKind::Task);
-        assert_eq!(scanner.push(b"{\"id\":\"task-77\"}"), vec!["task-77"]);
-        let mut scanner = CreationScanner::new(ResourceKind::Conversation);
+        let mut scanner = IdScanner::for_kind(ResourceKind::Task);
+        assert_eq!(
+            scanner.push(b"{\"id\":\"task-77\"}"),
+            vec![(ResourceKind::Task, "task-77".to_owned())]
+        );
+        let mut scanner = IdScanner::for_kind(ResourceKind::Conversation);
         assert!(scanner.push(b"{\"detail\":\"no id here\"}").is_empty());
     }
 
-    /// 路由快照的每条模板都必须被判为「已分类」或显式账号级，绝不允许落入
-    /// `Unclassified`：新增上游路由必须显式登记后才可用，否则产品面会出现
-    /// 「已观测但一访问就 503」。模板参数按族给出真实形态的占位值。
+    /// 全族扫描器（未分类路径的响应登记）同时识别六族的键，并把裸 `id` 当会话。
     #[test]
-    fn every_snapshot_route_is_classified_or_explicitly_unowned() {
+    fn all_kinds_scanner_covers_every_family_key() {
+        let mut scanner = IdScanner::for_all_kinds();
+        let found = scanner.push(
+            br#"{"conversation_id":"conv-0001","project_id":"proj-0001","gen_id":"img-0001","id":"6ab350c7-5d3c-83ea-be1f-a87b536c1c6c"}"#,
+        );
+        assert_eq!(
+            found,
+            vec![
+                (ResourceKind::Conversation, "conv-0001".to_owned()),
+                (ResourceKind::Project, "proj-0001".to_owned()),
+                (ResourceKind::Image, "img-0001".to_owned()),
+                (
+                    ResourceKind::Conversation,
+                    "6ab350c7-5d3c-83ea-be1f-a87b536c1c6c".to_owned()
+                ),
+            ]
+        );
+    }
+
+    /// 路由快照里凡是带六族 id 占位符的模板，都必须由族规则显式判定，不能落到
+    /// 「未显式分类」的 id 兜底：否则集合过滤、生成互斥与创建登记都会失效。
+    /// 不带占位符的字面量路由允许直接走 id 兜底——这正是上游前端新增路由时
+    /// 不需要再改网关代码的原因。
+    #[test]
+    fn snapshot_family_placeholders_are_never_left_to_the_auto_route() {
         let snapshot: Value =
             serde_json::from_str(include_str!("../assets/chatgpt-api-routes.json"))
                 .expect("路由快照必须是 JSON");
         let routes = snapshot["routes"].as_array().expect("快照缺少 routes");
         assert!(routes.len() > 900, "路由快照条数异常：{}", routes.len());
-        let mut unclassified: Vec<String> = Vec::new();
+        const FAMILY_HOLDS: [&str; 9] = [
+            "{conversation_id}",
+            "{conv_id}",
+            "{project_id}",
+            "{task_id}",
+            "{file_id}",
+            "{library_file_id}",
+            "{image_id}",
+            "{gen_id}",
+            "{connector_id}",
+        ];
+        let mut fallen_back: Vec<String> = Vec::new();
         for route in routes {
             let method = route["method"]
                 .as_str()
                 .and_then(|value| Method::from_bytes(value.as_bytes()).ok())
                 .expect("快照方法必须可解析");
-            let path = concrete_path(route["path"].as_str().expect("快照路径必须是字符串"));
+            let template = route["path"].as_str().expect("快照路径必须是字符串");
+            if !FAMILY_HOLDS
+                .iter()
+                .any(|placeholder| template.contains(placeholder))
+            {
+                continue;
+            }
+            let path = concrete_path(template);
             // 请求体与归属头按「该族最常见的真实形态」给出：带 UUID 的模板因此
             // 能被路径规则识别；不带 id 的模板落账号级也在此允许。
             let body = br#"{"conversation_id":"6ab350c7-5d3c-83ea-be1f-a87b536c1c6c"}"#;
             if matches!(
-                classify(&method, &path, &HeaderMap::new(), body),
-                Verdict::Unclassified
+                classify(&method, &path, None, &HeaderMap::new(), body),
+                Verdict::Auto { .. }
             ) {
-                unclassified.push(format!("{method} {path}"));
+                fallen_back.push(format!("{method} {template}"));
             }
         }
         assert!(
-            unclassified.is_empty(),
-            "以下路由模板未分类（用户可见 503）：\n{}",
-            unclassified.join("\n")
+            fallen_back.is_empty(),
+            "以下模板带六族 id 却落到了 id 兜底（六族规则失效）：\n{}",
+            fallen_back.join("\n")
         );
+    }
+
+    /// Auto 响应过滤：数组按可见性裁剪并同步 `total`；他人单对象整体拒绝；
+    /// 账号级清单（非 UUID 的裸 `id`）与含未识别字段的条目原样保留。
+    #[test]
+    fn auto_response_filter_drops_foreign_entries_and_refuses_foreign_objects() {
+        let mut visible: HashMap<ResourceKind, std::collections::BTreeSet<String>> = HashMap::new();
+        visible.insert(
+            ResourceKind::Conversation,
+            std::iter::once(CONVERSATION.to_owned()).collect(),
+        );
+        visible.insert(
+            ResourceKind::Project,
+            std::iter::once("proj-mine".to_owned()).collect(),
+        );
+        let body = json!({
+            "items": [
+                {"conversation_id": CONVERSATION, "title": "mine"},
+                {"conversation_id": "11111111-2222-3333-4444-555555555555", "title": "theirs"},
+                {"title": "no id at all"},
+            ],
+            "total": 3,
+            "models": [{"id": "gpt-5"}, {"id": "gpt-5-mini"}],
+            "cursor": "opaque",
+        });
+        let (filtered, changed) =
+            filter_auto_json(body.clone(), &visible).expect("数组条目只裁剪不拒绝");
+        assert!(changed, "裁掉了他人条目就是改动过");
+        assert_eq!(filtered["items"].as_array().unwrap().len(), 2);
+        assert_eq!(filtered["total"], 2, "已知信封的总数必须同步");
+        assert_eq!(
+            filtered["models"].as_array().unwrap().len(),
+            2,
+            "非 UUID 的裸 id 是账号级清单，不参与过滤"
+        );
+
+        // 顶层对象直接提到他人资源：整体拒绝，而不是裁剪。
+        let foreign = json!({"conversation_id": "11111111-2222-3333-4444-555555555555"});
+        assert!(filter_auto_json(foreign, &visible).is_none());
+        // 自己的资源照常放行；未登记/他人数组条目被裁掉。
+        let mine = json!({"project_id": "proj-mine", "name": "x"});
+        let (_, changed) = filter_auto_json(mine, &visible).unwrap();
+        assert!(!changed, "没有裁剪就不该重写正文");
+        let (emptied, changed) = filter_auto_json(
+            json!([{"task_id": "task-9999"}, {"task_id": "task-9998"}]),
+            &visible,
+        )
+        .unwrap();
+        assert!(changed);
+        assert_eq!(emptied.as_array().unwrap().len(), 0);
     }
 
     /// 快照模板 → 具体路径：`{x}` 段按名字换成对应形态的占位值。

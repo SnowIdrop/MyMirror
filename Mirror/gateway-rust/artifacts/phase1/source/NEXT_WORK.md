@@ -114,8 +114,9 @@ WS 合成回环双向透传与凭据注入、WS 无会话 401 与代理出口 fa
 依赖顺序：与缺口 1 同批推进；`/backend-api/*` 一旦放开，`/backend-api/sentinel/sdk.js` 的 503
 自然消失，因此该项与缺口 1 合并验收。媒体/字体类前缀应沿用「不携带账号凭据」的既有边界。
 **本批已落地**：可代理前缀按策略表反代，有意不代理的前缀给出按类别区分的文案，
-契约测试解析改写表保证「每个前缀都有语义」。**仍未覆盖**：`/external/*` 的真实主机白名单
-（原版 `is_allowed_external_proxy_host` 内容未还原），以及真实上游下这些前缀的渲染验收。
+契约测试解析改写表保证「每个前缀都有语义」。**2026-09-28 收敛**：`/external/*` 不再等原版
+主机白名单，改为「只允许公网目标」的公网策略落地（见 COMPATIBILITY「前端自愈」）。
+**仍未覆盖**：真实上游下这些前缀的渲染验收。
 
 验收要点：逐个前缀确认「脚本会改写到它」与「服务端按什么方法、什么扩展名、是否带凭据」；
 新增路径一律不许成为任意目标代理；渲染类前缀至少需要一次真实上游观测或合成 fixture 断言。
@@ -281,7 +282,9 @@ sha256）。**本批仍不做**：代理节点与出口分流、`CF_BYPASS_PROXY
     `GET /backend-api/checkout_pricing_config/configs/US`，该路径**不在** 923 条路由快照里
     （快照冻结于 2026-09-23），因此按 ACL 设计返回
     `503 {"code":"acl_unclassified_route"}`。**已收敛**：按账号级前缀登记进 `UNOWNED`
-    （快照仍然只有 923 条模板，因此由库内单测直接断言这条路径，不靠快照用例覆盖）。
+    （快照用例不覆盖这条路径，因此由库内单测直接断言）。2026-09-28 起快照刷新到 929 条、
+    未登记路径统一改走 id 兜底（见 COMPATIBILITY「前端自愈」），`acl_unclassified_route`
+    不再产生，这条前缀仍留在 `UNOWNED`。
   - **页面加载不需要 cfbypass**：真实浏览器自带 `sec-ch-ua*` 客户端提示头即可 200；
     合成客户端缺这些头才会被挑战。cfbypass 仍是挑战刷新路径的依赖（`CF_BYPASS_URL`）。
   - 真实上游 cookie 名已在证据里固化，可用于后续批次核对捕获名单。
@@ -302,7 +305,8 @@ sha256）。**本批仍不做**：代理节点与出口分流、`CF_BYPASS_PROXY
   - 项目/分支级归属与 `resource_acl.rs` 的产品接线已由缺口 3 批次完成（分支维度除外，见上）。
   - `/realtime` 的 WebSocket 升级桥接与 `/api/livekit/` 语音（后者需真实账号验收）。
   - `/backend-api/estuary/*` 的内容 URL 绝对化（原版规则仅有符号名，未还原）。
-  - `/external/*` 的上游主机白名单（原版 `is_allowed_external_proxy_host` 内容未还原）。
+  - `/external/*` 的上游主机白名单：2026-09-28 已由「只允许公网目标」的公网策略取代落地
+    （原白名单内容仍未还原，也不再尝试还原；见 COMPATIBILITY「前端自愈」）。
   - `/api/account-capabilities`、`/api/account-models`：Django 管理端会调用
     （`backend/app/accounts/views/__init__.py`），候选未注册，逆向路由清单里也没有这两个字面量，
     需实测定性。
@@ -345,6 +349,12 @@ sha256）。**本批仍不做**：代理节点与出口分流、`CF_BYPASS_PROXY
 - 审核 provider 的 5 个扩展响应用例（已列非目标，保留 503 门禁）。
 - 第二阶段可信身份与新库 ACL 产品接线；第六阶段统一验收与 All-in-One 镜像交付
   （`MirrorNiXiang/rebuild-reference/README.md` 的六条交付步骤，一条未做）。
+- **前端自愈的残余（2026-09-28，见 COMPATIBILITY「前端自愈」）**：
+  - Auto 路径的响应过滤只覆盖 JSON：SSE/流式与二进制正文原样透传，新流式端点靠请求侧 id 判定兜底；
+  - 超过 8 MiB 的 JSON 响应整体拒绝（`acl_response_too_large`），不做部分过滤；
+  - 六族之外的新资源族出现在数组里会被裁空（fail-closed）；靠 `acl_audit` 的 `route_auto_*`
+    记录发现，再按需把该路径登记为账号级；
+  - `/external/*` 的抓取一律从 AWS 出口发出；要收紧成域名白名单是一行改动，本批按公网策略实施。
 
 ## 归档说明
 

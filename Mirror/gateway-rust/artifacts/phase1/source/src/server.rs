@@ -6,6 +6,7 @@ mod chat_ws;
 mod cloudflare;
 mod compression;
 mod egress;
+mod external;
 pub mod identity;
 mod management;
 mod proxy;

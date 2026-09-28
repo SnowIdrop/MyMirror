@@ -160,12 +160,17 @@ pub(super) async fn chat_proxy(State(app): State<Shared>, request: Request) -> R
     // 注入脚本改写出去的公共静态/媒体前缀：与 `/assets/`、`/cdn/` 同属同源公共
     // 资源，不需要镜像会话，也一律不带账号凭据。
     // 有意不代理的前缀保留既有门禁顺序：未登录仍先 401，已登录才给 503 文案。
-    let refusal = match public_prefixes::resolve(&app.config, &path, request.uri().query()) {
+    let mut refusal = None;
+    let external = match public_prefixes::resolve(&app.config, &path, request.uri().query()) {
         Some(public_prefixes::Route::Proxy(target)) => {
             return public_prefixes::answer(&app, request, target).await
         }
-        Some(public_prefixes::Route::Refused(message)) => Some(message),
-        None => None,
+        Some(public_prefixes::Route::Refused(message)) => {
+            refusal = Some(message);
+            false
+        }
+        Some(public_prefixes::Route::External) => true,
+        None => false,
     };
     // 缺失能力必须保持失败，不能用旧二进制回退或伪造成功响应。
     if path.starts_with("/api/") {
@@ -184,6 +189,10 @@ pub(super) async fn chat_proxy(State(app): State<Shared>, request: Request) -> R
     };
     if let Some(message) = refusal {
         return error(StatusCode::SERVICE_UNAVAILABLE, message).into_response();
+    }
+    // 外链代理：目标由客户端给出，公网校验与凭据剥离在 external 模块内完成。
+    if external {
+        return super::external::answer(&app, request).await;
     }
     // 实时通道的 WebSocket 升级尚未实现：显式拒绝，而不是把升级请求当普通 GET 转发。
     let upgrades = request
@@ -304,9 +313,16 @@ async fn chat_forward(app: Shared, request: Request, session: &Session) -> Resul
     base.set_query(parts.uri.query());
     let data = to_bytes(body, MAX_BODY).await.context("请求体读取失败")?;
     // 共享账号下唯一的内容级边界：所有可归属资源都按 ACL 分类与判权，
-    // 未登记/他人/未分类路径一律在接触上游之前拒绝。
-    let verdict = acl::classify(&parts.method, &request_path, &parts.headers, &data);
-    let (collection, creation, lease) = match &verdict {
+    // 未登记/他人资源一律在接触上游之前拒绝；未显式登记的路径按请求里的资源 id
+    // 判定，因此上游前端新增路由不再需要改网关代码。
+    let verdict = acl::classify(
+        &parts.method,
+        &request_path,
+        parts.uri.query(),
+        &parts.headers,
+        &data,
+    );
+    let (collection, creation, lease, auto) = match &verdict {
         acl::Verdict::Scoped(scope) => {
             let Some((identity, account_id)) = acl::identity_of(session) else {
                 return Ok(acl::visitor_denied());
@@ -326,11 +342,11 @@ async fn chat_forward(app: Shared, request: Request, session: &Session) -> Resul
             // 生成类写请求：同一会话同时只允许一个在途生成，冲突不排队。
             if scope.generation {
                 match acl::Runtime::acquire(&app.acl, account_id, &scope.upstream_id) {
-                    Some(lease) => (None, None, Some(lease)),
+                    Some(lease) => (None, None, Some(lease), None),
                     None => return Ok(acl::generation_busy()),
                 }
             } else {
-                (None, None, None)
+                (None, None, None, None)
             }
         }
         acl::Verdict::Creation { kind, project } => (
@@ -338,10 +354,37 @@ async fn chat_forward(app: Shared, request: Request, session: &Session) -> Resul
             acl::identity_of(session)
                 .map(|_| (*kind, project.clone())),
             None,
+            None,
         ),
-        acl::Verdict::Collection(kind) => (Some(*kind), None, None),
-        acl::Verdict::Unscoped => (None, None, None),
-        acl::Verdict::Unclassified => return Ok(acl::unclassified(&request_path)),
+        acl::Verdict::Collection(kind) => (Some(*kind), None, None, None),
+        acl::Verdict::Unscoped => (None, None, None, None),
+        acl::Verdict::Auto { claim, ids } => {
+            let Some((identity, account_id)) = acl::identity_of(session) else {
+                return Ok(acl::visitor_denied());
+            };
+            let watch = acl::observe_route(&app.acl, &parts.method, &request_path);
+            let decision =
+                acl::authorize_auto(&app, identity, account_id, ids, &parts.method).await?;
+            match decision {
+                acl::AutoDecision::Allowed => (
+                    None,
+                    None,
+                    None,
+                    Some(AutoRoute {
+                        claim: *claim,
+                        watch,
+                    }),
+                ),
+                acl::AutoDecision::Foreign => {
+                    watch.note(&app, session, "route_auto_denied").await;
+                    return Ok(acl::refusal());
+                }
+                acl::AutoDecision::Unknown => {
+                    watch.note(&app, session, "route_auto_denied").await;
+                    return Ok(acl::unclassified_id());
+                }
+            }
+        }
     };
     if matches!(verdict, acl::Verdict::Creation { .. }) && creation.is_none() {
         return Ok(acl::visitor_denied());
@@ -398,6 +441,8 @@ async fn chat_forward(app: Shared, request: Request, session: &Session) -> Resul
             body
         };
         Ok(stream_body(status, headers, body))
+    } else if let Some(auto) = auto {
+        auto_response(&app, session, auto, upstream).await
     } else {
         // 生成/SSE 流：带 ACL 身份的会话在撤权时立即结束响应，不把剩余内容
         // 交给已失权用户；匿名/公共路径保持原样透传。
@@ -423,6 +468,77 @@ fn is_html(upstream: &wreq::Response) -> bool {
         .get("content-type")
         .and_then(|value| value.to_str().ok())
         .is_some_and(|value| value.starts_with("text/html"))
+}
+
+/// 未显式分类路径放行后的响应策略：写方法按响应登记新资源，首次命中留痕。
+struct AutoRoute {
+    claim: bool,
+    watch: acl::RouteWatch,
+}
+
+/// ACL JSON 响应的可过滤上限。超过它就不做部分过滤，整体拒绝并提示把该路径
+/// 登记为账号级（`acl_response_too_large`）。
+const ACL_JSON_LIMIT: usize = 8 * 1024 * 1024;
+
+fn is_json_content_type(headers: &HeaderMap) -> bool {
+    headers
+        .get("content-type")
+        .and_then(|value| value.to_str().ok())
+        .is_some_and(|value| {
+            let value = value.to_ascii_lowercase();
+            value.starts_with("application/json") || value.contains("+json")
+        })
+}
+
+/// 未显式分类路径的响应处理。
+///
+/// 成功响应里出现的资源 id 在交给客户端之前登记给当前会话；JSON 正文再按受众
+/// 裁剪（他人条目丢掉、他人单对象整体拒绝），流式/二进制正文无法缓冲，只登记
+/// 不裁剪。每个新路径的首次命中由调用方通过 [`AutoRoute::watch`] 留痕。
+async fn auto_response(
+    app: &Shared,
+    session: &Session,
+    auto: AutoRoute,
+    upstream: wreq::Response,
+) -> Result<Response> {
+    let (status, headers, body) = upstream_parts(upstream);
+    if !status.is_success() || !is_json_content_type(&headers) {
+        let body = if auto.claim && status.is_success() {
+            acl::auto_claim_body(app.clone(), session, body)
+        } else {
+            body
+        };
+        auto.watch.note(app, session, "route_auto_pass").await;
+        return Ok(stream_body(status, headers, body));
+    }
+    let raw = match to_bytes(body, ACL_JSON_LIMIT).await {
+        Ok(raw) => raw,
+        Err(_) => {
+            auto.watch.note(app, session, "route_auto_filtered").await;
+            return Ok(acl::response_too_large());
+        }
+    };
+    let Ok(value) = serde_json::from_slice::<Value>(&raw) else {
+        // 声称 JSON 但解析不了：不裁剪也不猜，按原字节回传。
+        auto.watch.note(app, session, "route_auto_pass").await;
+        return Ok(stream_body(status, headers, Body::from(raw)));
+    };
+    if auto.claim {
+        acl::claim_auto_buffer(app, session, &raw).await;
+    }
+    let visible = acl::visible_sets(app, session).await?;
+    let Some((filtered, changed)) = acl::filter_auto_json(value, &visible) else {
+        auto.watch.note(app, session, "route_auto_filtered").await;
+        return Ok(acl::foreign_in_response());
+    };
+    let body = if changed {
+        auto.watch.note(app, session, "route_auto_filtered").await;
+        Body::from(serde_json::to_vec(&filtered).context("未分类响应序列化失败")?)
+    } else {
+        auto.watch.note(app, session, "route_auto_pass").await;
+        Body::from(raw)
+    };
+    Ok(stream_body(status, headers, body))
 }
 
 /// `/0x/*` 透传：附加 TCP 对端 IP 头；不转发任何客户端凭据头（观测无 authorization）。

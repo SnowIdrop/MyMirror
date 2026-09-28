@@ -159,7 +159,7 @@ pub fn verify_visitor(
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum ResourceKind {
     Conversation,
     Project,
@@ -231,6 +231,18 @@ pub struct ConfirmedCreation {
     pub(crate) creation_id: String,
     pub(crate) resource: ResourceKey,
     pub(crate) project: Option<ResourceKey>,
+}
+
+/// 未显式分类的路径带着资源 id 出现时的判定结果：按 id 的登记与受众给出，
+/// 不看路径形状（上游前端新增路由时不需要再登记）。
+#[derive(Debug, PartialEq, Eq)]
+pub enum AutoAuthority {
+    /// 已登记且当前会话有权执行该动作。
+    Visible(ResourceKind),
+    /// 已登记但当前会话无权（他人资源）：与「不存在」同形拒绝。
+    Foreign,
+    /// 该账号下没有这个 id 的任何登记：未登记资源不可用。
+    Unknown,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -343,6 +355,49 @@ pub fn authorize(
     authorize_in(conn, &actor.0, resource, action)
 }
 
+/// 未显式分类的路径带 id 时的判定：同一个 id 在六族里逐个查登记与受众。
+/// 「已登记但无权」与「未登记」必须区分——前者是他人资源（404），后者需要
+/// 管理员认领或把路径登记为账号级（503）。
+pub fn auto_authority(
+    conn: &Connection,
+    actor: &RequestIdentity,
+    account_id: &str,
+    upstream_id: &str,
+    action: Action,
+) -> Result<AutoAuthority> {
+    let mut statement = conn.prepare(
+        "SELECT resource_type FROM acl_resources WHERE account_id=?1 AND upstream_id=?2",
+    )?;
+    let kinds = statement
+        .query_map(params![account_id, upstream_id], |row| {
+            row.get::<_, String>(0)
+        })?
+        .collect::<rusqlite::Result<Vec<_>>>()?;
+    let mut foreign = false;
+    for kind in kinds {
+        // 表内取值受 CHECK 约束，非法取值说明库被外部改写：按未知处理，不放行。
+        let Some(kind) = kind_from_str(&kind) else {
+            foreign = true;
+            continue;
+        };
+        let key = ResourceKey {
+            account_id: account_id.to_owned(),
+            kind,
+            upstream_id: upstream_id.to_owned(),
+        };
+        match authorize_in(conn, &actor.0, &key, action) {
+            Ok(_) => return Ok(AutoAuthority::Visible(kind)),
+            Err(AclError::Forbidden) => foreign = true,
+            Err(error) => return Err(error),
+        }
+    }
+    Ok(if foreign {
+        AutoAuthority::Foreign
+    } else {
+        AutoAuthority::Unknown
+    })
+}
+
 /// `None` 表示上游创建失败或未被确认：不登记任何东西。
 pub fn record_created(
     conn: &Connection,
@@ -375,6 +430,29 @@ pub fn record_created(
     let id = audit(&tx, &actor.0, "create", key, None, receipt.project.as_ref())?;
     tx.commit()?;
     Ok(Some(change(id, key, None)))
+}
+
+/// 未显式分类路径的成功响应登记：只在未登记时插入，绝不覆盖既有归属
+/// （`ON CONFLICT DO NOTHING` 同时覆盖主键与 `creation_id` 唯一冲突）。
+/// 返回 true 表示本次真的登记了，调用方据此决定是否记日志。
+pub fn claim_if_absent(
+    conn: &Connection,
+    actor: &RequestIdentity,
+    key: &ResourceKey,
+) -> Result<bool> {
+    let tx = immediate(conn)?;
+    let creation_id = format!("auto:{}:{}:{}", key.account_id, key.kind.as_str(), key.upstream_id);
+    let inserted = tx.execute(
+        "INSERT INTO acl_resources(account_id,resource_type,upstream_id,owner_user_id,creation_id) \
+         VALUES(?1,?2,?3,?4,?5) ON CONFLICT DO NOTHING",
+        params![key.account_id, key.kind.as_str(), key.upstream_id, actor.0.user_id, creation_id],
+    )?;
+    if inserted == 0 {
+        return Ok(false);
+    }
+    audit(&tx, &actor.0, "claim_auto", key, None, None)?;
+    tx.commit()?;
+    Ok(true)
 }
 
 /// 管理员认领/重新分配**未登记**资源：把 key 登记到 `owner_user_id` 名下。
@@ -595,6 +673,29 @@ pub fn audit_after(
         })
     })?;
     Ok(rows.collect::<rusqlite::Result<Vec<_>>>()?)
+}
+
+/// 未显式分类路径的运营审计：只记「哪个方法+路径首次出现、被怎么处理」，
+/// 不涉及具体归属，因此 `resource_type` 固定为 `route`、`upstream_id` 是模板键。
+pub fn audit_route(
+    conn: &Connection,
+    actor: &RequestIdentity,
+    account_id: &str,
+    action: &str,
+    route: &str,
+) -> Result<i64> {
+    conn.execute(
+        "INSERT INTO acl_audit(actor_user_id,authorization_version,action,account_id,resource_type,upstream_id) \
+         VALUES(?1,?2,?3,?4,'route',?5)",
+        params![
+            actor.0.user_id,
+            actor.0.authorization_version,
+            action,
+            account_id,
+            route
+        ],
+    )?;
+    Ok(conn.last_insert_rowid())
 }
 
 /// 已登记资源行（管理员查询输出）。

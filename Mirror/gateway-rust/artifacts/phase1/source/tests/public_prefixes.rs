@@ -74,6 +74,24 @@ async fn stub(events: Events, request: Request) -> Response {
         )
             .into_response();
     }
+    // 外链代理的行为断言用：重定向与第三方 cookie 都不得透传给浏览器。
+    if path.ends_with("/redirect-me") {
+        return (
+            StatusCode::FOUND,
+            [("location", "https://example.com/other")],
+        )
+            .into_response();
+    }
+    if path.ends_with("/set-cookie") {
+        return (
+            [
+                ("content-type", "application/json"),
+                ("set-cookie", "third_party=1; Path=/"),
+            ],
+            "{}",
+        )
+            .into_response();
+    }
     let content_type = if path.ends_with(".css") {
         "text/css"
     } else if path.ends_with(".js") {
@@ -327,7 +345,6 @@ async fn ab_prefix_requires_configuration() {
 async fn refused_prefixes_answer_with_a_stable_category_message() {
     let f = Fixture::new(true).await;
     for (path, expected) in [
-        ("/external/https/accounts.google.com/gsi/client", "外链代理尚未开放"),
         ("/vendor-script/gtag/js", "第三方脚本代理"),
         ("/vendor-static", "第三方脚本代理"),
         ("/cloudflare-insights/beacon.min.js", "第三方脚本代理"),
@@ -352,6 +369,77 @@ async fn refused_prefixes_answer_with_a_stable_category_message() {
         assert!(!message.contains('<'), "{path} 不得回传上游 HTML：{message}");
     }
     assert!(f.events.lock().unwrap().is_empty(), "拒绝路径不得接触上游");
+}
+
+/// 外链代理（`/external/<scheme>/<host>/<path>`）：只转发公网目标，不携带任何
+/// 凭据；重定向与 HTML 正文按上游故障处理，第三方 cookie 不进浏览器。
+/// 离线夹具用 `Config::public_prefix_base` 把目标指到本机桩，跳过公网校验，
+/// 其余转发语义与生产一致。
+#[tokio::test]
+async fn external_proxy_forwards_without_credentials_and_refuses_unsafe_answers() {
+    let f = Fixture::new(true).await;
+    f.clear();
+    let response = f
+        .client
+        .post(format!("{}/external/https/bzr.openai.com/v1/obi/sync?k=1", f.base))
+        .header("x-mirror-token", &f.token)
+        .header("cookie", "mirror_token=invalid")
+        .header("authorization", "Bearer browser-secret")
+        .header("referer", "https://chatgpt.com/c/secret-conversation")
+        .body("{\"p\":1}")
+        .send()
+        .await
+        .unwrap();
+    assert_eq!(response.status(), StatusCode::OK);
+    assert_eq!(response.text().await.unwrap(), "fixture-body");
+    let calls = f.events.lock().unwrap().clone();
+    let call = calls.last().expect("外链请求必须到达夹具上游");
+    assert_eq!(call["method"], "POST");
+    assert_eq!(call["path"], "/v1/obi/sync");
+    assert_eq!(call["query"], "k=1");
+    assert_eq!(call["body"], "{\"p\":1}");
+    for header in ["cookie", "authorization", "x_mirror_token"] {
+        assert_eq!(call[header], "", "{header} 不得转发给第三方");
+    }
+
+    // 重定向不跟随：第三方 302 一律按上游故障上报。
+    let redirect = f
+        .client
+        .get(format!("{}/external/https/example.com/redirect-me", f.base))
+        .header("x-mirror-token", &f.token)
+        .send()
+        .await
+        .unwrap();
+    assert_eq!(redirect.status(), StatusCode::BAD_GATEWAY);
+    assert!(redirect
+        .text()
+        .await
+        .unwrap()
+        .contains("重定向"));
+
+    // HTML 正文（同源下会变成可执行页面）同样拒绝。
+    let html = f
+        .client
+        .get(format!("{}/external/https/example.com/page.html", f.base))
+        .header("x-mirror-token", &f.token)
+        .send()
+        .await
+        .unwrap();
+    assert_eq!(html.status(), StatusCode::BAD_GATEWAY);
+    let message = html.text().await.unwrap();
+    assert!(message.contains("HTML"), "{message}");
+    assert!(!message.contains("must-not-be-proxied"));
+
+    // 第三方 `set-cookie` 既不进浏览器也不进共享 jar。
+    let cookie = f
+        .client
+        .get(format!("{}/external/https/example.com/set-cookie", f.base))
+        .header("x-mirror-token", &f.token)
+        .send()
+        .await
+        .unwrap();
+    assert_eq!(cookie.status(), StatusCode::OK);
+    assert!(!cookie.headers().contains_key("set-cookie"));
 }
 
 /// 公共前缀只允许 GET/HEAD，且 HTML 正文一律拒绝（同源下会变成可执行页面）。

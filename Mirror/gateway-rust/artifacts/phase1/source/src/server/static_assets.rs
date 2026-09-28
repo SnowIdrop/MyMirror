@@ -176,6 +176,12 @@ where
             return error(StatusCode::BAD_GATEWAY, "静态资源上游类型不匹配").into_response();
         }
     }
+    stream_public_response(upstream)
+}
+
+/// 公共资源的成功响应组装：只复制安全头（不含 `set-cookie`），正文流式回传。
+pub(super) fn stream_public_response(upstream: wreq::Response) -> Response {
+    let status = upstream.status();
     let mut headers = HeaderMap::new();
     for name in [
         "content-type",

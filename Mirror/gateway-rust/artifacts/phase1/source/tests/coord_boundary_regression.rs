@@ -302,8 +302,6 @@ async fn coord_unknown_route_matrix_stays_closed() {
     // coord_page_and_anonymous_routes_are_open；这里只保留仍然关闭的路径。
     // Static assets are deliberately left to the owner's static_assets.rs.
     for path in [
-        "/external/unknown.js",
-        "/external/http://127.0.0.1/unknown",
         "/internal-upstream",
         "/internal-upstream/backend-api/me",
         "/_next/data/coord-guessed-build/index.json",
@@ -333,6 +331,45 @@ async fn coord_unknown_route_matrix_stays_closed() {
                     } else {
                         401
                     }
+                );
+                no_credential_echo(&response, &[&token, ADMIN, ACCESS_A]);
+            }
+        }
+    }
+    // `/external/*` 已按公网策略打开：路径形态不合法 400，内网/回环/单标签主机
+    // 403；未登录仍先 401（门禁顺序不变），所有拒绝都不接触上游。
+    for (path, anonymous_status, authenticated_status) in [
+        // 脚本只会发出 `/external/<scheme>/<host>/<path>`；这两条是不合法形态。
+        ("/external/unknown.js", 401, 400),
+        ("/external/http://127.0.0.1/unknown", 401, 400),
+        // SSRF 探针：带端口的回环、单标签名与私网地址都必须被公网策略拒绝。
+        ("/external/https/127.0.0.1:8443/unknown", 401, 403),
+        ("/external/https/localhost/unknown", 401, 403),
+        ("/external/https/10.0.0.1/unknown", 401, 403),
+    ] {
+        for method in [reqwest::Method::GET, reqwest::Method::POST] {
+            for authenticated in [false, true] {
+                let mut request = h
+                    .client
+                    .request(method.clone(), format!("{}{path}", h.base))
+                    .query(&[("url", h.decoy.as_str()), ("target", h.decoy.as_str())]);
+                if authenticated {
+                    request = request.header("x-mirror-token", &token);
+                }
+                let response = h
+                    .request(
+                        &format!("{method} {path} authenticated={authenticated}"),
+                        request,
+                    )
+                    .await;
+                assert_eq!(
+                    response.status,
+                    if authenticated {
+                        authenticated_status
+                    } else {
+                        anonymous_status
+                    },
+                    "{method} {path} authenticated={authenticated}"
                 );
                 no_credential_echo(&response, &[&token, ADMIN, ACCESS_A]);
             }

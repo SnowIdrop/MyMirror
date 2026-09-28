@@ -81,7 +81,10 @@ CREATE_BODY = {
 LOCAL_CODES = {
     "acl_not_found",
     "acl_visitor_denied",
-    "acl_unclassified_route",
+    # 未显式分类路径的三个新错误码（`acl_unclassified_route` 已不再产生）。
+    "acl_unclassified_id",
+    "acl_foreign_resource_in_response",
+    "acl_response_too_large",
     "generation_busy",
     "upstream_blocked",
 }
@@ -106,6 +109,10 @@ LOCAL_MESSAGES = (
     "静态资源上游不可用",
     "静态资源上游类型不匹配",
     "静态资源上游重定向未开放",
+    # 未显式分类路径的三个新文案（见 source/src/server/acl.rs）。
+    "该路径携带的资源 id 尚未登记：管理员可认领该资源，或把该路径登记为账号级前缀",
+    "上游响应包含不属于当前用户的资源：该路径需要显式登记归属语义",
+    "上游响应过大，无法完成归属过滤：该路径需要显式登记为账号级前缀",
 )
 COLLECTION_KEYS = (
     "items",

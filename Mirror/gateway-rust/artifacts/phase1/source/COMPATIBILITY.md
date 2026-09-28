@@ -157,12 +157,14 @@ Django 健康检测据此把凭据标成不可用、可能发告警，刷新 cro
 |---|---|---|---|
 | 无凭据反代 | `/common/`（cdn.openai.com）、`/static-rsc-1/`、`/static-rsc-4/`、`/images-openai/`（images.openai.com）、`/images-app/`、`/persistent-deep-research/`（persistent.oaistatic.com）、`/files/`、`/files-southcentral/`、`/files-north/`（对应分片 oaiusercontent）、`/openai-files/`（files.openai.com）、`/connector-assets/`、`/mapbox/`、`/mapbox/styles/v1/oai-data/`（api.mapbox.com）、`/google-s2/`、`/google-avatar/a/`、`/gstatic-t0..t3/` | GET/HEAD | 无（与 `/assets/`、`/cdn/` 同边界） |
 | 配置驱动 | `/ab/` → `CHATGPT_AB_BASE_URL` | GET/HEAD | 无；未配置时 `503` + 可行动文案 |
-| 有意不代理 | `/external/*`（原版按 `is_allowed_external_proxy_host` 白名单转发，白名单未还原）、`/v1/*`、`/vendor-script/`、`/vendor-static`、`/cloudflare-insights/`、`/vendor-batch/collect`、`/ga/collect`、`/mapbox-events/events/`、`/connector-deep-research[/]` | — | 已登录 `503` + 按类别区分的文案；未登录保持既有 `401` 门禁顺序 |
+| 外链代理（2026-09-28 起） | `/external/<scheme>/<host>[:port]/<path>`（目标由客户端给出） | GET/HEAD/POST/PUT/PATCH/DELETE | 无；只允许解析到公网的目标、每请求钉扎解析结果，拒绝重定向与 HTML，见下方「前端自愈」 |
+| 有意不代理 | `/v1/*`、`/vendor-script/`、`/vendor-static`、`/cloudflare-insights/`、`/vendor-batch/collect`、`/ga/collect`、`/mapbox-events/events/`、`/connector-deep-research[/]` | — | 已登录 `503` + 按类别区分的文案；未登录保持既有 `401` 门禁顺序 |
 | 本地语义 | `/api/*` 未实现子路径 | — | `404 {"message":"本地未实现的 /api 路径"}`（含 `/api/livekit/`） |
 
 契约测试解析 `src/assets/gateway-client.html` 的两张改写表（2026-09-23 实测 63 条 pair、
 39 个去重目标前缀，加运行时拼出的 `/external/` 与 `/internal-upstream/` 共 41 个），
 断言每个前缀都有「已处理」或「显式拒绝」语义；将来新增或改名而不更新策略表即失败。
+2026-09-28 起 `/external/` 从「显式拒绝」改为「已处理」（见下方「前端自愈」），其余分类不变。
 
 ### 本批验证
 
@@ -342,8 +344,8 @@ Django `DJANGO_ENV=LOCAL manage.py test` 101 项通过（新增身份字段、�
   `TRUSTED_PROXY_IPS`、`MIRROR_API_PREFIX`、`ADMIN_UPSTREAM`。产品形态是单机直连 AWS 出口的
   内部共享账号，`egress.rs` 现有的 fail-closed 已覆盖真实部署形态，补齐既没有可观测验收目标，
   也会把未验证组合放进来。
-- **`/external/*` 主机白名单**：原版 `is_allowed_external_proxy_host` 内容未还原，补它只能靠实测；
-  账号密码登录路径不依赖它。
+- **`/external/*` 主机白名单**：2026-09-28 改为「只允许公网目标」的公网策略落地（原白名单内容
+  仍未还原，也不再尝试还原；见下方「前端自愈」），不再作为待办。
 - **语音 `/api/livekit/`、`/realtime` 升级桥接**：小团体共享账号不使用语音通话。
 - **estuary 内容 URL 绝对化、连接器创建自动登记、分支维度归属**：逆向材料只有符号名，没有协议证据。
 - **访客策略**：访客不参与 ACL 是既有产品决定。
@@ -794,3 +796,87 @@ sec-websocket-extensions`（`evidence/ws-handshake-headers-001.json`，key 值�
 NEXT_WORK）：改画像与常量 → 重采 146 参照并更新 `evidence/reference-chrome146-001/` 与
 本文件的对照表 → 更新 `identity_fingerprint.rs` 的三个常量 → 同步 cfbypass 镜像的
 chromium 版本与 compose 的 UA → 重跑两侧探针。缺任何一步，参照对照测试会红。
+
+## 前端自愈：id 驱动判定、外链开放、快照刷新（2026-09-28）
+
+上游前端每次发版都会带来新路径。本批把三处「一更新就要人工适配」的闸门拆掉：未显式分类的
+`/backend-api/*` 不再按路径形状 503，改按请求/响应里的资源 id 判定；`/external/*` 从「有意
+不代理」改为公网策略开放；路由快照改成一条命令刷新。改动只落在候选源码与 `Mirror/gateway-rust/tools/`，
+不动基线 `src/`、不动 Django/Vue、不新增环境变量、不改数据库 schema。
+
+### 未显式分类的 `/backend-api/*` 改为按资源 id 判定（`Auto`）
+
+| 项 | 行为 |
+|---|---|
+| 判定结果 | `Verdict::Unclassified` 删除，`acl_unclassified_route` 不再产生；未显式登记的路径判为 `Auto{claim, ids}`，`claim` = 方法不是 GET/HEAD |
+| id 材料 | 路径里 UUID 形态的段、query 里 `*_id` 键的值、请求体顶层 `*_id` 键的字符串值（去重后按 `is_resource_id` 过滤） |
+| 请求侧 | 无 id → 放行；全部 id 在六族任一登记且当前会话可见 → 放行；已登记但不可见 → `404 acl_not_found`；哪个族都查不到 → `503 acl_unclassified_id`（提示认领或登记为账号级）。三种结果都在接触上游之前定下；访客/匿名会话仍 `403 acl_visitor_denied` |
+| 响应侧（仅 Auto） | 2xx 且 `claim`：用同一套分块扫描器（六族 id 键 → 族）把响应里出现的 id **在把含该 id 的块交给客户端之前**登记给当前会话（`claim_if_absent`，`ON CONFLICT DO NOTHING`，只写 `claim_auto` 审计，既有归属永不覆盖）。JSON（`application/json` 或 `+json`，≤8 MiB，非 SSE）再按受众裁剪：顶层数组按条目可见性过滤、已知信封同步 `total`、顶层单对象含他人 id → `503 acl_foreign_resource_in_response`；超过 8 MiB → `502 acl_response_too_large`（解法是把该路径登记进 `UNOWNED`） |
+| 流式残余 | SSE/二进制正文无法缓冲，原样透传、不做响应过滤；请求侧 id 判定仍然生效，新流式端点由请求侧兜底 |
+| 可观测 | 每个新命中的 `(method, path)` 首次出现写一条 warn 日志 + 一条 `acl_audit`（`resource_type='route'`、`upstream_id="<METHOD> <path>"`、动作 `route_auto_pass`/`route_auto_denied`/`route_auto_filtered`）；进程内按路径去重，上限 1024，超出只记日志。管理员用既有 `GET /api/acl/audit` 就能看到新版前端带来了哪些路径、各自被怎么处理 |
+| 逃生口 | `UNOWNED` 显式登记的路径保持既有「不判权、不过滤」透传语义 |
+| 生成不重放 | Auto 路径不取生成互斥租约（无法判定是否生成类），`send_chat` 的「非 GET 不重放」规则不变 |
+
+### `/external/*` 按公网策略开放（`server/external.rs`）
+
+原版按 `is_allowed_external_proxy_host` 白名单转发，白名单内容未还原。本候选不复制白名单，
+改为等价收口：
+
+- 路径契约不变 `/external/<scheme>/<host>[:port]/<path>`，只接受 http/https；
+- 目标主机（含裸 IP 与 IPv6 字面量）解析后要求**每一个**地址都是公网：回环/私网/链路本地/
+  CGNAT(100.64/10)/ULA/组播/未指定/保留与文档段，以及单标签主机、`.local`/`.internal` 等
+  内网后缀一律拒绝；
+- 校验通过后用 `identity::client_builder().resolve_to_addrs(host, 已验证地址)` 把本次请求钉扎到
+  该解析结果，校验与连接之间没有第二次解析（防 DNS 重绑定）；
+- 请求只带 accept/accept-encoding/accept-language/content-type/range 一类的值类头 + 固定身份组，
+  `cookie`/`authorization`/`x-mirror-token` 一律不转发；非 GET/HEAD 补
+  `origin`/`referer = https://chatgpt.com`；正文流式、不重放、不跟随重定向；
+- 302 与 `text/html` 正文一律 `502`；响应头沿用静态资源白名单（不含 `set-cookie`），
+  第三方 cookie 既不进浏览器也不进共享 jar。
+
+### 路由快照一条命令刷新（`Mirror/gateway-rust/tools/refresh_chatgpt_routes.py`）
+
+- 默认从最近一份 `artifacts/phase1/probe/evidence/accept-*.json` 取浏览器实测的
+  `/cdn/assets/*.js` 清单（`--chunks-from` 可覆盖），逐个拉上游分块抽 `METHOD 路径模板`
+  （`safe(Get|Post|Put|Patch|Delete)` + 反引号路径）；分块缓存默认在系统临时目录，二进制不入库；
+- `--check`（默认）只比对并打印新增/消失的模板与分块，有漂移非零退出；`--write` 按现有字段
+  形状重写 `src/assets/chatgpt-api-routes.json`：`chunks{name,sha256,bytes}` +
+  `routes{method,path,chunk}` + `captured_at`；
+- 快照用例的口径从「每条模板都必须人工分类」改成「没有一条模板会落到 id 拒绝」：带六族 id
+  占位符的模板必须由族规则显式判定（集合过滤、生成互斥、创建登记仍然生效），不带占位符的
+  字面量路由允许走 id 兜底——这正是前端新增路由不再需要改网关代码的原因。六族显式断言、
+  `checkout_pricing_config` 账号级断言、改写表 ⊆ 策略分类的契约测试保持；
+- 2026-09-28 重抓：339 分块 / 929 路由（上一版 349/923；新增含 `GET /backend-api/bootstrap`、
+  `tpp/default-tab-recommendation`、`accounts/{id}/workspace_banner` 等，消失含
+  `GET /backend-api/conversations/search`、`GET /backend-api/conversations/{conversation_id}/files`
+  等），`--check` 复跑零漂移。
+
+### 新增/变更契约
+
+- 新增错误码：`acl_unclassified_id`(503)、`acl_foreign_resource_in_response`(503)、
+  `acl_response_too_large`(502)；移除 `acl_unclassified_route`(503，不再产生)；
+- 审计新增动作：`route_auto_pass`/`route_auto_denied`/`route_auto_filtered`/`claim_auto`
+  （`acl_audit` 表结构不变）；
+- `/external/*` 可达（状态透传）；其余不变：`/api/*` 未实现仍本地 404、`/cdn/*` 与 `/assets/*`
+  门禁、CF 挑战策略、凭据与出口 fail-closed、生成不重放、六族判权与集合过滤语义。
+
+### 本批验证
+
+`cargo test --locked --offline` 225 项（82 项库内单测 + 143 项集成用例；本批新增
+`tests/auto_route_acl.rs` 6 项、`tests/public_prefixes.rs` 外链用例 1 项，改写
+`tests/coord_boundary_regression.rs` 的 `/external/*` 矩阵）全过；
+`cargo clippy --locked --offline --all-targets -- -D warnings` 通过；Django
+`DJANGO_ENV=LOCAL manage.py test` 107 项通过（本批未改 Django 代码，作为回归）。
+快照工具以历史分块 + 历史观测复跑 `--check` 对上一版快照零漂移、对篡改副本非零退出。
+
+真实上游只读冒烟（`probe_browser_accept.py --no-write`，两次：`accept-20260928-100101.json`
+432 条请求 / `accept-20260928-100231.json` 434 条）：0 次 CF 挑战（全程无 403）、
+`/backend-api/*` 44 条全 2xx、`POST /external/https/bzr.openai.com/v1/obi/sync` 从上一版的
+`503` 变为 `204`（页面控制台的 `OBI synchronization failed with status 503` 随之消失，
+console error 7 → 5，剩余为 React #418/Datadog/favicon 这类既有噪声）；页面 JS 身份与
+网络层声明一致（Chrome146/Linux、`platformVersion=''`）；未做任何真实写入。
+**如实记录**：这一版真实前端请求到的 `/backend-api/*` 路径全部命中显式分类（六族规则或
+`UNOWNED`），因此本次冒烟没有实际落到 Auto 分支；`/api/acl/audit` 的
+`route_auto_pass/denied/filtered` 与 `claim_auto` 留痕由 `tests/auto_route_acl.rs` 的
+合成回环用例覆盖（含「同一路径只记一次」与「拒绝也写审计」），Auto 在本批的角色是
+未来新路径的兜底。
