@@ -360,7 +360,7 @@ async fn anonymous_session_shares_one_upstream_identity_and_injects_before_head(
         // 真浏览器的页面导航一定带这一对；网关据此换用导航顺序表。
         .header("sec-fetch-mode", "navigate")
         .header("upgrade-insecure-requests", "1")
-        // 访客自己的语言偏好：绝不能原样走到上游（见下面的断言）。
+        // 访客自己的语言偏好：必须**原样**走到上游（见下面的断言）。
         .header("accept-language", "de-DE,de;q=0.9")
         .send()
         .await
@@ -386,12 +386,10 @@ async fn anonymous_session_shares_one_upstream_identity_and_injects_before_head(
     assert_eq!(upstream["referer"].as_str().unwrap(), "http://127.0.0.1/");
     assert!(!upstream["sec-ch-ua"].as_str().unwrap().is_empty());
     assert!(!upstream["cookie"].as_str().unwrap().contains(&token));
-    // 访客浏览器的语言偏好不得泄漏：这一跳必须与 `oai-language`、注入 JS 和
-    // cfbypass 报同一份语言，否则同一个「用户」在不同层各说一套。
-    assert_eq!(
-        upstream["accept-language"].as_str().unwrap(),
-        "zh-CN,zh;q=0.9,en;q=0.8"
-    );
+    // `accept-language` 属于浏览器指纹：真 Chrome 的取值由 `navigator.languages`
+    // 派生，页面 JS 报什么语言、在线这一跳就得报什么，所以它跟随客户端而不是被
+    // 身份常量覆盖（界面语言 `oai-language` 是另一回事，不属于指纹）。
+    assert_eq!(upstream["accept-language"].as_str().unwrap(), "de-DE,de;q=0.9");
     // 导航的头序必须是**导航**那一张表：真 Chrome 的导航与 XHR 不同序
     // （evidence/browser-header-order-002.json 的 nav-from-link）。
     let (on_wire, recorded) = order_against_evidence(upstream, "nav-from-link");

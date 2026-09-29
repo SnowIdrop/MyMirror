@@ -247,8 +247,9 @@ def _load_settings() -> Settings:
         allowed_hosts=_env_allowed_hosts(),
         user_agent=_env_text("CF_BYPASS_USER_AGENT", DEFAULT_USER_AGENT),
         browser_path=_env_text("CF_BYPASS_BROWSER_PATH", DEFAULT_BROWSER_PATH),
-        # 与网关身份表的 ACCEPT_LANGUAGE 逐字一致（server/identity.rs）：两跳报不同的
-        # 语言偏好，上游就能把「网关直连」与「cfbypass 取 Cookie」拆成两个用户。
+        # 这一跳是网关**自己去连** chatgpt.com 取 Cookie，没有对应的页面 JS，因此
+        # 与网关身份表的 ACCEPT_LANGUAGE（server/identity.rs）逐字一致即可；转发跳的
+        # accept-language 跟随访客浏览器，那属于另一类（浏览器指纹随宿主）。
         # 请求体里带了 accept_language 时以请求为准，这里只是独立调试的兜底。
         accept_language=_env_text("CF_BYPASS_ACCEPT_LANGUAGE", "zh-CN,zh;q=0.9,en;q=0.8"),
         headless=_env_bool("CF_BYPASS_HEADLESS", True),

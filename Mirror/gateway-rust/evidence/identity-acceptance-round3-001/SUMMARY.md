@@ -2,7 +2,10 @@
 
 用**真实 SessionToken** 跑 `artifacts/phase1/probe/probe_browser_accept.py`，验证
 `cd6b6d5` 那一轮的改动在真实 chatgpt.com 上成立：新导航头序、WS 握手形状、
-三跳 `accept-language` 收口、去代理链痕迹，都没有把这条链路打坏。
+去代理链痕迹，都没有把这条链路打坏。
+
+同一次验收暴露了 `accept-language` 那项改动的方向性错误（界面语言不属于浏览器
+指纹），当场复核并改回透传，见文末「语言维度」与「改回透传后的只读复验」两节。
 
 ## 运行环境
 
@@ -55,6 +58,24 @@ curl 8.13（Schannel）复核同一份会话 cookie：
 | `GET /backend-api/conversations?offset=0&limit=50` | 200，`total=3`，3 条 |
 | 本次新建后删除的 conversation_id | **不在列表里** |
 
+## 改回透传后的只读复验（`accept-20260929-095513.json`）
+
+语言处置改完并重建二进制后，用 `--no-write` 再跑一次同一探针，确认这条链路没被改动
+打坏（无任何写入）：
+
+| 项 | 观测 |
+|---|---|
+| 页面 | 标题 `ChatGPT`，注入控制条命中，composer 找到 |
+| 请求 | **428 条**：423×200、2×202、1×201、1×204、1×302（交接本身）；**0 次 Cloudflare 挑战**，除交接的 302 外无任何非 2xx |
+| `/backend-api/*` | 45 条，全部 2xx |
+| WebSocket | 经 `/ws-chatgpt` 桥到 `wss://ws.chatgpt.com`：出 1 帧、进 1 帧共 371 字节，连接保持 |
+| 写入 | 无（`--no-write`） |
+
+上游实际收到的 `accept-language` 取值由合成回环用例锁定，不由这个探针观测
+（探针只记状态码与 content-type，不记头值）：`tests/anonymous_frontend.rs` 的导航用例
+断言「客户端报 `de-DE,de;q=0.9` → 上游收到 `de-DE,de;q=0.9`」，
+`identity` 的单测断言「带了就透传、没带才兜底、`api_baseline` 仍用固定值」。
+
 ## 探针侧的两处噪声（不是网关缺陷）
 
 - `创建响应正文读取失败：Error`：浏览器侧读取 SSE 正文的动作失败；创建请求本身返回
@@ -64,7 +85,14 @@ curl 8.13（Schannel）复核同一份会话 cookie：
 - 6 条 console 错误均为镜像域下的正常噪声：前端 addAction/Datadog 在非授权域初始化、
   React #418（注入改写 HTML 后的 hydration 差异）。
 
-## 本次验收暴露的一个未收敛点：语言维度
+## 语言维度（2026-09-29 复审：该「未收敛点」是误判，已改回透传）
+
+**结论先行**：`oai-language` 是账号/应用**界面语言**，不属于浏览器指纹。上面那组测量
+不能证明「身份漂移」，只能证明「页面把账号语言和宿主语言同时送出去了」——而真
+chatgpt.com 自己就是这么做的（下面实测）。真正需要自洽的是**浏览器指纹那一组**：
+线网 `accept-language`、页面 `navigator.language`/`navigator.languages`、`Intl` 的
+默认 locale。第三轮把线网那一项钉成固定值，恰好破坏了这一组，已改回透传
+（`identity::fallback_accept_language`）。
 
 同一轮只读测量（`lang-headers-20260929.txt`，起网关 + 授权桩 + 真实 SessionToken，
 加载页面并记录页面打到网关的 `/backend-api/*` 头）：
@@ -79,12 +107,11 @@ x42  accept-language='en-US,en;q=0.9'  oai-language='zh-CN'
 ```
 
 也就是说：本轮把出网跳的 `accept-language` 钉成 `zh-CN,zh;q=0.9,en;q=0.8` 之后，
-上游看到的是**线网说 zh-CN、页面 JS 说 en-US**。真 Chrome 的 `Accept-Language`
-就是从 `navigator.languages` 派生的，这一对矛盾真浏览器不会产生；而
-`oai-language=zh-CN` 与 `Accept-Language` 不同则是**正常**的——它取自账号/应用语言，
-本轮实测里 chatgpt.com 自己就是从 `navigator.language=en-US` 的浏览器发出
-`oai-language=zh-CN` 的。另外 `Intl` 的默认 locale 仍随宿主（en-US），
-只改 `navigator.language` 会留下第三条不一致。
+上游看到的是**线网说 zh-CN、页面 JS 说 en-US**——这一对才是真浏览器不会产生的
+组合（真 Chrome 的 `Accept-Language` 由 `navigator.languages` 派生），而
+`oai-language=zh-CN` 与 `Accept-Language=en-US` 并存**完全正常**：它取自账号/应用
+语言，本轮实测里 chatgpt.com 自己就是从 `navigator.language=en-US` 的浏览器发出
+`oai-language=zh-CN` 的。
 
 相关事实：
 
@@ -97,11 +124,8 @@ x42  accept-language='en-US,en;q=0.9'  oai-language='zh-CN'
 - 注入脚本只覆盖 `navigator.userAgent/appVersion/platform/userAgentData`，
   不覆盖 `language/languages`（第二轮就是这么定的）。
 
-结论：这是本轮修复 `oai-language` 与 `Accept-Language` 不一致时，用另一种不一致换来的，
-需要产品决定后再动：
-
-1. 维持现状；
-2. 连 `navigator.language/languages` 一起伪造——但 `Intl` 默认 locale 仍是宿主值，
-   要真正自洽得连 `Intl.DateTimeFormat/NumberFormat/toLocale*` 的默认 locale 一并处理；
-3. 撤掉出网跳的 `accept-language` 强覆盖，让它跟随访客浏览器（与 JS、`Intl` 自洽，
-   与原版行为一致），代价是 cfbypass 那一跳仍用固定语言、且不同访客之间语言不一致。
+处置：撤掉转发跳的强覆盖，改为「客户端带了就透传、缺失才兜底」。这样线网
+`accept-language` 与页面 `navigator.language`、`Intl` 默认 locale 三者一致；访客是
+zh-CN 浏览器时三者自然都是 zh-CN（无需任何伪造），访客是 en-US 时三者都是 en-US。
+网关自发的请求（凭据换取、清单、诊断）与 WS 握手、cfbypass 一跳仍用固定值：它们是
+网关**自己去连**上游，没有与之对应的页面 JS。

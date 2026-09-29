@@ -38,21 +38,22 @@ pub(super) const USER_AGENT: &str =
 /// `navigator.platform` 在 Linux 桌面 Chrome 的真实取值。
 const NAVIGATOR_PLATFORM: &str = "Linux x86_64";
 
-/// 声称身份的 `accept-language`：所有跳（网关自发请求、WS 握手缺省、cfbypass
-/// 浏览器）共用这一份，否则上游会在不同跳上看到同一个「用户」报不同语言偏好。
-/// 取值来自 2026-09-24 真 Chromium 同源 XHR 实录。
+/// 网关**自己发起**的请求所用的 `accept-language`：网关自发请求（凭据换取、清单、
+/// 诊断）、WS 握手、cfbypass 一跳共用这一份。
+///
+/// 转发跳（chat / 公共 CDN / 外链）**不**用它覆盖客户端，见
+/// [`fallback_accept_language`]。
+///
+/// 取值来自 2026-09-24 真 Chromium 同源 XHR 实录；注意那份实录的探针用的是
+/// `new_context(locale="zh-CN")`，所以它记录的是「一台 zh-CN 浏览器」的值，
+/// 不是 Chrome146 的固有属性。
 pub(super) const ACCEPT_LANGUAGE: &str = "zh-CN,zh;q=0.9,en;q=0.8";
 
-/// `accept-language` 的首选语言标签（`zh-CN,zh;q=0.9,en;q=0.8` → `zh-CN`）。
-/// 应用层的 `oai-language` 从这里派生，不再另写一份字面量。
-fn primary_language() -> &'static str {
-    ACCEPT_LANGUAGE
-        .split(',')
-        .next()
-        .and_then(|tag| tag.split(';').next())
-        .unwrap_or(ACCEPT_LANGUAGE)
-        .trim()
-}
+/// 应用层界面语言（`oai-language`）。**不属于浏览器指纹**：它取账号/应用语言，
+/// 真 Chrome 会在一台 `navigator.language=en-US` 的机器上发出 `oai-language=zh-CN`
+/// （2026-09-29 实测，见 `evidence/identity-acceptance-round3-001/`）。因此它与
+/// [`ACCEPT_LANGUAGE`] 是两份独立事实，不再互相派生。
+pub(super) const APP_LANGUAGE: &str = "zh-CN";
 
 /// 身份头整组。品牌列表采用 `wreq_util` 的 Chrome146 预设（Chromium + GREASE +
 /// Google Chrome，与 UA 声称的 Chrome 品牌一致）；高熵项由本表显式给出，
@@ -230,7 +231,7 @@ pub(super) fn apply_identity(headers: &mut HeaderMap) {
             HeaderValue::from_static(value),
         );
     }
-    force_accept_language(headers);
+    fallback_accept_language(headers);
 }
 
 /// 第三方目标（公共 CDN、外链代理）的身份头：`user-agent` + **只有低熵**提示。
@@ -251,22 +252,27 @@ pub(super) fn apply_low_entropy_identity(headers: &mut HeaderMap) {
             HeaderValue::from_static(hint(name)),
         );
     }
-    force_accept_language(headers);
+    fallback_accept_language(headers);
 }
 
-/// `accept-language` 归身份表，不归客户端。
+/// 转发跳的 `accept-language`：客户端带了就用客户端的，没带才用身份常量兜底。
 ///
-/// 转发路径（`proxy::strip_request_hop_by_hop`）与第三方路径（`external`/
-/// `static_assets` 的白名单）都是纯透传，于是访客浏览器的真实语言偏好会原样
-/// 送到上游：UA 与九个 `sec-ch-ua*` 说这是同一个 Chrome146/Linux 用户，
-/// `oai-language` 与注入 JS 说界面语言是 `zh-CN`，而线上这一跳却报
-/// `de-DE,de;q=0.9`——既是客户端头泄漏，也是同一身份在不同层各说一套。
-/// 覆盖放在身份组之后，因此白名单拷进来的值一定被压掉。
-fn force_accept_language(headers: &mut HeaderMap) {
-    headers.insert(
-        HeaderName::from_static("accept-language"),
-        HeaderValue::from_static(ACCEPT_LANGUAGE),
-    );
+/// 界面语言 [`APP_LANGUAGE`] 不是浏览器指纹，`accept-language` **才是**——真
+/// Chrome 的这一项由 `navigator.languages` 派生，与页面里 `navigator.language`、
+/// `Intl` 的默认 locale 天然一致。在这一跳强行钉成固定值，上游就会看到
+/// 「线网说 zh-CN、页面 JS 说 en-US」这种真浏览器不会产生的组合
+/// （2026-09-29 真实上游验收实测到这一对，见
+/// `evidence/identity-acceptance-round3-001/`）。
+///
+/// 兜底而不是「缺了就留空」：网关也会被非浏览器调用方（探针、脚本）访问，那些
+/// 请求没有 `accept-language`，而上游看到的应当是「一条真 Chrome 的请求」。
+fn fallback_accept_language(headers: &mut HeaderMap) {
+    if !headers.contains_key("accept-language") {
+        headers.insert(
+            HeaderName::from_static("accept-language"),
+            HeaderValue::from_static(ACCEPT_LANGUAGE),
+        );
+    }
 }
 
 fn remove_client_hints(headers: &mut HeaderMap) {
@@ -383,8 +389,8 @@ pub(super) fn api_baseline(base: &url::Url, method: &Method) -> Result<HeaderMap
         ("sec-fetch-dest", "empty"),
         ("sec-fetch-mode", "cors"),
         ("sec-fetch-site", "same-origin"),
-        // 应用层的界面语言，取 `accept-language` 的首选标签，不另写字面量。
-        ("oai-language", primary_language()),
+        // 应用层的界面语言，与 `accept-language` 是两份独立事实（见 [`APP_LANGUAGE`]）。
+        ("oai-language", APP_LANGUAGE),
     ] {
         headers.insert(
             HeaderName::from_static(name),
@@ -617,41 +623,42 @@ mod tests {
         assert!(!headers.contains_key("sec-ch-ua-form-factors"));
     }
 
-    /// `accept-language` 只有一份：网关自发请求、WS 握手与 cfbypass 共用它，
-    /// 而且**客户端给什么都不算**。
+    /// 转发跳的 `accept-language` 跟随客户端（真 Chrome 的该项由 `navigator.languages`
+    /// 派生，与页面 JS 报的语言一致），只在该头缺失时兜底；界面语言与它无关。
     ///
-    /// 转发与第三方路径都是纯透传（`proxy::strip_request_hop_by_hop`、
-    /// `external`/`static_assets` 的白名单），此前访客浏览器的真实语言偏好会原样
-    /// 送到上游：UA 与九个 `sec-ch-ua*` 说这是同一个 Chrome146/Linux 用户、
-    /// `oai-language` 与注入 JS 说 `zh-CN`，线上这一跳却报别的。
+    /// 此前这里把转发跳钉成身份常量，理由是「`oai-language` 说 zh-CN 而线上报
+    /// de-DE」。该理由不成立：`oai-language` 是账号/应用语言，**不属于浏览器指纹**；
+    /// 钉死的结果反而是上游看到「线网 zh-CN、页面 JS en-US」——真浏览器不会产生的
+    /// 组合（2026-09-29 真实上游验收实测到这一对，见
+    /// `evidence/identity-acceptance-round3-001/`）。
     #[test]
-    fn accept_language_has_a_single_source() {
-        let base = url::Url::parse("https://chatgpt.com/").unwrap();
-        let get = api_baseline(&base, &Method::GET).expect("基线构造失败");
-        assert_eq!(get["accept-language"], ACCEPT_LANGUAGE);
-        // 身份组与低熵组都要压掉客户端的值，否则访客的语言偏好会泄漏到上游。
+    fn accept_language_follows_the_browser_and_is_independent_of_oai_language() {
+        // 客户端带了就原样转发，且只能有一个值。
         for apply in [
             apply_identity as fn(&mut HeaderMap),
             apply_low_entropy_identity as fn(&mut HeaderMap),
         ] {
             let mut headers = HeaderMap::new();
-            headers.insert("accept-language", HeaderValue::from_static("de-DE,de;q=0.9"));
+            headers.insert("accept-language", HeaderValue::from_static("en-US,en;q=0.9"));
             apply(&mut headers);
-            assert_eq!(headers["accept-language"], ACCEPT_LANGUAGE);
+            assert_eq!(headers["accept-language"], "en-US,en;q=0.9");
             assert_eq!(
                 headers.get_all("accept-language").iter().count(),
                 1,
-                "只能有一个 accept-language：追加而不是覆盖会同时暴露两套语言"
+                "追加而不是保留单个值会同时暴露两套语言"
             );
+            // 非浏览器调用方没带这一项：兜底成真 Chrome 会发的形状。
+            let mut bare = HeaderMap::new();
+            apply(&mut bare);
+            assert_eq!(bare["accept-language"], ACCEPT_LANGUAGE);
         }
+        // 网关自发的请求仍用固定值——它们是网关自己发的，没有对应的页面 JS。
+        let base = url::Url::parse("https://chatgpt.com/").unwrap();
+        let get = api_baseline(&base, &Method::GET).expect("基线构造失败");
+        assert_eq!(get["accept-language"], ACCEPT_LANGUAGE);
+        assert_eq!(get["oai-language"], APP_LANGUAGE);
         assert!(REQUEST_HEADER_ORDER.contains(&"accept-language"));
         assert!(NAVIGATION_HEADER_ORDER.contains(&"accept-language"));
-        // 应用层的 `oai-language` 必须是 `accept-language` 的首选标签，不是第二份字面量。
-        assert_eq!(get["oai-language"], primary_language());
-        assert!(
-            ACCEPT_LANGUAGE.starts_with(primary_language()),
-            "首选标签必须真的是 accept-language 的开头"
-        );
     }
 
     /// 网关自发请求与转发跳必须对同一个源声明**同一套**压缩能力。

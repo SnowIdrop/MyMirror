@@ -264,6 +264,10 @@ pub(super) async fn connect(
 /// 握手里由本层提供的头，取值一律来自身份表——客户端的同名头不参与。
 /// 逐跳头、握手自有头与 `origin` 不在此表内（见 [`ws_shape_headers`]）。
 /// 与证据的绑定由库内单测锁定。
+///
+/// 这里用固定 `accept-language` 是对的而转发跳用客户端的（见
+/// `identity::fallback_accept_language`）：本表描述的是**网关自己去连**
+/// `ws.chatgpt.com` 的握手，没有与之对应的页面 JS；转发跳则是替访客浏览器出网。
 const WS_HANDSHAKE_HEADERS: [(&str, &str); 5] = [
     ("pragma", "no-cache"),
     ("cache-control", "no-cache"),

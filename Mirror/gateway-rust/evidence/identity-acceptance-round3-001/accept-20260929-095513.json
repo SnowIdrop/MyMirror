@@ -1,0 +1,2683 @@
+{
+  "probe": "browser-driven-acceptance",
+  "started_at": "2026-09-29T09:54:47.014737+00:00",
+  "credential": "session_token",
+  "credential_sha256": "d8575f4253ec99aed45a44e2b0603f349ce606b12ee7aba86f96fc7a83757a22",
+  "network": {
+    "handoff_status": 200,
+    "page_title": "ChatGPT",
+    "html_mentions_access_token": true,
+    "identity": {
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+      "platform": "Linux x86_64",
+      "language": "en-US",
+      "languages": [
+        "en-US"
+      ],
+      "brands": [
+        {
+          "brand": "Chromium",
+          "version": "146"
+        },
+        {
+          "brand": "Not-A.Brand",
+          "version": "24"
+        },
+        {
+          "brand": "Google Chrome",
+          "version": "146"
+        }
+      ],
+      "mobile": false,
+      "ua_data_platform": "Linux",
+      "architecture": "x86",
+      "bitness": "64",
+      "full_version": null,
+      "full_version_list": [
+        {
+          "brand": "Chromium",
+          "version": "146.0.7680.177"
+        },
+        {
+          "brand": "Not-A.Brand",
+          "version": "24.0.0.0"
+        },
+        {
+          "brand": "Google Chrome",
+          "version": "146.0.7680.177"
+        }
+      ],
+      "model": "",
+      "platform_version": "",
+      "timezone": "UTC",
+      "timezone_offset": 0
+    },
+    "composer_found": true,
+    "create": null,
+    "reply": null,
+    "stop": null,
+    "rename": null,
+    "history_after_reload": null,
+    "delete": null,
+    "websockets": [
+      {
+        "url": "ws://127.0.0.1:37851/ws-chatgpt/p4/ws/user/user-<redacted>?verify=<redacted>",
+        "frames_sent": 1,
+        "frames_received": 1,
+        "bytes_sent": 298,
+        "bytes_received": 371,
+        "closed": false
+      }
+    ],
+    "console_errors": 3,
+    "console_error_samples": [
+      {
+        "text": "Should not call addAction before initialize",
+        "url": "http://127.0.0.1:37851/cdn/assets/4813494d-nsss7fxurseygool.js"
+      },
+      {
+        "text": "Datadog Browser SDK: SDK initialized on a non-allowed domain.",
+        "url": "http://127.0.0.1:37851/cdn/assets/2340486e-kfapbrw5efyhrjct.js"
+      },
+      {
+        "text": "RecoverableError: Minified React error #418; visit https://react.dev/errors/418?args[]=text&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.\n    at script (<anonymous>)\n    at v8e (http://127.0.0.1:37851/cdn/assets/4813494d-nsss7fx",
+        "url": "http://127.0.0.1:37851/cdn/assets/4813494d-nsss7fxurseygool.js"
+      }
+    ],
+    "requests": [
+      {
+        "method": "GET",
+        "path": "/api/not-login",
+        "status": 302,
+        "content_type": ""
+      },
+      {
+        "method": "GET",
+        "path": "/",
+        "status": 200,
+        "content_type": "text/html"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/root-hceewa4v.css",
+        "status": 200,
+        "content_type": "text/css"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/root-kdmspc1p.css",
+        "status": 200,
+        "content_type": "text/css"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/conversation-small-f0lwil3j.css",
+        "status": 200,
+        "content_type": "text/css"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/manifest-80b15ad7.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/entry.client-dlj8ydto.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/f025431a-ehagpvg3m4e1cduv.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/4813494d-nsss7fxurseygool.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/2340486e-kfapbrw5efyhrjct.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/d42ee766-i321p4ca1ogkck4a.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/root-he0delv3.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/_conversation-bpob9ck3.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/8b34dbc2-ex22ttr6dfjnek6o.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/conversation-small-il4f9f078deiaqsx.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/30901919-blfi4ig5w3um9y6d.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/c470f5ab-erx86um09pinze9f.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/82782bc9-jcltcz94to5x2k6m.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/0e5afe53-zdey6w4vk3orcu0v.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/_conversation._index-gokvmr2d.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/api/user-blocked-paths",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/sprites-shell-f705d3e2.svg",
+        "status": 200,
+        "content_type": "image/svg+xml"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/sprites-composer-ece24c50.svg",
+        "status": 200,
+        "content_type": "image/svg+xml"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/eec4c631-gmajv8xoj8tlzkub.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/5ab42519-bhes6xerjxplaiyp.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/e6911992-kfc01pk08alxqeyl.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/88605b43-nranmlkt6wbdnxxx.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/be58453f-llgktx0jjtde1xfc.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/fd7f274b-ckv1o3jceidvpspd.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/noise-watercolor-m3j88gni.webp",
+        "status": 200,
+        "content_type": "image/webp"
+      },
+      {
+        "method": "GET",
+        "path": "/api/auth/session",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/favicon-l4nq08hd.svg",
+        "status": 200,
+        "content_type": "image/svg+xml"
+      },
+      {
+        "method": "POST",
+        "path": "/ces/v1/rgstr",
+        "status": 202,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/user_granular_consent",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/accounts/optimized/check",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/me",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/accounts/check/v4-2023-04-27",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/8d5bfd5c-mdfgb2l5s6uerod2.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/root-kdmspc1p.css",
+        "status": 200,
+        "content_type": "text/css"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/c2675c8c-jwsxhbydo0b4kgag.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/global-modals-ce80830w.css",
+        "status": 200,
+        "content_type": "text/css"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/9435784d-ibc7dqkk7s7w7hld.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/conversation-small-f0lwil3j.css",
+        "status": 200,
+        "content_type": "text/css"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/3c02c844-hfyjffm8pk1cpumk.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/68039cf3-jx2chdsphmjdy3vx.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/fc0b9bf1-o0ko1pce29o6vhr1.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/984a38d2-e8igt7802ifxjb28.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/b5525e3f-o7ci5hmzgabpnw8u.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/ddedd6e4-f1ij0hf12w5sjc87.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/79bfb0e2-ligzldyfaiurk2c9.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/7a2f851a-aobbitk2lptalbvb.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/4fea45e2-7wfh8k1y28vfmneb.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/19cb8032-rmwv5emaj85dwp70.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/45a9607d-mdeas6tj5srdgd7l.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/41a2fdf3-jql1lt26mob78phc.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/c19d65aa-iubr98nn6pufx14d.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/96098dcc-g7fk4lf1enlkzdjf.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/f6a81ab7-o135izlycxpdr2jc.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/f8d34c7f-jpji2ne6kvfjbshq.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/0fbccedd-ans51zihwtyfihft.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/e3127a4c-eznrq8742h9uj10e.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/4bcd40e4-hk2mdv8igb4ef1rt.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/051ead45-hajnnq1kur4ayj67.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/7bed292f-dnq6csxcwepvcmqq.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/407dfab1-k5bvthorgne0uxca.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/85f3cacd-m9h1aswpvyhib08x.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/832a9bb5-jiaqw3e2btmd63px.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/4dbef424-d0ki4qhkdkvmopm4.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/6cef767a-ihsc97gpaiuba9md.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/a366adf3-go9rng7cpl73pkkv.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/cot-message-chunk-b8hse3v2.css",
+        "status": 200,
+        "content_type": "text/css"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/a9ba2cca-ixgn6gqtbskv1y0t.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/3e7baffa-bj5y262rix416fx4.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/accdf855-nnjekf17txib4qbi.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/41426670-ny6hbxdwohyu9ur7.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/f95c074c-jerc41q4dsql7s4h.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/5fbbc85f-d6osf2scchcv5oa2.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/f5cccfb7-lfcrwwkj0fjuk1cn.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/65f98121-dgqh6zfowjf2khf0.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/0f8b28f8-6a8o4maz5w2frru3.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/30f82755-evie6sxb24lah0k1.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/79f982eb-buoqhk7glr24aalg.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/85557f11-l8rllt4o1xj9scd3.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/e4fe0dae-lzw9421tvo8gg0ik.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/a0c3e3cc-mleop37dml8db38z.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/4f3b7bd2-oc9sx0fo40jt9hnk.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/1878c176-mk2v93osssto32s2.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/3cc06638-l9alsfsrnyzr9b1q.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/e00155ab-brbh0sgdx50r0hxu.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/0fd8fe12-7j79fmczleakn2oz.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/428e79be-dc9ikrk24ldqy1rx.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/ccb1dc91-g8dt9sqsld3bdhe8.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/07b12a2d-irz2z3nlbukfnl9i.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/d453dc2b-g6i7r8u5y32qh8xu.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/ca6c2544-pfdppu7pen74p5gv.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/99cfde93-hh0h3g2dsaijhpy2.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/620d303b-fl68xkbefgwlex3u.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/e3b746a6-nuivue3uvhyihd87.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/2ea88c7a-lxyla91xs6iv7odf.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/8d846022-abyk2bvrp61fwgqi.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/91969468-byn35wwx0fa0b1zc.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/4d271a7b-k9r6xdzytrfc2s0e.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/e1a66d2b-nra2mj58jlqvbk9u.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/4c0f1f8e-hpe5bwwwtcngtm9s.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/3509739a-bi45vccmv7dvmlya.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/25a66342-e7o1svf2jpqsa4o9.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/25a66342-j7cd8h2bqav7weve.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/84983163-dpqpuob6xvkn2gd4.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/7517017f-mkkxmp5ybhsypptl.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/58bafdef-mbwrfbaewx4714va.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/e01e2324-hc2652hbh41ydwu7.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/5dc32f04-hvjt16khytkcg2hn.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/40748e50-l2e8fp99i3lo0fyk.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/app-block-trigger-actions-hxl87txx.css",
+        "status": 200,
+        "content_type": "text/css"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/56dee4d8-h9fihknwh73zrxba.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/72bb039a-j49z2mjmrxb7lr28.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/9eb56efa-ccl6yflrivox4tvl.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/cc79834b-fi0hayvgp69tuxy0.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/ec72420d-od6ojrink10tvcvm.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/560eefd0-ch7ywqkb13mjfv0d.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/3dcf3d3b-ia4flyaolsbbex5k.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/9a717608-mw2k6u0nfjufv3qc.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/55904901-g7jmm2tuwdhx95hn.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/02df22f1-gco2uwllry2klmr9.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/2071ed62-gulc6uso3zs8w76r.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/109df894-gxdhmswur7q16rca.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/eb34548a-m28yc16reetxx3zk.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/5b203e1c-ddl4gjbqopt274ub.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/f7e0bf69-nwix8hepohgugxss.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/824d80d7-e685x0wk5nl0ee3j.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/f254c486-8r2av2q3dmf2x15u.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/e3349b6b-m07mcn5xfxbwowwo.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/1c86a5ac-nx9yb70uuacuoesl.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/6601bf01-h8vtcdrp0od3t6f3.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/d86ca127-m57nkvdilzo3hbrd.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/67fb493c-fwjwgdgpnj7d87jd.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/cd7c6193-bejqxnzp60kvpfpp.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/08b6430b-fygn3qy4qrugfaxr.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/4143cd04-mxxwo8zyklogep10.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/b4b33d24-nx26dr5gnos4f7ej.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/31cec8d8-ejzahhq8v425zkie.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/54e99289-lbxwwrqqqnh3xmdw.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/2745b5be-dy0folhl1r9wn8ro.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/72e0c7a5-krzjafdx0yfyzo8i.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/b9e1b3a9-jftoek941glpnsm2.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/cc275b97-d66qn36etwf2svci.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/5ab42519-f3m5arg5hmimpgc5.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/e0691314-j25je0r3ld54d0o7.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/239f44f1-h6a3zst8h1lh173d.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/5be378a2-l2r83s0d2ll43tkn.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/c8f38d6c-ew8sila7wnh8icdy.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/58ab20f4-cosmy1a9wvea7m3j.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/2d4fbc67-oomrju18dxnphi7k.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/af004db9-diruwwc2nix9r5ys.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/9a292b8a-m25hya1ctjvcs1es.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/c157dfba-gk3si8melkqkx385.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/a89794b1-nhfjj9axvmie9m9z.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/3b8bd72c-e0zuyp4sau98vjx2.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/e04c699b-j48y14n9mc3j5kv5.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/19ad7347-c5ihn1uctzxvvo6y.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/96239e35-f8p8aayp2sfd70dk.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/6fd89734-ny5i76ta4bni7dqo.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/81fe9c28-gwatyzk4c01x8sl8.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/4740ae63-nllnggoz5g7b4n8l.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/da39060d-gn1rimgsuq617uis.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/conversation-small-f0lwil3j.css",
+        "status": 200,
+        "content_type": "text/css"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/f1324c00-li28iu37pw5uyi3i.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/ac827dee-ejwtq4vnqug0dh3l.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/6afb0137-mwh2o65hjax75yvg.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/4e1f6607-x550g3150dnj4eyi.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/0379e822-no2nybp22gdpa2z0.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/3ed411a3-fgoav0s2vrsoci1c.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/bcf56d39-bisf9u0y6uaww96k.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/e6fa0362-be5av005bujkdwnx.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/4e18e912-lymdusk6xzhcrj11.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/77d2caa0-ntpvm4udm7i91skd.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/2c0ba89a-dn8s2l7eo8fqhitt.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/e1d1ae28-f8mwgkniyxmea2wl.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/eda93c10-nalao2kpqvo9q9ni.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/6fd89734-n7ayezw1arh9bv9s.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/e802fc66-gtgi2wbk4v1sva0t.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/9521ff6d-gez3xee3fh413uia.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/4775c8e0-ldqt8sd5osglndc6.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/44d7f912-b27h4e9am2bngp9e.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/favicon-l4nq08hd.svg",
+        "status": 200,
+        "content_type": "image/svg+xml"
+      },
+      {
+        "method": "GET",
+        "path": "/api/user-blocked-paths",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/favicon-l4nq08hd.svg",
+        "status": 200,
+        "content_type": "image/svg+xml"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/settings/user",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/system_hints",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/system_hints",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/system_hints",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/models",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/calpico/chatgpt/rooms/summary",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/pins",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/conversations",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/aip/first-party/eligibility",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/settings/is_adult",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/profiles/me",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/settings/voices",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/checkout_pricing_config/configs/US",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/gizmos/snorlax/sidebar",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/gizmos/bootstrap",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/user_surveys/active",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/user_system_messages",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/client/strings",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/apps/sources_dropdown",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/images/bootstrap",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/amphora/notifications",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/prompt_library/",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/celsius/ws/user",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "POST",
+        "path": "/backend-api/accounts/backfill_workspace_owner_domains",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/internal-upstream/https/cdn.auth0.com/avatars/ai.png",
+        "status": 200,
+        "content_type": "image/png"
+      },
+      {
+        "method": "GET",
+        "path": "/ces/v1/projects/oai/settings",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/da6c1aaf-cpxdo98bzq70s4f0.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/f011c0a9-f9kc9to6waq3dyy3.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/ffa880af-gea5fhqmc0wuaq8l.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/f40d6676-kyum3gvqmttiywda.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/c88606bd-ggsbgiakatupke2j.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/baf95bf2-it28ghfp4742fw76.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/tasks",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/user_segments/codex_surface_usage",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/user_segments",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/pageConfigs/billing",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "POST",
+        "path": "/backend-api/conversation/init",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "POST",
+        "path": "/backend-api/sentinel/chat-requirements/prepare",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "POST",
+        "path": "/ces/v1/rgstr",
+        "status": 202,
+        "content_type": "application/json"
+      },
+      {
+        "method": "POST",
+        "path": "/backend-api/bazaar/obi/sync-token",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/tpp/default-tab-recommendation",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/639d2afb-5evd5vphanb086oj.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/b4c3a217-hyjv69nttst396t5.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/dcadf3b0-kr231k5yxox4hz06.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/4c806318-lybo2wph1sqme8vo.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/ansi-1f6vhsjh.css",
+        "status": 200,
+        "content_type": "text/css"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/58cf4120-lygasv70jfc0kd4l.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/2af37e0b-kkwh6edix9jj8ozx.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/5f4d7fa0-ocn5345zhens0tw2.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/dd81d43b-ec3m3syhgs0lq2p4.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/cf64444f-ihhce5l5cf5oji19.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/ab92372e-ni5obblgs1baelmy.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/94e0eb8c-kvygh9hvlo5gqei0.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/0f28d127-jakcqgbdcbpwfo5v.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/e7a416e4-dgaiirzb6nr8wokb.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/e8b55dd1-h5thk9tmnun3yksr.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/9e18a103-o7pknet8f33xgw7r.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/3f385189-n3sls8prf0uwjnan.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/3a774aaf-n8l1jee0oktjtoed.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/3625fe1a-hzulzzdzyblni4ou.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/06da37f5-r4067zu834yo2oxd.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/22bcb108-gxujz2lgp3hc41he.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/60549c99-ljg58x2g4xar4kyp.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/ce52ae67-h7tlc5oeh6o4lhgs.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/8baac9c1-boxwf11i9h39zpbg.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/dccfc4ad-lwm8ied1xszjwt80.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/25e69e8b-iyrd20bzxtxmqu5j.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/bd1b82bd-fa4jvint1obmwuqh.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/819fa1c4-f1a424rdymp9vqqt.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/23ad950b-dlfiqp0jphburhw0.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/8742b478-nf69cbi7ob0ymzvl.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/32a2db56-gchp8yi8ifry1v9n.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/70ccb607-vsbuteooy9bqs28n.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/4aa1bb90-vh5li66nh8qpus2o.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/5422a199-ohc0ujx944q7esd3.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/f56d3903-doe5inczvnf0kf1d.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/5ab42519-k568uuuaxbejj6ab.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/92cd10e6-jd7sq57c5qg06ezl.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/d8931810-gqjteiqatkwhziaw.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/5ab42519-c0h67prlnh3564t6.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/8d846022-bgzrkcq1z7rqzuqk.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/2abddabb-ofekf3etx8mgf2t4.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/32f10268-fo6m6fsr0nygn40p.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/7ec8c41d-fzo7y1yoclecgnnt.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/5fe72b0f-mpesntcup5zqacug.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/e87af100-m3ta2gmlqny70e8e.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/922a3d67-iqxi0z4i7q54zczz.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/b7324575-gdscc6ek8fhe8nxj.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/24ecc29f-k8hrq64kfwhn2uwe.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/cec13ce4-lfrqkbzqz5mqv4lk.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/18e7d84e-fgbdlfoqyhffhmmz.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/76b5a357-benxdh69028dkycz.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/2ab5aa6c-l3b8fl92bttrwunu.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/9e6b8179-j6ipyecr1q2xkids.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/c01cad0d-kcla04z8lzj7ivsr.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/0d44a401-e8lp0fitm71qcug3.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/ff057340-ji10gzogmvcmvlfy.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/8becd41d-fd25z1j5t9ump2sw.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/ae2c873a-ihbji8bq9qvvecii.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/70c3dee7-lsaf5xtpkkhxv4cr.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/d4c3e8a1-fwrvhqh6h5dyi0r9.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/bf44528e-bn99w5w3laie47md.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/c0abab23-ouaiwdco4fzbnafj.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/code-block-dop2czwo.css",
+        "status": 200,
+        "content_type": "text/css"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/a965fc59-gmcoed08nsbf08ad.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/44246d2c-lmvlavpa0h9fxz8q.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/31e01dd8-nm0xwicavdmlexka.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/4117f58d-bne8m6meoi7ctykc.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/203cffdc-nxsst5cktc9rmv1z.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/25a66342-irp9lmx77qt02go5.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/ba2d71b9-hqvgsoyis73nxgjz.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/a90e4a9a-nqrt5uzpd40azert.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/27597608-cgligv3im8nya5fb.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/ee696724-h3gx6ezk9vsn3bmt.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/9ec4d3b5-nfl0fnqchz1bxseg.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/a7704736-ik41h1hamzzk4y9p.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/react-cj2gxmrc.css",
+        "status": 200,
+        "content_type": "text/css"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/e54430f0-ljs97z4mrx2o7m1d.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/2d39f94f-cxhp6iica3uueo6b.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/multiplayer-gpibt2qn.css",
+        "status": 200,
+        "content_type": "text/css"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/4748c0bc-bik415supsq8zrrc.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/0631b696-c1n2gv67qpxciogf.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/781797c9-oe68u1vm05jxeq62.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/2ac7f54f-02zd53c9kvejxgg3.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/296caa51-fhgatfshezf4jijx.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/writing-block-provider-lbnz1gc0.css",
+        "status": 200,
+        "content_type": "text/css"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/2f7309c2-cb6h8u5sd50lox6q.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/920a0b2e-giqqafytu9pd2i1d.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/12a8bcb0-of58t13wgq4rgbiv.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/429593da-eqm1ovbgw58f6jx5.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/fc5e7148-f2w9wi4g63zo4tgy.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/1af2f3f4-boz8juasq043aral.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/ede2e481-m4h36uewt14nzb7s.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/0e8433b5-i7tz8e643s5b017v.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/3acfc0b4-fs2svnq0y03859gt.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/058a5ba2-ox4q4fe454tijumh.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/017c9c5c-bsuq7xu52sui8wtp.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/1a5e078c-d6u9anxbff4lcbv2.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/57f71cac-do3xxt7ydtlendqw.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/5798741d-gy694h0dvfqm8xpx.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/a91a940c-csw2p4p87767eyi1.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/4b2c6e28-et1gkkkwazt1gow8.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/2120deb9-bg1vfhibm91ti5bk.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/99a768a6-926ew1bd89u7knaa.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/3e88eafe-l9j1counrz0vtwfz.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/49b0ba35-o1hateyvdqwyvrwx.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/6cf03d47-igvsn6s18mivqqtj.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/35710e11-g7hskoeswehus56r.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/1c9ccc41-mmb919csrm6wf7gq.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/writing-block-gwgymy54.css",
+        "status": 200,
+        "content_type": "text/css"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/c7a1f949-etvir4y32rbn2ma0.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/b5901a24-kwmj58a86hxjjynb.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/f53a4715-cg2a60or0ey82pun.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/bd043fcd-g7hbm2ichqqwlkb2.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/5b8cbee9-bcw0k9iob7jdvkcq.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/d005bbef-c3ophv2vftc54p0k.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/d36fbe92-b3pgvhe9i7bwpial.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/c4153f57-f31ctkvfq8ixyapa.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/2ab871c9-jku90it87d5obsqn.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/client-defined-widget-gdqdmhro.css",
+        "status": 200,
+        "content_type": "text/css"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/023ae2e0-n92ol8ma1rzzvbu8.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/5983c1e5-n6x2wdealcj7if8q.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/e7d6bdc9-g5zha8eeda4i4g4g.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/c6ec27cf-nils2xfc4fgfoxhc.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/0e629c03-mhw44cg3xxbp6i46.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/e35f67a6-drjr7n10cfvblsmf.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/bb871603-o19xzqyadtztcx49.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/a10c6989-jnyr50iehjc9g1vp.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/9d32acbb-we0368upfsljszs4.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/44fdb285-hs6vws1aiyiv4oun.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/540191af-d42qzsqpygl9peaq.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/b9e74381-h0z6cp6y2ptcf91m.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/86793a97-dwu2i50pks9c7jwg.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/183f19de-khglhte100f2bolc.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/656cec6a-chot4vecztwv8mic.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/cb56d84a-nz2cnraax8tznbq3.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/image-viewer-b1e7tsj7.css",
+        "status": 200,
+        "content_type": "text/css"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/d93502a4-kqruznimbt1knkgk.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/a35b0b5c-ickvy0l6rqhmj2bj.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/498cd593-kjxpluxbi5x5lwo2.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/74802342-jzaw3ijt2kxjge18.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/b7675d69-je86n8m3kujalntp.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/table-components-b39fqymt.css",
+        "status": 200,
+        "content_type": "text/css"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/2b67bcd8-kcrnyljhh585avko.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/2f772deb-f61x3vfmiteuys1f.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/1362c49f-lntdhv08x3vlf56k.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/8e0d0293-coo8w3b2w5kxnab0.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/a5f68020-3zhcv3wabati5fgz.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/f4222f0c-vnkobpiznh4ireq7.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/05d28061-cjbzcio224dogs4l.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/2773dd5c-kc38a1ug6hp49c67.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/ba9404f9-kpm6bett08oq8bjf.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/ba13b013-korrmn6t5fkipfn8.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/e19454c3-dsqcsj6z4259l84e.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/c2d4b446-mzi0t55809wdoexw.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/23de51ef-i93zsw234ipee7tz.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/ae36c773-k8bays30mejymuue.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/54d21dcb-lfyz6tbrdut3o4tn.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/e1b7d567-ljhnjgw1dxbajhla.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/427e2db6-fjz0tzub92fhssiu.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/0a3e27b8-j1v9fig02r8hikms.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/93027c7b-cy33bvx15nub6pvl.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/830d32ee-c2d2edsqacsqm2cy.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/da07a0d0-frylj5nr5zq92s2i.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/23264968-j07vtpvoc36cltd2.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/4e933750-dyknska0t9ebi2jc.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/f7f35c37-kwd1poepu8s0tndy.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/12fa2cb9-i29dqhwv35o1chyq.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/FormattedText-j9z3n49x.css",
+        "status": 200,
+        "content_type": "text/css"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/81cf6f27-fidsffwtjkjq3xup.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/4726a1bc-obhbpn32bgghy68s.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/e8ccfb70-l5yn9hcq1uiwgfzh.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/385934b9-ifamf8m8a6ulyucv.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/ad0d1100-ead1f4i05ylz2dbh.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/a9c4a648-lwtj3iriq42nqw0o.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/3a792387-lzmb3xuboq4tlf8j.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/411304d4-gj7pkaslh4wy79gx.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/ba0ab623-lxim4rm4wdb0if1s.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "POST",
+        "path": "/backend-api/f/conversation/prepare",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/api/user-blocked-paths",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "POST",
+        "path": "/backend-api/f/conversation/prepare",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "POST",
+        "path": "/backend-api/f/conversation/prepare",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "POST",
+        "path": "/realtime/wm",
+        "status": 201,
+        "content_type": "application/sdp"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/memories",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/settings/user",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "POST",
+        "path": "/backend-api/f/conversation/prepare",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/api/user-blocked-paths",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "POST",
+        "path": "/ces/v1/p",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "POST",
+        "path": "/ces/v1/t",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "POST",
+        "path": "/ces/v1/t",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "POST",
+        "path": "/ces/v1/i",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "POST",
+        "path": "/external/https/bzr.openai.com/v1/obi/sync",
+        "status": 204,
+        "content_type": "",
+        "transport_error": "net::ERR_ABORTED"
+      },
+      {
+        "method": "POST",
+        "path": "/backend-api/sentinel/chat-requirements/finalize",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/api/user-blocked-paths",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/d7cbfb33-e6y4ex98b3tob1qd.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "POST",
+        "path": "/backend-api/promotions/no_payment_trial_automatic/claim",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/api/user-blocked-paths",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/watercolor-cxf1rp88.webp",
+        "status": 200,
+        "content_type": "image/webp"
+      },
+      {
+        "method": "GET",
+        "path": "/cdn/assets/voice-visualizer-shader-precompiler.worker-CIdmdSjo.js",
+        "status": 200,
+        "content_type": "application/javascript"
+      },
+      {
+        "method": "GET",
+        "path": "/backend-api/beacons/home",
+        "status": 200,
+        "content_type": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/api/user-blocked-paths",
+        "status": 200,
+        "content_type": "application/json"
+      }
+    ]
+  },
+  "cross_user": null,
+  "cleanup": null,
+  "notes": [
+    "--no-write：只观察页面与 WebSocket，未发送任何消息。"
+  ],
+  "login": {
+    "status": 200,
+    "content_type": "application/json",
+    "body_bytes": 203,
+    "body_sha256": "9f239f30619742e01f85fcd0d88d3cd05ec52d468b813322cecef0c4d0cd05c5",
+    "body_truncated": false,
+    "elapsed_ms": 1534,
+    "html_like": false,
+    "upstream_blocked": false,
+    "json_top_keys": [
+      "chatgpt_username",
+      "login_mode",
+      "login_url",
+      "message"
+    ],
+    "label": "login:probe-accept",
+    "route": "/api/login",
+    "method": "POST"
+  }
+}
