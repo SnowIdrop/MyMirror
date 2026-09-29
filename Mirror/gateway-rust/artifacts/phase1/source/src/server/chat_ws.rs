@@ -143,40 +143,49 @@ pub(super) fn upstream_url(base: &url::Url, path: &str, query: Option<&str>) -> 
 }
 
 /// 上游握手头：与会话绑定（会话凭据在前、jar 捕获项其次、CF 白名单在后），
+/// 握手的**形状**部分：不含任何凭据，因此可以在单测里直接对着浏览器实录断言
+/// （见 `ws_handshake_sends_no_header_the_browser_never_sent`）。凭据头
+/// （device/cookie/authorization）由 [`upstream_headers`] 在其后追加。
+///
+/// 真 Chromium146 的 WS 握手头（`evidence/browser-header-order-002.json` 的 `ws`
+/// 项）。握手的形状**不是**「HTTP 形状 + 升级头」：
+///
+/// * 不带任何 `sec-ch-ua*`。这不是「明文回环上浏览器不发 UA-CH」的取样限制——
+///   补采里同一个会话、同一个源已经通过 `Accept-CH` 授权过高熵提示（同页导航
+///   带全组九项可证），握手依然一个都不发。两轮语言注入方式下一致。
+/// * 不带 `referer`。浏览器给 WS 握手加 `origin`，但从不加 `referer`。
+///
+/// 因此这里既不调 [`identity::apply_identity`]（那会写进九个 `sec-ch-ua*`），
+/// 也不再合成 `referer`：发一组真 Chrome 在这条连接上从不发的头，比 UA 说
+/// Linux 更好认。身份仍然要声称同一个用户，所以 `user-agent`/`accept-language`/
+/// `accept-encoding` 直接取身份表的常量，**不**看客户端给了什么。
+///
+/// 逐跳头（host/connection/upgrade）与 `sec-websocket-key/version/extensions`
+/// 由传输层按自己的握手重建；顺序由 [`identity::ws_orig_headers`] 套用。
+fn ws_shape_headers(client: &HeaderMap, origin: &str) -> Result<HeaderMap> {
+    let mut headers = HeaderMap::new();
+    for (name, value) in WS_HANDSHAKE_HEADERS {
+        headers.insert(name, HeaderValue::from_static(value));
+    }
+    headers.insert(
+        "origin",
+        HeaderValue::from_str(origin).context("origin 头无效")?,
+    );
+    // 子协议是唯一由客户端决定的一项：上游没被要求时不能凭空声明。
+    if let Some(value) = client.get("sec-websocket-protocol") {
+        headers.insert("sec-websocket-protocol", value.clone());
+    }
+    Ok(headers)
+}
+
 /// origin/referer/UA 按 chat 规则固定，镜像 token 与客户端 cookie 一律不转发。
 async fn upstream_headers(
     app: &App,
     auth: &proxy::ChatAuth,
     client: &HeaderMap,
 ) -> Result<HeaderMap> {
-    let mut headers = HeaderMap::new();
-    // 真 Chromium 的 WS 握手头（2026-09-24 服务端实录，顺序 pragma → cache-control →
-    // user-agent → accept-language → origin → accept-encoding）：浏览器给的值优先，
-    // 缺省时补真实 Chrome 的固定值，这样非浏览器调用方也不会发出残缺握手。
-    // 逐跳头（host/connection/upgrade）与 `sec-websocket-key/version/extensions`
-    // 一律不转发：由传输层按自己的握手重建。client hints 同理交给身份整组覆盖。
-    for (name, fallback) in WS_FORWARDED_HEADERS {
-        match (client.get(name), fallback) {
-            (Some(value), _) => {
-                headers.insert(name, value.clone());
-            }
-            (None, Some(value)) => {
-                headers.insert(name, HeaderValue::from_static(value));
-            }
-            (None, None) => {}
-        }
-    }
     let origin = proxy::chat_origin(&app.config.upstream)?;
-    headers.insert(
-        "origin",
-        HeaderValue::from_str(&origin).context("origin 头无效")?,
-    );
-    headers.insert(
-        "referer",
-        HeaderValue::from_str(&format!("{origin}/")).context("referer 头无效")?,
-    );
-    // 上游 WS 是独立连接，必须与 HTTP 侧声称同一个浏览器身份。
-    identity::apply_identity(&mut headers);
+    let mut headers = ws_shape_headers(client, &origin)?;
     // 设备身份：原版 WS 桥显式写 `oai-device-id` 头（错误串 0xD3E785 邻域），
     // 并与 HTTP 侧共用同一个 jar（见 server/upstream_cookies.rs）。
     if let Some(value) = upstream_cookies::device_value(&auth.jar) {
@@ -233,6 +242,8 @@ pub(super) async fn connect(
     let response = client
         .websocket(target.as_str())
         .headers(headers)
+        // 握手的头序与 XHR 不同，必须按请求覆盖客户端基线的顺序表。
+        .orig_headers(identity::ws_orig_headers())
         .send()
         .await
         .map_err(|cause| ConnectFailure {
@@ -250,16 +261,19 @@ pub(super) async fn connect(
     Ok((socket, headers))
 }
 
-/// 转发的浏览器头：真 Chromium 实录里的应用层头加上子协议（由调用方决定）。
-/// 逐跳头与握手自有头不在此表内，`origin` 与 `user-agent` 分别由重写与身份组提供。
+/// 握手里由本层提供的头，取值一律来自身份表——客户端的同名头不参与。
+/// 逐跳头、握手自有头与 `origin` 不在此表内（见 [`ws_shape_headers`]）。
 /// 与证据的绑定由库内单测锁定。
-const WS_FORWARDED_HEADERS: [(&str, Option<&str>); 5] = [
-    ("pragma", Some("no-cache")),
-    ("cache-control", Some("no-cache")),
-    ("accept-language", Some("zh-CN,zh;q=0.9,en;q=0.8")),
-    ("accept-encoding", Some("gzip, deflate, br, zstd")),
-    // 子协议由调用方决定，上游没被要求时不能凭空声明。
-    ("sec-websocket-protocol", None),
+const WS_HANDSHAKE_HEADERS: [(&str, &str); 5] = [
+    ("pragma", "no-cache"),
+    ("cache-control", "no-cache"),
+    ("user-agent", identity::USER_AGENT),
+    // 真 Chrome 在握手上发 `gzip, deflate, br, zstd`，但网关的 HTTP 跳只声明
+    // `gzip`（见 [`proxy::GZIP_ONLY_ACCEPT_ENCODING`]）。同一个「用户」在
+    // chatgpt.com 与 ws.chatgpt.com 上报两套压缩能力就是跨跳不一致：
+    // 偏离可以有，但必须每一跳都一样地偏，所以这里跟 HTTP 跳对齐。
+    ("accept-encoding", proxy::GZIP_ONLY_ACCEPT_ENCODING),
+    ("accept-language", identity::ACCEPT_LANGUAGE),
 ];
 
 /// 桥接本体：双向透传，任一侧结束即把关闭帧转交另一侧后收尾。
@@ -434,20 +448,42 @@ mod tests {
     use axum::routing::get;
     use std::sync::{Arc as StdArc, Mutex};
 
-    /// 真 Chromium 的 WS 握手头实录（`evidence/ws-handshake-headers-001.json`）。
+    /// 真 Chromium146/Linux 的 WS 握手实录（`evidence/browser-header-order-002.json`，
+    /// 生成器 `probe/capture_header_order.py`）。
+    ///
+    /// 旧证据 `ws-handshake-headers-001.json` 采自 Playwright 自带的
+    /// **HeadlessChrome/151 on Windows**——与我们声称的 Chrome146/Linux 不是同一个
+    /// 浏览器，「146 到底发不发 `sec-ch-ua*`」它答不了。002 用的是 cfbypass 镜像里
+    /// 那套 chromium 146.0.7680.177（与身份表声称的完整版本号同源）。
     const WS_HANDSHAKE_EVIDENCE: &str =
-        include_str!("../../../../../evidence/ws-handshake-headers-001.json");
+        include_str!("../../../../../evidence/browser-header-order-002.json");
 
-    /// 转发名单必须覆盖真浏览器发的每个应用层头：漏一个就是可区分的残缺握手，
-    /// 将来 Chromium 新增握手头时这条会红。
-    #[test]
-    fn forwarded_headers_cover_the_recorded_browser_handshake() {
+    /// 实录里的握手头名（两轮语言注入方式下相同，断言其一致后取覆盖轮）。
+    fn recorded_ws_headers() -> Vec<String> {
         let evidence: serde_json::Value =
             serde_json::from_str(WS_HANDSHAKE_EVIDENCE).expect("WS 证据 JSON 无效");
-        let recorded = evidence["requests"][0]["header_names"]
-            .as_array()
-            .expect("证据缺少 header_names");
-        // 逐跳头与握手自有头由传输层重建；`origin`/`user-agent` 分别由重写与身份组提供。
+        let names = |mode: &str| -> Vec<String> {
+            evidence[mode]["requests"]["ws"]["header_names"]
+                .as_array()
+                .unwrap_or_else(|| panic!("{mode} 证据缺少 ws 握手"))
+                .iter()
+                .map(|value| value.as_str().expect("头名必须是字符串").to_owned())
+                .collect()
+        };
+        let override_mode = names("language_via_cdp_override");
+        assert_eq!(
+            override_mode,
+            names("language_via_command_line"),
+            "两轮握手顺序必须一致，否则这份实录不能当唯一依据"
+        );
+        override_mode
+    }
+
+    /// 本层提供的头必须覆盖真浏览器发的每个应用层头：漏一个就是可区分的残缺握手，
+    /// 将来 Chromium 新增握手头时这条会红。
+    #[test]
+    fn handshake_headers_cover_the_recorded_browser_handshake() {
+        // 逐跳头与握手自有头由传输层重建；`origin` 由本层按上游源重写。
         let transport_owned = [
             "host",
             "connection",
@@ -456,26 +492,64 @@ mod tests {
             "sec-websocket-version",
             "sec-websocket-extensions",
         ];
-        let rewritten = ["origin", "user-agent"];
-        let covered: Vec<&str> = WS_FORWARDED_HEADERS
+        let covered: Vec<&str> = WS_HANDSHAKE_HEADERS
             .iter()
             .map(|(name, _)| *name)
-            .chain(rewritten)
+            .chain(["origin"])
             .collect();
-        for name in recorded {
-            let name = name.as_str().expect("头名必须是字符串");
+        for name in recorded_ws_headers() {
             assert!(
-                transport_owned.contains(&name) || covered.contains(&name),
-                "{name} 既不由传输层重建、也不在转发名单里：浏览器会看到残缺握手"
+                transport_owned.contains(&name.as_str()) || covered.contains(&name.as_str()),
+                "{name} 既不由传输层重建、也不由本层提供：上游会看到残缺握手"
             );
         }
-        // 反向：名单里的代理层头必须在实录里出现过，否则就是凭空发明的头。
-        for (name, _) in WS_FORWARDED_HEADERS {
-            if name == "sec-websocket-protocol" {
-                continue; // 探针没有请求子协议，因此实录里不会出现。
-            }
+    }
+
+    /// 反向断言：真正发出去的每一个头都必须在实录里出现过。
+    ///
+    /// 这条是本次修复的锁：旧实现调 [`identity::apply_identity`] 并合成 `referer`，
+    /// 于是握手上多出九个 `sec-ch-ua*` 加一个 `referer`——真 Chrome146 在这条连接上
+    /// 一个都不发（`browser-header-order-002.json` 的 `ws`：同会话同源已被
+    /// `Accept-CH` 授权过高熵提示，握手仍然不带）。因此这里**没有**豁免名单：
+    /// 实录之外的头一个都不许发，加回去就会红。
+    #[test]
+    fn ws_handshake_sends_no_header_the_browser_never_sent() {
+        let recorded = recorded_ws_headers();
+        let mut client = HeaderMap::new();
+        // 客户端塞进来的身份头/referer 一律不得流到上游。
+        client.insert("referer", HeaderValue::from_static("https://evil.example/"));
+        client.insert("sec-ch-ua-platform", HeaderValue::from_static("\"Windows\""));
+        client.insert("accept-language", HeaderValue::from_static("de-DE,de;q=0.9"));
+        client.insert(
+            "accept-encoding",
+            HeaderValue::from_static("gzip, deflate, br, zstd"),
+        );
+        let headers =
+            ws_shape_headers(&client, "https://chatgpt.com").expect("握手形状构造失败");
+        for name in headers.keys() {
+            let name = name.as_str();
             assert!(
-                recorded.iter().any(|value| value.as_str() == Some(name)),
+                recorded.contains(&name.to_owned()) || name == "sec-websocket-protocol",
+                "{name} 不在浏览器实录里：不应凭猜测发送"
+            );
+        }
+        assert!(!headers.contains_key("referer"), "握手不带 referer");
+        assert!(
+            headers.keys().all(|name| !name.as_str().starts_with("sec-ch-ua")),
+            "握手不带任何 sec-ch-ua*"
+        );
+        // 身份取值归身份表，客户端给什么都不算。
+        assert_eq!(headers["user-agent"], identity::USER_AGENT);
+        assert_eq!(headers["accept-language"], identity::ACCEPT_LANGUAGE);
+        assert_eq!(
+            headers["accept-encoding"],
+            proxy::GZIP_ONLY_ACCEPT_ENCODING,
+            "握手与 HTTP 跳必须声明同一套压缩能力"
+        );
+        // 正向：本层提供的头必须在实录里出现过。
+        for (name, _) in WS_HANDSHAKE_HEADERS {
+            assert!(
+                recorded.contains(&name.to_owned()),
                 "{name} 不在浏览器实录里，不应凭猜测发送"
             );
         }

@@ -247,7 +247,10 @@ def _load_settings() -> Settings:
         allowed_hosts=_env_allowed_hosts(),
         user_agent=_env_text("CF_BYPASS_USER_AGENT", DEFAULT_USER_AGENT),
         browser_path=_env_text("CF_BYPASS_BROWSER_PATH", DEFAULT_BROWSER_PATH),
-        accept_language=_env_text("CF_BYPASS_ACCEPT_LANGUAGE", "zh-CN,zh"),
+        # 与网关身份表的 ACCEPT_LANGUAGE 逐字一致（server/identity.rs）：两跳报不同的
+        # 语言偏好，上游就能把「网关直连」与「cfbypass 取 Cookie」拆成两个用户。
+        # 请求体里带了 accept_language 时以请求为准，这里只是独立调试的兜底。
+        accept_language=_env_text("CF_BYPASS_ACCEPT_LANGUAGE", "zh-CN,zh;q=0.9,en;q=0.8"),
         headless=_env_bool("CF_BYPASS_HEADLESS", True),
         max_wait_seconds=_env_float("CF_BYPASS_MAX_WAIT_SECONDS", 20.0),
         page_load_timeout_seconds=_env_float("CF_BYPASS_PAGE_LOAD_TIMEOUT_SECONDS", 15.0),
@@ -283,9 +286,45 @@ LOGGER.info(
 )
 
 
+class BrandVersion(BaseModel):
+    brand: str
+    version: str
+
+
 class BypassRequest(BaseModel):
     url: str = Field(description="目标页面地址，主机必须在 CF_BYPASS_ALLOWED_HOSTS 内")
     proxy_server: str = Field(default="", description="可选，覆盖本次请求的代理")
+    # 身份的唯一事实来源是网关的身份表（gateway server/identity.rs）。这一跳必须
+    # 采用它下发的取值，否则上游会在两跳上看到两个浏览器：镜像内的 chromium 是
+    # **无品牌** Chrome-for-Testing 构建，原生只报 2 个品牌且 UA 不含 "Google Chrome"，
+    # 而网关声称的是带品牌的 Chrome/146（3 个品牌）。缺省为空表示沿用本服务的
+    # 环境变量默认值，仅供独立调试。
+    user_agent: str = Field(default="", description="可选，覆盖该跳 UA；由网关身份表下发")
+    accept_language: str = Field(default="", description="可选，覆盖该跳 accept-language")
+    brands: list[BrandVersion] | None = Field(default=None, description="可选，低熵品牌表")
+    full_version_list: list[BrandVersion] | None = Field(default=None, description="可选，完整版本品牌表")
+
+
+@dataclass(frozen=True)
+class RequestIdentity:
+    """该次请求实际使用的声称身份：请求体优先，缺省回落到 SETTINGS。"""
+
+    user_agent: str
+    accept_language: str
+    brands: list[dict] | None
+    full_version_list: list[dict] | None
+
+    @classmethod
+    def resolve(cls, payload: "BypassRequest") -> "RequestIdentity":
+        def listed(items: list[BrandVersion] | None) -> list[dict] | None:
+            return [item.model_dump() for item in items] if items else None
+
+        return cls(
+            user_agent=payload.user_agent.strip() or SETTINGS.user_agent,
+            accept_language=payload.accept_language.strip() or SETTINGS.accept_language,
+            brands=listed(payload.brands),
+            full_version_list=listed(payload.full_version_list),
+        )
 
 
 class CookieInfo(BaseModel):
@@ -486,8 +525,8 @@ async def _serve_native_hints(route) -> None:
     await route.fulfill(status=200, content_type="text/html; charset=utf-8", body=NATIVE_HINTS_PAGE)
 
 
-async def _apply_upstream_identity(context, page) -> None:
-    """把该跳的身份对齐成「配置的 UA 字符串 + 浏览器原生 UA-CH 元数据」。
+async def _apply_upstream_identity(context, page, identity: RequestIdentity) -> None:
+    """把该跳的身份对齐成「网关下发的 UA 字符串 + 浏览器原生 UA-CH 元数据」。
 
     不能用 `browser.new_context(user_agent=...)`：Playwright 会连 UA-CH 元数据一起替换成它
     自己派生的值——实测 Linux 上 `architecture` 变成 `x64`、`fullVersionList` 也不再来自浏览器，
@@ -495,8 +534,14 @@ async def _apply_upstream_identity(context, page) -> None:
     对 `x86_64` 固定返回 `x86`）。另外两种更差的形态也实测过：只发 `userAgent` 的 CDP 覆盖、
     以及启动参数 `--user-agent=`，都会把 UA-CH 全部清空。
 
-    因此顺序是：先在回环页读原生元数据，再用 CDP 把「配置的 UA + 原生元数据」一起装上，
+    因此顺序是：先在回环页读原生元数据，再用 CDP 把「网关下发的 UA + 原生元数据」一起装上，
     让该跳在线上看到的每一跳都与网关常量逐字段相同。
+
+    **品牌表例外**：架构/位宽/平台这些机器事实必须保持原生，但品牌表不是机器事实，
+    而是构建的品牌属性。镜像内的 chromium 是无品牌构建，原生只报 `Chromium` +
+    `Not-A.Brand` 两项；网关声称的 UA 是带品牌的 `Chrome/146`，对应 3 项品牌。
+    两者同时出现，上游一眼就能看出这两跳不是同一个浏览器。因此网关下发品牌表时
+    以网关为准——UA 说什么品牌，UA-CH 就必须报什么品牌。
     """
     await page.route(f"{NATIVE_HINTS_URL}**", _serve_native_hints)
     await page.goto(NATIVE_HINTS_URL, wait_until="domcontentloaded")
@@ -506,18 +551,23 @@ async def _apply_upstream_identity(context, page) -> None:
         # `userAgentData` 只存在于安全上下文；读不到说明这套 chromium 的行为变了。
         # 此时宁可让取 Cookie 失败并报错，也不发一条 UA 与 UA-CH 互相矛盾的请求。
         raise PlaywrightError(f"浏览器原生 UA-CH 元数据不可用: {metadata!r}")
+    if identity.brands:
+        metadata["brands"] = identity.brands
+    if identity.full_version_list:
+        metadata["fullVersionList"] = identity.full_version_list
     session = await context.new_cdp_session(page)
     await session.send(
         "Emulation.setUserAgentOverride",
         {
-            "userAgent": SETTINGS.user_agent,
-            "acceptLanguage": SETTINGS.accept_language,
+            "userAgent": identity.user_agent,
+            "acceptLanguage": identity.accept_language,
             "platform": metadata["platform"],
             "userAgentMetadata": metadata,
         },
     )
     LOGGER.info(
-        "身份已对齐: arch=%s bitness=%s platform=%s platform_version=%r full_version_list=%s",
+        "身份已对齐: brands=%s arch=%s bitness=%s platform=%s platform_version=%r full_version_list=%s",
+        metadata["brands"],
         metadata["architecture"],
         metadata["bitness"],
         metadata["platform"],
@@ -572,7 +622,9 @@ async def _probe_identity(browser, page, proxy: dict | None) -> IdentityInfo:
     return identity
 
 
-async def _navigate(target: str, proxy: dict | None) -> tuple[list[CookieInfo], str, IdentityInfo]:
+async def _navigate(
+    target: str, proxy: dict | None, identity_override: RequestIdentity
+) -> tuple[list[CookieInfo], str, IdentityInfo]:
     async with async_playwright() as playwright:
         # executable_path 指向系统 chromium（镜像内由 Dockerfile 固定版本安装）：
         # Playwright 自带的浏览器不参与这一跳的身份。chromium_sandbox=False 与
@@ -586,12 +638,13 @@ async def _navigate(target: str, proxy: dict | None) -> tuple[list[CookieInfo], 
         )
         try:
             context = await browser.new_context(
-                locale=SETTINGS.accept_language.split(",")[0],
+                # `locale` 只吃语言标签，不吃 q 值：`zh-CN,zh;q=0.9,…` 的首段即是。
+                locale=identity_override.accept_language.split(",")[0],
                 viewport={"width": SETTINGS.viewport_width, "height": SETTINGS.viewport_height},
-                extra_http_headers={"Accept-Language": SETTINGS.accept_language},
+                extra_http_headers={"Accept-Language": identity_override.accept_language},
             )
             page = await context.new_page()
-            await _apply_upstream_identity(context, page)
+            await _apply_upstream_identity(context, page, identity_override)
             await _goto_with_retries(page, target)
             final_url = page.url
             if not _host_allowed(urlparse(final_url).hostname or ""):
@@ -636,11 +689,12 @@ async def bypass(payload: BypassRequest, _: None = Depends(require_secret)) -> B
         raise HTTPException(
             status_code=400, detail={"code": "invalid_proxy", "message": str(error)}
         ) from error
+    identity_override = RequestIdentity.resolve(payload)
 
     started = time.monotonic()
     async with BROWSER_SLOTS:
         try:
-            cookies, final_url, identity = await _navigate(target, proxy)
+            cookies, final_url, identity = await _navigate(target, proxy, identity_override)
         except RedirectNotAllowed as error:
             raise HTTPException(
                 status_code=403,
@@ -682,7 +736,9 @@ async def bypass(payload: BypassRequest, _: None = Depends(require_secret)) -> B
     )
     return BypassResponse(
         url=final_url,
-        user_agent=SETTINGS.user_agent,
+        # 回这一跳**实际使用**的 UA，不是环境变量默认值：网关拿它做交叉校验，
+        # 报一个没用上的值会让校验永远通过。
+        user_agent=identity_override.user_agent,
         identity=identity,
         cookies=cookies,
         elapsed_seconds=elapsed,

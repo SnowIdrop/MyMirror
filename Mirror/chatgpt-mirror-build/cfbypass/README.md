@@ -42,7 +42,11 @@ FastAPI + Playwright，通过 `uvicorn app:app --host 0.0.0.0 --port 8000` 启�
 ```json
 {
   "url": "http://127.0.0.1:18002/",
-  "proxy_server": ""
+  "proxy_server": "",
+  "user_agent": "Mozilla/5.0 (X11; Linux x86_64) ... Chrome/146.0.0.0 Safari/537.36",
+  "accept_language": "zh-CN,zh;q=0.9,en;q=0.8",
+  "brands": [{"brand": "Chromium", "version": "146"}],
+  "full_version_list": [{"brand": "Chromium", "version": "146.0.7680.177"}]
 }
 ```
 
@@ -50,6 +54,14 @@ FastAPI + Playwright，通过 `uvicorn app:app --host 0.0.0.0 --port 8000` 启�
 | --- | --- | --- |
 | `url` | 是 | http/https 地址，主机必须在 `CF_BYPASS_ALLOWED_HOSTS` 内 |
 | `proxy_server` | 否 | 覆盖本次请求的代理，格式同 `CF_BYPASS_PROXY_SERVER` |
+| `user_agent` | 否 | 该跳声称的 UA；缺省回落 `CF_BYPASS_USER_AGENT` |
+| `accept_language` | 否 | 该跳的 `Accept-Language` 与 `locale`；缺省回落 `CF_BYPASS_ACCEPT_LANGUAGE` |
+| `brands` | 否 | 覆盖 UA-CH 低熵品牌表；缺省用浏览器原生值 |
+| `full_version_list` | 否 | 覆盖 UA-CH `fullVersionList`；缺省用浏览器原生值 |
+
+后四项由网关的身份表统一下发（见「身份一致性」）：身份只有一个事实来源，
+这一跳不再各自维护第二份字面量。架构/位宽/平台等**机器事实**仍取浏览器原生值，
+不接受覆盖。
 
 成功响应（`200`）：
 
@@ -62,18 +74,18 @@ FastAPI + Playwright，通过 `uvicorn app:app --host 0.0.0.0 --port 8000` 启�
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
     "browser_version": "146.0.7680.177",
     "language": "zh-CN",
-    "languages": ["zh-CN", "zh"],
+    "languages": ["zh-CN", "zh", "en"],
     "timezone": "Asia/Shanghai",
     "proxied": false,
     "proxy_server": null,
     "user_agent_data": {
-      "brands": [{"brand": "Chromium", "version": "146"}, {"brand": "Not?A_Brand", "version": "24"}],
+      "brands": [{"brand": "Chromium", "version": "146"}, {"brand": "Not-A.Brand", "version": "24"}, {"brand": "Google Chrome", "version": "146"}],
       "platform": "Linux",
       "mobile": false,
       "architecture": "x86",
       "bitness": "64",
       "full_version": "146.0.7680.177",
-      "full_version_list": [{"brand": "Chromium", "version": "146.0.7680.177"}],
+      "full_version_list": [{"brand": "Chromium", "version": "146.0.7680.177"}, {"brand": "Not-A.Brand", "version": "24.0.0.0"}, {"brand": "Google Chrome", "version": "146.0.7680.177"}],
       "platform_version": ""
     }
   },
@@ -118,9 +130,9 @@ FastAPI + Playwright，通过 `uvicorn app:app --host 0.0.0.0 --port 8000` 启�
 | --- | --- |
 | `CF_BYPASS_SECRET` | 导航接口 Bearer 密钥，默认空（空值将拒绝所有导航请求） |
 | `CF_BYPASS_ALLOWED_HOSTS` | 白名单主机，逗号分隔；`example.com` 精确匹配，`.example.com` 匹配子域（默认 `127.0.0.1,localhost`，生产由 compose 提供 `chatgpt.com,.chatgpt.com`） |
-| `CF_BYPASS_USER_AGENT` | 浏览器 User-Agent，并作为声称值原样返回给调用方；必须与网关身份常量同值（见「身份一致性」） |
+| `CF_BYPASS_USER_AGENT` | 浏览器 User-Agent 的**兜底**值；网关会在请求体里下发 `user_agent`，下发时以请求为准（见「身份一致性」） |
 | `CF_BYPASS_BROWSER_PATH` | 系统 chromium 可执行文件（默认 `/usr/bin/chromium`，即镜像内固定版本那个；本机开发需显式指向自己的 Chrome/Chromium） |
-| `CF_BYPASS_ACCEPT_LANGUAGE` | 浏览器语言与 `Accept-Language` 请求头 |
+| `CF_BYPASS_ACCEPT_LANGUAGE` | 浏览器语言与 `Accept-Language` 请求头的兜底值（默认 `zh-CN,zh;q=0.9,en;q=0.8`，与网关身份表同值）；请求体下发 `accept_language` 时以请求为准 |
 | `CF_BYPASS_HEADLESS` | 是否无头运行（默认 `true`） |
 | `CF_BYPASS_MAX_WAIT_SECONDS` | 导航完成后等待 Cookie 稳定的总上限（默认 `20`） |
 | `CF_BYPASS_PAGE_LOAD_TIMEOUT_SECONDS` | 单次页面加载超时（默认 `15`） |
@@ -136,10 +148,16 @@ FastAPI + Playwright，通过 `uvicorn app:app --host 0.0.0.0 --port 8000` 启�
 
 这一跳（cfbypass）与网关（wreq/btls）对上游声称同一套 Chrome146/Linux 身份，两侧都要能自证：
 
-- **声称值同源**：compose 的 `CF_BYPASS_USER_AGENT` 必须与网关身份常量逐字符相同
-  （`Mirror/gateway-rust/src/server/identity.rs` 的 `USER_AGENT`）；镜像内的系统 chromium
-  版本必须与网关 `FULL_VERSION` 同版（当前 `146.0.7680.177`，Dockerfile 以
+- **声称值同源**：身份的唯一事实来源是网关的身份表（`server/identity.rs`）。网关在每次
+  `/bypass` 请求体里下发 `user_agent` / `accept_language` / `brands` / `full_version_list`，
+  这一跳直接采用；`CF_BYPASS_USER_AGENT` / `CF_BYPASS_ACCEPT_LANGUAGE` 只是独立调试
+  时的兜底，默认值与身份表保持同值。镜像内的系统 chromium 版本必须与网关
+  `full_version()` 同版（当前 `146.0.7680.177`，Dockerfile 以
   `CHROMIUM_VERSION=146.0.7680.177-1~deb13u1` 钉在 snapshot.debian.org 的快照上）。
+- **品牌表以网关为准**：镜像内的 chromium 是 Debian 的**无品牌**构建，原生 UA-CH 只报
+  `Chromium` + `Not-A.Brand` 两项；网关声称的 UA 是带品牌的 `Chrome/146`，对应三项品牌。
+  因此 `brands` / `fullVersionList` 按网关下发值覆盖——UA 说什么品牌，UA-CH 就报什么品牌。
+  架构、位宽、平台、`platformVersion` 这些**机器事实**仍取浏览器原生值，不覆盖。
 - **实测值可核验**：`/bypass`、`/cloudflare5s/bypass-v1`、`/cloudflare5s/bypass-v2` 的响应都带
   `identity`，字段全部取自实际浏览器会话与本次启动参数（`navigator`、`Intl`、
   Playwright `Browser.version()`），不是环境变量的回声。

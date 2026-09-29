@@ -1,0 +1,360 @@
+{
+  "probe": "browser-header-order-chrome146",
+  "date": "2026-09-29",
+  "browser": "cfbypass 镜像内系统 chromium 146.0.7680.177（Debian 非品牌构建，Linux x86_64）",
+  "capture": "本机回环 HTTP/1.1 + ws:// 服务端按收到顺序记录头名",
+  "generator": "artifacts/phase1/probe/capture_header_order.py（docker run --network none，见脚本文档）",
+  "why": [
+    "reference-chrome146-001 只有首次（低熵）导航，缺高熵导航一例。",
+    "ws-handshake-headers-001.json 采自 HeadlessChrome/151 on Windows，与声称的 Chrome146/Linux 不同源。",
+    "accept-language 的槽位取决于语言是经 CDP 覆盖还是命令行偏好注入，两种都采以便区分。"
+  ],
+  "roles": {
+    "*-first": "首次导航：响应才带 Accept-CH，因此只有低熵提示",
+    "*-second": "第二次导航：高熵导航（原先缺的那一例）",
+    "nav-from-link": "页内 <a> 点击导航：给出导航形态下 referer 的槽位",
+    "favicon.ico": "页内子资源：交叉核对 identity::REQUEST_HEADER_ORDER",
+    "ws": "页内 new WebSocket 的握手"
+  },
+  "language_via_cdp_override": {
+    "browser_version": "146.0.7680.177",
+    "ws_state": "open",
+    "requests": {
+      "override-first": {
+        "header_names": [
+          "host",
+          "connection",
+          "sec-ch-ua",
+          "sec-ch-ua-mobile",
+          "sec-ch-ua-platform",
+          "upgrade-insecure-requests",
+          "user-agent",
+          "accept-language",
+          "accept",
+          "sec-fetch-site",
+          "sec-fetch-mode",
+          "sec-fetch-user",
+          "sec-fetch-dest",
+          "accept-encoding"
+        ],
+        "accept_language": "zh-CN",
+        "accept_encoding": "gzip, deflate, br, zstd",
+        "referer": null,
+        "client_hints": [
+          "sec-ch-ua",
+          "sec-ch-ua-mobile",
+          "sec-ch-ua-platform"
+        ]
+      },
+      "override-second": {
+        "header_names": [
+          "host",
+          "connection",
+          "sec-ch-ua",
+          "sec-ch-ua-mobile",
+          "sec-ch-ua-full-version",
+          "sec-ch-ua-arch",
+          "sec-ch-ua-platform",
+          "sec-ch-ua-platform-version",
+          "sec-ch-ua-model",
+          "sec-ch-ua-bitness",
+          "sec-ch-ua-full-version-list",
+          "upgrade-insecure-requests",
+          "user-agent",
+          "accept-language",
+          "accept",
+          "sec-fetch-site",
+          "sec-fetch-mode",
+          "sec-fetch-user",
+          "sec-fetch-dest",
+          "accept-encoding"
+        ],
+        "accept_language": "zh-CN",
+        "accept_encoding": "gzip, deflate, br, zstd",
+        "referer": null,
+        "client_hints": [
+          "sec-ch-ua",
+          "sec-ch-ua-mobile",
+          "sec-ch-ua-full-version",
+          "sec-ch-ua-arch",
+          "sec-ch-ua-platform",
+          "sec-ch-ua-platform-version",
+          "sec-ch-ua-model",
+          "sec-ch-ua-bitness",
+          "sec-ch-ua-full-version-list"
+        ]
+      },
+      "favicon.ico": {
+        "header_names": [
+          "host",
+          "connection",
+          "sec-ch-ua-full-version-list",
+          "sec-ch-ua-platform",
+          "accept-language",
+          "sec-ch-ua",
+          "sec-ch-ua-bitness",
+          "sec-ch-ua-model",
+          "sec-ch-ua-mobile",
+          "sec-ch-ua-arch",
+          "sec-ch-ua-full-version",
+          "user-agent",
+          "sec-ch-ua-platform-version",
+          "accept",
+          "sec-fetch-site",
+          "sec-fetch-mode",
+          "sec-fetch-dest",
+          "referer",
+          "accept-encoding"
+        ],
+        "accept_language": "zh-CN",
+        "accept_encoding": "gzip, deflate, br, zstd",
+        "referer": "http://127.0.0.1:48351/override-second",
+        "client_hints": [
+          "sec-ch-ua-full-version-list",
+          "sec-ch-ua-platform",
+          "sec-ch-ua",
+          "sec-ch-ua-bitness",
+          "sec-ch-ua-model",
+          "sec-ch-ua-mobile",
+          "sec-ch-ua-arch",
+          "sec-ch-ua-full-version",
+          "sec-ch-ua-platform-version"
+        ]
+      },
+      "ws": {
+        "header_names": [
+          "host",
+          "connection",
+          "pragma",
+          "cache-control",
+          "user-agent",
+          "upgrade",
+          "origin",
+          "sec-websocket-version",
+          "accept-encoding",
+          "accept-language",
+          "sec-websocket-key",
+          "sec-websocket-extensions"
+        ],
+        "accept_language": "en-US,en;q=0.9",
+        "accept_encoding": "gzip, deflate, br, zstd",
+        "referer": null,
+        "client_hints": []
+      },
+      "nav-from-link": {
+        "header_names": [
+          "host",
+          "connection",
+          "sec-ch-ua",
+          "sec-ch-ua-mobile",
+          "sec-ch-ua-full-version",
+          "sec-ch-ua-arch",
+          "sec-ch-ua-platform",
+          "sec-ch-ua-platform-version",
+          "sec-ch-ua-model",
+          "sec-ch-ua-bitness",
+          "sec-ch-ua-full-version-list",
+          "upgrade-insecure-requests",
+          "user-agent",
+          "accept-language",
+          "accept",
+          "sec-fetch-site",
+          "sec-fetch-mode",
+          "sec-fetch-user",
+          "sec-fetch-dest",
+          "referer",
+          "accept-encoding"
+        ],
+        "accept_language": "zh-CN",
+        "accept_encoding": "gzip, deflate, br, zstd",
+        "referer": "http://127.0.0.1:48351/override-second",
+        "client_hints": [
+          "sec-ch-ua",
+          "sec-ch-ua-mobile",
+          "sec-ch-ua-full-version",
+          "sec-ch-ua-arch",
+          "sec-ch-ua-platform",
+          "sec-ch-ua-platform-version",
+          "sec-ch-ua-model",
+          "sec-ch-ua-bitness",
+          "sec-ch-ua-full-version-list"
+        ]
+      }
+    }
+  },
+  "language_via_command_line": {
+    "browser_version": "146.0.7680.177",
+    "ws_state": "open",
+    "requests": {
+      "cmdline-first": {
+        "header_names": [
+          "host",
+          "connection",
+          "sec-ch-ua",
+          "sec-ch-ua-mobile",
+          "sec-ch-ua-platform",
+          "upgrade-insecure-requests",
+          "user-agent",
+          "accept",
+          "sec-fetch-site",
+          "sec-fetch-mode",
+          "sec-fetch-user",
+          "sec-fetch-dest",
+          "accept-encoding",
+          "accept-language"
+        ],
+        "accept_language": "zh-CN,zh;q=0.9",
+        "accept_encoding": "gzip, deflate, br, zstd",
+        "referer": null,
+        "client_hints": [
+          "sec-ch-ua",
+          "sec-ch-ua-mobile",
+          "sec-ch-ua-platform"
+        ]
+      },
+      "cmdline-second": {
+        "header_names": [
+          "host",
+          "connection",
+          "sec-ch-ua",
+          "sec-ch-ua-mobile",
+          "sec-ch-ua-full-version",
+          "sec-ch-ua-arch",
+          "sec-ch-ua-platform",
+          "sec-ch-ua-platform-version",
+          "sec-ch-ua-model",
+          "sec-ch-ua-bitness",
+          "sec-ch-ua-full-version-list",
+          "upgrade-insecure-requests",
+          "user-agent",
+          "accept",
+          "sec-fetch-site",
+          "sec-fetch-mode",
+          "sec-fetch-user",
+          "sec-fetch-dest",
+          "accept-encoding",
+          "accept-language"
+        ],
+        "accept_language": "zh-CN,zh;q=0.9",
+        "accept_encoding": "gzip, deflate, br, zstd",
+        "referer": null,
+        "client_hints": [
+          "sec-ch-ua",
+          "sec-ch-ua-mobile",
+          "sec-ch-ua-full-version",
+          "sec-ch-ua-arch",
+          "sec-ch-ua-platform",
+          "sec-ch-ua-platform-version",
+          "sec-ch-ua-model",
+          "sec-ch-ua-bitness",
+          "sec-ch-ua-full-version-list"
+        ]
+      },
+      "favicon.ico": {
+        "header_names": [
+          "host",
+          "connection",
+          "sec-ch-ua-full-version-list",
+          "sec-ch-ua-platform",
+          "sec-ch-ua",
+          "sec-ch-ua-bitness",
+          "sec-ch-ua-model",
+          "sec-ch-ua-mobile",
+          "sec-ch-ua-arch",
+          "sec-ch-ua-full-version",
+          "user-agent",
+          "sec-ch-ua-platform-version",
+          "accept",
+          "sec-fetch-site",
+          "sec-fetch-mode",
+          "sec-fetch-dest",
+          "referer",
+          "accept-encoding",
+          "accept-language"
+        ],
+        "accept_language": "zh-CN,zh;q=0.9",
+        "accept_encoding": "gzip, deflate, br, zstd",
+        "referer": "http://127.0.0.1:48351/cmdline-first",
+        "client_hints": [
+          "sec-ch-ua-full-version-list",
+          "sec-ch-ua-platform",
+          "sec-ch-ua",
+          "sec-ch-ua-bitness",
+          "sec-ch-ua-model",
+          "sec-ch-ua-mobile",
+          "sec-ch-ua-arch",
+          "sec-ch-ua-full-version",
+          "sec-ch-ua-platform-version"
+        ]
+      },
+      "ws": {
+        "header_names": [
+          "host",
+          "connection",
+          "pragma",
+          "cache-control",
+          "user-agent",
+          "upgrade",
+          "origin",
+          "sec-websocket-version",
+          "accept-encoding",
+          "accept-language",
+          "sec-websocket-key",
+          "sec-websocket-extensions"
+        ],
+        "accept_language": "zh-CN,zh;q=0.9",
+        "accept_encoding": "gzip, deflate, br, zstd",
+        "referer": null,
+        "client_hints": []
+      },
+      "nav-from-link": {
+        "header_names": [
+          "host",
+          "connection",
+          "sec-ch-ua",
+          "sec-ch-ua-mobile",
+          "sec-ch-ua-full-version",
+          "sec-ch-ua-arch",
+          "sec-ch-ua-platform",
+          "sec-ch-ua-platform-version",
+          "sec-ch-ua-model",
+          "sec-ch-ua-bitness",
+          "sec-ch-ua-full-version-list",
+          "upgrade-insecure-requests",
+          "user-agent",
+          "accept",
+          "sec-fetch-site",
+          "sec-fetch-mode",
+          "sec-fetch-user",
+          "sec-fetch-dest",
+          "referer",
+          "accept-encoding",
+          "accept-language"
+        ],
+        "accept_language": "zh-CN,zh;q=0.9",
+        "accept_encoding": "gzip, deflate, br, zstd",
+        "referer": "http://127.0.0.1:48351/cmdline-second",
+        "client_hints": [
+          "sec-ch-ua",
+          "sec-ch-ua-mobile",
+          "sec-ch-ua-full-version",
+          "sec-ch-ua-arch",
+          "sec-ch-ua-platform",
+          "sec-ch-ua-platform-version",
+          "sec-ch-ua-model",
+          "sec-ch-ua-bitness",
+          "sec-ch-ua-full-version-list"
+        ]
+      }
+    }
+  },
+  "conclusions": [
+    "WS 握手不含任何 sec-ch-ua*，也不含 referer——两种语言注入方式下一致，且同一会话里该源已经通过 Accept-CH 授权过高熵提示（*-second 导航带全组可证）。",
+    "WS 握手顺序（两轮逐位相同）：pragma, cache-control, user-agent, upgrade, origin, sec-websocket-version, accept-encoding, accept-language, sec-websocket-key, sec-websocket-extensions。",
+    "高熵导航的提示块顺序与同源 XHR 不同：sec-ch-ua, sec-ch-ua-mobile, sec-ch-ua-full-version, sec-ch-ua-arch, sec-ch-ua-platform, sec-ch-ua-platform-version, sec-ch-ua-model, sec-ch-ua-bitness, sec-ch-ua-full-version-list。",
+    "导航的 accept-language 紧跟 user-agent（与 reference-chrome146-001 的低熵导航实录一致），referer 在 sec-fetch-dest 与 accept-encoding 之间。",
+    "CDP 覆盖轮的子资源顺序与 identity::REQUEST_HEADER_ORDER 逐位相同，是该表的一份独立交叉证据。",
+    "命令行偏好轮把 accept-language 放在表尾；reference-chrome146-001 与 cfbypass 都是 CDP 覆盖形态，因此顺序表以覆盖轮为准。",
+    "CDP 覆盖不作用于 WS 握手：覆盖轮页面 locale 是 zh-CN，握手仍发 en-US,en;q=0.9。网关自己拼握手头，不受此影响。"
+  ]
+}

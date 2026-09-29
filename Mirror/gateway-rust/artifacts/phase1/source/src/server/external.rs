@@ -191,7 +191,8 @@ fn is_public_v6(address: Ipv6Addr) -> bool {
         || (segments[0] == 0x2001 && segments[1] == 0x0db8))
 }
 
-/// 转发：只复制值类请求头 + 固定身份组，不携带任何账号、浏览器或 CF 凭据。
+/// 转发：只复制值类请求头 + 低熵身份组（第三方源没下发过 `Accept-CH`，
+/// 高熵提示不发），不携带任何账号、浏览器或 CF 凭据。
 async fn forward(app: &App, request: Request, target: Target, method: Method) -> Response {
     let (parts, body) = request.into_parts();
     let mut headers = HeaderMap::new();
@@ -211,7 +212,7 @@ async fn forward(app: &App, request: Request, target: Target, method: Method) ->
             headers.insert(name, value.clone());
         }
     }
-    identity::apply_identity(&mut headers);
+    identity::apply_low_entropy_identity(&mut headers);
     if !matches!(method, Method::GET | Method::HEAD) {
         // 浏览器对第三方写请求会带 chatgpt.com 的 origin/referer；镜像源自证一致。
         headers.insert("origin", HeaderValue::from_static("https://chatgpt.com"));

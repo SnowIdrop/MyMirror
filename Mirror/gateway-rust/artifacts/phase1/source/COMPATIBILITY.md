@@ -616,21 +616,39 @@ Python 侧确定性读取，页面内检查降级为旁证。
 `evidence/reference-chrome146-001/04-linux-platform-version.json`。Windows 上同一头是
 `"15.0.0"`，所以这张表只在「声称 Linux」时成立。
 
-公共 CDN/静态资源与内部媒体代理同样使用这张身份表；仍然只复制既有白名单中的资源
-请求头，且不带浏览器、账号或 CF 凭据。页面注入脚本在 `<head>` 开标签后执行，并把
-`navigator.userAgent/platform/userAgentData/languages`、时区与 `window.chrome` 固定为
-同一个 Chrome146/Linux 表面，避免前端把宿主 Windows 身份写入请求体或自定义头。
+公共 CDN/静态资源与内部媒体代理只用这张表的**低熵子集**（`user-agent` +
+`sec-ch-ua` / `-mobile` / `-platform`，见 `identity::apply_low_entropy_identity`）：
+高熵六项（arch、bitness、model、platform-version、full-version、full-version-list）是
+真 Chrome 只在目标源用 `Accept-CH` 授权过之后才发的，对一个从没授权过的第三方源
+送全套高熵提示，本身就是一条比「UA 说 Linux」更强的可指纹信号
+（参照里同源 XHR 带全组，正是因为首个响应带了 `accept-ch`，见
+`evidence/reference-chrome146-001/03-request-headers.json` 的 `accept_ch` 字段）。
+两条路径仍然只复制既有白名单中的资源请求头，且不带浏览器、账号或 CF 凭据。
+
+页面注入脚本在 `<head>` 开标签后执行，把 `navigator.userAgent` / `appVersion` /
+`platform` 与 `navigator.userAgentData`（`brands`、`mobile`、`platform`、
+`getHighEntropyValues`、`toJSON`）改写成同一个 Chrome146/Linux 表面，避免前端把宿主
+Windows 身份写入请求体或自定义头。取值全部由 `identity::js_identity()` 从同一张身份表
+派生，JS 侧不维护第二份字面量。**覆盖范围仅限这一组**：`navigator.languages`、时区、
+字体、WebGL/Canvas、`window.chrome`、Worker 与子框架一律保持宿主真实取值，不合成
+（见「已知偏差」）。改写装在**原型**上而非 navigator 实例上，且 getter 的
+`toString()` 仍报 `[native code]`——装在实例上会让 `Object.getOwnPropertyNames(navigator)`
+多出一批本不该存在的自有属性，那比 UA 本身更容易被识别。
 
 ### 网关自发请求的头基线（`identity::api_baseline`）
 
 取值来自 2026-09-24 真 Chromium 同源 XHR 的服务端实录
 （`probe/probe_browser_headers.py`）：`accept: application/json, text/plain, */*`、
-`accept-language: zh-CN,zh;q=0.9,en;q=0.8`、`accept-encoding: gzip, deflate, br, zstd`、
+`accept-language: zh-CN,zh;q=0.9,en;q=0.8`、
 `sec-fetch-dest: empty` / `sec-fetch-mode: cors` / `sec-fetch-site: same-origin`、
 `oai-language`、`referer`、非 GET 才补 `origin`。**不合成** `priority` 与
 `oai-client-version`/`-build-number`/`oai-session-id`/`x-openai-web-frontend`：前者在同源 XHR
 实录里不出现，后者是页面自己算的前端状态，宁可不发也不发错值。响应体在 JSON 解析前按
 `compression::decode_buffered` 解码（只有这条路径解码，代理路径保持字节透传）。
+
+`accept-encoding` 不取实录值（真 Chrome 是 `gzip, deflate, br, zstd`），而是与 chat 出网跳、
+WS 握手统一用 `proxy::GZIP_ONLY_ACCEPT_ENCODING`（`gzip`）——只声明 gzip 是用户判定的
+有意偏离，但**偏离必须每一跳一致**，否则同一个「用户」的不同连接声称不同的解码能力。
 
 ### 传输指纹对照（真 Chromium vs 候选）
 
@@ -679,8 +697,9 @@ full-version-list/model/platform-version`，491 条请求里 488 条带 `sec-ch-
 | HTTP/1.1 头顺序 | **已收敛（第二轮）**：改用 wreq `orig_headers` 按录制顺序输出，网络层/应用层逐项对照见下节 |
 | cfbypass 一跳 | **已部分收敛（第二轮）**：镜像改为 Debian trixie + chromium 146.0.7680.177，响应新增实测 `identity`，网关比对不一致即 warn；代理与 headful 仍是残余 |
 | 出口 IP | 部署在 AWS 机房（用户判定：chatgpt.com 对 AWS 段是白名单，本轮不处理） |
-| WS 握手头子集 | **已收敛（第二轮）**：按真浏览器实录补齐 `pragma`/`cache-control`/`accept-encoding`，逐跳头与握手自有头不转发 |
+| WS 握手头子集 | **已闭合（第三轮，2026-09-29）**：改用 Chromium 146.0.7680.177 自采的 `evidence/browser-header-order-002.json`，握手改为「只发实录里那几个头」并按实录顺序落线；`sec-ch-ua*` 与 `referer` 不再发（见「WS 握手（#10）」） |
 | JS 覆盖的浏览器行为 | 注入脚本只覆盖与「网络层声称的平台/版本」直接冲突的可见值（UA/appVersion/platform/userAgentData）；语言、时区、字体、WebGL、Canvas、Worker 与子框架保持宿主真值 |
+| 第三方跳的 `accept-encoding` | **有意保留透传**：`static_assets::forward_public` 与 `external::forward` 把访客自己的 `accept-encoding` 送到第三方源，于是 Safari 访客会声称 `gzip, deflate, br`、Chrome 访客声称 `gzip, deflate, br, zstd`，与固定 UA 不完全自洽。改成固定值会真的坏功能：这两条路按流透传、不解码，上游的 `content-encoding` 直接落到访客浏览器，声称 zstd 就可能把访客解不了的正文喂给它。取舍：这一跳的对手是第三方 CDN 而不是 chatgpt.com，弱关联信号换功能正确性不值。`accept-language` 不同——它由 `apply_low_entropy_identity` 强制覆盖，见「跨层一致性」 |
 
 ### 契约与影响
 
@@ -766,26 +785,77 @@ Worker 与子框架。理由：这些值不直接矛盾（宿主语言/时区在
 
 ### WS 握手（#10）
 
-`probe/probe_browser_ws_headers.py` 用真 Chromium 打本机回环 WS 服务，服务端记录到浏览器
-实际发送（顺序）：`host, connection, pragma, cache-control, user-agent, accept-language,
-upgrade, origin, sec-websocket-version, accept-encoding, sec-websocket-key,
-sec-websocket-extensions`（`evidence/ws-handshake-headers-001.json`，key 值已占位）。
-`chat_ws::upstream_headers` 现在按此补齐 `pragma`/`cache-control`/`accept-encoding`（浏览器
-给值优先、缺省补固定值），`origin`/`referer` 重写为 chatgpt.com，`user-agent` 与 client hints
-走身份整组；`host`/`connection`/`upgrade`/`sec-websocket-key|version|extensions` 一律由传输层
-重建。库内单测直接读该证据文件断言「转发名单覆盖真浏览器发的每个应用层头、且不含凭空发明的头」。
+证据换了一份。旧的 `evidence/ws-handshake-headers-001.json` 采自 Playwright 自带的
+**HeadlessChrome/151 on Windows**（`accept-language: zh-CN` 排在第 6 位），不是我们声称的
+Chrome146/Linux，因此「146 到底发不发 `sec-ch-ua*`」这类问题它答不了。
+`probe/capture_header_order.py` 改用 cfbypass 镜像里的系统 chromium
+（146.0.7680.177，与身份表的 `sec-ch-ua-full-version` 同源）在回环上重采，
+产物 `evidence/browser-header-order-002.json`。
+
+实测握手（两种语言注入形态下**逐字相同**）：
+
+```
+host, connection, pragma, cache-control, user-agent, upgrade, origin,
+sec-websocket-version, accept-encoding, accept-language,
+sec-websocket-key, sec-websocket-extensions
+```
+
+**没有 `sec-ch-ua*`，也没有 `referer`。** 这一条现在是取过证的，不再是「实录跑在明文
+回环上所以不算」：同一轮采集里，服务端先用 `Accept-CH` 给该源授权过全部高熵提示、
+随后的导航确实带上了全套 `sec-ch-ua*`，而同一页面发起的 WS 握手仍然一个都不带——
+UA-CH 根本不适用于 upgrade 请求，与 `ws://` / `wss://` 无关。同一轮还顺带证明
+CDP 的语言覆盖（Playwright `locale`，也是 cfbypass 用的那条）**不作用于握手**：
+页面 locale 为 `zh-CN` 时握手仍发 `en-US,en;q=0.9`，所以握手的语言必须由我们显式写。
+
+`chat_ws::ws_shape_headers` 因此从「转发名单 + 缺省补齐」改成**从零构造**：
+`WS_HANDSHAKE_HEADERS` 五项固定值（`pragma`、`cache-control`、`user-agent`、
+`accept-encoding`、`accept-language`，全部取自身份表与 `proxy::GZIP_ONLY_ACCEPT_ENCODING`）
+加上按上游源重写的 `origin`，再加上**唯一**由客户端决定的 `sec-websocket-protocol`
+（上游没被要求子协议时不能凭空声明）。`identity::apply_identity` 与合成 `referer`
+都已移除；`host`/`connection`/`upgrade`/`sec-websocket-key|version|extensions` 一律由
+传输层重建。线上顺序由 `identity::ws_orig_headers()`（`WS_HANDSHAKE_HEADER_ORDER`）锁定——
+握手的顺序表与 XHR、导航那两张都不同，是第三张表，不是其中一张的变体。
+
+`accept-encoding` 从 `gzip, deflate, br, zstd` 改成与 HTTP 各跳同一个 `gzip`：
+只声明 gzip 本身是有意偏离（网关只实现了 gzip 流式解码），但**偏离必须每一跳一致**，
+否则同一个「用户」的 WS 连接与 XHR 连接声称不同的解码能力。
+
+单测两个方向都锁：正向 `handshake_headers_cover_the_recorded_browser_handshake`
+（构造出的握手覆盖实录里真浏览器发的每个应用层头），反向
+`ws_handshake_sends_no_header_the_browser_never_sent`（把 `ws_shape_headers` 的真实产物
+逐个回查证据，**没有任何放行名单**）。反向那条还喂了一组敌对客户端头
+（`referer: https://evil.example/`、`sec-ch-ua-platform: "Windows"`、
+`accept-language: de-DE,de;q=0.9`、`accept-encoding: gzip, deflate, br, zstd`）
+并断言它们全部被丢弃或覆盖。
+
+单测只看得到 `ws_shape_headers` 的产物，而 `upstream_headers` 在那之后还会补
+`oai-device-id` 与凭据组，所以 `tests/ws_bridge.rs` 补两条**线上**断言：
+一是实际头序与实录对照，二是整条线上不得出现「实录 ∪ 显式登记的四个应用层头
+（`oai-device-id`、`cookie`、`authorization`、`sec-websocket-protocol`）」之外的任何头。
+那四项是随原版的取舍——浏览器的 `new WebSocket()` 根本没有自定义头的接口，
+原版 WS 桥却显式写 `oai-device-id`；登记它等于把这笔账记在明处，而不是留个放行通道。
+两条都验过判别力：去掉 `.orig_headers(...)`，线上顺序立刻变成
+`accept-language, user-agent, origin, accept-encoding, pragma, cache-control`；
+在 `upstream_headers` 里塞一个 `x-drift-canary`，白名单那条立刻报出这个头名。
 
 ### cfbypass 一跳（#7）
 
 - 镜像：`cfbypass/Dockerfile` 从 Playwright jammy 镜像改为 **Debian trixie + snapshot 源**，
   精确安装 `chromium=146.0.7680.177-1~deb13u1`（与原版 all-in-one 同版），Playwright 用
-  `executable_path=/usr/bin/chromium` 驱动系统浏览器；compose 的 `CF_BYPASS_USER_AGENT` 与
-  网关常量同值。
+  `executable_path=/usr/bin/chromium` 驱动系统浏览器。
+- **身份由网关下发**：`cloudflare::fetch_payload` 在每次请求体里带上身份表的
+  `user_agent` / `accept_language` / `brands` / `full_version_list`，cfbypass 直接采用
+  （`CF_BYPASS_USER_AGENT` / `CF_BYPASS_ACCEPT_LANGUAGE` 降级为独立调试的兜底，默认值
+  与身份表同值）。品牌表必须由网关覆盖：Debian 的 chromium 是**无品牌**构建，原生
+  UA-CH 只报 `Chromium` + `Not-A.Brand` 两项，而网关声称的 UA 是带品牌的 `Chrome/146`，
+  对应三项品牌——两者同时出现，上游一眼就能看出这两跳不是同一个浏览器。架构、位宽、
+  平台、`platformVersion` 这些**机器事实**仍取浏览器原生值，不覆盖。
 - 可核验：响应新增 `identity`（UA、UA-CH 高熵、语言、时区、Chromium 版本、是否走代理），
   全部取自**实际浏览器会话**；网关每次刷新比对并 warn，`/api/refresh-cfbypass` 把该身份
   回给调用方（`cfbypass_identity`，缺字段时为 null）。
-  比对字段（`src/server/cloudflare.rs::log_identity_mismatch`）：`user_agent`，以及
-  `user_agent_data` 下的 `full_version`/`platform`/`architecture`/`bitness`/`platform_version`。
+  比对字段（`src/server/cloudflare.rs::log_identity_mismatch`）：`user_agent`，
+  `user_agent_data` 下的 `full_version`/`platform`/`architecture`/`bitness`/`platform_version`，
+  以及 `brands` / `full_version_list` 两张品牌表（按「品牌/版本」集合比对，与顺序无关）。
   其中 `platform_version` 是 2026-09-24 源码核对后才纳入的：Linux 上正确取值就是空串，报出
   内核版本即说明镜像里的 `ReduceUserAgentDataLinuxPlatformVersion` 被关掉，属于必须处理的
   错配（依据 `evidence/reference-chrome146-001/04-linux-platform-version.json`）。
@@ -1179,3 +1249,87 @@ Django 全量 115 项通过。
   修复后 **0 次传输失败、0 次慢于 3 秒**。如实说明：该现象本身是间歇性的，单轮 0/20 不能证明彻底消除，
   只能说明本轮未再触发；实际可依赖的保证是「一次有界重放 + 失败时给出可行动、可区分的语义」。
 - Django 未改动，本批未重跑其用例。
+
+## 传输身份漂移复审的收敛（2026-09-29）
+
+对候选网关做了一次以「上游看到的是不是**始终同一个** Chrome146/Linux 用户」为唯一判据的
+复审：逐跳（网关直连 / cfbypass / WS）、逐层（TLS、H2、请求头、页面 JS）对照
+`evidence/reference-chrome146-001/`。下面是本批收敛的项与新增的显式差异。
+
+### 跨跳一致性
+
+| 项 | 改动 |
+|---|---|
+| cfbypass 的品牌表 | Debian chromium 是**无品牌**构建，原生 UA-CH 只报两项品牌（`Chromium` + `Not-A.Brand`），而网关 UA 声称带品牌的 `Chrome/146`（三项）。`cloudflare::fetch_payload` 现在把身份表的 `brands` / `full_version_list` 一并下发，cfbypass 按下发值覆盖元数据；`log_identity_mismatch` 增加两张品牌表的集合比对 |
+| `accept-language` 的三份字面量 | 收敛为身份表里的 `identity::ACCEPT_LANGUAGE` 一份。此前 `api_baseline` 用 `zh-CN,zh;q=0.9,en;q=0.8`、WS 缺省用同值的硬编码、cfbypass 默认 `zh-CN,zh`——同一个「用户」在不同跳上报不同语言偏好。cfbypass 现在从请求体取值，`CF_BYPASS_ACCEPT_LANGUAGE` 与三个 compose、`.env.example` 的默认值同步改齐，只作兜底 |
+| cfbypass 回报的 `user_agent` | 改回**本次实际使用**的值而非 `CF_BYPASS_USER_AGENT` 的回声，否则网关的交叉校验永远通过 |
+| WS 跳的 `accept-encoding`（第三轮） | WS 握手原先声明 `gzip, deflate, br, zstd`，HTTP 各跳声明 `gzip`——同一个「用户」两条连接的解码能力不同。改为两边共用 `proxy::GZIP_ONLY_ACCEPT_ENCODING`：只声明 gzip 是有意偏离，但偏离必须每一跳一致 |
+| WS 握手的身份头（第三轮） | 握手原先走 `identity::apply_identity` 发全套 `sec-ch-ua*` 并合成 `referer`；实测 Chromium 146 的握手两者都不发（`evidence/browser-header-order-002.json`），且同一轮已证明该源被 `Accept-CH` 授权过高熵提示时握手依然不带。现改为从零构造，见「WS 握手（#10）」 |
+
+### 跨层一致性
+
+| 项 | 改动 |
+|---|---|
+| 第三方源的高熵 hints | 公共 CDN（`static_assets::forward_public`）与外链（`external::forward`）改用 `identity::apply_low_entropy_identity`：只发 `user-agent` + 低熵三项。高熵六项要等目标源用 `Accept-CH` 授权过才发，对从没授权过的源送全套，真 Chrome 不会这么做 |
+| 导航请求的头形状 | 导航与 XHR 不是同一个形状：导航多 `upgrade-insecure-requests` / `sec-fetch-user`，且**没有** `origin`。新增 `identity::NAVIGATION_HEADER_ORDER`，`send_chat_once` 在 `sec-fetch-mode: navigate` 时按请求覆盖顺序表；`origin` 改为只在非 GET/HEAD 上发 |
+| 导航顺序表的实测修正（第三轮） | 上一轮的 `NAVIGATION_HEADER_ORDER` 把高熵提示块按 XHR 实录排、`accept-language` 放在第 3 位，与参照证据**自己的导航记录**相互矛盾。实采高熵导航后改为实测顺序：提示块九项在前、`upgrade-insecure-requests` 紧邻 `user-agent` 之前、`accept-language` 在 `user-agent` 之后、`referer` 在 `sec-fetch-dest` 与 `accept-encoding` 之间（此前是猜的槽位） |
+| 访客 `accept-language` 泄漏（第三轮） | `strip_request_hop_by_hop` 对 `accept-language` 是纯透传，于是访客浏览器的真实语言偏好（例如 `de-DE,de;q=0.9`）原样到达 chatgpt.com，而同一请求的 UA、client hints、`oai-language` 与注入 JS 都在报固定身份。`identity::apply_identity` 与 `apply_low_entropy_identity` 末尾统一 `force_accept_language`，一处覆盖同时盖住 chat 出网跳、公共 CDN 跳与外链跳 |
+| 页面 JS 的可检测性 | 改写从 navigator **实例**移到**原型**（实例上多出一批自有属性，比 UA 本身更好认）；getter 的 `toString()` 仍报 `[native code]`；`userAgentData` 复用宿主真实实例与原型，保住 `instanceof` 与原生 `toJSON`，宿主没有该接口时不合成 |
+
+### 客户端头泄漏
+
+新增 `proxy::strip_upstream_leaks`，在 `strip_request_hop_by_hop` 之上再剥两类头：
+代理链痕迹（`forwarded`、`via`、`x-forwarded-*`、`cdn-loop`、`cf-*` 等 12 项）与宿主
+指纹头（`priority`、`device-memory`、`dpr`、`width`、`viewport-width`、`rtt`、
+`downlink`、`ect`，以及 `sec-ch-*` 里**非** `sec-ch-ua*` 的全部）。`sec-ch-ua*` 不在这里
+丢——由身份整组接管。
+
+只在 **chat 出网跳**调用，**不在 Django 跳**：Django 配了
+`SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")`（`backend/app/settings.py:83`），
+在那一跳丢掉 `x-forwarded-proto` 会让它把 TLS 终止后的请求当成明文。Django 是内部
+环回跳，本来就不是指纹面。
+
+`referer` 改为**只保留路径、源重写为上游源**：此前固定写成站点根路径，等于宣称每一次
+点击都来自首页；直接透传又会把镜像自己的主机名送到 chatgpt.com。
+
+### 锁的判别力
+
+| 项 | 改动 |
+|---|---|
+| H2 HEADERS 帧标志位 | 参照实录是 `flags: 0x25`（END_STREAM + END_HEADERS + PRIORITY）。`parse_h2_first_frames` 现在解出标志位名并与参照逐项断言——PRIORITY 在不在，本身就是指纹 |
+| 密码套件顺序 | 此前对**排序后**的集合比对，套件顺序漂了也不会红。改为按参照的原始顺序逐项比对（参照侧过滤 GREASE，候选侧本来就不含） |
+| WS 握手的反向断言 | 见「WS 握手（#10）」：从对常量表断言改为对 `ws_shape_headers` 的真实产物断言；第三轮进一步去掉全部放行名单，并喂敌对客户端头 |
+| 三张顺序表绑定实录（第三轮） | `identity::order_tables_match_the_captured_chrome146_order` 把 XHR / 导航 / WS 三张表逐项绑到 `browser-header-order-002.json`：子资源实采逐字重现 `REQUEST_HEADER_ORDER`（一份独立交叉证据），导航绑 `nav-from-link`，握手绑 `ws` 并额外断言表里不含任何 `sec-ch-ua*`。改表而不改证据就会红 |
+| 头序的**线上**断言（第三轮） | 只锁常量表锁不住「表有没有真的落到线上」。`tests/anonymous_frontend.rs` 与 `tests/ws_bridge.rs` 现在从 fixture 抓上游收到的原始头名序列与证据对照。两条都验过判别力：去掉对应的 `.orig_headers(...)`，线上立刻退回 XHR 顺序（导航那条表现为 `upgrade-insecure-requests` 被甩到表尾），测试转红 |
+
+### 待验证项（本批未做，需要采集或运行才能闭合）
+
+- ~~**高熵导航的头顺序**~~ → **已闭合（第三轮，2026-09-29）**：`probe/capture_header_order.py`
+  实采「`Accept-CH` 之后的第二次导航」与「页内 `<a>` 点击导航」，前者给出高熵提示块的
+  真实位置，后者给出 `referer` 的槽位。顺序表已按实采改写，由
+  `order_tables_match_the_captured_chrome146_order` 绑定，另有一条线上断言。
+- ~~**真实 `wss` 上的握手形状**~~ → **已闭合（第三轮，2026-09-29）**：命题本身是错的。
+  同一轮采集里服务端已用 `Accept-CH` 给该源授权过全部高熵提示、随后的导航确实带了
+  全套 `sec-ch-ua*`，而同一页面的 WS 握手仍然一个都不带——UA-CH 不适用于 upgrade
+  请求，与 `ws://` / `wss://` 无关。旧证据 `ws-handshake-headers-001.json` 采自
+  **HeadlessChrome/151 on Windows**，答不了 146/Linux 的问题，已由
+  `browser-header-order-002.json` 取代作为测试绑定源。
+- **`accept-language` 位置的机制依赖（已判明，登记备查）**：`accept-language` 在顺序表里
+  的位置取决于语言是怎么注入的。CDP 的 `Emulation.setUserAgentOverride`（Playwright
+  `locale=`，也是 cfbypass 用的那条）把它挪到覆盖机制自己的槽位（子资源实测第 3 位）；
+  命令行 `--accept-lang` 偏好则把它排在**表尾**。`reference-chrome146-001` 呈现的是
+  覆盖形态的特征，cfbypass 也用覆盖，因此顺序表以覆盖形态为准，`REQUEST_HEADER_ORDER`
+  保持原样。若将来 cfbypass 改用命令行偏好注入语言，三张表都要重采。
+- **注入脚本在真浏览器里的行为**：离线自检 `probe/check_injected_identity.mjs`
+  （`node probe/check_injected_identity.mjs`，不联网、不起浏览器）已经覆盖了改写生效、
+  `navigator` 实例无自有属性、`instanceof NavigatorUAData` 仍成立、getter 与方法的
+  `toString()` 仍报 `[native code]`、`toJSON` 只回低熵三项、高熵不合成 `wow64`——
+  并验证过判别力（把原型改写退回实例改写，自检会红）。但它跑在**桩宿主**上，
+  真 Chromium 的 `NavigatorUAData` 原型属性是否都可 `configurable` 重定义，
+  仍需在真浏览器里确认一次。
+- **测试套件已跑（第三轮，2026-09-29，WSL Ubuntu）**：`cargo test --locked --offline`
+  全绿（91 单测 + 各集成用例），`cargo clippy --locked --offline --all-targets -- -D warnings`
+  无输出。注意 rsync 会保留 Windows 侧的 mtime，**紧跟一次 rsync 的「通过」不可信**：
+  必须先 `find src tests -type f -exec touch {} +` 再跑，否则 cargo 可能复用旧测试二进制。
+- **容器未重建、未部署**：本批改的是网关二进制的行为，正在跑的
+  `mirror-gateway:phase1` 镜像仍是修复前的产物。重建/上线需显式批准。

@@ -117,7 +117,8 @@ services:
       TZ: "${TZ:-Asia/Shanghai}"
       # 必须与网关身份常量逐字符相同（见 cfbypass/README「身份一致性」）。
       CF_BYPASS_USER_AGENT: "${CF_BYPASS_USER_AGENT:-Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36}"
-      CF_BYPASS_ACCEPT_LANGUAGE: "${CF_BYPASS_ACCEPT_LANGUAGE:-zh-CN,zh}"
+      # 与网关身份表的 ACCEPT_LANGUAGE 逐字一致（gateway server/identity.rs）。
+      CF_BYPASS_ACCEPT_LANGUAGE: "${CF_BYPASS_ACCEPT_LANGUAGE:-zh-CN,zh;q=0.9,en;q=0.8}"
       CF_BYPASS_HEADLESS: "${CF_BYPASS_HEADLESS:-true}"
       CF_BYPASS_SECRET: "${GATEWAY_ADMIN_SECRET:?GATEWAY_ADMIN_SECRET must be set}"
       CF_BYPASS_ALLOWED_HOSTS: "${CF_BYPASS_ALLOWED_HOSTS:-chatgpt.com,.chatgpt.com}"

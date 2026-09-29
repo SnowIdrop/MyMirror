@@ -99,7 +99,8 @@ pub(super) async fn media(app: &App, request: Request, target: url::Url) -> Resp
     .await
 }
 
-/// 公共资源反代：请求头白名单 + 完整身份组，拒绝重定向、非 2xx 与 HTML 正文，
+/// 公共资源反代：请求头白名单 + 低熵身份组（公共 CDN 没下发过 `Accept-CH`，
+/// 高熵提示不发），拒绝重定向、非 2xx 与 HTML 正文，
 /// 响应只复制安全头并流式回传。凭据一律不转发。
 pub(super) async fn forward_public<F>(
     app: &App,
@@ -128,7 +129,7 @@ where
             headers.insert(name, value.clone());
         }
     }
-    identity::apply_identity(&mut headers);
+    identity::apply_low_entropy_identity(&mut headers);
     let upstream = app
         .client
         .request(parts.method.clone(), target.as_str())

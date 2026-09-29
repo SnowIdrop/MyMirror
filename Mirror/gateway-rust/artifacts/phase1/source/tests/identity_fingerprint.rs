@@ -28,9 +28,13 @@ const EXPECTED_HELLO_SHA256: &str =
 /// SNI 场景的 ClientHello 归一化指纹：只有 SNI 与公钥不同，其余字段必须一致。
 const EXPECTED_HELLO_SNI_SHA256: &str =
     "15d917f30e1b8f90de104dd5b5fad3d7fc7337a83adb146efb91d8186f18703b";
-/// HTTP/2 首帧归一化指纹（preface + SETTINGS 顺序 + 窗口增量 + 伪头顺序）。
+/// HTTP/2 首帧归一化指纹（preface + SETTINGS 顺序 + 窗口增量 + 伪头顺序 +
+/// HEADERS 帧标志位）。2026-09-29 因为归一化结构新增 `headers_frame_flags` 而重算：
+/// 标志位本身已由
+/// `candidate_http2_first_frame_matches_the_chrome146_reference` 对着参照逐项比过
+///（`END_STREAM`/`END_HEADERS`/`PRIORITY`），这里只是把新字段纳入摘要。
 const EXPECTED_H2_SHA256: &str =
-    "7b3ac4b0b8ccd90db9766439a16adc81cadbb6af773547050a0c0e88d528bee8";
+    "797c2ef2f61a428076dec3c1400ee573dbefe31bc792c5141eda9d6a347a5aab";
 
 /// 身份相关依赖的锁定版本：真实指纹由这些 crate 决定，`cargo update` 必须让这里变红。
 const IDENTITY_CRATES: [(&str, &str); 7] = [
@@ -482,6 +486,7 @@ fn parse_h2_first_frames(bytes: &[u8]) -> Value {
     let mut settings = Vec::new();
     let mut window_update = None;
     let mut pseudo_order: Vec<String> = Vec::new();
+    let mut headers_flags: Vec<&str> = Vec::new();
     for frame in &frames {
         match frame.kind {
             0x04 if frame.flags & 0x01 == 0 => {
@@ -509,6 +514,21 @@ fn parse_h2_first_frames(bytes: &[u8]) -> Value {
                 } else {
                     0
                 };
+                // HEADERS 的标志位本身就是指纹的一部分：真 Chrome146 的首个
+                // HEADERS 是 `END_STREAM|END_HEADERS|PRIORITY`（参照记的是
+                // `flags: "25"`），带 PRIORITY 就意味着帧里多 5 字节优先级字段。
+                // 此前这里只是把那 5 字节跳过去，标志位从不入摘要、也从不与参照
+                // 对照——候选少发 PRIORITY 或改了优先级都不会被这套锁发现。
+                for (bit, name) in [
+                    (0x01, "END_STREAM"),
+                    (0x04, "END_HEADERS"),
+                    (0x08, "PADDED"),
+                    (0x20, "PRIORITY"),
+                ] {
+                    if frame.flags & bit != 0 {
+                        headers_flags.push(name);
+                    }
+                }
                 if frame.flags & 0x20 != 0 {
                     block = &block[5..];
                 }
@@ -538,6 +558,7 @@ fn parse_h2_first_frames(bytes: &[u8]) -> Value {
         "settings": settings,
         "connection_window_update": window_update,
         "request_header_names": pseudo_order,
+        "headers_frame_flags": headers_flags,
     })
 }
 
@@ -783,24 +804,28 @@ async fn candidate_client_hello_matches_the_chrome146_reference() {
         ] {
             assert_eq!(hello[field], expected[field], "{host} 的 {field}");
         }
-        // 套件：参照给的是排序视图，候选保留原始顺序，排序后必须逐项一致。
-        let mut suites: Vec<String> = hello["cipher_suites"]
+        // 套件：**按顺序**比对。密码套件的排列本身就是 TLS 指纹的一部分，
+        // 只比集合等于放过「同一批套件、不同顺序」这种整类漂移。
+        // `rust_normalized` 只有排序视图，但原始顺序一直躺在同一份参照的
+        // `raw.cipher_suites` 里（GREASE 在首位，值每次握手随机，因此剔除后比较）。
+        let raw_capture = reference_capture(&reference, has_sni);
+        let expected_suites: Vec<String> = raw_capture["raw"]["cipher_suites"]
+            .as_array()
+            .expect("参照原始套件顺序")
+            .iter()
+            .map(|value| value.as_str().expect("套件号").to_owned())
+            .filter(|value| {
+                u16::from_str_radix(value, 16).is_ok_and(|value| !is_grease(value))
+            })
+            .collect();
+        // 候选侧由 `hex16` 产出，GREASE 已经剔除过。
+        let suites: Vec<String> = hello["cipher_suites"]
             .as_array()
             .expect("套件列表")
             .iter()
             .map(|value| value.as_str().expect("套件号").to_owned())
             .collect();
-        suites.sort();
-        assert_eq!(suites, {
-            let mut expected: Vec<String> = expected["cipher_suites_sorted"]
-                .as_array()
-                .expect("参照套件列表")
-                .iter()
-                .map(|value| value.as_str().expect("套件号").to_owned())
-                .collect();
-            expected.sort();
-            expected
-        }, "{host} 的密码套件集合");
+        assert_eq!(suites, expected_suites, "{host} 的密码套件顺序");
     }
 }
 
@@ -872,4 +897,9 @@ async fn candidate_http2_first_frame_matches_the_chrome146_reference() {
         .map(|value| value.as_str().expect("伪头名").to_owned())
         .collect();
     assert_eq!(pseudo, expected_pseudo, "伪头顺序必须与参照一致");
+    assert_eq!(
+        h2["headers_frame_flags"],
+        capture["first_headers"]["flags_names"],
+        "HEADERS 帧标志位必须与 146 参照一致（PRIORITY 在不在，本身就是指纹）"
+    );
 }

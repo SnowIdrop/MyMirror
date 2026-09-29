@@ -123,9 +123,32 @@ const REQUEST_HOP_BY_HOP: [&str; 11] = [
 /// 非逐跳头，单独成列，不并入 [`REQUEST_HOP_BY_HOP`]。
 const CLIENT_PROXY_IP_HEADERS: [&str; 2] = ["x-real-ip", "x-forwarded-for"];
 
+/// 代理链痕迹头：镜像部署在反代/CDN 后面时，入口会写入这些头，转发出去等于
+/// 告诉上游「这条请求经过了一层代理」——真浏览器直连 chatgpt.com 不会带任何一个。
+/// `x-real-ip`/`x-forwarded-for` 已在 [`CLIENT_PROXY_IP_HEADERS`] 里单列（原版观测），
+/// 这里补齐同族的其余成员，包括 Cloudflare 在前置时注入的 `cf-*` 与 `cdn-loop`。
+const CLIENT_PROXY_CHAIN_HEADERS: [&str; 12] = [
+    "forwarded",
+    "via",
+    "x-forwarded-proto",
+    "x-forwarded-host",
+    "x-forwarded-port",
+    "x-forwarded-server",
+    "x-client-ip",
+    "true-client-ip",
+    "cdn-loop",
+    "cf-connecting-ip",
+    "cf-ipcountry",
+    "cf-visitor",
+];
+
 /// chat 上游的 `accept-encoding`：只声明网关能解码的 gzip（见 [`send_chat_once`] 的
 /// 注释）。这是对原版「保留客户端声明值」的有意偏离，登记在 COMPATIBILITY。
-const GZIP_ONLY_ACCEPT_ENCODING: &str = "gzip";
+///
+/// 转发跳与网关自发请求（[`identity::api_baseline`]）共用这一个常量：同一个
+/// 「用户」在同一个源上一会儿声明 `gzip, deflate, br, zstd`、一会儿只声明 `gzip`，
+/// 本身就是跨跳不一致——偏离可以有，但必须**每一跳都一样地偏**。
+pub(super) const GZIP_ONLY_ACCEPT_ENCODING: &str = "gzip";
 
 /// 响应方向需要过滤的逐跳头；`content-length` 由本层按实际正文重算（流式响应不设，
 /// 由 HTTP 栈用分块传输），`transfer-encoding` 一律不复制（任务硬要求）。
@@ -940,6 +963,54 @@ fn strip_request_hop_by_hop(headers: &HeaderMap) -> Result<HeaderMap> {
     Ok(headers)
 }
 
+/// chat 上游专用的再过滤：在 [`strip_request_hop_by_hop`] 之上去掉「只会告诉上游
+/// 这条请求不是真浏览器直连」的两类头——代理链痕迹与宿主浏览器特征。
+///
+/// 只作用于出网跳，**不作用于 Django 跳**：Django 配了
+/// `SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")`，在那一跳丢掉
+/// `x-forwarded-proto` 会让它把 TLS 终止后的请求当成明文。Django 是内部环回跳，
+/// 本来就不是指纹面。
+fn strip_upstream_leaks(headers: &mut HeaderMap) {
+    for name in CLIENT_PROXY_CHAIN_HEADERS {
+        headers.remove(name);
+    }
+    let leaked: Vec<_> = headers
+        .keys()
+        .filter(|name| is_host_fingerprint_header(name.as_str()))
+        .cloned()
+        .collect();
+    for name in leaked {
+        headers.remove(&name);
+    }
+}
+
+/// 宿主浏览器特征头：`sec-ch-ua*` 之外的 client hints（`device-memory`、
+/// `viewport-width`、`sec-ch-prefers-*`、`sec-ch-viewport-*`、网络质量提示…）
+/// 与 `priority`。
+///
+/// 这些头不在 [`identity::apply_identity`] 的覆盖面内（它只管 `sec-ch-ua*`），
+/// 于是宿主浏览器的真实屏幕、内存、配色偏好和 HTTP/2 优先级语法会原样到达上游，
+/// 与「Chrome146/Linux」的声称身份并列出现。宿主不是 Chromium 时更明显：
+/// Firefox/Safari 根本不发这些头，或者 `priority` 语法不同。
+///
+/// `priority` 一并丢弃，与 [`identity::api_baseline`] 的既定规则一致
+/// （「XHR 实录里不出现，宁可不发也不发错值」，见 identity.rs 的单测
+/// `api_baseline_carries_xhr_fetch_metadata_and_origin_only_on_writes`）：
+/// 它也不在顺序表里，转发就只能落到头部列表末尾，位置本身就是错的。
+fn is_host_fingerprint_header(name: &str) -> bool {
+    if name == "priority" {
+        return true;
+    }
+    if let Some(rest) = name.strip_prefix("sec-ch-") {
+        // `sec-ch-ua*` 由身份组整组接管，不在这里丢。
+        return !(rest == "ua" || rest.starts_with("ua-"));
+    }
+    matches!(
+        name,
+        "device-memory" | "dpr" | "width" | "viewport-width" | "rtt" | "downlink" | "ect"
+    )
+}
+
 /// 响应头预处理：逐跳头 + `connection` 命名头移除（content-length/transfer-encoding
 /// 一律不复制，由本层或 HTTP 栈生成）。
 fn strip_response_hop_by_hop(headers: &HeaderMap) -> HeaderMap {
@@ -1037,17 +1108,36 @@ async fn send_chat_once(
     cookies: &[(String, String)],
 ) -> Result<wreq::Response> {
     let mut headers = strip_request_hop_by_hop(client_headers)?;
+    strip_upstream_leaks(&mut headers);
     headers.remove("authorization");
     // 客户端 cookie 绝不能进上游：这里先清掉，下面只写服务端合成的 cookie 组。
     headers.remove("cookie");
     let origin = chat_origin(base)?;
-    headers.insert(
-        "origin",
-        HeaderValue::from_str(&origin).context("origin 头无效")?,
-    );
+    // `origin` 只加在写入类方法上：真 Chrome 的同源 GET（XHR 与导航都一样）**不带**
+    // `Origin`，见 evidence/reference-chrome146-001/03-request-headers.json 的
+    // request 0（导航）与 request 1/2（GET XHR）。这条规则与网关自发请求的
+    // [`identity::api_baseline`] 本来就一致；此前这里对所有方法无条件插入，
+    // 会把经由 [`send_chat`] 的刷新链（`api_baseline(GET)`）改成一个带 Origin 的 GET，
+    // 同一个 `/backend-api/me` 于是在直发路径与刷新链上形状不同。
+    if !matches!(*method, Method::GET | Method::HEAD) {
+        headers.insert(
+            "origin",
+            HeaderValue::from_str(&origin).context("origin 头无效")?,
+        );
+    }
+    // `referer`：保留客户端的**路径**，但来源改写成上游源。站内跳转的 Referer 是
+    // 上一个页面的 URL，固定写成站点根路径等于宣称每一次点击都来自首页；而直接透传
+    // 又会把镜像自己的域名泄漏给上游。客户端没给（网关自发请求、非浏览器调用方）
+    // 或者给了个解析不了的值，才退回根路径。
+    let referer = headers
+        .get("referer")
+        .and_then(|value| value.to_str().ok())
+        .and_then(|value| url::Url::parse(value).ok())
+        .map(|value| format!("{origin}{}", &value[url::Position::BeforePath..]))
+        .unwrap_or_else(|| format!("{origin}/"));
     headers.insert(
         "referer",
-        HeaderValue::from_str(&format!("{origin}/")).context("referer 头无效")?,
+        HeaderValue::from_str(&referer).context("referer 头无效")?,
     );
     // 身份整组覆盖：浏览器自带的 client hints 一律被固定身份替换，
     // 避免上游同时看到「UA 说 Linux」与「提示说 Windows」。
@@ -1095,8 +1185,19 @@ async fn send_chat_once(
             HeaderValue::from_str(&format!("Bearer {token}")).context("上游凭据头无效")?,
         );
     }
-    auth.client
-        .request(method.clone(), base.as_str())
+    // 导航与 XHR 不是同一个头形状：导航多 `upgrade-insecure-requests` 与
+    // `sec-fetch-user`，两者都不在 XHR 顺序表里，按客户端基线转发只会被排到列表末尾。
+    // 客户端基线锁的是 XHR 顺序（见 identity::REQUEST_HEADER_ORDER 的实录来源），
+    // 因此导航按请求换成导航顺序表。判据用客户端自己的 `sec-fetch-mode: navigate`：
+    // 真浏览器一定会发，非浏览器调用方发不出来也就不会被当成导航。
+    let mut request = auth.client.request(method.clone(), base.as_str());
+    if headers
+        .get("sec-fetch-mode")
+        .is_some_and(|value| value.as_bytes() == b"navigate")
+    {
+        request = request.orig_headers(identity::navigation_orig_headers());
+    }
+    request
         .headers(headers)
         .body(body.clone())
         .send()
@@ -1510,6 +1611,52 @@ mod tests {
             filtered.get("x-e2e-keep").map(|v| v.to_str().unwrap()),
             Some("keep-me")
         );
+    }
+
+    /// 出网跳必须抹掉两类「这不是浏览器直连」的证据：代理链痕迹与宿主特征头。
+    /// `sec-ch-ua*` 不在这里丢（身份整组接管），`x-forwarded-proto` 只在出网跳丢——
+    /// Django 跳靠它判断 TLS 终止，见 [`strip_upstream_leaks`]。
+    #[test]
+    fn upstream_headers_drop_proxy_chain_and_host_fingerprints() {
+        let mut headers = HeaderMap::new();
+        for name in [
+            "via",
+            "forwarded",
+            "x-forwarded-proto",
+            "cdn-loop",
+            "cf-connecting-ip",
+            "priority",
+            "device-memory",
+            "viewport-width",
+            "sec-ch-prefers-color-scheme",
+            "sec-ch-viewport-width",
+        ] {
+            headers.insert(name, HeaderValue::from_static("leak"));
+        }
+        headers.insert("sec-ch-ua-platform", HeaderValue::from_static("\"Windows\""));
+        headers.insert("accept", HeaderValue::from_static("*/*"));
+        let django = strip_request_hop_by_hop(&headers).expect("过滤失败");
+        // Django 跳保留：`SECURE_PROXY_SSL_HEADER` 依赖它。
+        assert!(django.contains_key("x-forwarded-proto"));
+        let mut upstream = django;
+        strip_upstream_leaks(&mut upstream);
+        for name in [
+            "via",
+            "forwarded",
+            "x-forwarded-proto",
+            "cdn-loop",
+            "cf-connecting-ip",
+            "priority",
+            "device-memory",
+            "viewport-width",
+            "sec-ch-prefers-color-scheme",
+            "sec-ch-viewport-width",
+        ] {
+            assert!(!upstream.contains_key(name), "{name} 会泄漏给上游");
+        }
+        // `sec-ch-ua*` 留给身份整组覆盖，不能在这里丢掉。
+        assert!(upstream.contains_key("sec-ch-ua-platform"));
+        assert_eq!(upstream["accept"], "*/*");
     }
 
     #[test]

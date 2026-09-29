@@ -169,7 +169,17 @@ async fn fetch_payload(app: &App) -> Result<Value> {
         .client
         .post(base.join("/cloudflare5s/bypass-v1")?.as_str())
         .bearer_auth(&app.config.secret)
-        .json(&json!({"url":app.config.upstream.as_str(), "user_agent":identity::USER_AGENT}))
+        // 身份整组下发：cfbypass 的镜像是 Debian 的**无品牌** chromium，原生
+        // `brands`/`fullVersionList` 只有 Chromium + GREASE，没有 `Google Chrome`。
+        // 该跳取到的 `cf_clearance` 与网关后续请求绑定同一个身份，品牌不一致
+        // 等于两跳报了两个浏览器。UA 同理——由网关下发，cfbypass 不再各自维护。
+        .json(&json!({
+            "url": app.config.upstream.as_str(),
+            "user_agent": identity::USER_AGENT,
+            "accept_language": identity::ACCEPT_LANGUAGE,
+            "brands": identity::js_identity()["brands"],
+            "full_version_list": identity::js_identity()["fullVersionList"],
+        }))
         .send()
         .await
         .context("cfbypass 请求失败")?
@@ -227,6 +237,48 @@ fn log_identity_mismatch(payload: &Value) {
             }
         }
     }
+    // 品牌组单独比对：镜像里的 chromium 是**无品牌**构建，原生 `brands` 只有
+    // Chromium + GREASE，与网关声称的三品牌（含 `Google Chrome`）不同；
+    // 上面那张表全是标量字段，漏掉品牌就等于漏掉这一跳最容易漂的两项。
+    // 浏览器会打乱品牌次序，因此按品牌名排序后比集合，不比顺序。
+    let js = identity::js_identity();
+    for (field, want) in [
+        ("brands", &js["brands"]),
+        ("full_version_list", &js["fullVersionList"]),
+    ] {
+        let Some(actual) = identity.pointer(&format!("/user_agent_data/{field}")) else {
+            continue; // 探测失败是 cfbypass 侧的可观测缺陷，不是身份错配。
+        };
+        if brand_set(actual) != brand_set(want) {
+            tracing::warn!(
+                module = "gateway",
+                field,
+                expected = %want,
+                actual = %actual,
+                "cfbypass 一跳的浏览器品牌组与网关声称值不一致"
+            );
+        }
+    }
+}
+
+/// 品牌列表归一化成有序集合：`[{brand,version}]` → `["brand/version", …]` 排序。
+fn brand_set(value: &Value) -> Vec<String> {
+    let mut items: Vec<String> = value
+        .as_array()
+        .map(|list| {
+            list.iter()
+                .map(|item| {
+                    format!(
+                        "{}/{}",
+                        item["brand"].as_str().unwrap_or_default(),
+                        item["version"].as_str().unwrap_or_default()
+                    )
+                })
+                .collect()
+        })
+        .unwrap_or_default();
+    items.sort();
+    items
 }
 
 /// 白名单过滤：非数组、缺少 name/value 与未列入白名单的条目一律丢弃。

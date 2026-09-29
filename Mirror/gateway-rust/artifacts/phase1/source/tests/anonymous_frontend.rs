@@ -133,6 +133,13 @@ impl Fixture {
                         "origin": header("origin"),
                         "referer": header("referer"),
                         "sec-ch-ua": header("sec-ch-ua"),
+                        "accept-language": header("accept-language"),
+                        // 线上真实头名与顺序：顺序表只是意图，这里验证它真的生效了。
+                        "header_names": parts
+                            .headers
+                            .keys()
+                            .map(|name| name.as_str().to_owned())
+                            .collect::<Vec<_>>(),
                         "body": String::from_utf8_lossy(&body),
                     }));
                     if parts.uri.path() == "/"
@@ -295,6 +302,46 @@ async fn anonymous_login_requires_the_explicit_switch() {
     assert!(f.chat_calls("/").is_empty());
 }
 
+/// 真 Chromium146/Linux 的头序实录（生成器
+/// `artifacts/phase1/probe/capture_header_order.py`）。
+const HEADER_ORDER_EVIDENCE: &str =
+    include_str!("../../../../evidence/browser-header-order-002.json");
+
+/// 线上头序与实录的可比对：返回（线上出现过的实录头名，按线上顺序）与
+/// （同一集合，按实录顺序）。两者相等即说明相对顺序一致。
+///
+/// 只比较交集：凭据（cookie/authorization）与逐跳头不在实录里，fixture 的调用方
+/// 也不会发全套 `sec-fetch-*`，这些差异不该让断言变脆。
+fn order_against_evidence(call: &Value, tag: &str) -> (Vec<String>, Vec<String>) {
+    let evidence: Value = serde_json::from_str(HEADER_ORDER_EVIDENCE).expect("头序证据无效");
+    let recorded: Vec<String> = evidence["language_via_cdp_override"]["requests"][tag]
+        ["header_names"]
+        .as_array()
+        .unwrap_or_else(|| panic!("证据缺少 {tag}"))
+        .iter()
+        .map(|value| value.as_str().expect("头名必须是字符串").to_owned())
+        // 逐跳头由传输层生成，不由顺序表决定。
+        .filter(|name| name != "host" && name != "connection")
+        .collect();
+    let wire: Vec<String> = call["header_names"]
+        .as_array()
+        .expect("缺少 header_names")
+        .iter()
+        .map(|value| value.as_str().expect("头名必须是字符串").to_owned())
+        .collect();
+    (
+        wire.iter()
+            .filter(|name| recorded.contains(name))
+            .cloned()
+            .collect(),
+        recorded
+            .iter()
+            .filter(|name| wire.contains(name))
+            .cloned()
+            .collect(),
+    )
+}
+
 #[tokio::test]
 async fn anonymous_session_shares_one_upstream_identity_and_injects_before_head() {
     let f = Fixture::new(true).await;
@@ -310,6 +357,11 @@ async fn anonymous_session_shares_one_upstream_identity_and_injects_before_head(
         .client
         .get(format!("{}/", f.base))
         .header("cookie", format!("mirror_token={token}"))
+        // 真浏览器的页面导航一定带这一对；网关据此换用导航顺序表。
+        .header("sec-fetch-mode", "navigate")
+        .header("upgrade-insecure-requests", "1")
+        // 访客自己的语言偏好：绝不能原样走到上游（见下面的断言）。
+        .header("accept-language", "de-DE,de;q=0.9")
         .send()
         .await
         .unwrap();
@@ -328,11 +380,22 @@ async fn anonymous_session_shares_one_upstream_identity_and_injects_before_head(
         upstream["cookie"].as_str().unwrap(),
         "cf_clearance=CF-FIXTURE; __cf_bm=BM-FIXTURE"
     );
-    // 原版 chat 上游的 origin 固定为 scheme://host（去端口），referer 为其加 `/`。
-    assert_eq!(upstream["origin"].as_str().unwrap(), "http://127.0.0.1");
+    // 页面导航是 GET：真 Chrome 的同源 GET 不带 `Origin`，网关也不能凭空加一个。
+    assert_eq!(upstream["origin"].as_str().unwrap(), "");
+    // referer 以上游源为准（去端口），路径沿用客户端请求。
     assert_eq!(upstream["referer"].as_str().unwrap(), "http://127.0.0.1/");
     assert!(!upstream["sec-ch-ua"].as_str().unwrap().is_empty());
     assert!(!upstream["cookie"].as_str().unwrap().contains(&token));
+    // 访客浏览器的语言偏好不得泄漏：这一跳必须与 `oai-language`、注入 JS 和
+    // cfbypass 报同一份语言，否则同一个「用户」在不同层各说一套。
+    assert_eq!(
+        upstream["accept-language"].as_str().unwrap(),
+        "zh-CN,zh;q=0.9,en;q=0.8"
+    );
+    // 导航的头序必须是**导航**那一张表：真 Chrome 的导航与 XHR 不同序
+    // （evidence/browser-header-order-002.json 的 nav-from-link）。
+    let (on_wire, recorded) = order_against_evidence(upstream, "nav-from-link");
+    assert_eq!(on_wire, recorded, "导航头序与实录不一致：{upstream}");
 
     // 匿名通道复用同一身份，不再触发第二次 cfbypass 获取。
     let cf_before = f.cfbypass_events.lock().unwrap().len();
@@ -345,6 +408,23 @@ async fn anonymous_session_shares_one_upstream_identity_and_injects_before_head(
         .unwrap();
     assert_eq!(anonymous.status(), 200);
     assert_eq!(f.cfbypass_events.lock().unwrap().len(), cf_before);
+    // 反过来，写入类方法必须带 `Origin`：同源 POST 的 Chrome 会发，少发同样是漂移。
+    let write = f
+        .client
+        .post(format!("{}/backend-anon/sentinel/chat-requirements", f.base))
+        .header("cookie", format!("mirror_token={token}"))
+        .header("content-type", "application/json")
+        .body("{}")
+        .send()
+        .await
+        .unwrap();
+    assert_eq!(write.status(), 200);
+    let posted = f
+        .chat_calls("/backend-anon/sentinel/chat-requirements")
+        .into_iter()
+        .find(|call| call["method"] == "POST")
+        .expect("POST 必须到达上游");
+    assert_eq!(posted["origin"].as_str().unwrap(), "http://127.0.0.1");
     // accessToken 只属于真实账号登录：匿名链路不得请求 `/api/auth/session`
     //（fixture 对该路径返回 418，一旦请求就会被断言暴露）。
     assert!(

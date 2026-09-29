@@ -21,6 +21,41 @@ use std::{
 };
 use tokio_tungstenite::tungstenite;
 
+/// 真 Chromium146/Linux 的 WS 握手实录（生成器
+/// `artifacts/phase1/probe/capture_header_order.py`）。
+const WS_ORDER_EVIDENCE: &str = include_str!("../../../../evidence/browser-header-order-002.json");
+
+/// 握手里由网关提供的头。`host`/`connection`/`upgrade`/`sec-websocket-*` 由传输层
+/// 生成、`cookie`/`authorization`/`oai-device-id` 是凭据（实录里当然没有），
+/// 因此顺序断言只比较这几项的相对顺序。
+const GATEWAY_OWNED_WS_HEADERS: [&str; 6] = [
+    "pragma",
+    "cache-control",
+    "user-agent",
+    "origin",
+    "accept-encoding",
+    "accept-language",
+];
+
+/// 真 Chromium146 的 WS 握手实际发过的全部头名，按实录顺序。
+fn recorded_ws_names() -> Vec<String> {
+    let evidence: Value = serde_json::from_str(WS_ORDER_EVIDENCE).expect("头序证据无效");
+    evidence["language_via_cdp_override"]["requests"]["ws"]["header_names"]
+        .as_array()
+        .expect("证据缺少 ws 握手")
+        .iter()
+        .map(|value| value.as_str().expect("头名必须是字符串").to_owned())
+        .collect()
+}
+
+/// 实录里属于 [`GATEWAY_OWNED_WS_HEADERS`] 的头名，按实录顺序。
+fn recorded_ws_order() -> Vec<String> {
+    recorded_ws_names()
+        .into_iter()
+        .filter(|name| GATEWAY_OWNED_WS_HEADERS.contains(&name.as_str()))
+        .collect()
+}
+
 /// 最小 HTTP 正向代理桩：reqwest 走代理时发绝对形式请求行，这里改写为
 /// origin-form 后双向转发。只用于合成回环回归，不接触任何真实主机。
 async fn proxy_stub(listener: tokio::net::TcpListener, events: Events) {
@@ -148,6 +183,12 @@ async fn ws_upstream(
                         "upstream_version": header("sec-websocket-version"),
                         "upstream_upgrade": header("upgrade"),
                         "upstream_extensions": header("sec-websocket-extensions"),
+                        // 线上真实头名与顺序：顺序表只是意图，这里验证它真的生效了。
+                        "header_names": request
+                            .headers()
+                            .keys()
+                            .map(|name| name.as_str().to_owned())
+                            .collect::<Vec<_>>(),
                     }));
                     Ok(response)
                 },
@@ -513,13 +554,54 @@ async fn websocket_bridges_messages_with_session_credentials() {
         handshake["user_agent"],
         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
     );
-    assert_eq!(handshake["sec_ch_ua_platform"], "\"Linux\"");
-    assert_eq!(handshake["sec_ch_ua_full_version"], "\"146.0.7680.177\"");
-    // 真 Chrome 的 WS 握手头（2026-09-24 实录）：调用方没给时按固定值补齐。
+    // 握手上**没有**任何 client hints：真 Chromium146 在 WS 升级上一个都不发，
+    // 即便同源已被 `Accept-CH` 授权过高熵提示
+    // （evidence/browser-header-order-002.json 的 `ws`）。referer 同理。
+    assert_eq!(handshake["sec_ch_ua_platform"], "", "{handshake}");
+    assert_eq!(handshake["sec_ch_ua_full_version"], "", "{handshake}");
+    let wire: Vec<&str> = handshake["header_names"]
+        .as_array()
+        .expect("缺少 header_names")
+        .iter()
+        .map(|value| value.as_str().unwrap())
+        .collect();
+    assert!(
+        wire.iter().all(|name| !name.starts_with("sec-ch-ua")),
+        "{wire:?}"
+    );
+    assert!(!wire.contains(&"referer"), "{wire:?}");
+    // 真 Chrome 的 WS 握手头：取值一律来自身份表，调用方给什么都不算。
     assert_eq!(handshake["pragma"], "no-cache");
     assert_eq!(handshake["cache_control"], "no-cache");
-    assert_eq!(handshake["accept_encoding"], "gzip, deflate, br, zstd");
-    assert!(!handshake["accept_language"].as_str().unwrap().is_empty());
+    // 与 HTTP 跳同值：同一个「用户」不能在两条连接上报两套压缩能力。
+    assert_eq!(handshake["accept_encoding"], "gzip");
+    assert_eq!(handshake["accept_language"], "zh-CN,zh;q=0.9,en;q=0.8");
+    // 顺序表真的生效了：本层提供的头按实录的相对顺序出现在线上。
+    let on_wire: Vec<&str> = wire
+        .iter()
+        .filter(|name| GATEWAY_OWNED_WS_HEADERS.contains(name))
+        .copied()
+        .collect();
+    assert_eq!(on_wire, recorded_ws_order(), "握手头序与实录不一致");
+    // 整条线上不得出现实录之外的头。单测只看 `ws_shape_headers` 的产物，
+    // `upstream_headers` 在那之后还会补 `oai-device-id` 与凭据组——这三项是
+    // 显式登记的应用层头（原版 WS 桥同样发，浏览器的 `new WebSocket()` 根本没有
+    // 自定义头的接口，这本身就是随原版的取舍），除此之外多一个头就红。
+    const REGISTERED_APP_HEADERS: [&str; 4] = [
+        "oai-device-id",
+        "cookie",
+        "authorization",
+        "sec-websocket-protocol",
+    ];
+    let recorded = recorded_ws_names();
+    let unexpected: Vec<&str> = wire
+        .iter()
+        .copied()
+        .filter(|name| {
+            !recorded.iter().any(|known| known == name) && !REGISTERED_APP_HEADERS.contains(name)
+        })
+        .collect();
+    assert!(unexpected.is_empty(), "握手发了实录之外的头：{unexpected:?}");
     // 握手自有头必须由传输层重建：上游拿到的是它自己的 key 与版本。
     let upstream_key = handshake["upstream_key"].as_str().unwrap();
     assert!(!upstream_key.is_empty(), "{handshake}");

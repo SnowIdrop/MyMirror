@@ -7,49 +7,128 @@
   // WebGL/Canvas 等一律保持宿主真实取值，不合成。
   var gatewayIdentity = @@IDENTITY_JSON@@;
   if (typeof navigator !== 'undefined') {
-    var gatewayDefine = function(name, value) {
-      Object.defineProperty(navigator, name, {
+    // 覆盖装在**原型**上，不装在 navigator 实例上。真 Chrome 的 `userAgent` 等
+    // 就是 `Navigator.prototype` 上的访问器，实例自身没有这些属性：装在实例上会让
+    // `Object.getOwnPropertyNames(navigator)` 多出一批本不该存在的自有属性，
+    // 是一条比「UA 说 Linux」更强的信号。同理，getter 的 `toString()` 必须仍然
+    // 报 `[native code]`，否则改写过的函数体直接可读。
+    var gatewayNativeToString = Function.prototype.toString;
+    var gatewayFaked = new WeakMap();
+    // 改写过的函数要在**两处**都像原生：`toString()` 报 `[native code]`，`name` 报
+    // 被顶替的那个原生名。实测真 Chromium146（probe/check_native_identity.py）：
+    // `Object.getOwnPropertyDescriptor(Navigator.prototype,'userAgent').get.name`
+    // === `'get userAgent'`，`NavigatorUAData.prototype.getHighEntropyValues.name`
+    // === `'getHighEntropyValues'`。不改 `name` 的话页面直接读到 `gatewayHighEntropy`
+    // 这种名字——比「UA 说 Linux」直白得多。原生函数的 `name` 描述符是
+    // writable:false / enumerable:false / configurable:true，这里照抄。
+    var gatewayNative = function(fn, name) {
+      gatewayFaked.set(fn, name);
+      Object.defineProperty(fn, 'name', { configurable: true, value: name });
+      return fn;
+    };
+    Function.prototype.toString = gatewayNative(function() {
+      if (gatewayFaked.has(this)) return 'function ' + gatewayFaked.get(this) + '() { [native code] }';
+      return gatewayNativeToString.call(this);
+    }, 'toString');
+    // 访问器：enumerable:true、set:undefined、configurable:true——与实测的
+    // `Navigator.prototype` / `NavigatorUAData.prototype` 描述符逐位一致。
+    // 取值走函数而不是闭包常量，因为 `brands` 每次取值都必须是新数组（见下）。
+    var gatewayDefine = function(target, name, get) {
+      Object.defineProperty(target, name, {
         configurable: true,
-        get: function() { return value; }
+        enumerable: true,
+        get: gatewayNative(get, 'get ' + name)
       });
     };
-    gatewayDefine('userAgent', gatewayIdentity.userAgent);
-    gatewayDefine('appVersion', gatewayIdentity.appVersion);
-    gatewayDefine('platform', gatewayIdentity.platform);
-    var gatewayBrands = gatewayIdentity.brands;
-    var gatewayFullVersionList = gatewayIdentity.fullVersionList;
-    var gatewayUserAgentData = {
-      brands: gatewayBrands,
-      mobile: gatewayIdentity.mobile,
-      platform: gatewayIdentity.platformName,
-      getHighEntropyValues: function(hints) {
-        // 只回答真 Linux Chrome 会返回的键：`wow64` 是 Windows 专有，
-        // 表外的提示一律不合成。
-        var known = {
-          architecture: gatewayIdentity.architecture,
-          bitness: gatewayIdentity.bitness,
-          brands: gatewayBrands,
-          fullVersion: gatewayIdentity.fullVersion,
-          fullVersionList: gatewayFullVersionList,
-          mobile: gatewayIdentity.mobile,
-          model: gatewayIdentity.model,
-          platform: gatewayIdentity.platformName,
-          platformVersion: gatewayIdentity.platformVersion,
-          uaFullVersion: gatewayIdentity.fullVersion
-        };
-        var result = {};
-        for (var index = 0; index < hints.length; index++) {
-          if (Object.prototype.hasOwnProperty.call(known, hints[index])) {
-            result[hints[index]] = known[hints[index]];
-          }
-        }
-        // 实测：无论请求哪些提示，真 Chrome 都会回 brands 与 mobile。
-        result.brands = gatewayBrands;
-        result.mobile = gatewayIdentity.mobile;
-        return Promise.resolve(result);
-      }
+    // 原型上的方法：实测是 enumerable:true / writable:true / configurable:true
+    //（WebIDL 的接口成员本来就可枚举）。写成 enumerable:false 会让
+    // `Object.keys(NavigatorUAData.prototype)` 比真浏览器少两项。
+    var gatewayMethod = function(target, name, fn) {
+      Object.defineProperty(target, name, {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        value: gatewayNative(fn, name)
+      });
     };
-    gatewayDefine('userAgentData', gatewayUserAgentData);
+    // 品牌表每次都现造：实测 `uad.brands !== uad.brands`（每次取值是新数组），
+    // 数组本身冻结、里面的条目**不**冻结；而 `getHighEntropyValues` 回的
+    // brands / fullVersionList 数组连冻结都没有。复用同一个冻结数组会让
+    // `uad.brands === uad.brands` 变成 true，是一条干净的检测点。
+    var gatewayBrandList = function(items, frozen) {
+      var copy = items.map(function(item) { return { brand: item.brand, version: item.version }; });
+      return frozen ? Object.freeze(copy) : copy;
+    };
+    var gatewayNavigatorProto = Object.getPrototypeOf(navigator);
+    gatewayDefine(gatewayNavigatorProto, 'userAgent', function() { return gatewayIdentity.userAgent; });
+    gatewayDefine(gatewayNavigatorProto, 'appVersion', function() { return gatewayIdentity.appVersion; });
+    gatewayDefine(gatewayNavigatorProto, 'platform', function() { return gatewayIdentity.platform; });
+    // 改写装在宿主真实的 `NavigatorUAData` **原型**上，不碰实例，也不合成实例：
+    // 实测 `navigator.userAgentData !== navigator.userAgentData`（每次取值都是新
+    // 包装对象），装在实例上的改写下一次取值就没了；原型改写对所有实例一致生效。
+    // 宿主没有该接口时（非 Chromium）不合成，保持缺失。
+    var gatewayUserAgentData = navigator.userAgentData;
+    if (gatewayUserAgentData) {
+      var gatewayUaDataProto = Object.getPrototypeOf(gatewayUserAgentData);
+      gatewayDefine(gatewayUaDataProto, 'brands', function() {
+        return gatewayBrandList(gatewayIdentity.brands, true);
+      });
+      gatewayDefine(gatewayUaDataProto, 'mobile', function() { return gatewayIdentity.mobile; });
+      gatewayDefine(gatewayUaDataProto, 'platform', function() { return gatewayIdentity.platformName; });
+      // 键集与真 Chromium146 实测一致（probe/check_native_identity.py）：11 个合法
+      // 提示，含 `wow64`（Linux 上恒 false）与 `formFactors`，**不含** `fullVersion`
+      //（那不是提示名，只有 `uaFullVersion`）。表外的提示一律不合成。
+      var gatewayHint = function(name) {
+        switch (name) {
+          case 'architecture': return gatewayIdentity.architecture;
+          case 'bitness': return gatewayIdentity.bitness;
+          case 'brands': return gatewayBrandList(gatewayIdentity.brands, false);
+          case 'formFactors': return gatewayIdentity.formFactors.slice();
+          case 'fullVersionList': return gatewayBrandList(gatewayIdentity.fullVersionList, false);
+          case 'mobile': return gatewayIdentity.mobile;
+          case 'model': return gatewayIdentity.model;
+          case 'platform': return gatewayIdentity.platformName;
+          case 'platformVersion': return gatewayIdentity.platformVersion;
+          case 'uaFullVersion': return gatewayIdentity.fullVersion;
+          case 'wow64': return gatewayIdentity.wow64;
+          default: return undefined;
+        }
+      };
+      gatewayMethod(gatewayUaDataProto, 'getHighEntropyValues', function(hints) {
+        // 真 Chrome 对非数组入参（含缺参）抛 TypeError，不是静默返回。
+        if (!Array.isArray(hints)) {
+          return Promise.reject(new TypeError(
+            "Failed to execute 'getHighEntropyValues' on 'NavigatorUAData': " +
+            'The provided value cannot be converted to a sequence.'
+          ));
+        }
+        var keys = [];
+        var add = function(name) {
+          if (gatewayHint(name) !== undefined && keys.indexOf(name) < 0) keys.push(name);
+        };
+        for (var index = 0; index < hints.length; index++) add(String(hints[index]));
+        // 无论请求哪些提示，真 Chrome 都无条件补上这三项低熵值。
+        add('brands');
+        add('mobile');
+        add('platform');
+        // 实测键序是**字典序**，不是请求顺序：请求 ["wow64","architecture",…]
+        // 回来的是 architecture, brands, mobile, platform, uaFullVersion, wow64。
+        keys.sort();
+        var result = {};
+        for (var cursor = 0; cursor < keys.length; cursor++) {
+          result[keys[cursor]] = gatewayHint(keys[cursor]);
+        }
+        return Promise.resolve(result);
+      });
+      // `toJSON` 只回低熵三项，与真 `NavigatorUAData.prototype.toJSON` 同形。
+      gatewayMethod(gatewayUaDataProto, 'toJSON', function() {
+        return {
+          brands: gatewayBrandList(gatewayIdentity.brands, false),
+          mobile: gatewayIdentity.mobile,
+          platform: gatewayIdentity.platformName
+        };
+      });
+    }
   }
   var enableUserControls = true;
   var forceChatMode = @@FORCE_CHAT@@;
