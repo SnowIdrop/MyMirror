@@ -312,7 +312,9 @@ sha256）。**本批仍不做**：代理节点与出口分流、`CF_BYPASS_PROXY
     需实测定性。
 - **缺口 5 第一批实施产生的遗留（2026-09-24）**：
   - H2 首帧（SETTINGS 顺序、伪头顺序）未独立复采：抓到它需要给回环监听配测试证书并完成
-    握手，本轮没做；取值只来自 `wreq-util` 画像。
+    握手，本轮没做；取值只来自 `wreq-util` 画像。**已闭合（2026-09-29）**：本地自签 TLS 服务
+    实采参照首帧并逐项比对，另外把 HEADERS 帧标志位（`END_STREAM`/`END_HEADERS`/`PRIORITY`）
+    纳入摘要与断言——此前只是跳过 PRIORITY 的 5 字节，标志位漂了也不会红。
   - `signature_algorithms` 缺 ML-DSA（`0904/0905/0906`）：对照浏览器是 Chromium 151，
     候选按 Chrome146 画像；Chrome146 当时的真实取值未取得证据。
   - `sec-ch-ua-platform-version` 在 Linux 真机上的取值未验证（本机只有 Windows Chromium）；
@@ -323,6 +325,14 @@ sha256）。**本批仍不做**：代理节点与出口分流、`CF_BYPASS_PROXY
   - WS 握手头是子集：上游 WS 只发身份整组与协商必需头，真浏览器还会带
     `accept-encoding`/`cache-control`/`pragma`；**已收敛（2026-09-24 第二批）**：按真浏览器
     实录补齐，逐跳头与握手自有头不转发，证据 `evidence/ws-handshake-headers-001.json`。
+    **该结论已被第三轮取代（2026-09-29）**：001 采自 **HeadlessChrome/151 on
+    Windows**，答不了「Chromium 146 的握手到底发不发 `sec-ch-ua*`」。同会话同源实采
+    （`evidence/browser-header-order-002.json`，生成器 `probe/capture_header_order.py`）
+    证明 146 的握手**既不传任何** `sec-ch-ua*`、也**不带** `referer`，且该源当时已被
+    `Accept-CH` 授权过高熵提示（同页导航带全套）——UA-CH 不适用于 upgrade 请求。握手改为
+    从零构造（`chat_ws::ws_shape_headers`），顺序由 `identity::ws_orig_headers` 绑定，
+    `accept-encoding` 与 HTTP 各跳统一为 `proxy::GZIP_ONLY_ACCEPT_ENCODING`。见
+    COMPATIBILITY「传输身份漂移复审的收敛」。
   - **第二批新增遗留（2026-09-24）**：
     - Linux `sec-ch-ua-platform-version`：**已闭合（2026-09-28 运行时复核）**——Linux 上该
       feature 默认 `stable` ⇒ `GetPlatformVersion()` 返回空串 ⇒ 头值 `""`；Windows 参照实测
