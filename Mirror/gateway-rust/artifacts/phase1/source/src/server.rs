@@ -734,18 +734,113 @@ async fn exchange_session_with_client(
         .map(str::to_owned)
         .context("session_token 无法换取 access_token")
 }
+/// `chatgpt_token` 的两种凭据形态。两者都以 `eyJ` 开头，只能按 JWT 段数区分：
+/// AccessToken 是 JWS（`header.payload.signature`，2 个点），SessionToken 是 NextAuth 的
+/// JWE（`header..iv.ciphertext.tag`，4 个点且第 2 段必为空）。实测：AccessToken 2 个点、
+/// SessionToken 4 个点（`artifacts/phase1/probe/{access,session}-token.txt` 的形态元数据）。
+/// 只按 `eyJ` 判定会把 SessionToken 当成 AccessToken 发给 `/backend-api/me`，
+/// 得到「access_token 校验失败: backend-api/me 返回状态 401」（2026-09-29 本机实测）。
+#[derive(Debug, PartialEq, Eq)]
+enum TokenKind {
+    Access,
+    Session,
+}
+
+/// 非 JWT 形态沿用原版行为走会话换取（原版对 `synthetic-access-token` 只请求
+/// `/api/auth/session`，见 evidence/original-003 的 token-fixture）；`eyJ` 开头但不满足
+/// JWE 形状的输入保持既有默认（按 AccessToken 校验）。
+fn token_kind(token: &str) -> TokenKind {
+    let segments: Vec<&str> = token.split('.').collect();
+    match segments.as_slice() {
+        [_, "", _, _, _] if token.starts_with("eyJ") => TokenKind::Session,
+        _ if token.starts_with("eyJ") => TokenKind::Access,
+        _ => TokenKind::Session,
+    }
+}
+
+/// 上游计划类型：与 [`fetch_user_with_client`] 同一套请求头与凭据。查询失败由调用方退化为
+/// `free`（与原版会话刷新「accounts/check 失败仍显示 free」同一规则，见 `proxy.rs` 的
+/// 会话刷新分支），因此这里不再叠加重试。
+async fn fetch_plan(app: &App, access: &str, submitted: &[(String, String)]) -> Result<String> {
+    let outbound = { let db = app.db.lock().await; egress::load(&db, &app.config, None)? };
+    let url = app
+        .config
+        .upstream
+        .join("/backend-api/accounts/check/v4-2023-04-27")?;
+    let mut request = outbound
+        .client
+        .get(url.as_str())
+        .headers(identity::api_baseline(&url, &Method::GET)?)
+        .bearer_auth(access);
+    let cf = app.cloudflare.cookies().await;
+    if let Some(cookie) = cloudflare::cookie_header(&[submitted, cf.as_slice()]) {
+        request = request.header(
+            "cookie",
+            HeaderValue::from_str(&cookie).context("Cookie 头无效")?,
+        );
+    }
+    let answer = cloudflare::read(request.send().await.context("上游请求失败")?).await?;
+    if !answer.status.is_success() {
+        anyhow::bail!(
+            "plan 查询失败: accounts/check 返回状态 {}",
+            answer.status.as_u16()
+        );
+    }
+    Ok(answer.json::<Value>()?["accounts"]["default"]["account"]["plan_type"]
+        .as_str()
+        .filter(|plan| !plan.is_empty())
+        .unwrap_or("free")
+        .to_owned())
+}
+
+/// 管理端录入上游账号（Django `/0x/chatgpt` 的添加按钮）。响应必须是 Django
+/// `ChatgptAccount.save_data` 直接读取的信封：`user_info.email` / `user_info.plan_type` /
+/// `access_token` / `session_token`（形状同参考实现 `gateway/main.py` 的同一端点）。
+/// 只回传 `/backend-api/me` 正文会让 `save_data` 抛 KeyError（2026-09-29 定位）。
+/// `extra_cookies` 刻意不回传：Django 侧 `if data.get("extra_cookies") is not None` 的语义是
+/// 「缺省即不动该列」，而本路径没有 cookie 文本可解析，回传空数组会清掉已存的官网 Cookie。
 async fn user_info(State(app): State<Shared>, Json(input): Json<Value>) -> ApiResult {
     let token = input["chatgpt_token"].as_str().unwrap_or("");
     if token.is_empty() {
+        // 原版自身对该路径给出的文案就是「当前网关未实现 refresh_token 刷新」
+        // （报告 07 §3 的管理面粘连消息窗），两个实现都不实现 OAuth 刷新。
+        // 直接回「chatgpt_token 不能为空」会让管理端以为是自己漏填了字段。
+        if input["refresh_token"]
+            .as_str()
+            .is_some_and(|value| !value.is_empty())
+        {
+            return Err(error(
+                StatusCode::BAD_REQUEST,
+                "当前网关未实现 refresh_token 刷新",
+            ));
+        }
         return Err(error(StatusCode::BAD_REQUEST, "chatgpt_token 不能为空"));
     }
     let (_, submitted) = submitted_cookies(input.get("extra_cookies"));
-    let access = if token.starts_with("eyJ") {
-        token.into()
-    } else {
-        exchange_session(&app, token, &submitted).await?
+    let (access, session) = match token_kind(token) {
+        TokenKind::Access => (token.to_owned(), None),
+        TokenKind::Session => (
+            exchange_session(&app, token, &submitted).await?,
+            Some(token.to_owned()),
+        ),
     };
-    Ok(Json(fetch_user(&app, &access, &submitted).await?))
+    let info = fetch_user(&app, &access, &submitted).await?;
+    let email = info["email"]
+        .as_str()
+        .filter(|value| !value.is_empty())
+        .context("上游用户信息缺少 email")?
+        .to_owned();
+    let plan = fetch_plan(&app, &access, &submitted)
+        .await
+        .unwrap_or_else(|_| "free".to_owned());
+    let session_token_valid = session.is_some();
+    Ok(Json(json!({
+        "user_info": {"email": email, "plan_type": plan},
+        "access_token": access,
+        "session_token": session,
+        "access_token_valid": true,
+        "session_token_valid": session_token_valid,
+    })))
 }
 async fn diagnose(State(app): State<Shared>, Json(input): Json<Value>) -> ApiResult {
     let access = input["access_token"].as_str().unwrap_or("");
@@ -1480,4 +1575,22 @@ async fn refresh_cfbypass(State(app): State<Shared>, headers: HeaderMap) -> ApiR
         "message":"cookies 已更新",
         "cfbypass_identity": app.cloudflare.identity().await,
     })))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{token_kind, TokenKind};
+
+    /// 形态取自真实凭据的段数（不是内容）：AccessToken 3 段、SessionToken 5 段且第 2 段为空。
+    #[test]
+    fn token_kind_separates_access_jws_from_session_jwe() {
+        let access = "eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJmaXh0dXJlIn0.signature";
+        let session = "eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..iv.ciphertext.tag";
+        assert_eq!(token_kind(access), TokenKind::Access);
+        assert_eq!(token_kind(session), TokenKind::Session);
+        // 非 JWT 与 `eyJ` 开头但形状不符的输入：前者按原版行为走会话换取，
+        // 后者保持既有默认（按 AccessToken 校验），避免静默改变未知形态的语义。
+        assert_eq!(token_kind("synthetic-access-token"), TokenKind::Session);
+        assert_eq!(token_kind("eyJhbGciOiJSUzI1NiJ9.payload"), TokenKind::Access);
+    }
 }

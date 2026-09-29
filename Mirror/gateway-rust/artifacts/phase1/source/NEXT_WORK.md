@@ -356,6 +356,15 @@ sha256）。**本批仍不做**：代理节点与出口分流、`CF_BYPASS_PROXY
   - 六族之外的新资源族出现在数组里会被裁空（fail-closed）；靠 `acl_audit` 的 `route_auto_*`
     记录发现，再按需把该路径登记为账号级；
   - `/external/*` 的抓取一律从 AWS 出口发出；要收紧成域名白名单是一行改动，本批按公网策略实施。
+- **录入上游账号的残余（2026-09-29，见 COMPATIBILITY「录入上游账号」）**：
+  - 粘贴「完整 Cookie 文本 / Netscape 文件」不会解析出会话 Cookie：实测
+    `__Secure-next-auth.session-token=…` 形态被整体当成会话令牌，返回
+    `session_token 无法换取 access_token`；原版二进制有 `# Netscape HTTP Cookie File` 导入文案，
+    候选未实现该解析。当前可行做法是只粘贴 SessionToken 的值本身（JWE）。
+  - `refresh_token` 录入未实现，与前缀/段数判定无关；原版自身文案即
+    「当前网关未实现 refresh_token 刷新」，候选保持同一文案（不触上游）。
+  - 凭据形态按 JWT 段数判定（AccessToken 3 段 / SessionToken 5 段且第 2 段为空）；
+    两者都以 `eyJ` 开头，若将来自定义凭据格式变化，需要同步 `server.rs::token_kind`。
 
 ## 归档说明
 

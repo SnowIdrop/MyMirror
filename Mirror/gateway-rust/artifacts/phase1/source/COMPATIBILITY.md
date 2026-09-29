@@ -944,3 +944,42 @@ console error 7 → 5，剩余为 React #418/Datadog/favicon 这类既有噪声�
   预热可能早于 cfbypass 监听端口，日志出现一条 `cfbypass prewarm failed ... cfbypass 请求失败`。
   预热按设计不阻塞启动（server.rs:141-146），首次真正需要 clearance 的请求会重新刷新；
   cfbypass 已在监听时重启网关则不应出现该行——出现且刷新持续失败才需要排查。
+
+## 录入上游账号：凭据形态判定与响应信封（2026-09-29）
+
+管理端「添加上游账号」的链路是 Django `POST /0x/chatgpt` → 网关 `POST /api/get-user-info`。
+该端点此前没有任何测试覆盖，两处缺陷都只在真实录入时才会暴露，本轮一并修掉并补上回归。
+
+| 项 | 修前 | 修后 |
+|---|---|---|
+| 凭据形态判定 | `chatgpt_token.starts_with("eyJ")` 一律当 AccessToken | 按 JWT 段数判定：AccessToken 是 JWS（`header.payload.signature`，3 段），SessionToken 是 NextAuth 的 JWE（`header..iv.ciphertext.tag`，5 段且第 2 段为空） |
+| 形态错误的后果 | SessionToken 被当 Bearer 发给 `/backend-api/me`，得到 `access_token 校验失败: backend-api/me 返回状态 401`（用户实测） | SessionToken 走 `/api/auth/session` 换取；AccessToken 直接校验 |
+| 响应形状 | 直接回传 `/backend-api/me` 正文 | Django `ChatgptAccount.save_data` 直接读取的信封：`user_info{email,plan_type}` + `access_token` + `session_token` + 两个 valid 标志（形状同参考实现 `gateway/main.py` 的同一端点） |
+| `extra_cookies` | 无 | 刻意不回传：Django 侧 `if data.get("extra_cookies") is not None` 的语义是「缺省即不动该列」，而本路径没有 cookie 文本可解析，回传空数组会清掉已存的官网 Cookie |
+| `refresh_token` 录入 | 命中「chatgpt_token 不能为空」 | 回原版同一文案「当前网关未实现 refresh_token 刷新」（报告 07 §3 粘连消息窗），空输入仍是「chatgpt_token 不能为空」 |
+
+形态判定的依据是真实凭据的**段数**（只读元数据，不落内容）：`artifacts/phase1/probe/session-token.txt`
+是 4 个点 / 5 段且第 2 段为空（JWE），`access-token.txt` 是 2 个点 / 3 段（JWS）。两者都以
+`eyJ` 开头，因此单看前缀必然误判。非 JWT 形态沿用原版行为走会话换取（原版对
+`synthetic-access-token` 只请求 `/api/auth/session`，见 `evidence/original-003` 的 token-fixture：
+响应体是 `session_token 无法换取 access_token`）。
+
+### 本批验证
+
+- Rust：新增 `tests/token_import.rs` 4 项（SessionToken 先换取再校验并回信封、AccessToken 不经过
+  `api/auth/session`、非 JWT 仍走会话换取、refresh_token 文案且不触上游），另有 `token_kind`
+  的库内单测；`cargo test --locked --offline` 23 套件全过，`cargo clippy --all-targets -- -D warnings` 通过。
+- Django：新增 `app/chatgpt/test_account_import.py` 3 项，锁住消费端契约（信封能被 `save_data`
+  直接落库、网关文案原样透出且不含 HTML）；`manage.py test` 110 项通过。
+- 真实上游（只读，合成凭据）：经 `127.0.0.1:40003` 的管理端三条路径分别是
+  `session_token 无法换取 access_token`（JWE 形态）、`access_token 校验失败: backend-api/me 返回状态 401`
+  （JWS 形态）、`session_token 无法换取 access_token`（非 JWT），账号列表保持 0 行——证明分类
+  与错误语义都已按形态分流。真实账号的成功路径需要用户自己的有效凭据，未在本次验证内。
+
+### 本批登记的两个残余（见 NEXT_WORK）
+
+- 粘贴「完整 Cookie 文本 / Netscape 文件」不会被解析出会话 Cookie：实测
+  `__Secure-next-auth.session-token=…` 形态仍按字符串整体当会话令牌，返回
+  `session_token 无法换取 access_token`。原版二进制有 `# Netscape HTTP Cookie File` 导入文案，
+  候选尚未实现该解析。
+- `refresh_token` 录入未实现（与原版一致：原版自身文案即「当前网关未实现 refresh_token 刷新」）。
