@@ -83,3 +83,52 @@ class ChatgptAccountImportTests(TestCase):
         self.assertIn("session_token 无法换取 access_token", body)
         self.assertNotIn("<html", body)
         self.assertEqual(ChatgptAccount.objects.count(), 0)
+
+    @patch("app.chatgpt.views.chatgpt.req_gateway")
+    def test_comment_lines_are_skipped_and_partial_failures_are_reported(self, req_gateway):
+        """粘贴整份 Netscape/草稿文件时：注释行与空行跳过，坏行不拖垮好行。"""
+
+        def call(method, uri, **kwargs):
+            if uri == "/api/get-user-info":
+                if kwargs["json"]["chatgpt_token"] == "bad-token":
+                    raise ValidationError({"message": "session_token 无法换取 access_token"})
+                return self.envelope()
+            return {"message": "ok"}
+
+        req_gateway.side_effect = call
+        response = self.client.post(
+            self.url,
+            {
+                "chatgpt_token_list": [
+                    "# Netscape HTTP Cookie File",
+                    "   ",
+                    "bad-token",
+                    "good-token",
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("部分添加成功", response.data["message"])
+        self.assertEqual(len(response.data["errors"]), 1)
+        self.assertEqual(ChatgptAccount.objects.count(), 1)
+        self.assertNotIn(
+            "bad-token",
+            json.dumps(response.data, ensure_ascii=False),
+            "错误明细不得回显凭据本身",
+        )
+        imported = [c for c in req_gateway.call_args_list if c.args[1] == "/api/get-user-info"]
+        self.assertEqual(
+            [c.kwargs["json"]["chatgpt_token"] for c in imported], ["bad-token", "good-token"]
+        )
+
+    @patch("app.chatgpt.views.chatgpt.req_gateway")
+    def test_only_comment_lines_reports_an_actionable_error(self, req_gateway):
+        response = self.client.post(
+            self.url, {"chatgpt_token_list": ["# 真实上游探针的 SessionToken 草稿", ""]}, format="json"
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertIn(
+            "没有可录入的 Token", json.dumps(response.data, ensure_ascii=False)
+        )
+        req_gateway.assert_not_called()

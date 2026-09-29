@@ -976,13 +976,38 @@ console error 7 → 5，剩余为 React #418/Datadog/favicon 这类既有噪声�
   （JWS 形态）、`session_token 无法换取 access_token`（非 JWT），账号列表保持 0 行——证明分类
   与错误语义都已按形态分流。真实账号的成功路径需要用户自己的有效凭据，未在本次验证内。
 
-### 本批登记的两个残余（见 NEXT_WORK）
+### 残余（见 NEXT_WORK）
 
-- 粘贴「完整 Cookie 文本 / Netscape 文件」不会被解析出会话 Cookie：实测
-  `__Secure-next-auth.session-token=…` 形态仍按字符串整体当会话令牌，返回
-  `session_token 无法换取 access_token`。原版二进制有 `# Netscape HTTP Cookie File` 导入文案，
-  候选尚未实现该解析。
 - `refresh_token` 录入未实现（与原版一致：原版自身文案即「当前网关未实现 refresh_token 刷新」）。
+- 粘贴形态解析在本节第二轮实现，见下。
+
+## 录入上游账号：粘贴形态归一化（2026-09-29 第二轮）
+
+用户在同一入口第二次尝试时报 `session_token 无法换取 access_token`。**凭据本身是好的**：
+用同一 SessionToken 直接打本机网关 `/api/get-user-info` 返回 200，拿到真实邮箱与 access_token。
+按提交形态分组复现后确认问题在粘贴内容，不在凭据、也不在换取链路：
+
+| 提交形态 | 结果 |
+|---|---|
+| 纯 SessionToken 值（`eyJ…`，4 个点） | 200，换取成功 |
+| `session_token = <值>`（`probe/session-token.txt` 草稿的赋值行） | 400 `session_token 无法换取 access_token` |
+| `__Secure-next-auth.session-token=<值>`（DevTools 里整条 Cookie） | 同上 |
+| 纯值 + 尾部换行 | 502 `upstream_unavailable`（传输层抖动，不是凭据结论） |
+
+改动（`server.rs::pasted_token`）：录入前先归一化——跳过 `#` 注释行、按分号或制表符切分、
+识别 `__Secure-next-auth.session-token` / `next-auth.session-token` / `session_token` 三个 cookie
+名（含浏览器按长度拆出的 `.0`/`.1` 分块按序拼接），只把令牌值交给上游；都不匹配时退回整段
+文本，保持「非 JWT 也走会话换取」的既有行为。这三种形态原版同样支持：cookie 名常量见报告
+03 §10.5 与 08 §293，Netscape 导入文案见报告 07 §219（原版二进制含
+`# Netscape HTTP Cookie File` 头识别与跳过非法行）。
+
+换取失败（上游 200 但正文没有 `accessToken`）的文案在原版句子上追加可行动说明：
+`session_token 无法换取 access_token：api/auth/session 未返回 accessToken，会话令牌可能已失效或已退出登录`。
+这是对原版短文案的**有意偏离**：管理端只显示这一条消息，原样保留会让「令牌失效」与「粘错形态」
+无法区分。
+
+验证：`tests/token_import.rs` 新增 `pasted_cookie_forms_are_reduced_to_the_token_value`（四种
+粘贴形态各自换取成功，且回给 Django 的信封里 `session_token` 已归一化为纯值）。
 
 ## 上游连接偶发失败的处理（2026-09-29）
 

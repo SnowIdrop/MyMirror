@@ -229,12 +229,51 @@ async fn opaque_token_still_takes_the_session_exchange_path() {
     let f = Fixture::new().await;
     let (status, body) = f.import("synthetic-access-token").await;
     assert_eq!(status, StatusCode::BAD_REQUEST);
-    assert_eq!(body["message"], json!("session_token 无法换取 access_token"));
+    let message = body["message"].as_str().unwrap();
+    assert!(
+        message.starts_with("session_token 无法换取 access_token"),
+        "{message}"
+    );
+    assert!(
+        message.contains("未返回 accessToken"),
+        "换取失败必须说明上游没有返回 accessToken（令牌失效或已退出登录），否则管理端只看到无法定位的短文案：{message}"
+    );
     assert_eq!(
         f.paths(),
         vec!["/api/auth/session"],
         "非 JWT 形态沿用原版行为（evidence/original-003 的 token-fixture）"
     );
+}
+
+/// 2026-09-29 实测：这三种粘贴形态原样提交时上游返回 200 却没有 `accessToken`
+/// （管理端只看到「无法换取」），而归一化后应当都能导入成功。
+#[tokio::test]
+async fn pasted_cookie_forms_are_reduced_to_the_token_value() {
+    let f = Fixture::new().await;
+    let split = 20;
+    for pasted in [
+        // 本仓 probe/session-token.txt 草稿的赋值行，用户按行复制时的形态。
+        format!("session_token = {SESSION}"),
+        // DevTools 里整条 Cookie 的值。
+        format!("__Secure-next-auth.session-token={SESSION}"),
+        // 原版支持的 Netscape HTTP Cookie File（报告 07 §219）：制表符分隔、带注释行。
+        format!(
+            "# Netscape HTTP Cookie File\n.chatgpt.com\tTRUE\t/\tTRUE\t1900000000\t\
+             __Secure-next-auth.session-token\t{SESSION}\n"
+        ),
+        // 浏览器把超过 4096 字节的 Cookie 拆成 `.0`/`.1` 两条。
+        format!(
+            "__Secure-next-auth.session-token.0={}\n__Secure-next-auth.session-token.1={}",
+            &SESSION[..split],
+            &SESSION[split..]
+        ),
+    ] {
+        let (status, body) = f.import(&pasted).await;
+        assert_eq!(status, StatusCode::OK, "粘贴形态未被归一化: {pasted}");
+        assert_eq!(body["session_token"], json!(SESSION));
+        assert_eq!(body["access_token"], json!("exchanged-access-token"));
+    }
+    assert_eq!(f.paths().len(), 4 * 3, "四种粘贴形态各自走一次换取");
 }
 
 #[tokio::test]

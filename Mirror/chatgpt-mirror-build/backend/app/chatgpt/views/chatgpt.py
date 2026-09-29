@@ -103,18 +103,35 @@ class ChatGPTAccountView(generics.ListCreateAPIView):
             req_gateway("post", "/api/close-chatgpt-memory", json={"chatgpt_name": chatgpt_name})
             return Response({"message": "录入成功"})
 
+        imported = 0
+        errors = []
         for chatgpt_token in data["chatgpt_token_list"]:
-            if not chatgpt_token:
+            # 原版导入会跳过 Netscape cookie 文件的注释行与非法行（报告 07 §219）：
+            # 空行、以 # 开头的行不是凭据，跳过而不是让整批录入失败。
+            if not chatgpt_token.strip() or chatgpt_token.lstrip().startswith("#"):
                 continue
-            res_json = req_gateway("post", "/api/get-user-info", json={"chatgpt_token": chatgpt_token})
-            res_json["auth_status"] = True
-            ChatgptAccount.save_data(res_json)
+            try:
+                res_json = req_gateway("post", "/api/get-user-info", json={"chatgpt_token": chatgpt_token})
+                res_json["auth_status"] = True
+                ChatgptAccount.save_data(res_json)
 
-            # 关闭记忆
-            chatgpt_name = res_json["user_info"]["email"]
-            req_gateway("post", "/api/close-chatgpt-memory", json={"chatgpt_name": chatgpt_name})
+                # 关闭记忆
+                chatgpt_name = res_json["user_info"]["email"]
+                req_gateway("post", "/api/close-chatgpt-memory", json={"chatgpt_name": chatgpt_name})
+                imported += 1
+            except ValidationError as exc:
+                # 单条失败不拖垮整批（前端按 data.errors 提示部分成功）；错误只保留
+                # 网关文案，不回显凭据本身。
+                errors.append(exc.detail)
 
-        return Response({"message": "录入成功"})
+        if imported == 0:
+            # 一条都没录入时保持原有的 400 + 网关原文语义。
+            if errors:
+                raise ValidationError(errors[0])
+            raise ValidationError({"message": "没有可录入的 Token"})
+
+        message = "录入成功" if not errors else f"部分添加成功，失败 {len(errors)} 个"
+        return Response({"message": message, "errors": errors})
 
     def put(self, request):
         serializer = UpdateChatgptInfoSerializer(data=request.data)

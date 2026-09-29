@@ -744,7 +744,10 @@ async fn exchange_session_with_client(
         .as_str()
         .filter(|s| !s.is_empty())
         .map(str::to_owned)
-        .context("session_token 无法换取 access_token")
+        .context(
+            "session_token 无法换取 access_token：api/auth/session 未返回 accessToken，\
+             会话令牌可能已失效或已退出登录",
+        )
 }
 /// `chatgpt_token` 的两种凭据形态。两者都以 `eyJ` 开头，只能按 JWT 段数区分：
 /// AccessToken 是 JWS（`header.payload.signature`，2 个点），SessionToken 是 NextAuth 的
@@ -768,6 +771,78 @@ fn token_kind(token: &str) -> TokenKind {
         _ if token.starts_with("eyJ") => TokenKind::Access,
         _ => TokenKind::Session,
     }
+}
+
+/// 会话凭据的 cookie 名（原版常量簇逐字复核：报告 03 §10.5 与 08 §293 的
+/// `__Secure-next-auth.session-token` / `next-auth.session-token`；`session_token`
+/// 是本仓 `probe/session-token.txt` 草稿与管理面旧版赋值名）。
+const TOKEN_COOKIE_NAMES: [&str; 3] = [
+    "__Secure-next-auth.session-token",
+    "next-auth.session-token",
+    "session_token",
+];
+
+/// 录入表单粘贴内容的归一化。管理端允许粘贴令牌值本身、`name=value` 文本或 Netscape
+/// cookie 文件（前端占位文案与原版导入行为一致），但只有纯令牌值才能直接发给上游：
+/// 实测 2026-09-29 把 `session_token = <值>` 或
+/// `__Secure-next-auth.session-token=<值>` 原样提交时，上游返回 200 却没有
+/// `accessToken`，管理端只看到「无法换取」。这里剥掉注释行与 cookie 名，并在浏览器
+/// 因长度把大 Cookie 拆成 `.0`/`.1` 条目时按序号拼回完整值。
+fn pasted_token(input: &str) -> String {
+    let mut exact: Vec<(usize, String)> = Vec::new();
+    let mut chunks: Vec<(usize, usize, String)> = Vec::new();
+    let mut plain: Vec<&str> = Vec::new();
+    for line in input.lines() {
+        let line = line.trim();
+        if line.is_empty() || line.starts_with('#') {
+            continue;
+        }
+        // Netscape HTTP Cookie File 用制表符分隔且不带等号，最后两列就是 cookie 名与值
+        // （原版同样支持该导入格式，报告 07 §219）；其余形态按 `name=value` 切分，一行
+        // 可以是分号分隔的整段 `Cookie:` 头。
+        let columns: Vec<&str> = line.split('\t').map(str::trim).collect();
+        let fields: Vec<(&str, &str)> = if columns.len() >= 7 {
+            vec![(columns[columns.len() - 2], columns[columns.len() - 1])]
+        } else {
+            line.split(';')
+                .filter_map(|field| field.split_once('='))
+                .collect()
+        };
+        let mut named = false;
+        for (key, value) in fields {
+            let (key, value) = (key.trim(), value.trim().trim_matches('"'));
+            for (rank, name) in TOKEN_COOKIE_NAMES.iter().enumerate() {
+                if key == *name {
+                    exact.push((rank, value.to_owned()));
+                    named = true;
+                } else if let Some(index) = key
+                    .strip_prefix(&format!("{name}."))
+                    .and_then(|index| index.parse::<usize>().ok())
+                {
+                    chunks.push((rank, index, value.to_owned()));
+                    named = true;
+                }
+            }
+        }
+        if !named {
+            // 没有已知 cookie 名的行整行按纯令牌处理：base64url 结尾的 `=` 不能被当成
+            // 赋值号，否则令牌会被截断成空值。
+            plain.push(line);
+        }
+    }
+    if let Some((_, value)) = exact.into_iter().min_by_key(|(rank, _)| *rank) {
+        return value;
+    }
+    if !chunks.is_empty() {
+        chunks.sort_by_key(|(rank, index, _)| (*rank, *index));
+        let rank = chunks[0].0;
+        return chunks
+            .into_iter()
+            .filter(|(chunk_rank, _, _)| *chunk_rank == rank)
+            .map(|(_, _, value)| value)
+            .collect();
+    }
+    plain.join("")
 }
 
 /// 上游计划类型：与 [`fetch_user_with_client`] 同一套请求头与凭据。查询失败由调用方退化为
@@ -812,7 +887,10 @@ async fn fetch_plan(app: &App, access: &str, submitted: &[(String, String)]) -> 
 /// `extra_cookies` 刻意不回传：Django 侧 `if data.get("extra_cookies") is not None` 的语义是
 /// 「缺省即不动该列」，而本路径没有 cookie 文本可解析，回传空数组会清掉已存的官网 Cookie。
 async fn user_info(State(app): State<Shared>, Json(input): Json<Value>) -> ApiResult {
-    let token = input["chatgpt_token"].as_str().unwrap_or("");
+    // 表单里被粘贴进来的常常是带名字的 cookie 文本，先归一化再判空：原样取值只会
+    // 让上游换不出 accessToken（见 [`pasted_token`]）。
+    let pasted = pasted_token(input["chatgpt_token"].as_str().unwrap_or(""));
+    let token = pasted.as_str();
     if token.is_empty() {
         // 原版自身对该路径给出的文案就是「当前网关未实现 refresh_token 刷新」
         // （报告 07 §3 的管理面粘连消息窗），两个实现都不实现 OAuth 刷新。
@@ -1591,7 +1669,7 @@ async fn refresh_cfbypass(State(app): State<Shared>, headers: HeaderMap) -> ApiR
 
 #[cfg(test)]
 mod tests {
-    use super::{token_kind, TokenKind};
+    use super::{pasted_token, token_kind, TokenKind};
 
     /// 形态取自真实凭据的段数（不是内容）：AccessToken 3 段、SessionToken 5 段且第 2 段为空。
     #[test]
@@ -1604,5 +1682,38 @@ mod tests {
         // 后者保持既有默认（按 AccessToken 校验），避免静默改变未知形态的语义。
         assert_eq!(token_kind("synthetic-access-token"), TokenKind::Session);
         assert_eq!(token_kind("eyJhbGciOiJSUzI1NiJ9.payload"), TokenKind::Access);
+    }
+
+    /// 粘贴形态的抽取规则；真实形态见 COMPATIBILITY「粘贴形态归一化」。
+    #[test]
+    fn pasted_token_strips_cookie_names_and_keeps_token_values() {
+        let session = "eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..iv.ciphertext.tag";
+        assert_eq!(pasted_token(session), session);
+        assert_eq!(pasted_token(&format!("  {session}\n")), session);
+        // 以 `=` 结尾的 base64url 令牌必须原样保留，不能被当成 `name=value` 截掉。
+        let padded = "eyJhbGciOiJkaXIifQ..iv.ct.tag==";
+        assert_eq!(pasted_token(padded), padded);
+        assert_eq!(pasted_token(&format!("session_token = {session}")), session);
+        assert_eq!(
+            pasted_token(&format!("__Secure-next-auth.session-token={session}; __cf_bm=fixture")),
+            session
+        );
+        assert_eq!(
+            pasted_token(&format!(
+                "# Netscape HTTP Cookie File\n.chatgpt.com\tTRUE\t/\tTRUE\t1900000000\t\
+                 __Secure-next-auth.session-token\t{session}"
+            )),
+            session
+        );
+        // 浏览器把超过 4096 字节的 Cookie 拆成 `.0`/`.1`，按序号拼回。
+        assert_eq!(
+            pasted_token(
+                "__Secure-next-auth.session-token.1=tag\n__Secure-next-auth.session-token.0=eyJhbGci"
+            ),
+            "eyJhbGcitag"
+        );
+        // 空值不当作令牌：由调用方回「chatgpt_token 不能为空」，而不是把整行发给上游。
+        assert_eq!(pasted_token("__Secure-next-auth.session-token="), "");
+        assert_eq!(pasted_token("# 只有注释行\n\n"), "");
     }
 }
