@@ -983,3 +983,45 @@ console error 7 → 5，剩余为 React #418/Datadog/favicon 这类既有噪声�
   `session_token 无法换取 access_token`。原版二进制有 `# Netscape HTTP Cookie File` 导入文案，
   候选尚未实现该解析。
 - `refresh_token` 录入未实现（与原版一致：原版自身文案即「当前网关未实现 refresh_token 刷新」）。
+
+## 上游连接偶发失败的处理（2026-09-29）
+
+录入账号时出现 `{"message":"上游请求失败"}`。该文案来自凭据链路的传输层失败（不是 HTTP 状态码，
+也不是凭据结论）。现场证据与处理如下。
+
+### 现场证据
+
+| 证据 | 结果 |
+|---|---|
+| 管理端两次尝试（09:27:02 / 09:27:15） | 网关 400 `{"message":"上游请求失败"}`；Django 日志 `POST /0x/chatgpt/ 400 32` 与 32 字节正文吻合，确认来自网关 `/api/get-user-info` |
+| 复现（连续 20 次真实上游探测） | **4 次失败（20%）**，每次耗时约 **5.0 秒** |
+| 失败成因 | 传输层：对端在响应前关闭连接/停顿；DNS 与 TCP 连接本身瞬时（`getaddrinfo`、`connect` 均 <10ms） |
+| 同环境旁证 | `docker compose build` 因同一类出网抖动失败（`auth.docker.io ... EOF`）；容器内解析 `chatgpt.com` 得到 `65.49.68.152`，WSL 主机得到 `173.244.209.150` |
+| 受影响范围 | 凭据类幂等 GET（`api/auth/session` 换取、`backend-api/me` 校验、`accounts/check`、未登记清单） |
+
+### 改动
+
+| 项 | 内容 |
+|---|---|
+| 完整错误链 | `ApiError::from(anyhow::Error)` 的日志改用 `{:#}`。原来只打最外层 Display，`上游请求失败` 无法区分 DNS/连接/TLS/超时（本次排查即受阻于此） |
+| 幂等 GET 自动重试一次 | `cloudflare::get_with_challenge_retry` 在首次连接失败后重放一次；三个调用点（换取、校验、清单）都传入各自的操作名用于文案 |
+| 重放前等待 200ms | **实测必要**：对端刚关闭时，失败连接可能仍留在客户端连接池并被重放复用（不加等待时重试报同一条 `connection closed before message completed`，且不建立新连接）；等待后重放改用新连接 |
+| 独立语义与状态码 | 新增 `cloudflare::UpstreamUnavailable` → **502 + `code=upstream_unavailable`**，文案 `"<操作名>：上游连接失败，已自动重试一次仍失败，请稍后重试"`；不再用 400 让管理端把偶发出网故障读成「凭据有问题」 |
+| 构建面 | `Dockerfile` 去掉 `# syntax=docker/dockerfile:1`：该指令要求构建时从 Docker Hub 拉 frontend 镜像，本机出网抖动时构建直接失败（实测两次）；本文件只用经典指令 |
+
+### 本批验证
+
+- 新增 `tests/upstream_retry.rs`：本地 TCP 代理「接受后立刻关闭」模拟该故障形态。
+  - 首条连接被关闭 → 自动重放一次 → 录入成功（断言实际建立过新连接）；
+  - 持续失败 → `502 upstream_unavailable`、文案含「上游连接失败/已自动重试一次/请稍后重试」、
+    不含 `<html>`、不被说成凭据结论，且**恰好两次**连接尝试（有界重试）。
+  - 判别力：在临时副本里关掉重放后两条用例都失败（成功用例变 502、持续失败用例只发起 1 次连接），
+    证明用例确实覆盖该改动而不是空过。
+- `cargo test --locked --offline` 全量 8 轮：7 轮 24 套件全过；1 轮失败在
+  `anonymous_frontend.rs::internal_upstream_media_is_allowlisted_and_credential_free`（5 秒超时），
+  该用例**单独跑也会 6 次失败 1 次**，属既有环境性抖动，与本批改动无关。
+  `cargo clippy --locked --offline --all-targets -- -D warnings` 通过。
+- 真实上游（只读、合成凭据）：修复前后各 20 次同规模探测——修复前 4 次传输失败（各约 5 秒），
+  修复后 **0 次传输失败、0 次慢于 3 秒**。如实说明：该现象本身是间歇性的，单轮 0/20 不能证明彻底消除，
+  只能说明本轮未再触发；实际可依赖的保证是「一次有界重放 + 失败时给出可行动、可区分的语义」。
+- Django 未改动，本批未重跑其用例。

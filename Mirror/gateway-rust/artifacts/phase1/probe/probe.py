@@ -87,6 +87,8 @@ LOCAL_CODES = {
     "acl_response_too_large",
     "generation_busy",
     "upstream_blocked",
+    # 上游连接类失败（DNS/连接/TLS 停顿、连接被对端关闭）：502 且已自动重试一次。
+    "upstream_unavailable",
 }
 # 本候选自己的错误文案（逐字取自 source/src/server*，随源码更新）。
 # 只有与这张表逐字相同的 `message` 才会写进证据：这样「网关在发送阶段就失败」与

@@ -364,7 +364,16 @@ sha256）。**本批仍不做**：代理节点与出口分流、`CF_BYPASS_PROXY
   - `refresh_token` 录入未实现，与前缀/段数判定无关；原版自身文案即
     「当前网关未实现 refresh_token 刷新」，候选保持同一文案（不触上游）。
   - 凭据形态按 JWT 段数判定（AccessToken 3 段 / SessionToken 5 段且第 2 段为空）；
-    两者都以 `eyJ` 开头，若将来自定义凭据格式变化，需要同步 `server.rs::token_kind`。
+   两者都以 `eyJ` 开头，若将来自定义凭据格式变化，需要同步 `server.rs::token_kind`。
+- **部署环境出网抖动（2026-09-29，见 COMPATIBILITY「上游连接偶发失败的处理」）**：
+  - 现象：真实上游探测 20 次中 4 次在约 5 秒后传输层失败；同一环境 `docker build` 也出现
+    `auth.docker.io ... EOF`；容器内与 WSL 主机解析 `chatgpt.com` 得到的地址不一致。
+  - 已做：凭据类幂等 GET 自动重放一次（含 200ms 等待），持续失败按
+    `502 upstream_unavailable` + 可行动文案上报，不再混入「凭据有问题」的语义。
+  - 未做（环境侧，非网关可解）：更换/固定出口 DNS 与网络路径；该抖动仍会让非幂等请求
+    （生成、SSE）失败且**刻意不重放**。
+  - 既有测试抖动：`anonymous_frontend.rs::internal_upstream_media_is_allowlisted_and_credential_free`
+    单独跑 6 次失败 1 次（5 秒超时），与本批改动无关，未修（属另一模块的超时假设）。
 
 ## 归档说明
 

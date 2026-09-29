@@ -441,7 +441,7 @@ pub(super) async fn unclaimed_conversations(
         "/backend-api/conversations?offset={}&limit={UNCLAIMED_PAGE_SIZE}",
         page * UNCLAIMED_PAGE_SIZE
     ))?;
-    let (response, refresh) = cloudflare::get_with_challenge_retry(&app, |cf| {
+    let (response, refresh) = cloudflare::get_with_challenge_retry(&app, "读取会话清单失败", |cf| {
         let url = url.clone();
         let client = client.clone();
         let cookies = cookies.clone();

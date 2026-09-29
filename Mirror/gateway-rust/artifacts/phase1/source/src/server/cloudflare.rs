@@ -30,6 +30,9 @@ pub(super) const CLOUDFLARE_COOKIE_NAMES: [&str; 4] =
 /// 挑战驱动刷新的冷却秒数：持续拦截时避免每次请求都拉起一次 cfbypass 浏览器。
 const REFRESH_COOLDOWN_SECS: u64 = 30;
 
+/// 连接类失败后、重放之前的等待毫秒数：让客户端连接池先淘汰那条已失败的连接。
+const RETRY_SETTLE_MILLIS: u64 = 200;
+
 /// 挑战驱动刷新的结论：既决定是否重放，也用于生成不含上游正文的错误说明。
 #[derive(Debug)]
 pub(super) enum RefreshOutcome {
@@ -55,6 +58,20 @@ impl std::fmt::Display for UpstreamBlocked {
 }
 
 impl std::error::Error for UpstreamBlocked {}
+
+/// 上游连接类失败（DNS/连接/TLS 停顿、连接被对端关闭）：与「凭据无效」和「客户端请求有误」
+/// 都不是一回事，API 层据此返回 502 + `upstream_unavailable`。
+/// 部署环境实测存在偶发失败（20 次探测中 4 次在 ~5 秒后失败），因此幂等 GET 会先自动重试一次。
+#[derive(Debug)]
+pub(super) struct UpstreamUnavailable(String);
+
+impl std::fmt::Display for UpstreamUnavailable {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter.write_str(&self.0)
+    }
+}
+
+impl std::error::Error for UpstreamUnavailable {}
 
 /// 进程内 CF 状态：白名单 cookies、刷新代次与最近一次挑战驱动刷新时间。
 pub(super) struct Cloudflare {
@@ -286,10 +303,12 @@ pub(super) async fn read(response: wreq::Response) -> Result<Answer> {
     })
 }
 
-/// 幂等 GET 的挑战处理：首轮命中实测挑战时刷新一次并重放一次。
+/// 幂等 GET 的上游处理：首轮连接失败自动重放一次（`label` 用于生成可行动文案），
+/// 首轮命中实测挑战时刷新一次并重放一次。
 /// `send` 每次都必须基于同一业务请求重新构造（请求与响应体都已被消费）。
 pub(super) async fn get_with_challenge_retry<F, Fut>(
     app: &App,
+    label: &str,
     send: F,
 ) -> Result<(wreq::Response, Option<RefreshOutcome>)>
 where
@@ -297,7 +316,35 @@ where
     Fut: std::future::Future<Output = Result<wreq::Response>>,
 {
     let generation = app.cloudflare.generation().await;
-    let first = send(app.cloudflare.cookies().await).await?;
+    let first = match send(app.cloudflare.cookies().await).await {
+        Ok(response) => response,
+        Err(cause) => {
+            // 出网偶发失败（DNS/连接/TLS 停顿、连接被对端关闭）在本项目的容器部署环境实测存在，
+            // 而这些调用都是幂等 GET：重放一次没有副作用，仍失败才按上游不可用上报。
+            tracing::warn!(
+                module = "gateway",
+                error = %format!("{cause:#}"),
+                "上游连接失败，自动重试一次"
+            );
+            // 对端刚落连接时，失败的那条可能还留在客户端连接池里并被重放复用
+            // （实测：不加等待时重试仍报同一条 `connection closed before message completed`，
+            // 且没有建立新连接）。留一小段时间让池子先淘汰它，再重放。
+            tokio::time::sleep(Duration::from_millis(RETRY_SETTLE_MILLIS)).await;
+            match send(app.cloudflare.cookies().await).await {
+                Ok(response) => response,
+                Err(cause) => {
+                    tracing::error!(
+                        module = "gateway",
+                        error = %format!("{cause:#}"),
+                        "上游连接重试后仍失败"
+                    );
+                    return Err(anyhow::Error::new(UpstreamUnavailable(format!(
+                        "{label}：上游连接失败，已自动重试一次仍失败，请稍后重试"
+                    ))));
+                }
+            }
+        }
+    };
     if !is_challenge(&first) {
         return Ok((first, None));
     }

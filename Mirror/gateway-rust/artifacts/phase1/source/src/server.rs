@@ -75,7 +75,19 @@ impl From<anyhow::Error> for ApiError {
                 Some("upstream_blocked"),
             );
         }
-        tracing::error!(module="gateway", error=%e, "request failed");
+        // 上游连接类失败与凭据结论、客户端请求都无关：用 502 区分，
+        // 否则管理端会把偶发出网故障读成「这个 token 有问题」。
+        if let Some(unavailable) = e.downcast_ref::<cloudflare::UpstreamUnavailable>() {
+            return Self(
+                StatusCode::BAD_GATEWAY,
+                unavailable.to_string(),
+                Some("upstream_unavailable"),
+            );
+        }
+        // `{:#}` 打印完整 anyhow 链（外层 context + 根因）。只打 Display 会丢掉根因，
+        // 「上游请求失败」这类外层文案无法区分 DNS、连接、TLS 还是超时
+        // （2026-09-29 排查容器内上游偶发失败时踩到）。
+        tracing::error!(module="gateway", error=%format!("{e:#}"), "request failed");
         Self(StatusCode::BAD_REQUEST, e.to_string(), None)
     }
 }
@@ -631,7 +643,7 @@ async fn fetch_user_with_client(
     submitted: &[(String, String)],
 ) -> Result<Value> {
     let url = app.config.upstream.join("/backend-api/me")?;
-    let (response, refresh) = cloudflare::get_with_challenge_retry(app, |cf| {
+    let (response, refresh) = cloudflare::get_with_challenge_retry(app, "access_token 校验", |cf| {
         let url = url.clone();
         let client = client.clone();
         let submitted = submitted.to_vec();
@@ -691,7 +703,7 @@ async fn exchange_session_with_client(
         "__Secure-next-auth.session-token".to_owned(),
         session.to_owned(),
     )];
-    let (response, refresh) = cloudflare::get_with_challenge_retry(app, |cf| {
+    let (response, refresh) = cloudflare::get_with_challenge_retry(app, "session_token 换取", |cf| {
         let url = url.clone();
         let client = client.clone();
         let submitted = submitted.to_vec();
