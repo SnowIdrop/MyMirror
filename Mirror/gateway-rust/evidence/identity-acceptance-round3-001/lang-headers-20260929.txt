@@ -1,0 +1,140 @@
+[gateway] gateway listening on http://127.0.0.1:32913 (development candidate; release gate incomplete)
+页面标题: ChatGPT
+navigator.language = en-US
+navigator.languages = ['en-US']
+Exception in callback SyncBase._sync.<locals>.<lambda>() at /opt/venv/lib/python3.13/site-packages/playwright/_impl/_sync_base.py:111
+handle: <Handle SyncBase._sync.<locals>.<lambda>() at /opt/venv/lib/python3.13/site-packages/playwright/_impl/_sync_base.py:111>
+Traceback (most recent call last):
+  File "/usr/lib/python3.13/asyncio/events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 111, in <lambda>
+    task.add_done_callback(lambda _: g_self.switch())
+                                     ~~~~~~~~~~~~~^^
+  File "/opt/venv/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 444, in _listener_with_error_handler_attached
+    potential_future = listener(params)
+  File "/opt/venv/lib/python3.13/site-packages/playwright/_impl/_browser_context.py", line 177, in <lambda>
+    lambda params: self._on_request(
+                   ~~~~~~~~~~~~~~~~^
+        from_channel(params["request"]),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        from_nullable_channel(params.get("page")),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ),
+    ^
+  File "/opt/venv/lib/python3.13/site-packages/playwright/_impl/_browser_context.py", line 702, in _on_request
+    page.emit(Page.Events.Request, request)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.13/site-packages/pyee/base.py", line 212, in emit
+    handled = self._call_handlers(event, args, kwargs)
+  File "/opt/venv/lib/python3.13/site-packages/pyee/base.py", line 188, in _call_handlers
+    self._emit_run(f, args, kwargs)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.13/site-packages/pyee/asyncio.py", line 53, in _emit_run
+    self.emit("error", exc)
+    ~~~~~~~~~^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.13/site-packages/pyee/base.py", line 215, in emit
+    self._emit_handle_potential_error(event, args[0] if args else None)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.13/site-packages/pyee/base.py", line 173, in _emit_handle_potential_error
+    raise error
+  File "/opt/venv/lib/python3.13/site-packages/pyee/asyncio.py", line 51, in _emit_run
+    coro: Any = f(*args, **kwargs)
+                ~^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.13/site-packages/playwright/_impl/_impl_to_api_mapping.py", line 123, in wrapper_func
+    return handler(
+        *list(map(lambda a: self.from_maybe_impl(a), args))[:arg_count]
+    )
+  File "/lang_probe.py", line 99, in on_request
+    for name, value in request.all_headers().items()
+                       ~~~~~~~~~~~~~~~~~~~^^
+  File "/opt/venv/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 353, in all_headers
+    return mapping.from_maybe_impl(self._sync(self._impl_obj.all_headers()))
+                                   ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/venv/lib/python3.13/site-packages/playwright/_impl/_network.py", line 280, in all_headers
+    return (await self._actual_headers()).headers()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.13/site-packages/playwright/_impl/_network.py", line 294, in _actual_headers
+    headers = await self._channel.send("rawRequestHeaders")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 61, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "/opt/venv/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 528, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Request.all_headers: Target page, context or browser has been closed
+Exception in callback SyncBase._sync.<locals>.<lambda>() at /opt/venv/lib/python3.13/site-packages/playwright/_impl/_sync_base.py:111
+handle: <Handle SyncBase._sync.<locals>.<lambda>() at /opt/venv/lib/python3.13/site-packages/playwright/_impl/_sync_base.py:111>
+Traceback (most recent call last):
+  File "/usr/lib/python3.13/asyncio/events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 111, in <lambda>
+    task.add_done_callback(lambda _: g_self.switch())
+                                     ~~~~~~~~~~~~~^^
+  File "/opt/venv/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 444, in _listener_with_error_handler_attached
+    potential_future = listener(params)
+  File "/opt/venv/lib/python3.13/site-packages/playwright/_impl/_browser_context.py", line 177, in <lambda>
+    lambda params: self._on_request(
+                   ~~~~~~~~~~~~~~~~^
+        from_channel(params["request"]),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        from_nullable_channel(params.get("page")),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ),
+    ^
+  File "/opt/venv/lib/python3.13/site-packages/playwright/_impl/_browser_context.py", line 702, in _on_request
+    page.emit(Page.Events.Request, request)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.13/site-packages/pyee/base.py", line 212, in emit
+    handled = self._call_handlers(event, args, kwargs)
+  File "/opt/venv/lib/python3.13/site-packages/pyee/base.py", line 188, in _call_handlers
+    self._emit_run(f, args, kwargs)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.13/site-packages/pyee/asyncio.py", line 53, in _emit_run
+    self.emit("error", exc)
+    ~~~~~~~~~^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.13/site-packages/pyee/base.py", line 215, in emit
+    self._emit_handle_potential_error(event, args[0] if args else None)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.13/site-packages/pyee/base.py", line 173, in _emit_handle_potential_error
+    raise error
+  File "/opt/venv/lib/python3.13/site-packages/pyee/asyncio.py", line 51, in _emit_run
+    coro: Any = f(*args, **kwargs)
+                ~^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.13/site-packages/playwright/_impl/_impl_to_api_mapping.py", line 123, in wrapper_func
+    return handler(
+        *list(map(lambda a: self.from_maybe_impl(a), args))[:arg_count]
+    )
+  File "/lang_probe.py", line 99, in on_request
+    for name, value in request.all_headers().items()
+                       ~~~~~~~~~~~~~~~~~~~^^
+  File "/opt/venv/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 353, in all_headers
+    return mapping.from_maybe_impl(self._sync(self._impl_obj.all_headers()))
+                                   ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/venv/lib/python3.13/site-packages/playwright/_impl/_network.py", line 280, in all_headers
+    return (await self._actual_headers()).headers()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.13/site-packages/playwright/_impl/_network.py", line 294, in _actual_headers
+    headers = await self._channel.send("rawRequestHeaders")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 61, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "/opt/venv/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 528, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Request.all_headers: Target page, context or browser has been closed
+=== 页面打到网关的 /backend-api/* 语言类头组合 ===
+  x42  accept-language='en-US,en;q=0.9' oai-language='zh-CN' sec-ch-ua-platform='"Linux"' ua[:40]='Mozilla/5.0 (X11; Linux x86_64) AppleWeb'
