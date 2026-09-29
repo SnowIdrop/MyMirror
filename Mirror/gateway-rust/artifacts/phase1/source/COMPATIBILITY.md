@@ -902,6 +902,33 @@ console error 7 → 5，剩余为 React #418/Datadog/favicon 这类既有噪声�
 | 构建树换行 | `Mirror/chatgpt-mirror-build/.gitattributes` 固定 `*.sh`、`Dockerfile`、`docker-compose*.yml` 为 LF。Windows 上 `core.autocrlf=true` 会把 `backend/entrypoint.sh` 检出成 CRLF，容器内 dash 报 `set: Illegal option -` 并无限重启（实测） |
 | 侧车解析 | `frontend/nginx.rust.conf` 用 `resolver 127.0.0.11 valid=10s ipv6=off` + 变量 `proxy_pass` 让 nginx 按 TTL 重新解析网关。静态写 `proxy_pass http://gateway:40002` 时 nginx 只在启动解析一次并永久缓存：网关容器重建换了 IP 之后，管理端整片 502，nginx 错误日志明确指向旧地址（实测 `upstream: "http://172.19.0.2:40002"`，而网关已是 `172.19.0.5`） |
 
+### 管理端与镜像面不同源：登录交接地址（2026-09-29）
+
+原版网关是**单端口同源**部署：同一个进程既用 tower-http ServeDir 提供管理端产物
+（`/admin`、`/static`），又提供镜像面（`/`、`/backend-api/*`）与 `/api/*`。因此网关
+`/api/login` 返回的相对交接地址 `/api/not-login?user_gateway_token=…` 天然落在同一来源上，
+浏览器直接打开即可完成交接（cookie 与跳转目标 `/` 都在镜像面上）。
+
+候选编排把管理界面拆到了 nginx 侧车（`${ADMIN_PORT:-40003}`），镜像面留在网关
+（`${PORT:-40002}`）：管理端登录按钮拿到的同一段相对路径会被浏览器解析到 **管理端源**
+上，而该源的 nginx 只配了 `/admin/` 与 `/0x/`，于是 `GET /api/not-login` 得到 nginx 404
+（2026-09-29 用户实测：`http://127.0.0.1:40003/api/not-login?…` → 404；同样的请求打到
+40002 则是网关自己的响应）。
+
+| 项 | 内容 |
+|---|---|
+| 改动 | Django 新增可选设置 `MIRROR_PUBLIC_URL`（local/production 两个配置模块都读同名环境变量，去尾斜杠）。`ChatGPTLoginView` 返回前把以 `/` 开头的 `login_url` 补成 `<MIRROR_PUBLIC_URL><login_url>` |
+| 未配置时 | 保持相对地址原样返回——即原版单端口同源部署的语义，行为不变 |
+| 已配置时 | 浏览器直接跳到浏览器可达的镜像面地址，交接 cookie 也落在镜像面源上（跨源场景不能再依赖「同源相对路径」） |
+| 取值要求 | 必须是**浏览器可达**的镜像面地址（本机预览 `http://127.0.0.1:40002`；公网部署写对外域名，HTTPS 写全）。管理界面与镜像面同源时留空 |
+| 未做 | 没有让 nginx 侧车改写/代理 `/api/not-login`：那样交接 cookie 会落在管理端源上，只在「同主机不同端口」的本地预览里偶然可用，换到不同域名/HTTPS 即失效，属于把部署巧合写进代码 |
+
+验证：`app/chatgpt/test_login_handoff.py` 3 项（配置后补绝对地址、未配置保持相对、已是
+绝对地址不改写）；容器内 `settings.MIRROR_PUBLIC_URL` 实测为配置值；把用户那条 404 的交接
+链接打到镜像面（40002）复现完整链路——`302 Found` + `location: /` +
+`Set-Cookie: mirror_token`，随后带该 cookie 请求 `/` 得到 200（710 KB 真实页面）。
+Django 全量 115 项通过。
+
 ### 容器验证中发现并修复的三处真实缺陷
 
 1. **cfbypass 取 Cookie 接口 500**：`cfbypass/app.py` 写成 `browser.version()`，而

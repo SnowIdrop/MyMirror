@@ -1,6 +1,7 @@
 import time
 
 import jwt
+from django.conf import settings
 from django.db import transaction
 from django.db.models import F
 from rest_framework import generics
@@ -20,6 +21,21 @@ from app.accounts.session_authority import gateway_authorization, capability_ali
 from rest_framework.exceptions import ValidationError
 
 DEFAULT_REFRESH_CLIENT_ID = "app_EMoamEEZ73f0CkXaXp7hrann"
+
+
+def absolute_login_url(login_url):
+    """把网关返回的相对交接地址补成镜像面的绝对地址。
+
+    原版是单端口同源部署（网关自托管 `/admin`、镜像面与 `/api/*`），`/api/not-login`
+    相对路径天然落在同一来源上。候选编排把管理界面拆到 nginx 侧车（40003）、镜像面
+    留在网关（40002），同一段相对路径会被浏览器解析到管理端源上，得到 nginx 404
+    （2026-09-29 实测）。配置 `MIRROR_PUBLIC_URL` 时改成绝对地址；未配置时保持原样。
+    """
+    # 经 django.conf 读取（而不是 import 常量）：部署时按环境生效，测试可用
+    # override_settings 覆盖。
+    if settings.MIRROR_PUBLIC_URL and isinstance(login_url, str) and login_url.startswith("/"):
+        return settings.MIRROR_PUBLIC_URL + login_url
+    return login_url
 
 
 def build_token_expiry_result(account, now=None, error=""):
@@ -271,6 +287,7 @@ class ChatGPTLoginView(APIView):
         payload.update(account_model_policy(request.user, chatgpt))
         # print(payload)
         res_json = req_gateway("post", "/api/login", json=payload)
+        res_json["login_url"] = absolute_login_url(res_json.get("login_url"))
 
         ChatgptAccount.objects.filter(id=chatgpt.id).update(login_count=F("login_count") + 1)
 

@@ -13,6 +13,8 @@
 # 端口约定：
 #   ${PORT:-40002}        镜像入口（网关本体，直连）：/、/backend-api/*、/ws-chatgpt 等
 #   ${ADMIN_PORT:-40003}  管理界面（nginx 侧车）：/admin/ 静态页 + /0x/ 管理 API
+# 两者不同源：管理端的登录跳转必须由 MIRROR_PUBLIC_URL 指回镜像面（见 django 服务的
+# 同名变量注释与 COMPATIBILITY「管理端与镜像面不同源」）。同源部署留空即可。
 # 网关的容器端口固定 40002：只有宿主端口可配，避免侧车与 Django 的固定指向漂移。
 services:
   gateway:
@@ -79,6 +81,10 @@ services:
       ALLOW_REGISTER: "${ALLOW_REGISTER:-false}"
       FREE_ACCOUNT_USERNAME: "${FREE_ACCOUNT_USERNAME:-free_account}"
       CHATGPT_GATEWAY_URL: "http://gateway:40002"
+      # 管理端（40003）与镜像面（40002）不同源：网关返回的 login_url 是相对路径，
+      # 不配置这个变量时浏览器会在 40003 上打开 /api/not-login 并得到 nginx 404。
+      # 取值必须是浏览器可达的镜像面地址（本机预览即 http://127.0.0.1:${PORT:-40002}）。
+      MIRROR_PUBLIC_URL: "${MIRROR_PUBLIC_URL:-}"
       LOCAL_NETWORK_ACCESS: "${LOCAL_NETWORK_ACCESS:-disable}"
       NO_PROXY: "localhost,127.0.0.1,django,gateway,cfbypass"
       no_proxy: "localhost,127.0.0.1,django,gateway,cfbypass"

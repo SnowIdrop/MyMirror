@@ -18,6 +18,11 @@ ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "")
 GATEWAY_ADMIN_SECRET = os.environ.get("GATEWAY_ADMIN_SECRET", "")
 ALLOW_REGISTER = env_bool("ALLOW_REGISTER", True)
 CHATGPT_GATEWAY_URL = os.environ.get("CHATGPT_GATEWAY_URL", "http://chatgpt-mirror:40002")
+# 镜像面对外基址（浏览器可达）。候选编排把管理界面与镜像面拆成两个端口
+# （40003 / 40002）后，网关返回的 `login_url` 是相对路径，浏览器会在管理端源上
+# 打开它并拿到 nginx 404；配置该变量后由管理端改成绝对地址。原版单端口部署
+# 两者同源，留空即保持原语义。
+MIRROR_PUBLIC_URL = os.environ.get("MIRROR_PUBLIC_URL", "").strip().rstrip("/")
 
 TURNSTILE_MODE = os.environ.get("CLOUDFLARE_TURNSTILE", "disable").strip().lower()
 if TURNSTILE_MODE not in {"enable", "disable"}:

@@ -18,6 +18,10 @@ GATEWAY_ADMIN_SECRET = required_env("GATEWAY_ADMIN_SECRET")
 CHATGPT_GATEWAY_URL = required_env("CHATGPT_GATEWAY_URL")
 ALLOW_REGISTER = os.environ.get("ALLOW_REGISTER", "false") == "true"
 SHOW_GITHUB = os.environ.get("SHOW_GITHUB", "true") == "true"
+# 可选：镜像面对外基址。管理界面与镜像面不同源时（候选编排：管理 40003、
+# 镜像 40002）必须配置，否则管理端的登录跳转会在管理端源上打开 /api/not-login
+# 并得到 404。原版是单端口同源部署，留空即保持原语义。
+MIRROR_PUBLIC_URL = os.environ.get("MIRROR_PUBLIC_URL", "").strip().rstrip("/")
 
 TURNSTILE_MODE = os.environ.get("CLOUDFLARE_TURNSTILE", "disable").strip().lower()
 if TURNSTILE_MODE not in {"enable", "disable"}:
