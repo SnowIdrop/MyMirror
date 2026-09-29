@@ -910,43 +910,48 @@ console error 7 → 5，剩余为 React #418/Datadog/favicon 这类既有噪声�
 `location: http://127.0.0.1:40003/admin/`，同一 Cookie 在退出前 `/backend-api/me` 为 200、
 退出后为 401，`?mode=api` 与无参数行为一致。
 
-## 页面导航放行：页面路由不再按清单枚举（2026-09-29）
+## 读取面统一放行：GET/HEAD 不再按路径或 Accept 判定（2026-09-29）
 
 用户点进 `http://127.0.0.1:40002/projects` 得到 `503`。该文案来自候选自己的门禁
 （`proxy.rs` 的「聊天代理兼容门禁尚未通过」），因为放行判定此前只枚举了 `/` 与 `/c/*`
 两个页面前缀——上游前端换一次页面路由就要改网关一次。
 
-原版的兜底路由是 `/*path` 整体反代（报告 08 §3.1-B/C 第 19 条），页面路由由上游前端
-自己决定；本候选与它对齐，把判定从「路径清单」改成「导航请求」：
+第一轮改成「`Accept` 含 `text/html` 的导航请求」后用户**仍然**报 `503`：同一条
+`/projects`，地址栏导航（`Accept: text/html…`）会放行，而任何不带该头的读取
+（脚本、工具、Postman、curl）依旧命中门禁 —— 判据本身把「同一个 URL 的行为」
+绑在请求头上。原版的兜底路由是 `/*path` 整体反代（报告 08 §3.1-B/C 第 19 条），
+读取面本就不该由网关按路径或头枚举，因此第二轮改为**按方法放行**：
 
 | 项 | 内容 |
 |---|---|
-| 规则 | `GET`/`HEAD` 且请求头 `Accept` 含 `text/html` ⇒ 转发上游（`proxy.rs::page_navigation`） |
-| 为什么不用路径清单 | 上游页面路由是上游前端的产品决定，枚举必然滞后（本次 `/projects` 就是新增面） |
-| 为什么看 `Accept` | 地址栏、刷新、深链都带 `text/html`；XHR/fetch 带 `*/*` 或具体类型 —— 未知**数据**端点因此仍然停在 503 门禁上，不会因为这条规则被静默直通 |
-| 不变 | `/api/*` 未实现路径仍本地 404；`/backend-api/*` 仍走 ACL；REFUSED 前缀（遥测、沙箱页、`/v1/`）仍在会话校验后 503；升级/写方法不受影响 |
-| 未做 | 上游 302 的 `Location` 重写（原版有 `rewrite_origin_prefix_to_local` 符号）。本次实测上游返回的是**同源相对路径**（`/auth/login/?next=%2Fprojects`、`/#settings`），不构成跳回真实站点的泄漏；真出现绝对 URL 时再按证据补 |
+| 规则 | `GET`/`HEAD` 一律转上游（`proxy.rs::is_read`），不再看路径清单，也不再看 `Accept` |
+| 为什么不用路径清单 | 上游页面/数据路由是上游前端的产品决定，枚举必然滞后（本次 `/projects`、`/_next/data/*` 都是新增面） |
+| 为什么不用 `Accept` | 判据必须与请求头无关：同一个 URL 用不同 Accept 得到 200 与 503 属于网关自己制造的不一致（2026-09-29 实测） |
+| 仍然关闭的 | ①`/api/*` 未实现路径本地 404；②REFUSED 前缀（遥测、沙箱页、`/v1/`）在会话校验后 503；③网关自有命名空间形态不合法时显式拒绝：`/internal-upstream*`、裸 `/external`；④**写入类方法**（POST/PUT/PATCH/DELETE）仍按路径分类，未分类的 503 并写 `WARN` 日志（含 method 与 path） |
+| 未做 | 上游 302 的 `Location` 重写（原版有 `rewrite_origin_prefix_to_local` 符号）。实测上游返回的是**同源相对路径**（`/auth/login/?next=%2Fprojects`、`/#settings`），不构成跳回真实站点的泄漏；真出现绝对 URL 时再按证据补 |
 
-### 真实上游验证（2026-09-29，api 与 web 两种登录模式）
+放行不绕过任何一层：`/backend-api/*` 仍走 ACL 判权与响应裁剪，上游出网仍带会话凭据与
+CF cookies，ACL 的 Auto 分支对带 id 的未登记/他人资源仍然 fail-closed。
+
+### 真实上游验证（2026-09-29）
 
 用真实账号经本机栈实测（方式：Django 侧按自身密钥签发一次性授权 → 网关 `/api/login`
-→ `/api/not-login` 交接 → 以 `Accept: text/html` 请求页面；会话用完即 `logout` 删除）：
+→ `/api/not-login` 交接 → 请求页面；会话用完即 `logout` 删除；探针使用一次性
+`gateway-probe-lite` 用户，结束后删除，避免轮换管理员自己的镜像会话）：
 
-| 请求 | `Accept: text/html`（导航） | 说明 |
+| 请求 | 结果 | 说明 |
 |---|---|---|
-| `/`（api 模式） | `200` 458 KB HTML | 正常渲染 |
-| `/gpts`（api 模式） | `200` 656 KB HTML | 正常渲染 |
-| `/projects`（api 模式） | `302` → `/auth/login/?next=%2Fprojects` | 上游自己的未登录跳转，**不再是 503** |
-| `/`（web/SessionToken 模式） | `200` 710 KB，注入标记命中 | 页面注入链路完好 |
-| `/library`（web 模式） | `200` 699 KB `<title>ChatGPT - Library</title>` | 带会话 Cookie 后页面路由正常返回 |
-| `/projects`（web 模式） | `302` → `/auth/login/?next=%2Fprojects` | 该账号为 `free`，Projects 对其不可用；转发行为与真实站点一致 |
+| `/`、`/gpts`（api 模式） | `200`（458/656 KB HTML） | 正常渲染 |
+| `/projects`（api 模式，`Accept: text/html…`） | `302` → `/auth/login/?next=%2Fprojects` | 上游自己的未登录跳转，**不再是 503** |
+| `/projects`（`Accept: */*` 与 `application/json`） | `302` → 同上 | 三种 Accept 行为一致（这正是第二轮修掉的不一致） |
+| `/`、`/library`（web/SessionToken 模式） | `200`（710/700 KB，注入标记命中） | 页面注入链路完好 |
 | `/settings`（web 模式） | `302` → `/#settings` | 上游自己的应用内跳转 |
-| `/projects`（`Accept: */*`） | `503` 门禁文案 | 非导航请求仍 fail-closed，未触上游 |
+| `POST /projects`（任意会话） | `503` 门禁文案 + `WARN` 日志 | 写入面仍按路径分类，未知写路径不静默透传 |
 
-结论：这条路径现在交给上游前端决定，与本仓「前端自愈」的取向一致（少一处需要随上游
-更新而维护的清单）。回归由 `tests/anonymous_frontend.rs` 的
-`spa_page_routes_are_forwarded_as_navigation` 与
-`non_navigation_requests_still_stop_at_the_gate` 锁定。
+结论：读取面现在完全交给上游（与本仓「前端自愈」同一取向），网关只保留写入分类、
+凭据、CF 与 ACL 这几层它本来就该负责的判定。回归由 `tests/anonymous_frontend.rs`
+的 `read_requests_are_forwarded_regardless_of_accept`（三种 Accept 都转发且各只发一次）
+与 `tests/coord_boundary_regression.rs` 的写入门禁矩阵锁定。
 
 ## 打包与部署（Docker Compose，2026-09-28）
 

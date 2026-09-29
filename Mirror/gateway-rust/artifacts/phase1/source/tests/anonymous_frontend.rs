@@ -502,10 +502,9 @@ async fn injection_handles_missing_or_uppercase_head() {
     assert_eq!(f.chat_calls("/c/conv-1").len(), 1);
 }
 
-/// 页面路由由上游前端自己决定，网关不维护路径清单：任何 `Accept: text/html` 的
-/// GET/HEAD 都按「导航请求」转发（2026-09-29 用户实测 `/projects` 命中 503 门禁）。
-/// 取数请求不在这条规则内，未知数据端点仍然 fail-closed。
-async fn page_navigation(path: &str, accept: &str) -> (reqwest::Response, Vec<String>) {
+/// 读取面用例：`Accept` 取不同值时行为必须一致（2026-09-29 实测同一个 `/projects`
+/// 曾因 Accept 不同得到 200 与 503 —— 那次是按 `text/html` 判「页面导航」的后果）。
+async fn read_request(path: &str, accept: &str) -> (reqwest::Response, Vec<String>) {
     let f = Fixture::new(true).await;
     let (_, _, cookies) = f.anonymous_login().await;
     let token = cookies
@@ -525,31 +524,22 @@ async fn page_navigation(path: &str, accept: &str) -> (reqwest::Response, Vec<St
 }
 
 #[tokio::test]
-async fn spa_page_routes_are_forwarded_as_navigation() {
-    let (response, paths) = page_navigation(
-        "/projects",
+async fn read_requests_are_forwarded_regardless_of_accept() {
+    // 地址栏导航（text/html）与取数请求（*/*）走同一条路径：原版兜底路由本就是
+    // `/*path` 全转发，读取面按方法放行，不由 Accept 决定。
+    for accept in [
         "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    )
-    .await;
-    assert_eq!(response.status(), 200);
-    assert!(response.text().await.unwrap().contains("anon-page"));
-    assert_eq!(
-        paths.iter().filter(|path| *path == "/projects").count(),
-        1,
-        "页面路由必须转发到上游，且只发一次"
-    );
-}
-
-/// 同一条路径只要不是导航请求（XHR/fetch 用 `*/*`），就仍然停在 503 门禁上：
-/// 页面规则不能变成未知数据端点的静默直通。
-#[tokio::test]
-async fn non_navigation_requests_still_stop_at_the_gate() {
-    let (response, paths) = page_navigation("/projects", "*/*").await;
-    assert_eq!(response.status(), 503);
-    assert!(
-        paths.iter().all(|path| path != "/projects"),
-        "门禁拒绝不得接触上游"
-    );
+        "*/*",
+        "application/json",
+    ] {
+        let (response, paths) = read_request("/projects", accept).await;
+        assert_eq!(response.status(), 200, "accept={accept}");
+        assert_eq!(
+            paths.iter().filter(|path| *path == "/projects").count(),
+            1,
+            "accept={accept} 必须恰好转发一次"
+        );
+    }
 }
 
 /// 未登录前端自带的 next-auth 客户端在进入对话前会调用这四个端点；缺一个就会

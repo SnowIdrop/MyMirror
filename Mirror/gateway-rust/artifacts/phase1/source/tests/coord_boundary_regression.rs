@@ -302,13 +302,16 @@ async fn coord_unknown_route_matrix_stays_closed() {
     // 页面（`/`、`/c/*`）与 `/backend-anon/*` 已按本批契约放行，见
     // coord_page_and_anonymous_routes_are_open；这里只保留仍然关闭的路径。
     // Static assets are deliberately left to the owner's static_assets.rs.
+    // 读取面（GET/HEAD）自 2026-09-29 起统一转发上游（原版 `/*path` 兜底语义，
+    // 见 COMPATIBILITY「读取面统一放行」）：下面只断言**写入类方法**仍在门禁上，
+    // 以及网关自有命名空间（`/internal-upstream`）与 `/api/*` 本地语义不随之放开。
     for path in [
         "/internal-upstream",
         "/internal-upstream/backend-api/me",
         "/_next/data/coord-guessed-build/index.json",
         "/api/coord-unknown",
     ] {
-        for method in [reqwest::Method::GET, reqwest::Method::POST] {
+        for method in [reqwest::Method::POST, reqwest::Method::DELETE] {
             for authenticated in [false, true] {
                 let mut request = h
                     .client
@@ -336,6 +339,24 @@ async fn coord_unknown_route_matrix_stays_closed() {
                 no_credential_echo(&response, &[&token, ADMIN, ACCESS_A]);
             }
         }
+        // 同一路径的读取请求不再命中门禁：要么命中网关自有命名空间的显式拒绝
+        // （`/internal-upstream*`），要么转发上游（其余路径，状态码由上游决定）。
+        let request = h
+            .client
+            .get(format!("{}{path}", h.base))
+            .query(&[("url", h.decoy.as_str()), ("target", h.decoy.as_str())])
+            .header("x-mirror-token", &token);
+        let response = h
+            .request(&format!("GET {path} authenticated=true"), request)
+            .await;
+        if path.starts_with("/api/") {
+            assert_eq!(response.status, 404, "GET {path}");
+        } else if path.starts_with("/internal-upstream") {
+            assert_eq!(response.status, 503, "GET {path}");
+        } else {
+            assert_ne!(response.status, 503, "GET {path} 不应再命中写入门禁");
+        }
+        no_credential_echo(&response, &[&token, ADMIN, ACCESS_A]);
     }
     // `/external/*` 已按公网策略打开：路径形态不合法 400，内网/回环/单标签主机
     // 403；未登录仍先 401（门禁顺序不变），所有拒绝都不接触上游。
@@ -408,7 +429,31 @@ async fn coord_unknown_route_matrix_stays_closed() {
             .await;
         assert_eq!(response.status, 401, "{path}");
     }
-    assert_eq!(h.egress("chat").len(), chat_before);
+    // 上面的读取矩阵现在会命中上游（读取面按方法放行）：`/_next/data/*` 这类上游
+    // 数据路由不再被门禁拦下，因此次数可能增加；要断言的是**没有任何拒绝路径
+    // 借客户端参数选到别的目标**——chat 上游只应看到这些路径本身。
+    let extra: Vec<Value> = h
+        .egress("chat")
+        .into_iter()
+        .skip(chat_before)
+        .collect();
+    for event in &extra {
+        let uri = event["uri"].as_str().unwrap();
+        assert!(
+            uri.starts_with("/_next/data/coord-guessed-build/index.json")
+                || uri.starts_with("/internal-upstream")
+                || uri.starts_with("/backend-api/")
+                || uri.starts_with("/realtime/"),
+            "放行的读取请求不得被改写到其它目标: {uri}"
+        );
+    }
+    assert!(
+        extra
+            .iter()
+            .all(|event| !event["uri"].as_str().unwrap().contains("192.0.2.99")
+                && !event["uri"].as_str().unwrap().contains("decoy")),
+        "客户端参数不得成为上游目标"
+    );
     assert!(h.egress("cdn-unwired").is_empty());
     assert!(h.egress("client-target-decoy").is_empty());
 }

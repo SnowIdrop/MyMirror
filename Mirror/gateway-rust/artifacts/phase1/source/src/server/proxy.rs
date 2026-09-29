@@ -206,11 +206,6 @@ pub(super) async fn chat_proxy(State(app): State<Shared>, request: Request) -> R
         return error(StatusCode::SERVICE_UNAVAILABLE, "实时通道升级未开放").into_response();
     }
     let method = request.method().clone();
-    // 页面导航（地址栏直达、刷新、深链）按「导航请求」而不是路径清单放行：
-    // 上游前端的页面路由由它自己决定，枚举法每换一次路由就要改网关一次
-    // （2026-09-29 用户实测 `/projects` 503）。原版的兜底路由就是 `/*path`
-    // 整体反代（报告 08 §3.1-B/C 第 19 条），这里与它对齐。
-    let navigation = page_navigation(&request);
     let result = if method == Method::GET && path == ME_PATH {
         me_passthrough(&app, request, &session).await
     } else if let Some(target) = internal_upstream_target(&path, request.uri().query()) {
@@ -220,9 +215,21 @@ pub(super) async fn chat_proxy(State(app): State<Shared>, request: Request) -> R
         } else {
             Ok(method_not_allowed(super::static_assets::MEDIA_ALLOW))
         }
-    } else if open_path(&path, &method) || navigation {
+    } else if let Some(message) = synthetic_namespace_refusal(&path) {
+        // 网关自有命名空间（注入脚本改写的内部媒体与外链代理）不是上游路径：
+        // 形态或主机不合法时拒绝，绝不把它当普通路径透传给 chat 上游。
+        Ok(error(StatusCode::SERVICE_UNAVAILABLE, message).into_response())
+    } else if open_path(&path, &method) || is_read(&method) {
         chat_forward(app.clone(), request, &session).await
     } else {
+        // 走到这里的只有写入类方法（POST/PUT/PATCH/DELETE）的未分类路径：读取面已全部
+        // 放行（见 [`is_read`]）。留一条日志便于定位「为什么这个写请求 503」。
+        tracing::warn!(
+            module = "gateway",
+            method = %method,
+            path = %path,
+            "未分类的写入路径被门禁拒绝"
+        );
         return error(
             StatusCode::SERVICE_UNAVAILABLE,
             "聊天代理兼容门禁尚未通过，候选制品未启用此路径",
@@ -235,19 +242,32 @@ pub(super) async fn chat_proxy(State(app): State<Shared>, request: Request) -> R
     }
 }
 
-/// 页面导航判定：GET/HEAD 且 `Accept` 含 `text/html`。浏览器地址栏、刷新与深链
-/// 都会带该头；取数请求（XHR/fetch）用的是 `*/*` 或具体类型，因此未知的数据端点
-/// 仍然停在 503 门禁上，不会因为这条规则被静默放行。
-fn page_navigation(request: &Request) -> bool {
-    if !matches!(*request.method(), Method::GET | Method::HEAD) {
-        return false;
+/// 读取类方法（GET/HEAD）一律转上游：原版的兜底路由就是 `/*path` 整体反代
+/// （报告 08 §3.1-B/C 第 19 条），页面路由与取数端点都由上游前端决定。
+///
+/// 早期版本按 `Accept` 是否含 `text/html` 区分「页面导航」，2026-09-29 实测该判据不够：
+/// 同一个 `/projects` 用不同 Accept（地址栏、脚本、工具）会分别得到 200 与 503，
+/// 于是每次上游改版都会以「又 503 了」的形式回来。读取面因此改为按方法放行。
+///
+/// 放行不绕过任何一层：`/api/*` 本地语义、REFUSED 前缀（遥测/沙箱/`/v1/`）、
+/// 内部上游命名空间都在本分支之前判定；`/backend-api/*` 仍走 ACL 判权与响应裁剪；
+/// 上游出网仍带会话凭据与 CF cookies。写入类方法（可能触发生成或产生新资源）
+/// 保持按路径分类，未分类的一律 503。
+fn is_read(method: &Method) -> bool {
+    matches!(*method, Method::GET | Method::HEAD)
+}
+
+/// 网关自有命名空间里「形态不合法」的路径：这些前缀由注入脚本使用、目标由网关
+/// 校验，因此不是上游路径，也不该出现在 chat 反代里（`/internal-upstream` 与
+/// `/external` 各自缺省掉必要的 scheme/host 段）。返回拒绝文案。
+fn synthetic_namespace_refusal(path: &str) -> Option<&'static str> {
+    if path == "/internal-upstream" || path.starts_with(INTERNAL_UPSTREAM_PREFIX) {
+        return Some("内部上游路径不合法");
     }
-    request
-        .headers()
-        .get_all("accept")
-        .iter()
-        .filter_map(|value| value.to_str().ok())
-        .any(|value| value.to_ascii_lowercase().contains("text/html"))
+    if path == "/external" {
+        return Some("外链代理路径不合法");
+    }
+    None
 }
 
 /// 本阶段放行判定：页面与匿名/公共接口前缀转发上游；媒体代理与既有两条只读
