@@ -123,6 +123,10 @@ const REQUEST_HOP_BY_HOP: [&str; 11] = [
 /// 非逐跳头，单独成列，不并入 [`REQUEST_HOP_BY_HOP`]。
 const CLIENT_PROXY_IP_HEADERS: [&str; 2] = ["x-real-ip", "x-forwarded-for"];
 
+/// chat 上游的 `accept-encoding`：只声明网关能解码的 gzip（见 [`send_chat_once`] 的
+/// 注释）。这是对原版「保留客户端声明值」的有意偏离，登记在 COMPATIBILITY。
+const GZIP_ONLY_ACCEPT_ENCODING: &str = "gzip";
+
 /// 响应方向需要过滤的逐跳头；`content-length` 由本层按实际正文重算（流式响应不设，
 /// 由 HTTP 栈用分块传输），`transfer-encoding` 一律不复制（任务硬要求）。
 const RESPONSE_HOP_BY_HOP: [&str; 9] = [
@@ -453,10 +457,11 @@ async fn chat_forward(app: Shared, request: Request, session: &Session) -> Resul
         buffered_response(&app, session, upstream).await
     } else if let Some(kind) = collection {
         // 集合读取：按 ACL 过滤正文并重算 total，再交给客户端。
-        let (status, headers, body) = upstream_parts(upstream);
+        let (status, mut headers, body) = upstream_parts(upstream);
         let raw = to_bytes(body, usize::MAX)
             .await
             .context("集合响应读取失败")?;
+        let raw = decode_for_inspection(&mut headers, &raw)?;
         let payload = if status.is_success() {
             match serde_json::from_slice::<Value>(&raw) {
                 Ok(value) => acl::filter_collection(&app, session, kind, value).await?,
@@ -543,7 +548,7 @@ async fn auto_response(
     auto: AutoRoute,
     upstream: wreq::Response,
 ) -> Result<Response> {
-    let (status, headers, body) = upstream_parts(upstream);
+    let (status, mut headers, body) = upstream_parts(upstream);
     if !status.is_success() || !is_json_content_type(&headers) {
         let body = if auto.claim && status.is_success() {
             acl::auto_claim_body(app.clone(), session, body)
@@ -558,6 +563,20 @@ async fn auto_response(
         Err(_) => {
             auto.watch.note(app, session, "route_auto_filtered").await;
             return Ok(acl::response_too_large());
+        }
+    };
+    // 声称 JSON 的正文必须先解出明文才能判权：解不开时不能把它当「非 JSON」原样透传
+    // （那会把未裁剪的他人资源交给客户端），按可行动错误拒绝。
+    let raw = match decode_for_inspection(&mut headers, &raw) {
+        Ok(plain) => plain,
+        Err(cause) => {
+            auto.watch.note(app, session, "route_auto_filtered").await;
+            tracing::warn!(module = "gateway", error = %cause, "未分类 JSON 响应解码失败");
+            return Ok(error(
+                StatusCode::BAD_GATEWAY,
+                "上游响应解码失败，无法安全裁剪：请重试，或把该路径登记为账号级前缀",
+            )
+            .into_response());
         }
     };
     let Ok(value) = serde_json::from_slice::<Value>(&raw) else {
@@ -1033,6 +1052,15 @@ async fn send_chat_once(
     // 身份整组覆盖：浏览器自带的 client hints 一律被固定身份替换，
     // 避免上游同时看到「UA 说 Linux」与「提示说 Windows」。
     identity::apply_identity(&mut headers);
+    // 只声明 gzip：网关要在把正文交给客户端前做注入与 ACL 扫描（HTML 注入、集合
+    // 过滤、创建登记、Auto 归属），而 [`compression::decode_upstream`] 只实现了 gzip
+    // 流式解码。原版保留客户端声明值（`gzip, deflate, br, zstd`），候选若照抄会拿到
+    // br/zstd 正文：集合 JSON 解析失败被替换成空信封、HTML 注入落空、创建响应扫不到
+    // 资源 id。2026-09-29 实测症状即浏览器侧「无法加载历史记录」。
+    headers.insert(
+        "accept-encoding",
+        HeaderValue::from_static(GZIP_ONLY_ACCEPT_ENCODING),
+    );
     // 设备身份：原版 `send_upstream_request` 与 `build_upstream_auth_cookie_header` 都
     // 用服务端设备标识显式写 `oai-device-id` 头（该 cookie 本身也由 jar 回注，两者同值）。
     if let Some(value) = upstream_cookies::device_value(&auth.jar) {
@@ -1129,16 +1157,41 @@ async fn buffered_response(
     session: &Session,
     upstream: wreq::Response,
 ) -> Result<Response> {
-    let (status, headers, body) = upstream_parts(upstream);
+    let (status, mut headers, body) = upstream_parts(upstream);
     let data = to_bytes(body, usize::MAX)
         .await
         .context("上游响应读取失败")?;
+    // 注入必须作用在明文上；`upstream_parts` 只流式解掉 gzip，这里兜底处理其余编码。
+    // 解不开时不注入也不改头，按原字节透传（客户端拿到的仍是上游原始响应）。
+    let data = match decode_for_inspection(&mut headers, &data) {
+        Ok(plain) => plain,
+        Err(cause) => {
+            tracing::warn!(module = "gateway", error = %cause, "上游 HTML 解码失败，跳过身份注入");
+            let mut response = Response::new(Body::from(data));
+            *response.status_mut() = status;
+            *response.headers_mut() = strip_response_hop_by_hop(&headers);
+            mark_proxied(&mut response);
+            return Ok(response);
+        }
+    };
     let (data, headers) = inject_client_resource(app, session, headers, data.to_vec()).await?;
     let mut response = Response::new(Body::from(data));
     *response.status_mut() = status;
     *response.headers_mut() = strip_response_hop_by_hop(&headers);
     mark_proxied(&mut response);
     Ok(response)
+}
+
+/// 需要读正文的分支（HTML 注入、集合过滤、未分类 JSON 裁剪）在解析前调用：
+/// 按 `content-encoding` 解出明文，并清掉该头。
+///
+/// `content-encoding` 必须跟着一起删：调用方随后会把「已经解码过的正文」交给客户端，
+/// 留着它会让浏览器拿 identity 正文去解压——2026-09-29 实测症状就是 ChatGPT 前端
+/// 报「无法加载历史记录」（22 字节明文 JSON 配 `content-encoding: br`）。
+fn decode_for_inspection(headers: &mut HeaderMap, data: &Bytes) -> Result<Bytes> {
+    let plain = compression::decode_buffered(headers, data).context("上游正文解码失败")?;
+    headers.remove("content-encoding");
+    Ok(Bytes::from(plain))
 }
 
 /// 注入点：插在第一个 `<head …>` 之后，让身份覆盖先于页面脚本执行。
@@ -1256,6 +1309,16 @@ fn upstream_parts(upstream: wreq::Response) -> (StatusCode, HeaderMap, Body) {
     let mut headers = strip_response_hop_by_hop(upstream.headers());
     let body = Body::from_stream(upstream.bytes_stream().map_err(std::io::Error::other));
     let body = compression::decode_upstream(body, &mut headers);
+    // [`compression::decode_upstream`] 只接手 gzip，而 chat 上游只被声明 gzip
+    // （见 [`send_chat_once`]）。仍出现编码说明有环节违约：流式扫描路径（创建登记、
+    // Auto 归属）会拿不到明文，必须留痕而不是静默降级。
+    if let Some(value) = headers.get("content-encoding") {
+        tracing::warn!(
+            module = "gateway",
+            encoding = %value.to_str().unwrap_or("invalid"),
+            "上游正文编码不是 gzip：正文扫描可能失败"
+        );
+    }
     (status, headers, body)
 }
 

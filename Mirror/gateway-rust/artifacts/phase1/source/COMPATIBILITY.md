@@ -910,6 +910,38 @@ console error 7 → 5，剩余为 React #418/Datadog/favicon 这类既有噪声�
 `location: http://127.0.0.1:40003/admin/`，同一 Cookie 在退出前 `/backend-api/me` 为 200、
 退出后为 401，`?mode=api` 与无参数行为一致。
 
+## 上游压缩正文的解码：历史记录为空与「无法加载历史记录」（2026-09-29）
+
+用户侧边栏提示「无法加载历史记录」。现场复现：`GET /backend-api/conversations`
+返回 `200 application/json`、正文 22 字节，响应头却带 `content-encoding: br`。
+22 字节正是网关自己伪造的空信封 `{"items":[],"total":0}`：客户端拿 identity 正文
+去 brotli 解压，前端直接判定加载失败。同一条链路还有两处被同一根因影响：
+创建响应扫不到 `conversation_id`（日志 `创建响应未识别到资源 id，归属未登记`）、
+页面注入落到 `上游 HTML 缺少 <head>` 的降级分支。
+
+| 项 | 内容 |
+|---|---|
+| 根因 | 网关把客户端的 `accept-encoding: gzip, deflate, br, zstd` 原样转给上游，上游选 **br**；而 [`compression::decode_upstream`] 只实现 gzip 流式解码 ⇒ 正文始终是密文。集合分支解析 JSON 失败后**伪造空信封**、注入分支找不到锚点、创建登记扫不到 id；同时上游的 `content-encoding` 被原样保留给客户端，而正文已被我们替换成明文 |
+| 修法一 | chat 上游请求改为**只声明 gzip**（`send_chat_once` 强制 `accept-encoding: gzip`）：上游就不可能回我们解不开的编码，所有正文检查都能拿到明文 |
+| 修法二 | 缓冲分支（HTML 注入、集合过滤、未分类 JSON 裁剪）在解析前调用 `decode_for_inspection`：按 `content-encoding` 全量解码（gzip/deflate/br/zstd）并**删掉该头**；解不开时不再伪造结果——集合与 Auto 分支返回 502，HTML 分支按原字节透传并 `warn!` |
+| 修法三 | `upstream_parts` 在解码后若仍见到 `content-encoding` 就 `warn!`：流式扫描路径（创建登记、Auto 归属）此时拿不到明文，必须留痕而不是静默降级 |
+| 有意偏离 | 原版**保留客户端声明的 `accept-encoding`**（`proxy.rs` 模块注释记录的观测契约）。候选声明 gzip-only：原版的解码实现不在证据里，候选现有的流式解码只有 gzip；声明我们真能处理的编码，比留着 br 再把正文替换成明文更安全 |
+| 仍然保留的语义 | 客户端侧压缩不变（统一压缩层按原版契约只真正编码 gzip）；SSE/流式正文仍逐块透传（gzip 由流式解码器处理） |
+
+### 验证
+
+- 新增 `tests/compressed_upstream.rs`：fixture 忠实模拟上游——按请求声明回 br（声明了 br 时）
+  否则回 gzip，并记录每条代理请求实际声明的编码。断言：代理路径只声明 gzip；创建响应里的
+  `conversation_id` 在交给客户端前完成登记（随后按会话 id 直取为 200）；集合响应是**可直接
+  解析的明文**且 `items`/`total` 正确；HTML 注入命中且响应不带 `content-encoding`。
+  **判别力已验证**：临时撤掉强制 gzip 后该用例失败在「创建响应里的 id 必须在交给客户端前
+  完成登记（404 ≠ 200）」，恢复后 3/3 通过。
+- 全量：`cargo test --locked --offline` 26 套件 239 项通过、`clippy --all-targets -- -D warnings` 干净。
+- 真实上游（一次性 `gateway-probe-lite` 用户，用后即删，未触碰用户会话）：
+  `/backend-api/conversations` 由「22 字节伪造空信封 + `content-encoding: br`」变为
+  **44 字节上游原信封**（`items/limit/offset/total`，无 `content-encoding` 头）；
+  `/` 页面 459 KB 且注入标记命中。探针用户不拥有任何会话，因此 `items` 为 0 属 ACL 预期。
+
 ## 读取面统一放行：GET/HEAD 不再按路径或 Accept 判定（2026-09-29）
 
 用户点进 `http://127.0.0.1:40002/projects` 得到 `503`。该文案来自候选自己的门禁

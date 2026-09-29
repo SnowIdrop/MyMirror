@@ -355,6 +355,10 @@ sha256）。**本批仍不做**：代理节点与出口分流、`CF_BYPASS_PROXY
 - 第二阶段可信身份与新库 ACL 产品接线；第六阶段统一验收与 All-in-One 镜像交付
   （`MirrorNiXiang/rebuild-reference/README.md` 的六条交付步骤，一条未做）。
 - **前端自愈的残余（2026-09-28，见 COMPATIBILITY「前端自愈」）**：
+  - chat 上游只声明 gzip（2026-09-29，见 COMPATIBILITY「上游压缩正文的解码」）：原版保留
+    客户端的 `gzip, deflate, br, zstd`，候选只声明 gzip，因为正文注入与 ACL 扫描必须拿到明文，
+    而已实现的流式解码只有 gzip；deflate/br/zstd 的流式解码与「声明全量编码」若要做到，
+    需要先补对应解码器。
   - 控制条「切到 API 模式 / 切到混合模式」（`/api/user-logout?mode=api|web`）目前只做登出并
     回到管理后台，不预选登录模式：候选管理端没有读取该参数的入口，原版切换语义无证据。
     「返回后台 / 换号」本身已实现（2026-09-29，见 COMPATIBILITY「页面控制条登出」）。
