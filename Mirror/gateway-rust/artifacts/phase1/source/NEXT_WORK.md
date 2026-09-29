@@ -355,6 +355,9 @@ sha256）。**本批仍不做**：代理节点与出口分流、`CF_BYPASS_PROXY
 - 第二阶段可信身份与新库 ACL 产品接线；第六阶段统一验收与 All-in-One 镜像交付
   （`MirrorNiXiang/rebuild-reference/README.md` 的六条交付步骤，一条未做）。
 - **前端自愈的残余（2026-09-28，见 COMPATIBILITY「前端自愈」）**：
+  - 控制条「切到 API 模式 / 切到混合模式」（`/api/user-logout?mode=api|web`）目前只做登出并
+    回到管理后台，不预选登录模式：候选管理端没有读取该参数的入口，原版切换语义无证据。
+    「返回后台 / 换号」本身已实现（2026-09-29，见 COMPATIBILITY「页面控制条登出」）。
   - 页面路由已改按「导航请求」放行（`GET`/`HEAD` + `Accept: text/html`，2026-09-29），
     不再枚举路径清单；未做的是上游 302 的 `Location` 绝对地址重写（实测上游给的是
     同源相对路径 `/auth/login/?next=…`、`/#settings`，尚未构成跳回真实站点的泄漏）。

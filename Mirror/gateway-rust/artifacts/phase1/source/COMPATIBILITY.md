@@ -883,6 +883,33 @@ console error 7 → 5，剩余为 React #418/Datadog/favicon 这类既有噪声�
 合成回环用例覆盖（含「同一路径只记一次」与「拒绝也写审计」），Auto 在本批的角色是
 未来新路径的兜底。
 
+## 页面控制条登出：`/api/user-logout`（2026-09-29）
+
+用户点开 `http://127.0.0.1:40002/api/user-logout` 得到 `404 {"message":"本地未实现的 /api 路径"}`。
+该路径来自**原版自己的**注入脚本：`src/assets/gateway-client.html` 由
+`tools/extract_client_template.py` 从 `evidence/proxy-v3-original-010` 的 `p1-me-html` 响应
+逐字节提取（sha256 `97ffff5a…`），其中 `_gwSessionLogoutPath = "/api/user-logout"` 有两处调用：
+控制条按钮「返回后台 / 换号」（`window.location.href`），以及
+`/api/user-blocked-paths` 返回 401 时的兜底跳转。静态路由扫描（报告 08 §3.1-A 的 27 条 token）
+没有覆盖到它，候选因此一直缺这个端点。
+
+| 项 | 内容 |
+|---|---|
+| 证据确定的契约 | ①不要求会话有效——客户端正是会话失效时才跳这里；②必须把浏览器交回管理后台（按钮文案「返回后台 / 换号」） |
+| 实现 | `GET /api/user-logout`：按 `mirror_token` 删 `gateway_sessions`/`rust_authorizations` 对应行（先取 `user_name` 用于 `abort_subject` 中止在途流），清 Cookie，然后 `302` |
+| 跳转目标 | 未配置 `ADMIN_PUBLIC_URL` 时回相对 `/admin#/`（原版单端口同源部署：网关自己托管 `/admin`）；配置后跳该绝对地址，供管理端与镜像面分源部署（本候选 compose：管理 40003、镜像 40002） |
+| Cookie 清理 | 与 `/api/logout` 共用 `clear_session_cookies`（同一份 10 个 Cookie 名单），避免两处漂移后留下半个登录态 |
+| 未做（残余） | `?mode=api` / `?mode=web`（「切到 API / 混合模式」两个按钮）目前只做登出：候选管理端没有按参数预选登录模式的入口，原版切换语义无证据，不猜测。已在 NEXT_WORK 登记 |
+
+`?mode=` 仍被接受（不报错），只是不改变行为——控制条上那两个按钮的效果等同于「返回后台」。
+
+验证：新增 `tests/user_logout.rs` 两项（配置后跳绝对地址 + 清 Cookie + 会话行删除后业务面
+转 401 + 重复点击仍 302；未配置时保持 `/admin#/`）；`cargo test --locked --offline` 25 套件
+239 项通过、`clippy --all-targets -- -D warnings` 干净。真实环境（本机栈，用 admin 身份
+经 Django 自签授权登录，用完即退出）：`/api/user-logout` 返回 `302` +
+`location: http://127.0.0.1:40003/admin/`，同一 Cookie 在退出前 `/backend-api/me` 为 200、
+退出后为 401，`?mode=api` 与无参数行为一致。
+
 ## 页面导航放行：页面路由不再按清单枚举（2026-09-29）
 
 用户点进 `http://127.0.0.1:40002/projects` 得到 `503`。该文案来自候选自己的门禁

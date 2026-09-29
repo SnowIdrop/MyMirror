@@ -41,6 +41,10 @@ services:
       CHATGPT_CDN_BASE_URL: "${CHATGPT_CDN_BASE_URL:-https://cdn.oaistatic.com}"
       CHATGPT_AB_BASE_URL: "${CHATGPT_AB_BASE_URL:-https://ab.chatgpt.com}"
       CF_BYPASS_URL: "http://cfbypass:8000"
+      # 管理端（40003）与镜像面（40002）不同源：注入脚本控制条的
+      # `/api/user-logout` 会把浏览器交回管理后台，取值必须是浏览器可达的管理界面地址
+      # （本机预览即 http://127.0.0.1:${ADMIN_PORT:-40003}/admin/）。留空回原版同源相对跳转。
+      ADMIN_PUBLIC_URL: "${ADMIN_PUBLIC_URL:-}"
       REQUEST_TIMEOUT_SECS: "${REQUEST_TIMEOUT_SECS:-180}"
       COOKIE_SECURE: "${COOKIE_SECURE:-true}"
       RUST_LOG: "${RUST_LOG:-info}"

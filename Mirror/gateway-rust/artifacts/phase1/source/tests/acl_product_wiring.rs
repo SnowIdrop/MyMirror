@@ -298,6 +298,7 @@ impl Fixture {
             mirror_profile: true,
             cookie_secure: false,
             allow_anonymous_session: false,
+            admin_public_url: None,
         })
         .await
         .unwrap();
@@ -341,6 +342,7 @@ impl Fixture {
             mirror_profile: true,
             cookie_secure: false,
             allow_anonymous_session: false,
+            admin_public_url: None,
         }
     }
 

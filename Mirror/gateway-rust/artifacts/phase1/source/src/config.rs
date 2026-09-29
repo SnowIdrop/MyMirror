@@ -31,6 +31,11 @@ pub struct Config {
     /// 开发阶段匿名上游开关。默认关闭；仅显式 true 时允许无上游凭据的镜像会话
     /// 绑定全局共享匿名身份（见 server/anonymous.rs）。
     pub allow_anonymous_session: bool,
+    /// 管理后台的**浏览器可达**基址（`ADMIN_PUBLIC_URL`）。原版是单端口同源部署，
+    /// `/api/user-logout` 直接回相对路径 `/admin#/`；候选把管理界面拆到 nginx 侧车后
+    /// 两者不同源（见 COMPATIBILITY「管理端与镜像面不同源」），此时必须配置本项，
+    /// 否则用户点「返回后台 / 换号」会落在镜像端口上。未配置保持原版相对跳转。
+    pub admin_public_url: Option<String>,
 }
 
 pub fn loopback_url(value: &str) -> Result<Url> {
@@ -76,6 +81,25 @@ fn anonymous_session_flag(value: Option<&str>) -> Result<bool> {
         Some("true") => Ok(true),
         Some(_) => bail!("GATEWAY_ALLOW_ANONYMOUS_SESSION 只能是 true 或 false"),
     }
+}
+
+/// 管理后台的浏览器可达基址。空值表示未配置（`/api/user-logout` 回原版的同源相对
+/// 跳转 `/admin#/`）；非空必须是 http(s) 绝对地址，拒绝凭据与相对路径输入，
+/// 避免把用户重定向到非预期来源。
+fn admin_public_url(value: Option<&str>) -> Result<Option<String>> {
+    let Some(value) = value.map(str::trim).filter(|value| !value.is_empty()) else {
+        return Ok(None);
+    };
+    let url = Url::parse(value).context("ADMIN_PUBLIC_URL 无效")?;
+    if !matches!(url.scheme(), "http" | "https")
+        || url.host().is_none()
+        || !url.username().is_empty()
+        || url.password().is_some()
+    {
+        bail!("ADMIN_PUBLIC_URL 必须是 http(s) 绝对地址，且不能含凭据");
+    }
+    // 存规范化后的字符串：非 ASCII 输入会被 Url 百分号编码，直接回写入响应头会失败。
+    Ok(Some(url.to_string()))
 }
 
 impl Config {
@@ -141,6 +165,7 @@ impl Config {
         let anonymous_env = env::var("GATEWAY_ALLOW_ANONYMOUS_SESSION").ok();
         let allow_anonymous_session = anonymous_session_flag(anonymous_env.as_deref())
             .context("GATEWAY_ALLOW_ANONYMOUS_SESSION 无效")?;
+        let admin_public_url = admin_public_url(env::var("ADMIN_PUBLIC_URL").ok().as_deref())?;
         Ok(Self {
             host: env::var("HOST").unwrap_or_else(|_| "127.0.0.1".into()),
             port: env::var("PORT")
@@ -168,6 +193,7 @@ impl Config {
                 .map(|v| v != "false")
                 .unwrap_or(true),
             allow_anonymous_session,
+            admin_public_url,
         })
     }
 }

@@ -44,6 +44,7 @@ async fn mirror_authority_revocation_and_relogin_are_enforced() {
         mirror_profile: true,
         cookie_secure: false,
         allow_anonymous_session: false,
+        admin_public_url: None,
     };
     let app = server::router(config).await.unwrap();
     let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();

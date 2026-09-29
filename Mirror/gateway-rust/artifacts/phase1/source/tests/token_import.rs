@@ -122,6 +122,7 @@ impl Fixture {
             mirror_profile: true,
             cookie_secure: false,
             allow_anonymous_session: false,
+            admin_public_url: None,
         };
         let app = server::router(config).await.unwrap();
         let gateway = serve(app).await;

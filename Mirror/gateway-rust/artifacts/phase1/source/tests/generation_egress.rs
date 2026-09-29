@@ -120,6 +120,7 @@ impl Fixture {
             mirror_profile: true,
             cookie_secure: false,
             allow_anonymous_session: false,
+            admin_public_url: None,
         };
         let (base, task) = bind(server::router(config.clone()).await.unwrap()).await;
         Self {

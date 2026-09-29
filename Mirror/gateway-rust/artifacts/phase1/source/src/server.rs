@@ -215,6 +215,8 @@ pub async fn router(config: Config) -> Result<Router> {
     Ok(Router::new()
         .merge(admin)
         .route("/api/not-login", get(handoff))
+        // 注入脚本控制条的登出入口（原版客户端脚本自带该链接）：清会话 + 回管理后台。
+        .route("/api/user-logout", get(user_logout))
         .route("/api/auth/session", get(auth_session))
         // 未登录前端自带的 next-auth 客户端在进入对话前会访问这几个端点；
         // 实测形状见 evidence/anonymous-nextauth-001 与下方各 handler。
@@ -989,11 +991,14 @@ async fn logout(
     )?;
     tx.commit()?;
     let mut response = Json(json!({"message":"退出成功"})).into_response();
-    let secure = if app.config.cookie_secure {
-        "; Secure"
-    } else {
-        ""
-    };
+    clear_session_cookies(&mut response, app.config.cookie_secure)?;
+    Ok(response)
+}
+
+/// 会话 Cookie 的清理：登出与页面控制条的「返回后台 / 换号」共用同一份名单，
+/// 避免两处漂移后留下半个登录态（例如 `mirror_token` 清了但 `login_mode` 还在）。
+fn clear_session_cookies(response: &mut Response, cookie_secure: bool) -> Result<()> {
+    let secure = if cookie_secure { "; Secure" } else { "" };
     for (name, http_only) in [
         ("access_token", true),
         ("session_token", true),
@@ -1015,6 +1020,57 @@ async fn logout(
             .context("退出 Cookie 无效")?,
         );
     }
+    Ok(())
+}
+
+/// 注入脚本自带控制条的登出入口（`/api/user-logout`，原版客户端脚本逐字节提取，
+/// `src/assets/gateway-client.html` 的 `_gwSessionLogoutPath`）。
+///
+/// 两处证据决定了它的契约：按钮文案是「返回后台 / 换号」，且 `user-blocked-paths`
+/// 返回 401 时客户端也把用户送到这里——因此本端点**不要求会话有效**（会话已经过期
+/// 正是它被调用的场景），清掉 Cookie 与库里对应行之后把浏览器交回管理后台。
+/// `?mode=api|web`（「切到 API / 混合模式」按钮）目前只做登出：候选管理端没有按
+/// 参数预选登录模式的入口，不猜测原版的切换语义，已在 COMPATIBILITY 登记为残余。
+async fn user_logout(
+    State(app): State<Shared>,
+    headers: HeaderMap,
+) -> std::result::Result<Response, ApiError> {
+    if let Some(token) = token_from(&headers) {
+        let hash = sha256_hex(&token);
+        let mut db = app.db.lock().await;
+        // 会话可能已经过期或被撤销：先按行取 subject 用于中止在途流，再无条件删行。
+        // 这条路径不能因为「查不到有效会话」就报错——客户端正是会话失效时才来这里。
+        let subject: Option<String> = db
+            .conn
+            .query_row(
+                "SELECT user_name FROM gateway_sessions WHERE mirror_token=?1",
+                [&hash],
+                |row| row.get(0),
+            )
+            .optional()?;
+        let tx = db.conn.transaction()?;
+        tx.execute("DELETE FROM rust_authorizations WHERE token_hash=?1", [&hash])?;
+        tx.execute("DELETE FROM gateway_sessions WHERE mirror_token=?1", [&hash])?;
+        tx.commit()?;
+        drop(db);
+        if let Some(subject) = subject {
+            app.acl.abort_subject(&subject);
+        }
+    }
+    let mut response = StatusCode::FOUND.into_response();
+    // 未配置 `ADMIN_PUBLIC_URL` 时回原版的同源相对跳转（原版网关自己托管 /admin）。
+    let admin = app
+        .config
+        .admin_public_url
+        .clone()
+        .unwrap_or_else(|| "/admin#/".to_owned());
+    response
+        .headers_mut()
+        .insert(
+            "location",
+            HeaderValue::from_str(&admin).context("管理后台地址不是合法响应头值")?,
+        );
+    clear_session_cookies(&mut response, app.config.cookie_secure)?;
     Ok(response)
 }
 async fn revoke(State(app): State<Shared>, Json(input): Json<Value>) -> ApiResult {
