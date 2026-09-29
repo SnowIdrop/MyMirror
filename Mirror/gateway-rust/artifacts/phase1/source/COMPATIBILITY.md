@@ -883,6 +883,44 @@ console error 7 → 5，剩余为 React #418/Datadog/favicon 这类既有噪声�
 合成回环用例覆盖（含「同一路径只记一次」与「拒绝也写审计」），Auto 在本批的角色是
 未来新路径的兜底。
 
+## 页面导航放行：页面路由不再按清单枚举（2026-09-29）
+
+用户点进 `http://127.0.0.1:40002/projects` 得到 `503`。该文案来自候选自己的门禁
+（`proxy.rs` 的「聊天代理兼容门禁尚未通过」），因为放行判定此前只枚举了 `/` 与 `/c/*`
+两个页面前缀——上游前端换一次页面路由就要改网关一次。
+
+原版的兜底路由是 `/*path` 整体反代（报告 08 §3.1-B/C 第 19 条），页面路由由上游前端
+自己决定；本候选与它对齐，把判定从「路径清单」改成「导航请求」：
+
+| 项 | 内容 |
+|---|---|
+| 规则 | `GET`/`HEAD` 且请求头 `Accept` 含 `text/html` ⇒ 转发上游（`proxy.rs::page_navigation`） |
+| 为什么不用路径清单 | 上游页面路由是上游前端的产品决定，枚举必然滞后（本次 `/projects` 就是新增面） |
+| 为什么看 `Accept` | 地址栏、刷新、深链都带 `text/html`；XHR/fetch 带 `*/*` 或具体类型 —— 未知**数据**端点因此仍然停在 503 门禁上，不会因为这条规则被静默直通 |
+| 不变 | `/api/*` 未实现路径仍本地 404；`/backend-api/*` 仍走 ACL；REFUSED 前缀（遥测、沙箱页、`/v1/`）仍在会话校验后 503；升级/写方法不受影响 |
+| 未做 | 上游 302 的 `Location` 重写（原版有 `rewrite_origin_prefix_to_local` 符号）。本次实测上游返回的是**同源相对路径**（`/auth/login/?next=%2Fprojects`、`/#settings`），不构成跳回真实站点的泄漏；真出现绝对 URL 时再按证据补 |
+
+### 真实上游验证（2026-09-29，api 与 web 两种登录模式）
+
+用真实账号经本机栈实测（方式：Django 侧按自身密钥签发一次性授权 → 网关 `/api/login`
+→ `/api/not-login` 交接 → 以 `Accept: text/html` 请求页面；会话用完即 `logout` 删除）：
+
+| 请求 | `Accept: text/html`（导航） | 说明 |
+|---|---|---|
+| `/`（api 模式） | `200` 458 KB HTML | 正常渲染 |
+| `/gpts`（api 模式） | `200` 656 KB HTML | 正常渲染 |
+| `/projects`（api 模式） | `302` → `/auth/login/?next=%2Fprojects` | 上游自己的未登录跳转，**不再是 503** |
+| `/`（web/SessionToken 模式） | `200` 710 KB，注入标记命中 | 页面注入链路完好 |
+| `/library`（web 模式） | `200` 699 KB `<title>ChatGPT - Library</title>` | 带会话 Cookie 后页面路由正常返回 |
+| `/projects`（web 模式） | `302` → `/auth/login/?next=%2Fprojects` | 该账号为 `free`，Projects 对其不可用；转发行为与真实站点一致 |
+| `/settings`（web 模式） | `302` → `/#settings` | 上游自己的应用内跳转 |
+| `/projects`（`Accept: */*`） | `503` 门禁文案 | 非导航请求仍 fail-closed，未触上游 |
+
+结论：这条路径现在交给上游前端决定，与本仓「前端自愈」的取向一致（少一处需要随上游
+更新而维护的清单）。回归由 `tests/anonymous_frontend.rs` 的
+`spa_page_routes_are_forwarded_as_navigation` 与
+`non_navigation_requests_still_stop_at_the_gate` 锁定。
+
 ## 打包与部署（Docker Compose，2026-09-28）
 
 候选网关由源码构建成可部署镜像，并在 WSL Ubuntu 26.04 的 dockerd（29.1.3、overlayfs）里

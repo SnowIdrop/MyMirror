@@ -206,6 +206,11 @@ pub(super) async fn chat_proxy(State(app): State<Shared>, request: Request) -> R
         return error(StatusCode::SERVICE_UNAVAILABLE, "实时通道升级未开放").into_response();
     }
     let method = request.method().clone();
+    // 页面导航（地址栏直达、刷新、深链）按「导航请求」而不是路径清单放行：
+    // 上游前端的页面路由由它自己决定，枚举法每换一次路由就要改网关一次
+    // （2026-09-29 用户实测 `/projects` 503）。原版的兜底路由就是 `/*path`
+    // 整体反代（报告 08 §3.1-B/C 第 19 条），这里与它对齐。
+    let navigation = page_navigation(&request);
     let result = if method == Method::GET && path == ME_PATH {
         me_passthrough(&app, request, &session).await
     } else if let Some(target) = internal_upstream_target(&path, request.uri().query()) {
@@ -215,7 +220,7 @@ pub(super) async fn chat_proxy(State(app): State<Shared>, request: Request) -> R
         } else {
             Ok(method_not_allowed(super::static_assets::MEDIA_ALLOW))
         }
-    } else if open_path(&path, &method) {
+    } else if open_path(&path, &method) || navigation {
         chat_forward(app.clone(), request, &session).await
     } else {
         return error(
@@ -228,6 +233,21 @@ pub(super) async fn chat_proxy(State(app): State<Shared>, request: Request) -> R
         Ok(response) => response,
         Err(failure) => error(StatusCode::BAD_GATEWAY, &failure.to_string()).into_response(),
     }
+}
+
+/// 页面导航判定：GET/HEAD 且 `Accept` 含 `text/html`。浏览器地址栏、刷新与深链
+/// 都会带该头；取数请求（XHR/fetch）用的是 `*/*` 或具体类型，因此未知的数据端点
+/// 仍然停在 503 门禁上，不会因为这条规则被静默放行。
+fn page_navigation(request: &Request) -> bool {
+    if !matches!(*request.method(), Method::GET | Method::HEAD) {
+        return false;
+    }
+    request
+        .headers()
+        .get_all("accept")
+        .iter()
+        .filter_map(|value| value.to_str().ok())
+        .any(|value| value.to_ascii_lowercase().contains("text/html"))
 }
 
 /// 本阶段放行判定：页面与匿名/公共接口前缀转发上游；媒体代理与既有两条只读

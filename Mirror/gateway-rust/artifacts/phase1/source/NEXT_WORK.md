@@ -355,6 +355,9 @@ sha256）。**本批仍不做**：代理节点与出口分流、`CF_BYPASS_PROXY
 - 第二阶段可信身份与新库 ACL 产品接线；第六阶段统一验收与 All-in-One 镜像交付
   （`MirrorNiXiang/rebuild-reference/README.md` 的六条交付步骤，一条未做）。
 - **前端自愈的残余（2026-09-28，见 COMPATIBILITY「前端自愈」）**：
+  - 页面路由已改按「导航请求」放行（`GET`/`HEAD` + `Accept: text/html`，2026-09-29），
+    不再枚举路径清单；未做的是上游 302 的 `Location` 绝对地址重写（实测上游给的是
+    同源相对路径 `/auth/login/?next=…`、`/#settings`，尚未构成跳回真实站点的泄漏）。
   - Auto 路径的响应过滤只覆盖 JSON：SSE/流式与二进制正文原样透传，新流式端点靠请求侧 id 判定兜底；
   - 超过 8 MiB 的 JSON 响应整体拒绝（`acl_response_too_large`），不做部分过滤；
   - 六族之外的新资源族出现在数组里会被裁空（fail-closed）；靠 `acl_audit` 的 `route_auto_*`

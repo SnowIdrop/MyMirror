@@ -135,7 +135,11 @@ impl Fixture {
                         "sec-ch-ua": header("sec-ch-ua"),
                         "body": String::from_utf8_lossy(&body),
                     }));
-                    if parts.uri.path() == "/" || parts.uri.path().starts_with("/c/") {
+                    if parts.uri.path() == "/"
+                        || parts.uri.path().starts_with("/c/")
+                        // 任意 SPA 页面路由都用同一段 HTML 应答：网关不维护页面路径清单。
+                        || parts.uri.path() == "/projects"
+                    {
                         return (
                             [(axum::http::header::CONTENT_TYPE, "text/html")],
                             "<html><head><script src=\"/assets/app.js\"></script></head><body>anon-page</body></html>",
@@ -495,6 +499,56 @@ async fn injection_handles_missing_or_uppercase_head() {
         "页面静态资源必须走 CDN，不是 chat 上游"
     );
     assert_eq!(f.chat_calls("/c/conv-1").len(), 1);
+}
+
+/// 页面路由由上游前端自己决定，网关不维护路径清单：任何 `Accept: text/html` 的
+/// GET/HEAD 都按「导航请求」转发（2026-09-29 用户实测 `/projects` 命中 503 门禁）。
+/// 取数请求不在这条规则内，未知数据端点仍然 fail-closed。
+async fn page_navigation(path: &str, accept: &str) -> (reqwest::Response, Vec<String>) {
+    let f = Fixture::new(true).await;
+    let (_, _, cookies) = f.anonymous_login().await;
+    let token = cookies
+        .iter()
+        .find_map(|cookie| cookie.strip_prefix("mirror_token="))
+        .expect("登录必须下发 mirror_token")
+        .to_owned();
+    let response = f
+        .client
+        .get(format!("{}{path}", f.base))
+        .header("cookie", format!("mirror_token={token}"))
+        .header("accept", accept)
+        .send()
+        .await
+        .unwrap();
+    (response, f.upstream_paths())
+}
+
+#[tokio::test]
+async fn spa_page_routes_are_forwarded_as_navigation() {
+    let (response, paths) = page_navigation(
+        "/projects",
+        "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    )
+    .await;
+    assert_eq!(response.status(), 200);
+    assert!(response.text().await.unwrap().contains("anon-page"));
+    assert_eq!(
+        paths.iter().filter(|path| *path == "/projects").count(),
+        1,
+        "页面路由必须转发到上游，且只发一次"
+    );
+}
+
+/// 同一条路径只要不是导航请求（XHR/fetch 用 `*/*`），就仍然停在 503 门禁上：
+/// 页面规则不能变成未知数据端点的静默直通。
+#[tokio::test]
+async fn non_navigation_requests_still_stop_at_the_gate() {
+    let (response, paths) = page_navigation("/projects", "*/*").await;
+    assert_eq!(response.status(), 503);
+    assert!(
+        paths.iter().all(|path| path != "/projects"),
+        "门禁拒绝不得接触上游"
+    );
 }
 
 /// 未登录前端自带的 next-auth 客户端在进入对话前会调用这四个端点；缺一个就会
