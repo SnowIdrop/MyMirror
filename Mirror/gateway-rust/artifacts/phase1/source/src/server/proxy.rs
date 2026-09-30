@@ -72,6 +72,38 @@ const MAX_BODY: usize = 16 * 1024 * 1024;
 /// 与其余 `/backend-api/*` 一样走 ACL 集合过滤，不再是独立分支）。
 const ME_PATH: &str = "/backend-api/me";
 
+/// 桌面端（Codex App，见其 `app.asar` 的 URL 改写函数）把
+/// `https://chatgpt.com/backend-api/*` 改写成同源根路径 `/__codex-api/*`，由它自己的
+/// 原生层接住；两前缀在其他代码里也被当作等价（例如共享文件的下载地址判定）。
+/// 镜像不是那个原生层，必须自己接住这个前缀：否则页面（或宿主客户端）发出的账号、
+/// 任务与设置请求全部落到网关的 404/503 上，表现为「We couldn't load your account」。
+/// 别名只在网关内部换回 `/backend-api/*`，其后的 ACL、凭据注入与「生成不重放」规则
+/// 完全复用同一条链路，不新增任何上游能力。
+const CODEX_API_ALIAS: &str = "/__codex-api";
+
+/// `/__codex-api[/…]` → `/backend-api[/…]`。前缀边界必须显式判断，
+/// 否则 `/__codex-apiary` 这类无关路径也会被当成别名改写。
+fn alias_codex_api(mut request: Request) -> Request {
+    let Some(rest) = request.uri().path().strip_prefix(CODEX_API_ALIAS) else {
+        return request;
+    };
+    if !rest.is_empty() && !rest.starts_with('/') {
+        return request;
+    }
+    let target = format!("/backend-api{rest}");
+    let path_and_query = match request.uri().query() {
+        Some(query) => format!("{target}?{query}"),
+        None => target,
+    };
+    // 路径与查询串都取自已经解析成功的 URI，这里只替换 ASCII 前缀，
+    // 因此重建必然成功；失败属于程序错误，直接暴露而不是静默按原路径转发。
+    *request.uri_mut() = axum::http::Uri::builder()
+        .path_and_query(path_and_query.as_str())
+        .build()
+        .expect("从既有 URI 派生的 path_and_query 必须合法");
+    request
+}
+
 /// 匿名通道与公共接口前缀（原版路由表：`/backend-anon/*` 为匿名通道，
 /// `/public-api/`、`/ces/`、`/sentinel/`、`/cdn-cgi/` 为公共/遥测/挑战路径）。
 /// 未登录页面只用这些前缀，因此本阶段放行它们；其余业务路径继续关闭。
@@ -182,6 +214,7 @@ pub(super) async fn django_proxy(
 /// 媒体代理、已登录业务面读写与实时通道，以及既有两条只读会话端点；
 /// 其余路径继续以 503 门禁失败，不做整体直通。
 pub(super) async fn chat_proxy(State(app): State<Shared>, request: Request) -> Response {
+    let request = alias_codex_api(request);
     let path = request.uri().path().to_owned();
     if path.starts_with("/assets/") || path.starts_with("/cdn/") {
         return super::static_assets::serve(&app, request).await;
@@ -1426,6 +1459,34 @@ fn upstream_parts(upstream: wreq::Response) -> (StatusCode, HeaderMap, Body) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// 桌面端的 `/__codex-api/*` 必须落回 `/backend-api/*`（含查询串），
+    /// 同时不能把 `/__codex-apiary` 这类同前缀的无关路径一起改写。
+    #[test]
+    fn codex_api_alias_rewrites_only_the_desktop_prefix() {
+        for (input, expected) in [
+            ("/__codex-api/me", "/backend-api/me"),
+            (
+                "/__codex-api/wham/tasks/list?limit=20",
+                "/backend-api/wham/tasks/list?limit=20",
+            ),
+            ("/__codex-api", "/backend-api"),
+            ("/backend-api/me", "/backend-api/me"),
+            ("/__codex-apiary/me", "/__codex-apiary/me"),
+        ] {
+            let request = Request::builder()
+                .uri(input)
+                .body(Body::empty())
+                .expect("测试请求构造必须成功");
+            let actual = alias_codex_api(request)
+                .uri()
+                .path_and_query()
+                .expect("测试请求都有路径")
+                .as_str()
+                .to_owned();
+            assert_eq!(actual, expected, "输入 {input}");
+        }
+    }
 
     /// 注入点必须命中第一个 `<head …>`（大小写不敏感、容忍属性与换行），
     /// 缺失时退化为追加并回传 `false` 供调用方留痕。

@@ -515,6 +515,34 @@ async fn unimplemented_api_paths_stay_local() {
     assert!(f.all_calls().is_empty());
 }
 
+/// 桌面端（Codex App）把 `/backend-api/*` 改写成同源的 `/__codex-api/*`；
+/// 网关必须把它当同一命名空间，用同一套会话凭据转发到上游 `/backend-api/*`。
+#[tokio::test]
+async fn codex_api_alias_is_proxied_as_backend_api() {
+    let f = Fixture::new().await;
+    let alice = f.login("alice").await;
+    f.clear_calls();
+
+    let response = f
+        .request("GET", &alice, "/__codex-api/me?probe=1")
+        .send()
+        .await
+        .unwrap();
+    assert_eq!(response.status(), StatusCode::OK);
+    let calls = f.calls("/backend-api/me");
+    assert_eq!(calls.len(), 1, "别名必须落到上游的 /backend-api/me");
+    assert_eq!(calls[0]["query"], "probe=1");
+    assert_eq!(calls[0]["authorization"], "Bearer synthetic-access-alice");
+    assert!(
+        calls[0]["cookie"].as_str().unwrap().contains("probe_extra=alice"),
+        "别名不得绕过会话 cookie 注入"
+    );
+    assert!(
+        f.calls("/__codex-api/me").is_empty(),
+        "上游不能看到桌面端前缀"
+    );
+}
+
 /// 无镜像会话时已登录业务面继续 401，不泄露上游行为。
 #[tokio::test]
 async fn backend_api_requires_a_mirror_session() {

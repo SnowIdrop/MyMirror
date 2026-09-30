@@ -1337,5 +1337,39 @@ Django 全量 115 项通过。
   全绿（91 单测 + 各集成用例），`cargo clippy --locked --offline --all-targets -- -D warnings`
   无输出。注意 rsync 会保留 Windows 侧的 mtime，**紧跟一次 rsync 的「通过」不可信**：
   必须先 `find src tests -type f -exec touch {} +` 再跑，否则 cargo 可能复用旧测试二进制。
-- **容器未重建、未部署**：本批改的是网关二进制的行为，正在跑的
-  `mirror-gateway:phase1` 镜像仍是修复前的产物。重建/上线需显式批准。
+- **容器已重建并部署**：本批改动随 2026-09-30 的生产切换一起进入
+  `mirror-gateway:phase1` 镜像（`docker compose -p mirror-build … build gateway`），
+  详见下一节与 `STATUS.json` 的 `production_deployment_20260930`。
+
+## 桌面端前缀 `/__codex-api/*` 的别名（2026-09-30）
+
+生产切换后的现场：镜像页面在浏览器里发起一批
+`GET /__codex-api/{me,settings/user,wham/accounts/check,…}`，带会话时全部 404；
+同名路径的 `POST`（`conversation/init`、`sentinel/chat-requirements/prepare`）被
+「未分类写入路径」门禁拒成 503，页面随后显示桌面端文案
+`We couldn't load your account` / `Try reloading, or sign out and sign in again`。
+
+取证（2026-09-30）：
+
+- 该文案与 `__codex-api` 前缀都只出现在桌面端 bundle `app.asar`（字符串 id
+  `home.accountAccessError.*` 与 URL 改写函数）；chatgpt.com 当日的网页构建
+  `prod-1d615f8f…`（把 manifest 列出的 1511 个分块全量抓取后逐个搜索）里两者都不存在。
+- 上游侧：匿名 `POST https://chatgpt.com/__codex-api/*` 与任意不存在的路径一样是 302 兜底，
+  只有 `/backend-api/*` 返回 401 JSON；`GET /__codex-api/*` 与随机路径同为 404 站内页。
+- 桌面端代码自己把两个前缀当等价：改写函数把 `https://chatgpt.com/backend-api/*` 写成根相对的
+  `/__codex-api/*` 交给它的原生层；共享文件下载地址判定也同时接受 `/__codex-api/` 与
+  `chatgpt.com/backend-api/`。
+
+改动：`server/proxy.rs::alias_codex_api` 在 `chat_proxy` 入口把 `/__codex-api[/…]`
+重写成 `/backend-api[/…]`（查询串保留）。之后的 ACL 判权与集合过滤、会话凭据 + CF cookies
+注入、公共头处理、「生成不重放」与读取面放行全部复用原链路；前缀边界显式判断，
+`/__codex-apiary` 不受影响。**这是相对原版网关的新增兼容面**：原版没有这个前缀，
+镜像不是桌面端原生层，必须自己接住它。
+
+验证：`cargo test --locked --offline` 全绿（92 单测 + 各集成套件，含新增
+`codex_api_alias_is_proxied_as_backend_api`：别名带查询串落到上游 `/backend-api/me`、
+带会话 cookie 与 Authorization、且上游看不到桌面端前缀），
+`cargo clippy --locked --offline --all-targets -- -D warnings` 干净。生产机重建镜像并重启后，
+用一次性探针用户（用完即删、只读 GET）实测：`/__codex-api/me` 200（与 `/backend-api/me`
+同字节数 1224）、`/__codex-api/wham/accounts/check` 200、`/__codex-api/pins?item_type=feature`
+200；`/__codex-apiary/me` 仍是 404，前缀边界成立。
