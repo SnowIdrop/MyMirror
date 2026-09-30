@@ -353,12 +353,16 @@ sha256）。**本批仍不做**：代理节点与出口分流、`CF_BYPASS_PROXY
     完整栈验证；编排、端口约定与残余见 COMPATIBILITY「打包与部署」。
   - WSL 路径：**已打通（2026-09-28）**。Ubuntu 26.04 内 `cargo test`（22 套件）与
     `cargo clippy --all-targets -- -D warnings` 全过，Docker 构建与运行也都在 WSL 内完成。
-  - 尚未做的部署面：All-in-One 单镜像打包、TLS 终结与公网暴露策略、`/admin` 由网关本体自托管
-    （候选仍按既有实现把 `/admin` 透传给 Django，管理界面走 nginx 侧车）。
+  - 部署面：TLS 终结与公网暴露策略**已在目标机落地（2026-09-30）**——宿主 Caddy 终结
+    TLS，`/admin/*` 与 `/0x/*` 分流到 nginx 侧车，其余路径直连网关；应用端口用
+    `docker-compose.prod.yml` 只绑 `127.0.0.1`。做法与回滚步骤见
+    `chatgpt-mirror-build/DEPLOYMENT.md`。**仍未做**：All-in-One 单镜像打包，
+    以及 `/admin` 由网关本体自托管（现在仍是 nginx 侧车）。
   - 管理端与镜像面不同源时的登录跳转：**已实现（2026-09-29）**，Django 侧 `MIRROR_PUBLIC_URL`
     把网关返回的相对 `/api/not-login` 补成镜像面绝对地址（同源留空即原语义）。部署方需要按
     浏览器实际访问的镜像面地址填写；All-in-One 单端口打包落地后该项可重新置空。详见
-    COMPATIBILITY「管理端与镜像面不同源：登录交接地址」。
+    COMPATIBILITY「管理端与镜像面不同源：登录交接地址」。**目标机上是同源部署**
+    （Caddy 按路径分流到同一个域名），因此那里 `MIRROR_PUBLIC_URL` 留空。
 - 初次登录只调 `me`，原版登录同样先调 `accounts/check`（COMPATIBILITY「未完成/显式差异」）。
 - 管理非空库 `gateway_sessions` 自增 ID 偏移与上游调用序列差异、`login extra_cookies` 严格提取契约。
 - 审核 provider 的 5 个扩展响应用例（已列非目标，保留 503 门禁）。

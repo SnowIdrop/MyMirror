@@ -1137,8 +1137,14 @@ Django 全量 115 项通过。
   `django_passthrough_preserves_browser_cookies`，该用例在修复前确实失败）；
   `cargo clippy --locked --offline --all-targets -- -D warnings` 通过；
   Django `DJANGO_ENV=LOCAL manage.py test` 107 项通过。
-- 未做：真实上游写入、All-in-One 单镜像打包、TLS 终结与公网暴露策略
-  （`LOCAL_NETWORK_ACCESS`/`DJANGO_*_COOKIE_SECURE`/`CSRF_TRUSTED_ORIGINS` 由部署方设置）。
+- 未做：真实上游写入、All-in-One 单镜像打包。
+  **TLS 终结与公网暴露策略已在目标机落地（2026-09-30）**：`54.95.51.66` 上闭源
+  all-in-one 已被本候选替换，由宿主 Caddy 终结 TLS、`/admin/*` 与 `/0x/*` 分流到 nginx
+  侧车、其余路径直连网关；`LOCAL_NETWORK_ACCESS=disable`、`COOKIE_SECURE=true`、
+  `DJANGO_*_COOKIE_SECURE=true`、`CSRF_TRUSTED_ORIGINS=https://mirror.linuxsnowdrop.ccwu.cc`。
+  应用端口全部只绑 `127.0.0.1`（靠 `docker-compose.prod.yml` 的 `!override`），
+  实测公网只能经 Caddy 到达。数据承接（Django 库沿用 + 网关库 `migrate` 子命令）、
+  切换后验证与回滚步骤见 `chatgpt-mirror-build/DEPLOYMENT.md`。
 - **冷启动瞬态**：四个容器被宿主机同时拉起时（例如 dockerd/WSL 重启），网关的 cfbypass
   预热可能早于 cfbypass 监听端口，日志出现一条 `cfbypass prewarm failed ... cfbypass 请求失败`。
   预热按设计不阻塞启动（server.rs:141-146），首次真正需要 clearance 的请求会重新刷新；

@@ -1,0 +1,24 @@
+# 生产覆盖：宿主端口只绑回环，对外由前置反代（Caddy/Nginx）终结 TLS 后转发。
+#
+# 为什么需要这个文件：`docker-compose.rust-gateway.yml` 面向本机预览，谁访问都不经过
+# 反代，所以把 40002/40003 绑在 0.0.0.0 上是对的。同一份文件直接拿到生产机上用，
+# 就会把网关与管理界面裸露到公网、绕过反代，比替换前的部署更糟——替换前那个
+# all-in-one 自己就只绑 127.0.0.1:40002（2026-09-30 在目标机实测），对外只有 Caddy。
+#
+# 用 `!override` 整体替换 `ports` 而不是追加：Compose 对多值字段是**拼接**语义，
+# 直接写会让同一个宿主端口出现两条绑定（0.0.0.0 与 127.0.0.1），Docker 启动即报端口占用。
+# 该标签需要 Compose 2.24.4+（本机 2.40.3、目标机 5.5.1 均已满足）。
+#
+# 用法（与基础编排叠加，顺序不能反）：
+#   docker compose -p mirror-build --env-file .env \
+#     -f docker-compose.rust-gateway.yml -f docker-compose.prod.yml up -d
+#
+# django（18000）与 cfbypass（18001）在基础编排里已经绑 127.0.0.1，这里不重复声明：
+# 重复声明只会多两份需要同步的真相。
+services:
+  gateway:
+    ports: !override
+      - "127.0.0.1:${PORT:-40002}:40002"
+  frontend:
+    ports: !override
+      - "127.0.0.1:${ADMIN_PORT:-40003}:80"
